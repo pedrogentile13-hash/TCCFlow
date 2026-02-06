@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Conta - GentileOrganization</title>
+    <title>Entrar - GentileOrganization</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -34,35 +34,24 @@
 </head>
 <body class="bg-slate-950 text-white min-h-screen antialiased flex items-center justify-center relative overflow-hidden">
 
-    <div class="hero-glow bg-blue-600 -top-40 -left-40"></div>
-    <div class="hero-glow bg-emerald-500 -bottom-40 -right-40"></div>
+    <div class="hero-glow bg-blue-600 -top-40 -right-40"></div>
+    <div class="hero-glow bg-purple-500 -bottom-40 -left-40"></div>
 
     <div class="relative z-10 w-full max-w-md mx-4">
-        <!-- Back link -->
-        <a href="index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition mb-8">
+        <a href="../index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition mb-8">
             <i class="fa-solid fa-arrow-left"></i> Voltar ao início
         </a>
 
         <div class="glass-strong rounded-3xl p-8 sm:p-10">
-            <!-- Header -->
             <div class="text-center mb-8">
                 <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-user-plus text-xl"></i>
+                    <i class="fa-solid fa-right-to-bracket text-xl"></i>
                 </div>
-                <h1 class="text-2xl font-bold">Criar Conta</h1>
-                <p class="text-sm text-slate-400 mt-2">Preencha os dados para começar</p>
+                <h1 class="text-2xl font-bold">Bem-vindo de volta</h1>
+                <p class="text-sm text-slate-400 mt-2">Entre na sua conta para continuar</p>
             </div>
 
-            <!-- Form -->
-            <form id="registerForm" class="space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">
-                        <i class="fa-solid fa-user mr-1 text-blue-400"></i> Nome Completo
-                    </label>
-                    <input type="text" id="name" required placeholder="Seu nome completo"
-                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-                </div>
-
+            <form id="loginForm" class="space-y-5">
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-2">
                         <i class="fa-solid fa-envelope mr-1 text-blue-400"></i> Email
@@ -76,7 +65,7 @@
                         <i class="fa-solid fa-lock mr-1 text-blue-400"></i> Senha
                     </label>
                     <div class="relative">
-                        <input type="password" id="password" required placeholder="Mínimo 6 caracteres" minlength="6"
+                        <input type="password" id="password" required placeholder="Sua senha"
                             class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition pr-10">
                         <button type="button" id="togglePass" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition">
                             <i class="fa-solid fa-eye text-sm"></i>
@@ -84,35 +73,23 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">
-                        <i class="fa-solid fa-lock mr-1 text-blue-400"></i> Confirmar Senha
-                    </label>
-                    <input type="password" id="confirmPassword" required placeholder="Repita a senha"
-                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-                </div>
-
-                <!-- Error message -->
-                <div id="errorMsg" class="hidden bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3">
-                </div>
-                <!-- Success message -->
-                <div id="successMsg" class="hidden bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm rounded-xl px-4 py-3">
-                </div>
+                <div id="errorMsg" class="hidden bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3"></div>
+                <div id="successMsg" class="hidden bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm rounded-xl px-4 py-3"></div>
 
                 <button type="submit"
                     class="w-full bg-blue-600 hover:bg-blue-500 font-semibold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/25">
-                    <i class="fa-solid fa-check mr-2"></i>Criar Conta
+                    <i class="fa-solid fa-right-to-bracket mr-2"></i>Entrar
                 </button>
             </form>
 
             <p class="text-center text-sm text-slate-400 mt-6">
-                Já tem conta? <a href="login.html" class="text-blue-400 hover:text-blue-300 font-medium transition">Entrar</a>
+                Não tem conta? <a href="cadastro.html" class="text-blue-400 hover:text-blue-300 font-medium transition">Criar Conta</a>
             </p>
         </div>
     </div>
 
     <script>
-        // Toggle password visibility
+        // Toggle password
         const togglePass = document.getElementById('togglePass');
         const passwordInput = document.getElementById('password');
         togglePass.addEventListener('click', () => {
@@ -122,61 +99,40 @@
             togglePass.querySelector('i').classList.toggle('fa-eye-slash');
         });
 
-        // Register form
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim().toLowerCase();
             const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
 
             const errorMsg = document.getElementById('errorMsg');
             const successMsg = document.getElementById('successMsg');
             errorMsg.classList.add('hidden');
             successMsg.classList.add('hidden');
 
-            // Validation
-            if (password !== confirmPassword) {
-                errorMsg.textContent = 'As senhas não coincidem.';
-                errorMsg.classList.remove('hidden');
-                return;
-            }
-
-            if (password.length < 6) {
-                errorMsg.textContent = 'A senha deve ter pelo menos 6 caracteres.';
-                errorMsg.classList.remove('hidden');
-                return;
-            }
-
-            // Get existing users
             const users = JSON.parse(localStorage.getItem('gentile_users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
 
-            // Check if email already exists
-            if (users.find(u => u.email === email)) {
-                errorMsg.textContent = 'Este email já está registado.';
+            if (!user) {
+                errorMsg.textContent = 'Email ou senha incorretos.';
                 errorMsg.classList.remove('hidden');
                 return;
             }
 
-            // Create user
-            const newUser = {
-                id: Date.now().toString(),
-                name: name,
-                email: email,
-                password: password,
-                createdAt: new Date().toISOString()
-            };
+            // Save current session
+            localStorage.setItem('gentile_current_user', JSON.stringify({
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }));
 
-            users.push(newUser);
-            localStorage.setItem('gentile_users', JSON.stringify(users));
-
-            successMsg.textContent = 'Conta criada com sucesso! Redirecionando...';
+            successMsg.textContent = 'Login efetuado com sucesso! Redirecionando...';
             successMsg.classList.remove('hidden');
 
             setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1500);
+                window.location.href = 'dashboard.html';
+            }, 1000);
         });
     </script>
 </body>
