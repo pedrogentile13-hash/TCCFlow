@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário - GentileOrganization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .glass-strong {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-link.active { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .calendar-day:hover { background: rgba(255,255,255,0.08); }
+        .calendar-day.today { border: 2px solid #3b82f6; }
+        .calendar-day.has-session { position: relative; }
+        .calendar-day.has-session::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #3b82f6;
+        }
+        .calendar-day.has-completed::after { background: #10b981; }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen antialiased">
+
+    <!-- Mobile header -->
+    <header class="lg:hidden fixed top-0 w-full z-50 glass">
+        <div class="flex items-center justify-between px-4 h-14">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-book-open text-xs"></i>
+                </div>
+                <span class="text-sm font-bold">Gentile<span class="text-blue-400">Org</span></span>
+            </div>
+            <button id="sidebarToggle" class="text-slate-300 hover:text-white">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-book-open text-sm"></i>
+                </div>
+                <div>
+                    <span class="text-base font-bold block">Gentile<span class="text-blue-400">Org</span></span>
+                    <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
+                </div>
+            </div>
+            <nav class="space-y-1">
+                <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
+                </a>
+                <a href="calendario.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
+                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
+                </a>
+                <a href="admin.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-gear w-5 text-center"></i> Definições
+                </a>
+                <a href="debug.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-bug w-5 text-center"></i> Debug
+                </a>
+            </nav>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-6">
+            <button id="logoutBtn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition">
+                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Sair
+            </button>
+        </div>
+    </aside>
+
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
+        <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+
+            <div class="mb-8">
+                <h1 class="text-2xl sm:text-3xl font-bold"><span class="gradient-text">Calendário</span></h1>
+                <p class="text-sm text-slate-400 mt-1">Visualize e organize as suas metas de estudo</p>
+            </div>
+
+            <!-- Calendar Navigation -->
+            <div class="glass rounded-3xl p-6 mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <button id="prevMonth" class="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-white/10 transition">
+                        <i class="fa-solid fa-chevron-left text-sm"></i>
+                    </button>
+                    <h2 id="monthTitle" class="text-xl font-bold"></h2>
+                    <button id="nextMonth" class="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-white/10 transition">
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Weekday headers -->
+                <div class="grid grid-cols-7 gap-1 mb-2">
+                    <div class="text-center text-xs font-semibold text-slate-500 py-2">Dom</div>
+                    <div class="text-center text-xs font-semibold text-slate-500 py-2">Seg</div>
+                    <div class="text-center text-xs font-semibold text-slate-500 py-2">Ter</div>
+                    <div class="text-center text-xs font-semibold text-slate-500 py-2">Qua</div>
+                    <div class="text-center text-xs font-semibold text-slate-500 py-2">Qui</div>
+                    <div class="text-center text-xs font-semibold text-slate-500 py-2">Sex</div>
+                    <div class="text-center text-xs font-semibold text-slate-500 py-2">Sáb</div>
+                </div>
+
+                <!-- Calendar grid -->
+                <div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
+            </div>
+
+            <!-- Goals Section -->
+            <div class="glass rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold">
+                        <i class="fa-solid fa-bullseye mr-2 text-emerald-400"></i>Metas
+                    </h2>
+                    <button id="addGoalBtn" class="bg-blue-600 hover:bg-blue-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                        <i class="fa-solid fa-plus mr-1"></i> Nova Meta
+                    </button>
+                </div>
+
+                <!-- Add goal form -->
+                <div id="goalForm" class="hidden glass rounded-2xl p-5 mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Meta</label>
+                            <input type="text" id="goalTitle" placeholder="Ex: Terminar capítulo 5"
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Prazo</label>
+                            <input type="date" id="goalDeadline"
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="saveGoal" class="bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                            <i class="fa-solid fa-check mr-1"></i> Salvar
+                        </button>
+                        <button id="cancelGoal" class="bg-slate-700 hover:bg-slate-600 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Goals list -->
+                <div id="goalsList" class="space-y-3">
+                    <div class="text-center py-6 text-slate-500">
+                        <i class="fa-solid fa-flag text-2xl mb-2 block"></i>
+                        <p class="text-sm">Nenhuma meta definida.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day sessions panel -->
+            <div id="dayPanel" class="hidden glass rounded-3xl p-6 mt-6">
+                <h3 class="text-lg font-bold mb-4" id="dayPanelTitle">Sessões do dia</h3>
+                <div id="daySessionsList" class="space-y-3"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ========== Auth Check ==========
+        const currentUser = JSON.parse(localStorage.getItem('gentile_current_user'));
+        if (!currentUser) window.location.href = 'login.html';
+
+        if (currentUser) {
+            document.getElementById('sidebarUserName').textContent = currentUser.name;
+        }
+
+        // ========== Sidebar ==========
+        const sidebar = document.getElementById('sidebar');
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        });
+        document.getElementById('sidebarOverlay').addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('gentile_current_user');
+            window.location.href = 'login.html';
+        });
+
+        // ========== Calendar ==========
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+        function getSessions() {
+            return JSON.parse(localStorage.getItem('gentile_sessions') || '[]').filter(s => s.userId === currentUser.id);
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const title = document.getElementById('monthTitle');
+            title.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = new Date();
+
+            const sessions = getSessions();
+
+            let html = '';
+
+            // Empty cells
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="p-2 sm:p-3"></div>';
+            }
+
+            // Days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const daySessions = sessions.filter(s => s.date === dateStr);
+                const isToday = day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+                const hasSession = daySessions.length > 0;
+                const allCompleted = hasSession && daySessions.every(s => s.completed);
+
+                let classes = 'calendar-day rounded-xl p-2 sm:p-3 text-center cursor-pointer transition';
+                if (isToday) classes += ' today';
+                if (hasSession && allCompleted) classes += ' has-session has-completed';
+                else if (hasSession) classes += ' has-session';
+
+                html += `<div class="${classes}" onclick="showDaySessions('${dateStr}', ${day})">
+                    <span class="text-sm font-medium ${isToday ? 'text-blue-400' : ''}">${day}</span>
+                    ${hasSession ? `<div class="text-[10px] text-slate-500 mt-1 hidden sm:block">${daySessions.length} sessão${daySessions.length > 1 ? 'ões' : ''}</div>` : ''}
+                </div>`;
+            }
+
+            grid.innerHTML = html;
+        }
+
+        window.showDaySessions = function(dateStr, day) {
+            const sessions = getSessions().filter(s => s.date === dateStr);
+            const panel = document.getElementById('dayPanel');
+            const list = document.getElementById('daySessionsList');
+            const title = document.getElementById('dayPanelTitle');
+
+            title.textContent = `Sessões de ${day} de ${monthNames[currentMonth]}`;
+
+            if (sessions.length === 0) {
+                list.innerHTML = '<p class="text-sm text-slate-500 text-center py-4">Nenhuma sessão neste dia.</p>';
+            } else {
+                list.innerHTML = sessions.map(s => `
+                    <div class="glass rounded-xl p-3 flex items-center justify-between">
+                        <div>
+                            <span class="text-sm font-semibold">${escapeHtml(s.subject)}</span>
+                            <span class="text-xs text-slate-400 ml-2">${escapeHtml(s.topic || '')}</span>
+                            ${s.time ? `<span class="text-xs text-slate-500 ml-2"><i class="fa-regular fa-clock mr-1"></i>${s.time}</span>` : ''}
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded-lg ${s.completed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">
+                            ${s.completed ? 'Concluída' : 'Pendente'}
+                        </span>
+                    </div>
+                `).join('');
+            }
+
+            panel.classList.remove('hidden');
+        };
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            renderCalendar();
+        });
+
+        // ========== Goals ==========
+        const GOALS_KEY = 'gentile_goals';
+
+        function getGoals() {
+            return JSON.parse(localStorage.getItem(GOALS_KEY) || '[]').filter(g => g.userId === currentUser.id);
+        }
+
+        function saveGoals(goals) {
+            const allGoals = JSON.parse(localStorage.getItem(GOALS_KEY) || '[]').filter(g => g.userId !== currentUser.id);
+            localStorage.setItem(GOALS_KEY, JSON.stringify([...allGoals, ...goals]));
+        }
+
+        function renderGoals() {
+            const goals = getGoals();
+            const list = document.getElementById('goalsList');
+
+            if (goals.length === 0) {
+                list.innerHTML = `<div class="text-center py-6 text-slate-500">
+                    <i class="fa-solid fa-flag text-2xl mb-2 block"></i>
+                    <p class="text-sm">Nenhuma meta definida.</p>
+                </div>`;
+                return;
+            }
+
+            goals.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+            list.innerHTML = goals.map(goal => {
+                const isOverdue = new Date(goal.deadline) < new Date() && !goal.completed;
+                const statusClass = goal.completed ? 'text-emerald-400' : isOverdue ? 'text-red-400' : 'text-blue-400';
+                const bgClass = goal.completed ? 'bg-emerald-500/10 border-emerald-500/20' : isOverdue ? 'bg-red-500/10 border-red-500/20' : 'bg-blue-500/10 border-blue-500/20';
+
+                return `
+                <div class="glass rounded-2xl p-4 flex items-center justify-between gap-3">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-semibold ${goal.completed ? 'line-through opacity-60' : ''}">${escapeHtml(goal.title)}</h4>
+                        <p class="text-xs text-slate-400 mt-1">
+                            <i class="fa-regular fa-calendar mr-1"></i>Prazo: ${new Date(goal.deadline + 'T00:00:00').toLocaleDateString('pt-BR')}
+                            ${isOverdue ? '<span class="text-red-400 ml-2">Atrasada</span>' : ''}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleGoal('${goal.id}')" class="${bgClass} ${statusClass} border text-xs font-medium px-3 py-1.5 rounded-lg transition">
+                            <i class="fa-solid ${goal.completed ? 'fa-rotate-left' : 'fa-check'}"></i>
+                        </button>
+                        <button onclick="deleteGoal('${goal.id}')" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 text-xs font-medium px-3 py-1.5 rounded-lg transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Goal form toggle
+        document.getElementById('addGoalBtn').addEventListener('click', () => {
+            document.getElementById('goalForm').classList.toggle('hidden');
+        });
+        document.getElementById('cancelGoal').addEventListener('click', () => {
+            document.getElementById('goalForm').classList.add('hidden');
+        });
+
+        document.getElementById('saveGoal').addEventListener('click', () => {
+            const title = document.getElementById('goalTitle').value.trim();
+            const deadline = document.getElementById('goalDeadline').value;
+
+            if (!title || !deadline) {
+                alert('Preencha a meta e o prazo.');
+                return;
+            }
+
+            const goals = getGoals();
+            goals.push({
+                id: Date.now().toString(),
+                userId: currentUser.id,
+                title,
+                deadline,
+                completed: false,
+                createdAt: new Date().toISOString()
+            });
+
+            saveGoals(goals);
+            document.getElementById('goalTitle').value = '';
+            document.getElementById('goalDeadline').value = '';
+            document.getElementById('goalForm').classList.add('hidden');
+            renderGoals();
+        });
+
+        window.toggleGoal = function(id) {
+            const goals = getGoals();
+            const goal = goals.find(g => g.id === id);
+            if (goal) {
+                goal.completed = !goal.completed;
+                saveGoals(goals);
+                renderGoals();
+            }
+        };
+
+        window.deleteGoal = function(id) {
+            if (!confirm('Eliminar esta meta?')) return;
+            const goals = getGoals().filter(g => g.id !== id);
+            saveGoals(goals);
+            renderGoals();
+        };
+
+        // ========== Init ==========
+        renderCalendar();
+        renderGoals();
+    </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GentileOrganization - Gestão de Estudos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .glass-strong {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; }
+        .fade-in-delay-1 { animation-delay: 0.2s; }
+        .fade-in-delay-2 { animation-delay: 0.4s; }
+        .fade-in-delay-3 { animation-delay: 0.6s; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .fade-in { transform: translateY(20px); }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen antialiased">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-book-open text-sm"></i>
+                    </div>
+                    <span class="text-lg font-bold">Gentile<span class="text-blue-400">Organization</span></span>
+                </a>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#features" class="text-sm text-slate-300 hover:text-white transition">Funcionalidades</a>
+                    <a href="#about" class="text-sm text-slate-300 hover:text-white transition">Sobre</a>
+                    <a href="login.html" class="text-sm text-slate-300 hover:text-white transition">Entrar</a>
+                    <a href="cadastro.html" class="bg-blue-600 hover:bg-blue-500 text-sm font-semibold px-5 py-2 rounded-xl transition">Criar Conta</a>
+                </div>
+                <button id="mobileMenuBtn" class="md:hidden text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2">
+            <a href="#features" class="block text-sm text-slate-300 hover:text-white py-2">Funcionalidades</a>
+            <a href="#about" class="block text-sm text-slate-300 hover:text-white py-2">Sobre</a>
+            <a href="login.html" class="block text-sm text-slate-300 hover:text-white py-2">Entrar</a>
+            <a href="cadastro.html" class="block bg-blue-600 hover:bg-blue-500 text-sm font-semibold px-5 py-2 rounded-xl transition text-center">Criar Conta</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+        <div class="hero-glow bg-blue-600 top-1/4 left-1/4"></div>
+        <div class="hero-glow bg-emerald-500 bottom-1/4 right-1/4"></div>
+
+        <div class="relative z-10 max-w-4xl mx-auto px-4 text-center">
+            <div class="fade-in inline-flex items-center gap-2 glass-strong px-4 py-2 rounded-full mb-8">
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                <span class="text-xs text-slate-300 font-medium">Plataforma de Estudos Inteligente</span>
+            </div>
+
+            <h1 class="fade-in fade-in-delay-1 text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-tight mb-6">
+                Organize os seus<br>
+                <span class="gradient-text">estudos com eficiência</span>
+            </h1>
+
+            <p class="fade-in fade-in-delay-2 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                Gerencie sessões de estudo, acompanhe o seu progresso com timer Pomodoro,
+                visualize o seu calendário e alcance os seus objetivos acadêmicos.
+            </p>
+
+            <div class="fade-in fade-in-delay-3 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="cadastro.html" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 font-semibold px-8 py-3.5 rounded-2xl transition shadow-lg shadow-blue-600/25 text-center">
+                    <i class="fa-solid fa-rocket mr-2"></i>Começar Agora
+                </a>
+                <a href="#features" class="w-full sm:w-auto glass-strong hover:bg-white/10 font-semibold px-8 py-3.5 rounded-2xl transition text-center">
+                    <i class="fa-solid fa-circle-play mr-2"></i>Saber Mais
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="fade-in fade-in-delay-3 grid grid-cols-3 gap-4 mt-16 max-w-lg mx-auto">
+                <div class="glass rounded-2xl p-4">
+                    <div class="text-2xl font-bold text-blue-400">100%</div>
+                    <div class="text-xs text-slate-400 mt-1">Gratuito</div>
+                </div>
+                <div class="glass rounded-2xl p-4">
+                    <div class="text-2xl font-bold text-emerald-400">24/7</div>
+                    <div class="text-xs text-slate-400 mt-1">Disponível</div>
+                </div>
+                <div class="glass rounded-2xl p-4">
+                    <div class="text-2xl font-bold text-purple-400">Offline</div>
+                    <div class="text-xs text-slate-400 mt-1">Funciona</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Tudo o que precisa para <span class="gradient-text">estudar melhor</span></h2>
+                <p class="text-slate-400 max-w-xl mx-auto">Ferramentas poderosas projetadas para maximizar a sua produtividade acadêmica.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="glass rounded-3xl p-8 hover:bg-white/[0.08] transition group">
+                    <div class="w-14 h-14 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600/30 transition">
+                        <i class="fa-solid fa-stopwatch text-blue-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3">Timer Pomodoro</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Técnica comprovada de gestão de tempo com sessões de foco de 25 minutos e pausas programadas.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="glass rounded-3xl p-8 hover:bg-white/[0.08] transition group">
+                    <div class="w-14 h-14 bg-emerald-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-emerald-600/30 transition">
+                        <i class="fa-solid fa-calendar-days text-emerald-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3">Calendário Inteligente</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Visualize as suas metas e sessões de estudo num calendário interativo e intuitivo.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="glass rounded-3xl p-8 hover:bg-white/[0.08] transition group">
+                    <div class="w-14 h-14 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600/30 transition">
+                        <i class="fa-solid fa-chart-line text-purple-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3">Estatísticas Detalhadas</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Acompanhe o seu progresso com gráficos e métricas detalhadas de desempenho.</p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="glass rounded-3xl p-8 hover:bg-white/[0.08] transition group">
+                    <div class="w-14 h-14 bg-amber-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-amber-600/30 transition">
+                        <i class="fa-solid fa-list-check text-amber-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3">Gestão de Sessões</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Crie, organize e acompanhe todas as suas sessões de estudo num só lugar.</p>
+                </div>
+                <!-- Feature 5 -->
+                <div class="glass rounded-3xl p-8 hover:bg-white/[0.08] transition group">
+                    <div class="w-14 h-14 bg-rose-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-rose-600/30 transition">
+                        <i class="fa-solid fa-shield-halved text-rose-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3">Dados Seguros</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Os seus dados ficam armazenados localmente no seu navegador com total privacidade.</p>
+                </div>
+                <!-- Feature 6 -->
+                <div class="glass rounded-3xl p-8 hover:bg-white/[0.08] transition group">
+                    <div class="w-14 h-14 bg-cyan-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-cyan-600/30 transition">
+                        <i class="fa-solid fa-mobile-screen text-cyan-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3">100% Responsivo</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Interface adaptada para qualquer dispositivo: computador, tablet ou telemóvel.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About / CTA Section -->
+    <section id="about" class="py-24">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <div class="glass-strong rounded-3xl p-8 sm:p-16">
+                <div class="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-8">
+                    <i class="fa-solid fa-graduation-cap text-blue-400 text-2xl"></i>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Pronto para transformar os seus estudos?</h2>
+                <p class="text-slate-400 max-w-xl mx-auto mb-10">
+                    Junte-se à plataforma GentileOrganization e comece a organizar as suas sessões
+                    de estudo de forma inteligente e eficiente.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="cadastro.html" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 font-semibold px-8 py-3.5 rounded-2xl transition shadow-lg shadow-blue-600/25 text-center">
+                        <i class="fa-solid fa-user-plus mr-2"></i>Criar Conta Gratuita
+                    </a>
+                    <a href="login.html" class="w-full sm:w-auto glass hover:bg-white/10 font-semibold px-8 py-3.5 rounded-2xl transition text-center">
+                        Já tenho conta <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 py-8">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-book-open text-xs"></i>
+                </div>
+                <span class="text-sm font-semibold">GentileOrganization</span>
+            </div>
+            <p class="text-xs text-slate-500">&copy; 2026 GentileOrganization. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
