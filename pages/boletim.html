@@ -14,24 +14,11 @@
     </script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .glass-strong {
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #3b82f6, #10b981);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-strong { background: rgba(255,255,255,0.08); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.12); }
+        .gradient-text { background: linear-gradient(135deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .sidebar-link.active { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .sub-link.active { background: rgba(59,130,246,0.1); color: #60a5fa; }
         .subject-row { cursor: pointer; transition: background 0.15s; }
         .subject-row:hover { background: rgba(255,255,255,0.04); }
         .subject-row.selected { background: rgba(59,130,246,0.08); border-left: 3px solid #3b82f6; }
@@ -39,27 +26,24 @@
         .type-card { transition: transform 0.15s; }
         .type-card:hover { transform: translateY(-2px); }
         .activity-item { animation: slideIn 0.2s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideIn { from { opacity:0; transform: translateX(-8px); } to { opacity:1; transform: translateX(0); } }
         .grade-cell { min-width: 70px; }
         .table-scroll::-webkit-scrollbar { height: 6px; }
         .table-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 3px; }
         .table-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        .year-chip { cursor: pointer; transition: all 0.15s; }
+        .year-chip.active { background: rgba(59,130,246,0.2); color: #60a5fa; border-color: rgba(59,130,246,0.4); }
     </style>
 </head>
 <body class="bg-slate-950 text-white min-h-screen antialiased">
-
     <!-- Mobile header -->
     <header class="lg:hidden fixed top-0 w-full z-50 glass">
         <div class="flex items-center justify-between px-4 h-14">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-xs"></i>
-                </div>
+                <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-book-open text-xs"></i></div>
                 <span class="text-sm font-bold">Gentile<span class="text-blue-400">Org</span></span>
             </div>
-            <button id="sidebarToggle" class="text-slate-300 hover:text-white">
-                <i class="fa-solid fa-bars text-lg"></i>
-            </button>
+            <button id="sidebarToggle" class="text-slate-300 hover:text-white"><i class="fa-solid fa-bars text-lg"></i></button>
         </div>
     </header>
 
@@ -67,9 +51,7 @@
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
         <div class="p-6">
             <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-sm"></i>
-                </div>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-book-open text-sm"></i></div>
                 <div>
                     <span class="text-base font-bold block">Gentile<span class="text-blue-400">Org</span></span>
                     <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
@@ -79,9 +61,23 @@
                 <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
                     <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
                 </a>
-                <a href="boletim.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
-                    <i class="fa-solid fa-clipboard-list w-5 text-center"></i> Boletim
-                </a>
+                <!-- Boletim with sub-items -->
+                <div>
+                    <a href="boletim.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
+                        <i class="fa-solid fa-clipboard-list w-5 text-center"></i> Boletim
+                    </a>
+                    <div class="ml-9 mt-1 space-y-0.5">
+                        <a href="boletim.html" class="sub-link active block text-xs font-medium px-3 py-1.5 rounded-lg transition hover:bg-white/5">
+                            <i class="fa-solid fa-table w-4 text-center mr-1.5"></i>Visão Geral
+                        </a>
+                        <a href="boletim-detalhado.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300">
+                            <i class="fa-solid fa-magnifying-glass-chart w-4 text-center mr-1.5"></i>Detalhado
+                        </a>
+                        <a href="desempenho.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300">
+                            <i class="fa-solid fa-chart-pie w-4 text-center mr-1.5"></i>Desempenho
+                        </a>
+                    </div>
+                </div>
                 <a href="calendario.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
                     <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
                 </a>
@@ -99,70 +95,80 @@
             </button>
         </div>
     </aside>
-
     <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <main class="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
         <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
 
             <!-- Header -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-bold"><span class="gradient-text">Boletim Escolar</span></h1>
-                    <p class="text-sm text-slate-400 mt-1">9º C Fundamental II</p>
+                    <p class="text-sm text-slate-400 mt-1">Visão geral das notas por bimestre</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div id="situacaoFinal" class="glass rounded-xl px-4 py-2 text-sm font-semibold">
-                        Situação Final: <span id="situacaoText" class="text-slate-400">—</span>
+                <div id="situacaoFinal" class="glass rounded-xl px-4 py-2 text-sm font-semibold">
+                    Situação Final: <span id="situacaoText" class="text-slate-400">—</span>
+                </div>
+            </div>
+
+            <!-- Year/Class Selector -->
+            <div class="glass rounded-2xl p-4 mb-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-graduation-cap text-blue-400"></i>
+                        <span class="text-sm font-bold">Ano Letivo</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap" id="yearChips"></div>
+                    <button id="addYearBtn" class="bg-blue-600 hover:bg-blue-500 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
+                        <i class="fa-solid fa-plus mr-1"></i> Novo Ano
+                    </button>
+                </div>
+                <!-- Add year form -->
+                <div id="yearForm" class="hidden mt-4 glass rounded-xl p-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Ano</label>
+                            <input type="number" id="yearInput" placeholder="2026" min="2020" max="2040"
+                                class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Turma</label>
+                            <input type="text" id="classInput" placeholder="9C"
+                                class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button id="saveYear" class="bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold px-4 py-2 rounded-lg transition"><i class="fa-solid fa-check mr-1"></i>Salvar</button>
+                            <button id="cancelYear" class="bg-slate-700 hover:bg-slate-600 text-xs font-semibold px-3 py-2 rounded-lg transition">Cancelar</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Overview Stats -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- Stats -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div class="glass rounded-2xl p-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-book text-blue-400 text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-xl font-bold" id="statDisciplinas">17</div>
-                            <div class="text-xs text-slate-400">Disciplinas</div>
-                        </div>
+                        <div class="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center"><i class="fa-solid fa-book text-blue-400 text-sm"></i></div>
+                        <div><div class="text-xl font-bold" id="statDisciplinas">15</div><div class="text-xs text-slate-400">Disciplinas</div></div>
                     </div>
                 </div>
                 <div class="glass rounded-2xl p-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-emerald-600/20 rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-chart-line text-emerald-400 text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-xl font-bold text-emerald-400" id="statMedia">—</div>
-                            <div class="text-xs text-slate-400">Média Geral</div>
-                        </div>
+                        <div class="w-10 h-10 bg-emerald-600/20 rounded-xl flex items-center justify-center"><i class="fa-solid fa-chart-line text-emerald-400 text-sm"></i></div>
+                        <div><div class="text-xl font-bold text-emerald-400" id="statMedia">—</div><div class="text-xs text-slate-400">Média Geral</div></div>
                     </div>
                 </div>
                 <div class="glass rounded-2xl p-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-amber-600/20 rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-star text-amber-400 text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-xl font-bold text-amber-400" id="statMaior">—</div>
-                            <div class="text-xs text-slate-400">Maior Nota</div>
-                        </div>
+                        <div class="w-10 h-10 bg-amber-600/20 rounded-xl flex items-center justify-center"><i class="fa-solid fa-star text-amber-400 text-sm"></i></div>
+                        <div><div class="text-xl font-bold text-amber-400" id="statMaior">—</div><div class="text-xs text-slate-400">Maior Nota</div></div>
                     </div>
                 </div>
                 <div class="glass rounded-2xl p-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-red-600/20 rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-arrow-down text-red-400 text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-xl font-bold text-red-400" id="statMenor">—</div>
-                            <div class="text-xs text-slate-400">Menor Nota</div>
-                        </div>
+                        <div class="w-10 h-10 bg-red-600/20 rounded-xl flex items-center justify-center"><i class="fa-solid fa-arrow-down text-red-400 text-sm"></i></div>
+                        <div><div class="text-xl font-bold text-red-400" id="statMenor">—</div><div class="text-xs text-slate-400">Menor Nota</div></div>
                     </div>
                 </div>
             </div>
@@ -170,36 +176,20 @@
             <!-- Grades Table -->
             <div class="glass rounded-3xl p-4 sm:p-6 mb-6">
                 <div class="flex items-center justify-between mb-5">
-                    <h2 class="text-lg font-bold">
-                        <i class="fa-solid fa-table mr-2 text-blue-400"></i>Notas por Bimestre
-                    </h2>
-                    <span class="text-xs text-slate-500">Clique numa disciplina para detalhes</span>
+                    <h2 class="text-lg font-bold"><i class="fa-solid fa-table mr-2 text-blue-400"></i>Notas por Bimestre</h2>
+                    <span class="text-xs text-slate-500">Clique numa disciplina para editar</span>
                 </div>
-
                 <div class="table-scroll overflow-x-auto">
-                    <table class="w-full text-sm min-w-[640px]">
+                    <table class="w-full text-sm min-w-[700px]">
                         <thead>
                             <tr class="border-b border-white/10">
-                                <th class="text-left py-3 px-3 text-xs text-slate-400 font-semibold w-48">Disciplinas</th>
-                                <th class="text-center py-2 px-2 grade-cell">
-                                    <div class="text-xs text-slate-300 font-semibold">1º Bimestre</div>
-                                    <div class="text-[10px] text-slate-500 font-normal">Peso: 2</div>
-                                </th>
-                                <th class="text-center py-2 px-2 grade-cell">
-                                    <div class="text-xs text-slate-300 font-semibold">2º Bimestre</div>
-                                    <div class="text-[10px] text-slate-500 font-normal">Peso: 2</div>
-                                </th>
-                                <th class="text-center py-2 px-2 grade-cell">
-                                    <div class="text-xs text-slate-300 font-semibold">3º Bimestre</div>
-                                    <div class="text-[10px] text-slate-500 font-normal">Peso: 3</div>
-                                </th>
-                                <th class="text-center py-2 px-2 grade-cell">
-                                    <div class="text-xs text-slate-300 font-semibold">4º Bimestre</div>
-                                    <div class="text-[10px] text-slate-500 font-normal">Peso: 3</div>
-                                </th>
-                                <th class="text-center py-2 px-2 grade-cell">
-                                    <div class="text-xs font-bold text-white">Média Final</div>
-                                </th>
+                                <th class="text-left py-3 px-3 text-xs text-slate-400 font-semibold w-44">Disciplinas</th>
+                                <th class="text-left py-3 px-2 text-xs text-slate-400 font-semibold w-28">Professor</th>
+                                <th class="text-center py-2 px-2 grade-cell"><div class="text-xs text-slate-300 font-semibold">1º Bim</div><div class="text-[10px] text-slate-500">Peso: 2</div></th>
+                                <th class="text-center py-2 px-2 grade-cell"><div class="text-xs text-slate-300 font-semibold">2º Bim</div><div class="text-[10px] text-slate-500">Peso: 2</div></th>
+                                <th class="text-center py-2 px-2 grade-cell"><div class="text-xs text-slate-300 font-semibold">3º Bim</div><div class="text-[10px] text-slate-500">Peso: 3</div></th>
+                                <th class="text-center py-2 px-2 grade-cell"><div class="text-xs text-slate-300 font-semibold">4º Bim</div><div class="text-[10px] text-slate-500">Peso: 3</div></th>
+                                <th class="text-center py-2 px-2 grade-cell"><div class="text-xs font-bold text-white">Média Final</div></th>
                             </tr>
                         </thead>
                         <tbody id="gradesTableBody"></tbody>
@@ -209,21 +199,14 @@
 
             <!-- Detail Panel -->
             <div id="detailPanel" class="hidden">
-                <!-- Detail Header -->
                 <div class="glass rounded-3xl p-4 sm:p-6 mb-6">
                     <div class="flex items-center justify-between mb-5">
                         <div>
-                            <h2 class="text-lg font-bold">
-                                <i class="fa-solid fa-pen-to-square mr-2 text-blue-400"></i>
-                                <span id="detailSubjectName">Disciplina</span>
-                            </h2>
-                            <p class="text-xs text-slate-400 mt-1">Adicione e gerencie as notas de cada atividade</p>
+                            <h2 class="text-lg font-bold"><i class="fa-solid fa-pen-to-square mr-2 text-blue-400"></i><span id="detailSubjectName">Disciplina</span></h2>
+                            <p class="text-xs text-slate-400 mt-1">Adicione e gerencie notas de cada atividade</p>
                         </div>
-                        <button id="closeDetail" class="w-9 h-9 glass rounded-xl flex items-center justify-center hover:bg-white/10 transition">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
+                        <button id="closeDetail" class="w-9 h-9 glass rounded-xl flex items-center justify-center hover:bg-white/10 transition"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-
                     <!-- Bimester Tabs -->
                     <div class="flex gap-2 mb-6 flex-wrap">
                         <button class="bim-tab active glass text-sm font-semibold px-4 py-2 rounded-xl border border-transparent transition" data-bim="1">1º Bimestre</button>
@@ -231,11 +214,8 @@
                         <button class="bim-tab glass text-sm font-semibold px-4 py-2 rounded-xl border border-transparent text-slate-400 transition" data-bim="3">3º Bimestre</button>
                         <button class="bim-tab glass text-sm font-semibold px-4 py-2 rounded-xl border border-transparent text-slate-400 transition" data-bim="4">4º Bimestre</button>
                     </div>
-
-                    <!-- Activity Type Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="typeCardsContainer"></div>
-
-                    <!-- Bimester Summary -->
+                    <!-- Summary -->
                     <div class="glass rounded-2xl p-5">
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
@@ -250,24 +230,26 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
     <!-- Add Activity Modal -->
     <div id="addModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/60" id="modalOverlay"></div>
-        <div class="relative glass-strong rounded-3xl p-6 sm:p-8 w-full max-w-md">
+        <div class="relative glass-strong rounded-3xl p-6 sm:p-8 w-full max-w-lg">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-bold" id="modalTitle">Adicionar Atividade</h3>
-                <button id="closeModal" class="w-8 h-8 glass rounded-lg flex items-center justify-center hover:bg-white/10 transition">
-                    <i class="fa-solid fa-xmark text-sm"></i>
-                </button>
+                <button id="closeModal" class="w-8 h-8 glass rounded-lg flex items-center justify-center hover:bg-white/10 transition"><i class="fa-solid fa-xmark text-sm"></i></button>
             </div>
             <form id="activityForm" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Nome da Atividade</label>
                     <input type="text" id="actName" required placeholder="Ex: Prova Anglo P7 8"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Descrição / Conteúdo (opcional)</label>
+                    <input type="text" id="actDesc" placeholder="Ex: Módulos 37 a 44"
                         class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                 </div>
                 <div class="grid grid-cols-3 gap-3">
@@ -287,11 +269,31 @@
                             class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                     </div>
                 </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Data da Atividade (opcional)</label>
+                    <input type="date" id="actDate"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                </div>
                 <input type="hidden" id="actType">
                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 font-semibold py-3 rounded-xl transition text-sm">
                     <i class="fa-solid fa-plus mr-2"></i>Adicionar
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Teacher Modal -->
+    <div id="teacherModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60" id="teacherModalOverlay"></div>
+        <div class="relative glass-strong rounded-3xl p-6 sm:p-8 w-full max-w-sm">
+            <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-chalkboard-user mr-2 text-blue-400"></i>Professor</h3>
+            <p class="text-xs text-slate-400 mb-4" id="teacherSubjectLabel">Disciplina</p>
+            <input type="text" id="teacherInput" placeholder="Nome do professor"
+                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition mb-4">
+            <div class="flex gap-3">
+                <button id="saveTeacher" class="flex-1 bg-blue-600 hover:bg-blue-500 font-semibold py-2.5 rounded-xl transition text-sm">Salvar</button>
+                <button id="cancelTeacher" class="bg-slate-700 hover:bg-slate-600 font-semibold px-4 py-2.5 rounded-xl transition text-sm">Cancelar</button>
+            </div>
         </div>
     </div>
 
@@ -303,393 +305,244 @@
 
         // ========== Sidebar ==========
         const sidebar = document.getElementById('sidebar');
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            document.getElementById('sidebarOverlay').classList.toggle('hidden');
-        });
-        document.getElementById('sidebarOverlay').addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-        });
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('gentile_current_user');
-            window.location.href = 'login.html';
-        });
+        document.getElementById('sidebarToggle').addEventListener('click', () => { sidebar.classList.toggle('-translate-x-full'); document.getElementById('sidebarOverlay').classList.toggle('hidden'); });
+        document.getElementById('sidebarOverlay').addEventListener('click', () => { sidebar.classList.add('-translate-x-full'); document.getElementById('sidebarOverlay').classList.add('hidden'); });
+        document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('gentile_current_user'); window.location.href = 'login.html'; });
 
         // ========== Constants ==========
-        const SUBJECTS = [
-            'Artes', 'Biologia', 'Educação Financeira', 'Educação Física',
-            'Educação Socioemocional', 'Física', 'Geografia', 'História',
-            'Inglês', 'Iniciação Científica', 'Língua Portuguesa', 'Matemática',
-            'Pensamento Computacional', 'Produção de Texto', 'Química'
-        ];
-
-        const BIMESTER_WEIGHTS = { 1: 2, 2: 2, 3: 3, 4: 3 };
-
+        const DEFAULT_SUBJECTS = ['Artes','Biologia','Educação Financeira','Educação Física','Educação Socioemocional','Física','Geografia','História','Inglês','Iniciação Científica','Língua Portuguesa','Matemática','Pensamento Computacional','Produção de Texto','Química'];
+        const BIMESTER_WEIGHTS = {1:2,2:2,3:3,4:3};
         const ACTIVITY_TYPES = [
-            { key: 'prova_bimestral', name: 'Prova Bimestral', weight: 35, color: 'blue' },
-            { key: 'qualitativa', name: 'Qualitativa', weight: 30, color: 'amber' },
-            { key: 'va', name: 'VA', weight: 35, color: 'emerald' }
+            {key:'prova_bimestral',name:'Prova Bimestral',weight:35,color:'blue'},
+            {key:'qualitativa',name:'Qualitativa',weight:30,color:'amber'},
+            {key:'va',name:'VA',weight:35,color:'emerald'}
         ];
-
         const BOLETIM_KEY = 'gentile_boletim';
+        const YEARS_KEY = 'gentile_years';
+        const TEACHERS_KEY = 'gentile_teachers';
 
         // ========== State ==========
         let selectedSubject = null;
         let selectedBimestre = 1;
+        let activeYear = null;
+
+        // ========== Years ==========
+        function getYears() {
+            return JSON.parse(localStorage.getItem(YEARS_KEY) || '[]').filter(y => y.userId === currentUser.id);
+        }
+        function saveYearEntry(year, turma) {
+            const all = JSON.parse(localStorage.getItem(YEARS_KEY) || '[]');
+            const id = Date.now().toString();
+            all.push({ id, userId: currentUser.id, year: parseInt(year), turma, createdAt: new Date().toISOString() });
+            localStorage.setItem(YEARS_KEY, JSON.stringify(all));
+            return id;
+        }
+        function renderYears() {
+            const years = getYears().sort((a,b) => b.year - a.year);
+            const container = document.getElementById('yearChips');
+            if (years.length === 0) {
+                container.innerHTML = '<span class="text-xs text-slate-500">Nenhum ano cadastrado</span>';
+                activeYear = null;
+                return;
+            }
+            if (!activeYear || !years.find(y => y.id === activeYear)) activeYear = years[0].id;
+            container.innerHTML = years.map(y => `
+                <button class="year-chip glass text-xs font-semibold px-3 py-1.5 rounded-lg border border-transparent ${y.id === activeYear ? 'active' : 'text-slate-400'}" onclick="setActiveYear('${y.id}')">
+                    ${y.year} - ${escapeHtml(y.turma)}
+                </button>
+            `).join('');
+        }
+        window.setActiveYear = function(id) {
+            activeYear = id;
+            selectedSubject = null;
+            renderYears();
+            renderTable();
+            renderDetail();
+        };
+
+        // Year form
+        document.getElementById('addYearBtn').addEventListener('click', () => document.getElementById('yearForm').classList.toggle('hidden'));
+        document.getElementById('cancelYear').addEventListener('click', () => document.getElementById('yearForm').classList.add('hidden'));
+        document.getElementById('saveYear').addEventListener('click', () => {
+            const year = document.getElementById('yearInput').value;
+            const turma = document.getElementById('classInput').value.trim();
+            if (!year || !turma) { alert('Preencha o ano e a turma.'); return; }
+            const id = saveYearEntry(year, turma);
+            activeYear = id;
+            document.getElementById('yearForm').classList.add('hidden');
+            document.getElementById('yearInput').value = '';
+            document.getElementById('classInput').value = '';
+            renderYears(); renderTable();
+        });
+
+        // ========== Teachers ==========
+        function getTeachers() {
+            return JSON.parse(localStorage.getItem(TEACHERS_KEY) || '[]').filter(t => t.userId === currentUser.id);
+        }
+        function getTeacher(subject) {
+            if (!activeYear) return '';
+            const t = getTeachers().find(t => t.subject === subject && t.yearId === activeYear);
+            return t ? t.name : '';
+        }
+        function saveTeacher(subject, name) {
+            const all = JSON.parse(localStorage.getItem(TEACHERS_KEY) || '[]');
+            const idx = all.findIndex(t => t.userId === currentUser.id && t.subject === subject && t.yearId === activeYear);
+            if (idx >= 0) { all[idx].name = name; } else { all.push({ userId: currentUser.id, yearId: activeYear, subject, name }); }
+            localStorage.setItem(TEACHERS_KEY, JSON.stringify(all));
+        }
+        let teacherEditSubject = null;
+        window.openTeacherModal = function(subject) {
+            teacherEditSubject = subject;
+            document.getElementById('teacherSubjectLabel').textContent = subject;
+            document.getElementById('teacherInput').value = getTeacher(subject);
+            document.getElementById('teacherModal').classList.remove('hidden');
+            document.getElementById('teacherInput').focus();
+        };
+        document.getElementById('saveTeacher').addEventListener('click', () => {
+            saveTeacher(teacherEditSubject, document.getElementById('teacherInput').value.trim());
+            document.getElementById('teacherModal').classList.add('hidden');
+            renderTable();
+        });
+        document.getElementById('cancelTeacher').addEventListener('click', () => document.getElementById('teacherModal').classList.add('hidden'));
+        document.getElementById('teacherModalOverlay').addEventListener('click', () => document.getElementById('teacherModal').classList.add('hidden'));
 
         // ========== Data Layer ==========
         function getActivities() {
-            return JSON.parse(localStorage.getItem(BOLETIM_KEY) || '[]')
-                .filter(a => a.userId === currentUser.id);
+            return JSON.parse(localStorage.getItem(BOLETIM_KEY) || '[]').filter(a => a.userId === currentUser.id && a.yearId === activeYear);
         }
-
-        function getAllActivities() {
-            return JSON.parse(localStorage.getItem(BOLETIM_KEY) || '[]');
-        }
-
+        function getAllActivities() { return JSON.parse(localStorage.getItem(BOLETIM_KEY) || '[]'); }
         function saveActivity(activity) {
             const all = getAllActivities();
-            all.push({
-                ...activity,
-                id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
-                userId: currentUser.id
-            });
+            all.push({ ...activity, id: Date.now().toString() + Math.random().toString(36).slice(2,6), userId: currentUser.id, yearId: activeYear });
             localStorage.setItem(BOLETIM_KEY, JSON.stringify(all));
         }
-
         function removeActivity(id) {
-            const all = getAllActivities().filter(a => a.id !== id);
-            localStorage.setItem(BOLETIM_KEY, JSON.stringify(all));
+            localStorage.setItem(BOLETIM_KEY, JSON.stringify(getAllActivities().filter(a => a.id !== id)));
         }
 
-        // ========== Calculation Layer ==========
+        // ========== Calc ==========
         function calcTypeAverage(subject, bimestre, typeKey) {
-            const acts = getActivities().filter(a =>
-                a.subject === subject && a.bimestre === bimestre && a.type === typeKey
-            );
-            if (acts.length === 0) return null;
-
-            let sumWeighted = 0;
-            let sumWeights = 0;
-            for (const act of acts) {
-                const normalized = (act.nota / act.notaMaxima) * 10;
-                sumWeighted += normalized * act.peso;
-                sumWeights += act.peso;
-            }
-            return sumWeights > 0 ? sumWeighted / sumWeights : null;
+            const acts = getActivities().filter(a => a.subject===subject && a.bimestre===bimestre && a.type===typeKey);
+            if (!acts.length) return null;
+            let sw=0,sws=0;
+            for (const a of acts) { const n=(a.nota/a.notaMaxima)*10; sw+=n*a.peso; sws+=a.peso; }
+            return sws>0?sw/sws:null;
         }
-
         function calcBimestreAverage(subject, bimestre) {
-            let sumWeighted = 0;
-            let sumWeights = 0;
-
-            for (const type of ACTIVITY_TYPES) {
-                const avg = calcTypeAverage(subject, bimestre, type.key);
-                if (avg !== null) {
-                    sumWeighted += avg * type.weight;
-                    sumWeights += type.weight;
-                }
-            }
-            return sumWeights > 0 ? sumWeighted / sumWeights : null;
+            let sw=0,sws=0;
+            for (const t of ACTIVITY_TYPES) { const a=calcTypeAverage(subject,bimestre,t.key); if(a!==null){sw+=a*t.weight;sws+=t.weight;} }
+            return sws>0?sw/sws:null;
         }
-
         function calcFinalAverage(subject) {
-            let sumWeighted = 0;
-            let sumWeights = 0;
-
-            for (let bim = 1; bim <= 4; bim++) {
-                const avg = calcBimestreAverage(subject, bim);
-                if (avg !== null) {
-                    sumWeighted += avg * BIMESTER_WEIGHTS[bim];
-                    sumWeights += BIMESTER_WEIGHTS[bim];
-                }
-            }
-            return sumWeights > 0 ? sumWeighted / sumWeights : null;
+            let sw=0,sws=0;
+            for (let b=1;b<=4;b++){const a=calcBimestreAverage(subject,b);if(a!==null){sw+=a*BIMESTER_WEIGHTS[b];sws+=BIMESTER_WEIGHTS[b];}}
+            return sws>0?sw/sws:null;
         }
+        function formatGrade(v){return v===null?'—':v.toFixed(1);}
+        function gradeColorClass(v){if(v===null)return'text-slate-500';if(v>=7)return'text-blue-400';if(v>=5)return'text-amber-400';return'text-red-400';}
+        function escapeHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
 
-        function formatGrade(value) {
-            if (value === null) return '—';
-            return value.toFixed(1);
-        }
-
-        function gradeColorClass(value) {
-            if (value === null) return 'text-slate-500';
-            if (value >= 7) return 'text-blue-400';
-            if (value >= 5) return 'text-amber-400';
-            return 'text-red-400';
-        }
-
-        // ========== Render: Main Table ==========
+        // ========== Render Table ==========
         function renderTable() {
+            if (!activeYear) { document.getElementById('gradesTableBody').innerHTML='<tr><td colspan="7" class="text-center py-8 text-slate-500 text-sm">Selecione ou crie um ano letivo</td></tr>'; updateStats([]); return; }
             const tbody = document.getElementById('gradesTableBody');
             let allFinals = [];
-
-            tbody.innerHTML = SUBJECTS.map(subject => {
+            tbody.innerHTML = DEFAULT_SUBJECTS.map(subject => {
                 const finalAvg = calcFinalAverage(subject);
-                if (finalAvg !== null) allFinals.push({ subject, avg: finalAvg });
-
-                const isSelected = subject === selectedSubject;
-                const rowClass = isSelected ? 'subject-row selected' : 'subject-row';
-
-                let cells = '';
-                for (let bim = 1; bim <= 4; bim++) {
-                    const avg = calcBimestreAverage(subject, bim);
-                    cells += `<td class="text-center py-3 px-2 font-semibold tabular-nums ${gradeColorClass(avg)}">${formatGrade(avg)}</td>`;
-                }
-
-                const finalClass = gradeColorClass(finalAvg);
-                const finalBold = finalAvg !== null ? 'font-extrabold' : 'font-semibold';
-
-                return `
-                    <tr class="${rowClass} border-b border-white/5" onclick="selectSubject('${subject}')">
-                        <td class="py-3 px-3 text-sm font-medium">${escapeHtml(subject)}</td>
-                        ${cells}
-                        <td class="text-center py-3 px-2 ${finalBold} tabular-nums ${finalClass}">${formatGrade(finalAvg)}</td>
-                    </tr>`;
+                if (finalAvg !== null) allFinals.push({subject, avg:finalAvg});
+                const isSelected = subject===selectedSubject;
+                const teacher = getTeacher(subject);
+                let cells='';
+                for(let b=1;b<=4;b++){const a=calcBimestreAverage(subject,b);cells+=`<td class="text-center py-3 px-2 font-semibold tabular-nums ${gradeColorClass(a)}">${formatGrade(a)}</td>`;}
+                return `<tr class="${isSelected?'subject-row selected':'subject-row'} border-b border-white/5" onclick="selectSubject('${subject.replace(/'/g,"\\'")}')">
+                    <td class="py-3 px-3 text-sm font-medium">${escapeHtml(subject)}</td>
+                    <td class="py-3 px-2 text-xs text-slate-400 cursor-pointer hover:text-blue-400 transition" onclick="event.stopPropagation(); openTeacherModal('${subject.replace(/'/g,"\\'")}')" title="Clique para definir professor">
+                        ${teacher ? escapeHtml(teacher) : '<span class="text-slate-600 italic">+ Prof.</span>'}
+                    </td>
+                    ${cells}
+                    <td class="text-center py-3 px-2 ${finalAvg!==null?'font-extrabold':'font-semibold'} tabular-nums ${gradeColorClass(finalAvg)}">${formatGrade(finalAvg)}</td>
+                </tr>`;
             }).join('');
+            updateStats(allFinals);
+        }
 
-            // Stats
-            document.getElementById('statDisciplinas').textContent = SUBJECTS.length;
-
+        function updateStats(allFinals) {
+            document.getElementById('statDisciplinas').textContent = DEFAULT_SUBJECTS.length;
             if (allFinals.length > 0) {
-                const generalAvg = allFinals.reduce((s, f) => s + f.avg, 0) / allFinals.length;
-                document.getElementById('statMedia').textContent = generalAvg.toFixed(1);
-                document.getElementById('statMedia').className = 'text-xl font-bold ' + gradeColorClass(generalAvg);
-
-                const maxG = Math.max(...allFinals.map(f => f.avg));
-                const minG = Math.min(...allFinals.map(f => f.avg));
-                document.getElementById('statMaior').textContent = maxG.toFixed(1);
-                document.getElementById('statMenor').textContent = minG.toFixed(1);
-
-                // Situação Final
-                const allApproved = allFinals.length === SUBJECTS.length && allFinals.every(f => f.avg >= 6);
-                const anyFailing = allFinals.some(f => f.avg < 6);
-                const situacaoEl = document.getElementById('situacaoText');
-
-                if (allFinals.length < SUBJECTS.length) {
-                    situacaoEl.textContent = 'Em andamento';
-                    situacaoEl.className = 'text-amber-400';
-                } else if (allApproved) {
-                    situacaoEl.textContent = 'Aprovado';
-                    situacaoEl.className = 'text-emerald-400';
-                } else {
-                    situacaoEl.textContent = 'Reprovado';
-                    situacaoEl.className = 'text-red-400';
-                }
+                const ga = allFinals.reduce((s,f)=>s+f.avg,0)/allFinals.length;
+                document.getElementById('statMedia').textContent = ga.toFixed(1);
+                document.getElementById('statMedia').className = 'text-xl font-bold '+gradeColorClass(ga);
+                document.getElementById('statMaior').textContent = Math.max(...allFinals.map(f=>f.avg)).toFixed(1);
+                document.getElementById('statMenor').textContent = Math.min(...allFinals.map(f=>f.avg)).toFixed(1);
+                const sit = document.getElementById('situacaoText');
+                if(allFinals.length<DEFAULT_SUBJECTS.length){sit.textContent='Em andamento';sit.className='text-amber-400';}
+                else if(allFinals.every(f=>f.avg>=6)){sit.textContent='Aprovado';sit.className='text-emerald-400';}
+                else{sit.textContent='Reprovado';sit.className='text-red-400';}
             } else {
-                document.getElementById('statMedia').textContent = '—';
-                document.getElementById('statMedia').className = 'text-xl font-bold text-slate-400';
-                document.getElementById('statMaior').textContent = '—';
-                document.getElementById('statMenor').textContent = '—';
-                document.getElementById('situacaoText').textContent = '—';
-                document.getElementById('situacaoText').className = 'text-slate-400';
+                document.getElementById('statMedia').textContent='—';document.getElementById('statMedia').className='text-xl font-bold text-slate-400';
+                document.getElementById('statMaior').textContent='—';document.getElementById('statMenor').textContent='—';
+                document.getElementById('situacaoText').textContent='—';document.getElementById('situacaoText').className='text-slate-400';
             }
         }
 
-        // ========== Render: Detail Panel ==========
+        // ========== Render Detail ==========
         function renderDetail() {
-            if (!selectedSubject) {
-                document.getElementById('detailPanel').classList.add('hidden');
-                return;
-            }
-
+            if(!selectedSubject||!activeYear){document.getElementById('detailPanel').classList.add('hidden');return;}
             document.getElementById('detailPanel').classList.remove('hidden');
-            document.getElementById('detailSubjectName').textContent = selectedSubject;
-
-            // Update tabs
-            document.querySelectorAll('.bim-tab').forEach(tab => {
-                const bim = parseInt(tab.dataset.bim);
-                if (bim === selectedBimestre) {
-                    tab.classList.add('active');
-                    tab.classList.remove('text-slate-400');
-                } else {
-                    tab.classList.remove('active');
-                    tab.classList.add('text-slate-400');
-                }
-            });
-
-            // Render cards
-            const container = document.getElementById('typeCardsContainer');
-            container.innerHTML = ACTIVITY_TYPES.map(type => {
-                const acts = getActivities().filter(a =>
-                    a.subject === selectedSubject && a.bimestre === selectedBimestre && a.type === type.key
-                );
-                const typeAvg = calcTypeAverage(selectedSubject, selectedBimestre, type.key);
-
-                const colorMap = { blue: 'blue', amber: 'amber', emerald: 'emerald' };
-                const c = colorMap[type.color];
-
-                let activitiesHtml = '';
-                if (acts.length === 0) {
-                    activitiesHtml = `<p class="text-xs text-slate-500 text-center py-4">Nenhuma atividade</p>`;
-                } else {
-                    activitiesHtml = acts.map(act => {
-                        const normalized = (act.nota / act.notaMaxima) * 10;
-                        return `
-                        <div class="activity-item flex items-center justify-between gap-2 py-2 px-3 rounded-lg bg-white/[0.03] mb-1.5">
-                            <div class="flex-1 min-w-0">
-                                <div class="text-xs font-medium truncate">${escapeHtml(act.name)}</div>
-                                <div class="text-[10px] text-slate-500">
-                                    Nota: ${act.nota}/${act.notaMaxima} &middot; Peso: ${act.peso} &middot; Norm: ${normalized.toFixed(2)}
-                                </div>
-                            </div>
-                            <button onclick="event.stopPropagation(); deleteActivity('${act.id}')" class="text-red-400/60 hover:text-red-400 transition shrink-0">
-                                <i class="fa-solid fa-trash text-[10px]"></i>
-                            </button>
-                        </div>`;
-                    }).join('');
-                }
-
-                return `
-                <div class="type-card glass rounded-2xl p-4 flex flex-col">
-                    <div class="flex items-center justify-between mb-3">
-                        <div>
-                            <h4 class="text-sm font-bold text-${c}-400">${type.name}</h4>
-                            <span class="text-[10px] text-slate-500">Peso: ${type.weight}</span>
+            document.getElementById('detailSubjectName').textContent=selectedSubject;
+            document.querySelectorAll('.bim-tab').forEach(tab=>{const b=parseInt(tab.dataset.bim);if(b===selectedBimestre){tab.classList.add('active');tab.classList.remove('text-slate-400');}else{tab.classList.remove('active');tab.classList.add('text-slate-400');}});
+            const container=document.getElementById('typeCardsContainer');
+            container.innerHTML=ACTIVITY_TYPES.map(type=>{
+                const acts=getActivities().filter(a=>a.subject===selectedSubject&&a.bimestre===selectedBimestre&&a.type===type.key);
+                const typeAvg=calcTypeAverage(selectedSubject,selectedBimestre,type.key);
+                const c=type.color;
+                let html='';
+                if(!acts.length){html='<p class="text-xs text-slate-500 text-center py-4">Nenhuma atividade</p>';}
+                else{html=acts.map(act=>{const norm=(act.nota/act.notaMaxima)*10;return`
+                    <div class="activity-item flex items-center justify-between gap-2 py-2 px-3 rounded-lg bg-white/[0.03] mb-1.5">
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs font-medium truncate">${escapeHtml(act.name)}</div>
+                            <div class="text-[10px] text-slate-500">${act.description?escapeHtml(act.description)+' · ':''}Nota: ${act.nota}/${act.notaMaxima} · Peso: ${act.peso} · Norm: ${norm.toFixed(2)}${act.date?' · '+act.date:''}</div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-lg font-extrabold tabular-nums ${typeAvg !== null ? 'text-' + c + '-400' : 'text-slate-500'}">
-                                ${typeAvg !== null ? typeAvg.toFixed(2) : '—'}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex-1 mb-3 max-h-48 overflow-y-auto">
-                        ${activitiesHtml}
-                    </div>
-
-                    <button onclick="openAddModal('${type.key}', '${type.name}')"
-                        class="w-full bg-${c}-600/20 hover:bg-${c}-600/30 text-${c}-400 text-xs font-semibold py-2 rounded-xl transition">
-                        <i class="fa-solid fa-plus mr-1"></i> Adicionar
-                    </button>
+                        <button onclick="event.stopPropagation();deleteActivity('${act.id}')" class="text-red-400/60 hover:text-red-400 transition shrink-0"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                    </div>`;}).join('');}
+                return`<div class="type-card glass rounded-2xl p-4 flex flex-col">
+                    <div class="flex items-center justify-between mb-3"><div><h4 class="text-sm font-bold text-${c}-400">${type.name}</h4><span class="text-[10px] text-slate-500">Peso: ${type.weight}</span></div>
+                    <div class="text-right"><div class="text-lg font-extrabold tabular-nums ${typeAvg!==null?'text-'+c+'-400':'text-slate-500'}">${typeAvg!==null?typeAvg.toFixed(2):'—'}</div></div></div>
+                    <div class="flex-1 mb-3 max-h-48 overflow-y-auto">${html}</div>
+                    <button onclick="openAddModal('${type.key}','${type.name}')" class="w-full bg-${c}-600/20 hover:bg-${c}-600/30 text-${c}-400 text-xs font-semibold py-2 rounded-xl transition"><i class="fa-solid fa-plus mr-1"></i> Adicionar</button>
                 </div>`;
             }).join('');
-
-            // Bimester summary
-            const bimAvg = calcBimestreAverage(selectedSubject, selectedBimestre);
-            const compositionEl = document.getElementById('compositionSummary');
-            const parts = [];
-            for (const type of ACTIVITY_TYPES) {
-                const avg = calcTypeAverage(selectedSubject, selectedBimestre, type.key);
-                const c = type.color;
-                parts.push(`
-                    <span class="inline-flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg">
-                        <span class="w-2 h-2 rounded-full bg-${c}-400"></span>
-                        <span class="text-slate-300">${type.name}:</span>
-                        <span class="font-semibold ${avg !== null ? 'text-' + c + '-400' : 'text-slate-500'}">${avg !== null ? avg.toFixed(2) : '—'}</span>
-                        <span class="text-slate-500">&times;${type.weight}</span>
-                    </span>
-                `);
-            }
-            compositionEl.innerHTML = parts.join('');
-
-            const bimDisplay = document.getElementById('bimestreAvgDisplay');
-            bimDisplay.textContent = formatGrade(bimAvg);
-            bimDisplay.className = 'text-3xl font-extrabold ' + gradeColorClass(bimAvg);
+            const bimAvg=calcBimestreAverage(selectedSubject,selectedBimestre);
+            const comp=document.getElementById('compositionSummary');
+            comp.innerHTML=ACTIVITY_TYPES.map(t=>{const a=calcTypeAverage(selectedSubject,selectedBimestre,t.key);return`<span class="inline-flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg"><span class="w-2 h-2 rounded-full bg-${t.color}-400"></span><span class="text-slate-300">${t.name}:</span><span class="font-semibold ${a!==null?'text-'+t.color+'-400':'text-slate-500'}">${a!==null?a.toFixed(2):'—'}</span><span class="text-slate-500">×${t.weight}</span></span>`;}).join('');
+            const bd=document.getElementById('bimestreAvgDisplay');bd.textContent=formatGrade(bimAvg);bd.className='text-3xl font-extrabold '+gradeColorClass(bimAvg);
         }
 
         // ========== Interactions ==========
-        window.selectSubject = function(subject) {
-            if (selectedSubject === subject) {
-                selectedSubject = null;
-            } else {
-                selectedSubject = subject;
-                selectedBimestre = 1;
-            }
-            renderTable();
-            renderDetail();
-
-            if (selectedSubject) {
-                setTimeout(() => {
-                    document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            }
-        };
-
-        document.querySelectorAll('.bim-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                selectedBimestre = parseInt(tab.dataset.bim);
-                renderDetail();
-            });
-        });
-
-        document.getElementById('closeDetail').addEventListener('click', () => {
-            selectedSubject = null;
-            renderTable();
-            renderDetail();
-        });
+        window.selectSubject=function(s){if(selectedSubject===s){selectedSubject=null;}else{selectedSubject=s;selectedBimestre=1;}renderTable();renderDetail();if(selectedSubject)setTimeout(()=>document.getElementById('detailPanel').scrollIntoView({behavior:'smooth',block:'start'}),100);};
+        document.querySelectorAll('.bim-tab').forEach(t=>t.addEventListener('click',()=>{selectedBimestre=parseInt(t.dataset.bim);renderDetail();}));
+        document.getElementById('closeDetail').addEventListener('click',()=>{selectedSubject=null;renderTable();renderDetail();});
 
         // ========== Modal ==========
-        let currentModalType = null;
-
-        window.openAddModal = function(typeKey, typeName) {
-            currentModalType = typeKey;
-            document.getElementById('modalTitle').textContent = 'Adicionar ' + typeName;
-            document.getElementById('actType').value = typeKey;
-            document.getElementById('actName').value = '';
-            document.getElementById('actNota').value = '';
-            document.getElementById('actNotaMax').value = '10';
-            document.getElementById('actPeso').value = '1';
-            document.getElementById('addModal').classList.remove('hidden');
-            document.getElementById('actName').focus();
-        };
-
-        function closeModal() {
-            document.getElementById('addModal').classList.add('hidden');
-            currentModalType = null;
-        }
-
-        document.getElementById('closeModal').addEventListener('click', closeModal);
-        document.getElementById('modalOverlay').addEventListener('click', closeModal);
-
-        document.getElementById('activityForm').addEventListener('submit', function(e) {
+        window.openAddModal=function(tk,tn){document.getElementById('modalTitle').textContent='Adicionar '+tn;document.getElementById('actType').value=tk;document.getElementById('actName').value='';document.getElementById('actDesc').value='';document.getElementById('actNota').value='';document.getElementById('actNotaMax').value='10';document.getElementById('actPeso').value='1';document.getElementById('actDate').value='';document.getElementById('addModal').classList.remove('hidden');document.getElementById('actName').focus();};
+        function closeModal(){document.getElementById('addModal').classList.add('hidden');}
+        document.getElementById('closeModal').addEventListener('click',closeModal);
+        document.getElementById('modalOverlay').addEventListener('click',closeModal);
+        document.getElementById('activityForm').addEventListener('submit',function(e){
             e.preventDefault();
-
-            const name = document.getElementById('actName').value.trim();
-            const nota = parseFloat(document.getElementById('actNota').value);
-            const notaMaxima = parseFloat(document.getElementById('actNotaMax').value);
-            const peso = parseFloat(document.getElementById('actPeso').value);
-            const type = document.getElementById('actType').value;
-
-            if (!name || isNaN(nota) || isNaN(notaMaxima) || isNaN(peso)) return;
-
-            if (nota > notaMaxima) {
-                alert('A nota não pode ser maior que a nota máxima.');
-                return;
-            }
-
-            saveActivity({
-                subject: selectedSubject,
-                bimestre: selectedBimestre,
-                type: type,
-                name: name,
-                nota: nota,
-                notaMaxima: notaMaxima,
-                peso: peso
-            });
-
-            closeModal();
-            renderTable();
-            renderDetail();
+            const name=document.getElementById('actName').value.trim();const nota=parseFloat(document.getElementById('actNota').value);
+            const notaMaxima=parseFloat(document.getElementById('actNotaMax').value);const peso=parseFloat(document.getElementById('actPeso').value);
+            const type=document.getElementById('actType').value;const desc=document.getElementById('actDesc').value.trim();const date=document.getElementById('actDate').value;
+            if(!name||isNaN(nota)||isNaN(notaMaxima)||isNaN(peso))return;
+            if(nota>notaMaxima){alert('A nota não pode ser maior que a nota máxima.');return;}
+            saveActivity({subject:selectedSubject,bimestre:selectedBimestre,type,name,description:desc,nota,notaMaxima,peso,date});
+            closeModal();renderTable();renderDetail();
         });
-
-        window.deleteActivity = function(id) {
-            if (!confirm('Eliminar esta atividade?')) return;
-            removeActivity(id);
-            renderTable();
-            renderDetail();
-        };
-
-        // ========== Utils ==========
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        window.deleteActivity=function(id){if(!confirm('Eliminar esta atividade?'))return;removeActivity(id);renderTable();renderDetail();};
 
         // ========== Init ==========
-        renderTable();
+        renderYears();renderTable();
     </script>
 </body>
 </html>

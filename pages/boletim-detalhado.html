@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim Detalhado - GentileOrganization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-strong { background: rgba(255,255,255,0.08); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.12); }
+        .gradient-text { background: linear-gradient(135deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar-link.active { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .sub-link.active { background: rgba(59,130,246,0.1); color: #60a5fa; }
+        .year-chip { cursor: pointer; transition: all 0.15s; }
+        .year-chip.active { background: rgba(59,130,246,0.2); color: #60a5fa; border-color: rgba(59,130,246,0.4); }
+        .subject-item { cursor: pointer; transition: all 0.15s; }
+        .subject-item:hover { background: rgba(255,255,255,0.04); }
+        .subject-item.active { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.4); color: #60a5fa; }
+        .formula-box { font-family: 'Plus Jakarta Sans', monospace; }
+        .table-scroll::-webkit-scrollbar { height: 6px; }
+        .table-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 3px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        .bimester-section { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen antialiased">
+    <!-- Mobile header -->
+    <header class="lg:hidden fixed top-0 w-full z-50 glass">
+        <div class="flex items-center justify-between px-4 h-14">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-book-open text-xs"></i></div>
+                <span class="text-sm font-bold">Gentile<span class="text-blue-400">Org</span></span>
+            </div>
+            <button id="sidebarToggle" class="text-slate-300 hover:text-white"><i class="fa-solid fa-bars text-lg"></i></button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-book-open text-sm"></i></div>
+                <div>
+                    <span class="text-base font-bold block">Gentile<span class="text-blue-400">Org</span></span>
+                    <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
+                </div>
+            </div>
+            <nav class="space-y-1">
+                <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
+                </a>
+                <div>
+                    <a href="boletim.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
+                        <i class="fa-solid fa-clipboard-list w-5 text-center"></i> Boletim
+                    </a>
+                    <div class="ml-9 mt-1 space-y-0.5">
+                        <a href="boletim.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300">
+                            <i class="fa-solid fa-table w-4 text-center mr-1.5"></i>Vis&atilde;o Geral
+                        </a>
+                        <a href="boletim-detalhado.html" class="sub-link active block text-xs font-medium px-3 py-1.5 rounded-lg transition hover:bg-white/5">
+                            <i class="fa-solid fa-magnifying-glass-chart w-4 text-center mr-1.5"></i>Detalhado
+                        </a>
+                        <a href="desempenho.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300">
+                            <i class="fa-solid fa-chart-pie w-4 text-center mr-1.5"></i>Desempenho
+                        </a>
+                    </div>
+                </div>
+                <a href="calendario.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calend&aacute;rio
+                </a>
+                <a href="admin.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-gear w-5 text-center"></i> Defini&ccedil;&otilde;es
+                </a>
+                <a href="debug.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-bug w-5 text-center"></i> Debug
+                </a>
+            </nav>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-6">
+            <button id="logoutBtn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition">
+                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Sair
+            </button>
+        </div>
+    </aside>
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+
+    <!-- Main -->
+    <main class="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
+        <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold"><span class="gradient-text">Boletim Detalhado</span></h1>
+                    <p class="text-sm text-slate-400 mt-1">An&aacute;lise completa de todas as atividades por disciplina</p>
+                </div>
+            </div>
+
+            <!-- Year Selector -->
+            <div class="glass rounded-2xl p-4 mb-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-graduation-cap text-blue-400"></i>
+                        <span class="text-sm font-bold">Ano Letivo</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap" id="yearChips"></div>
+                </div>
+            </div>
+
+            <!-- Subject Selector -->
+            <div class="glass rounded-2xl p-4 mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <i class="fa-solid fa-book text-blue-400"></i>
+                    <span class="text-sm font-bold">Selecione uma Disciplina</span>
+                </div>
+                <div class="flex flex-wrap gap-2" id="subjectChips"></div>
+            </div>
+
+            <!-- Teacher Info -->
+            <div id="teacherInfo" class="hidden glass rounded-2xl p-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-purple-600/20 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-chalkboard-user text-purple-400 text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Professor(a)</div>
+                        <div class="text-sm font-semibold" id="teacherName">--</div>
+                    </div>
+                    <div class="ml-auto">
+                        <span class="text-xs text-slate-500" id="teacherSubjectLabel"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bimesters Content -->
+            <div id="bimestersContainer"></div>
+
+            <!-- Final Average Section -->
+            <div id="finalAverageSection" class="hidden"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="glass rounded-3xl p-12 text-center">
+                <i class="fa-solid fa-magnifying-glass-chart text-4xl text-slate-600 mb-4"></i>
+                <h3 class="text-lg font-bold text-slate-400 mb-2">Selecione uma disciplina</h3>
+                <p class="text-sm text-slate-500">Escolha um ano letivo e uma disciplina acima para ver a an&aacute;lise detalhada de todas as atividades.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ========== Auth ==========
+        const currentUser = JSON.parse(localStorage.getItem('gentile_current_user'));
+        if (!currentUser) window.location.href = 'login.html';
+        if (currentUser) document.getElementById('sidebarUserName').textContent = currentUser.name;
+
+        // ========== Sidebar ==========
+        const sidebar = document.getElementById('sidebar');
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        });
+        document.getElementById('sidebarOverlay').addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('gentile_current_user');
+            window.location.href = 'login.html';
+        });
+
+        // ========== Constants ==========
+        const DEFAULT_SUBJECTS = ['Artes','Biologia','Educa\u00e7\u00e3o Financeira','Educa\u00e7\u00e3o F\u00edsica','Educa\u00e7\u00e3o Socioemocional','F\u00edsica','Geografia','Hist\u00f3ria','Ingl\u00eas','Inicia\u00e7\u00e3o Cient\u00edfica','L\u00edngua Portuguesa','Matem\u00e1tica','Pensamento Computacional','Produ\u00e7\u00e3o de Texto','Qu\u00edmica'];
+        const BIMESTER_WEIGHTS = { 1: 2, 2: 2, 3: 3, 4: 3 };
+        const BIMESTER_LABELS = { 1: '1\u00ba', 2: '2\u00ba', 3: '3\u00ba', 4: '4\u00ba' };
+        const ACTIVITY_TYPES = [
+            { key: 'prova_bimestral', name: 'Prova Bimestral', weight: 35, color: 'blue', bgClass: 'bg-blue-600/20', textClass: 'text-blue-400', borderClass: 'border-blue-500/30' },
+            { key: 'qualitativa', name: 'Qualitativa', weight: 30, color: 'amber', bgClass: 'bg-amber-600/20', textClass: 'text-amber-400', borderClass: 'border-amber-500/30' },
+            { key: 'va', name: 'VA', weight: 35, color: 'emerald', bgClass: 'bg-emerald-600/20', textClass: 'text-emerald-400', borderClass: 'border-emerald-500/30' }
+        ];
+        const BOLETIM_KEY = 'gentile_boletim';
+        const YEARS_KEY = 'gentile_years';
+        const TEACHERS_KEY = 'gentile_teachers';
+
+        // ========== State ==========
+        let activeYear = null;
+        let selectedSubject = null;
+
+        // ========== Utilities ==========
+        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+        function formatGrade(v) { return v === null ? '\u2014' : v.toFixed(2); }
+        function formatGrade1(v) { return v === null ? '\u2014' : v.toFixed(1); }
+        function gradeColorClass(v) {
+            if (v === null) return 'text-slate-500';
+            if (v >= 7) return 'text-blue-400';
+            if (v >= 5) return 'text-amber-400';
+            return 'text-red-400';
+        }
+
+        // ========== Data Layer ==========
+        function getYears() {
+            return JSON.parse(localStorage.getItem(YEARS_KEY) || '[]').filter(y => y.userId === currentUser.id);
+        }
+        function getActivities() {
+            return JSON.parse(localStorage.getItem(BOLETIM_KEY) || '[]').filter(a => a.userId === currentUser.id && a.yearId === activeYear);
+        }
+        function getTeachers() {
+            return JSON.parse(localStorage.getItem(TEACHERS_KEY) || '[]').filter(t => t.userId === currentUser.id);
+        }
+        function getTeacher(subject) {
+            if (!activeYear) return '';
+            const t = getTeachers().find(t => t.subject === subject && t.yearId === activeYear);
+            return t ? t.name : '';
+        }
+
+        // ========== Calculations ==========
+        function calcTypeAverage(subject, bimestre, typeKey) {
+            const acts = getActivities().filter(a => a.subject === subject && a.bimestre === bimestre && a.type === typeKey);
+            if (!acts.length) return null;
+            let sw = 0, sws = 0;
+            for (const a of acts) {
+                const n = (a.nota / a.notaMaxima) * 10;
+                sw += n * a.peso;
+                sws += a.peso;
+            }
+            return sws > 0 ? sw / sws : null;
+        }
+
+        function calcBimestreAverage(subject, bimestre) {
+            let sw = 0, sws = 0;
+            for (const t of ACTIVITY_TYPES) {
+                const a = calcTypeAverage(subject, bimestre, t.key);
+                if (a !== null) { sw += a * t.weight; sws += t.weight; }
+            }
+            return sws > 0 ? sw / sws : null;
+        }
+
+        function calcFinalAverage(subject) {
+            let sw = 0, sws = 0;
+            for (let b = 1; b <= 4; b++) {
+                const a = calcBimestreAverage(subject, b);
+                if (a !== null) { sw += a * BIMESTER_WEIGHTS[b]; sws += BIMESTER_WEIGHTS[b]; }
+            }
+            return sws > 0 ? sw / sws : null;
+        }
+
+        // ========== Year Rendering ==========
+        function renderYears() {
+            const years = getYears().sort((a, b) => b.year - a.year);
+            const container = document.getElementById('yearChips');
+            if (years.length === 0) {
+                container.innerHTML = '<span class="text-xs text-slate-500">Nenhum ano cadastrado. <a href="boletim.html" class="text-blue-400 hover:underline">Criar ano</a></span>';
+                activeYear = null;
+                return;
+            }
+            if (!activeYear || !years.find(y => y.id === activeYear)) activeYear = years[0].id;
+            container.innerHTML = years.map(y => `
+                <button class="year-chip glass text-xs font-semibold px-3 py-1.5 rounded-lg border border-transparent ${y.id === activeYear ? 'active' : 'text-slate-400'}" onclick="setActiveYear('${y.id}')">
+                    ${y.year} - ${escapeHtml(y.turma)}
+                </button>
+            `).join('');
+        }
+
+        window.setActiveYear = function(id) {
+            activeYear = id;
+            selectedSubject = null;
+            renderYears();
+            renderSubjects();
+            renderContent();
+        };
+
+        // ========== Subject Rendering ==========
+        function renderSubjects() {
+            const container = document.getElementById('subjectChips');
+            container.innerHTML = DEFAULT_SUBJECTS.map(s => {
+                const isActive = s === selectedSubject;
+                const finalAvg = activeYear ? calcFinalAverage(s) : null;
+                const hasData = activeYear ? getActivities().some(a => a.subject === s) : false;
+                return `
+                    <button onclick="selectSubject('${s.replace(/'/g, "\\'")}')"
+                        class="subject-item glass text-xs font-semibold px-3 py-2 rounded-xl border border-transparent transition flex items-center gap-2 ${isActive ? 'active' : hasData ? 'text-slate-300' : 'text-slate-500'}">
+                        ${escapeHtml(s)}
+                        ${finalAvg !== null ? `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${gradeColorClass(finalAvg)} bg-white/5">${finalAvg.toFixed(1)}</span>` : ''}
+                        ${hasData && finalAvg === null ? '<span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>' : ''}
+                    </button>`;
+            }).join('');
+        }
+
+        window.selectSubject = function(s) {
+            selectedSubject = selectedSubject === s ? null : s;
+            renderSubjects();
+            renderContent();
+        };
+
+        // ========== Main Content Rendering ==========
+        function renderContent() {
+            const bimContainer = document.getElementById('bimestersContainer');
+            const finalSection = document.getElementById('finalAverageSection');
+            const emptyState = document.getElementById('emptyState');
+            const teacherInfo = document.getElementById('teacherInfo');
+
+            if (!selectedSubject || !activeYear) {
+                bimContainer.innerHTML = '';
+                finalSection.classList.add('hidden');
+                finalSection.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                teacherInfo.classList.add('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            // Teacher info
+            const teacher = getTeacher(selectedSubject);
+            if (teacher) {
+                teacherInfo.classList.remove('hidden');
+                document.getElementById('teacherName').textContent = teacher;
+                document.getElementById('teacherSubjectLabel').textContent = selectedSubject;
+            } else {
+                teacherInfo.classList.add('hidden');
+            }
+
+            // Render all 4 bimesters
+            let bimHtml = '';
+            for (let b = 1; b <= 4; b++) {
+                bimHtml += renderBimester(b);
+            }
+            bimContainer.innerHTML = bimHtml;
+
+            // Final average
+            renderFinalAverage();
+        }
+
+        function renderBimester(bimestre) {
+            const bimAvg = calcBimestreAverage(selectedSubject, bimestre);
+            const weight = BIMESTER_WEIGHTS[bimestre];
+            const label = BIMESTER_LABELS[bimestre];
+
+            // Build the 3 type cards
+            let cardsHtml = ACTIVITY_TYPES.map(type => renderTypeCard(bimestre, type)).join('');
+
+            // Build the bimester average formula
+            let formulaParts = [];
+            let formulaNumParts = [];
+            let totalWeight = 0;
+            let hasAnyData = false;
+
+            for (const t of ACTIVITY_TYPES) {
+                const avg = calcTypeAverage(selectedSubject, bimestre, t.key);
+                formulaParts.push(`${t.name.substring(0, 5)}\u00d7${t.weight}`);
+                if (avg !== null) {
+                    formulaNumParts.push(`${avg.toFixed(2)}\u00d7${t.weight}`);
+                    totalWeight += t.weight;
+                    hasAnyData = true;
+                } else {
+                    formulaNumParts.push(`\u2014\u00d7${t.weight}`);
+                }
+            }
+
+            let bimFormulaHtml = '';
+            if (hasAnyData) {
+                // Build the actual formula with numbers
+                let numParts = [];
+                let denomParts = [];
+                for (const t of ACTIVITY_TYPES) {
+                    const avg = calcTypeAverage(selectedSubject, bimestre, t.key);
+                    if (avg !== null) {
+                        numParts.push(`<span class="${getTypeTextClass(t.color)}">${avg.toFixed(2)}</span> <span class="text-slate-500">\u00d7</span> <span class="text-slate-400">${t.weight}</span>`);
+                        denomParts.push(t.weight);
+                    }
+                }
+                bimFormulaHtml = `
+                    <div class="formula-box text-xs mt-3 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                        <div class="text-slate-500 mb-1">M<sub>bim</sub> = (Prova\u00d735 + Qualit\u00d730 + VA\u00d735) / (35+30+35)</div>
+                        <div class="text-slate-300">M<sub>${label}</sub> = ( ${numParts.join(' <span class="text-slate-600">+</span> ')} ) / <span class="text-slate-400">${denomParts.join('+')}</span></div>
+                        <div class="text-sm font-bold mt-1 ${gradeColorClass(bimAvg)}">= ${formatGrade(bimAvg)}</div>
+                    </div>`;
+            }
+
+            return `
+                <div class="bimester-section mb-8">
+                    <!-- Bimester Header -->
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 glass-strong rounded-xl flex items-center justify-center">
+                            <span class="text-sm font-extrabold text-blue-400">${label}</span>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold">${label} Bimestre</h2>
+                            <span class="text-xs text-slate-400">Peso: ${weight}</span>
+                        </div>
+                        <div class="ml-auto text-right">
+                            <div class="text-xs text-slate-500">M&eacute;dia do Bimestre</div>
+                            <div class="text-2xl font-extrabold tabular-nums ${gradeColorClass(bimAvg)}">${formatGrade(bimAvg)}</div>
+                        </div>
+                    </div>
+
+                    <!-- Type Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        ${cardsHtml}
+                    </div>
+
+                    <!-- Bimester Formula -->
+                    <div class="glass rounded-2xl p-4">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-300 mb-1">Composi&ccedil;&atilde;o - ${label} Bimestre</h3>
+                                <div class="flex flex-wrap gap-2 text-xs">
+                                    ${ACTIVITY_TYPES.map(t => {
+                                        const avg = calcTypeAverage(selectedSubject, bimestre, t.key);
+                                        return `<span class="inline-flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg">
+                                            <span class="w-2 h-2 rounded-full ${getBgDotClass(t.color)}"></span>
+                                            <span class="text-slate-300">${t.name}:</span>
+                                            <span class="font-semibold ${avg !== null ? getTypeTextClass(t.color) : 'text-slate-500'}">${avg !== null ? avg.toFixed(2) : '\u2014'}</span>
+                                            <span class="text-slate-500">\u00d7${t.weight}</span>
+                                        </span>`;
+                                    }).join('')}
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <div class="text-xs text-slate-500">M&eacute;dia</div>
+                                <div class="text-xl font-extrabold ${gradeColorClass(bimAvg)}">${formatGrade(bimAvg)}</div>
+                            </div>
+                        </div>
+                        ${bimFormulaHtml}
+                    </div>
+                </div>`;
+        }
+
+        function renderTypeCard(bimestre, type) {
+            const acts = getActivities().filter(a => a.subject === selectedSubject && a.bimestre === bimestre && a.type === type.key);
+            const typeAvg = calcTypeAverage(selectedSubject, bimestre, type.key);
+
+            let tableHtml = '';
+            if (acts.length === 0) {
+                tableHtml = `<div class="text-xs text-slate-500 text-center py-6"><i class="fa-solid fa-inbox text-lg mb-2 block text-slate-600"></i>Nenhuma atividade</div>`;
+            } else {
+                // Build a detailed table
+                let rows = acts.map(act => {
+                    const norm = (act.nota / act.notaMaxima) * 10;
+                    return `
+                        <tr class="border-b border-white/5 text-xs">
+                            <td class="py-2 px-2 font-medium text-slate-200 max-w-[120px] truncate" title="${escapeHtml(act.name)}">${escapeHtml(act.name)}</td>
+                            <td class="py-2 px-2 text-slate-500 max-w-[100px] truncate" title="${act.description ? escapeHtml(act.description) : ''}">${act.description ? escapeHtml(act.description) : '<span class="text-slate-600">\u2014</span>'}</td>
+                            <td class="py-2 px-2 text-slate-400 text-center whitespace-nowrap">${act.date || '<span class="text-slate-600">\u2014</span>'}</td>
+                            <td class="py-2 px-2 text-center font-semibold ${gradeColorClass(norm)}">${act.nota}</td>
+                            <td class="py-2 px-2 text-center text-slate-400">${act.notaMaxima}</td>
+                            <td class="py-2 px-2 text-center text-slate-400">${act.peso}</td>
+                            <td class="py-2 px-2 text-center font-semibold ${gradeColorClass(norm)}">${norm.toFixed(2)}</td>
+                        </tr>`;
+                }).join('');
+
+                // Formula display
+                let formulaItems = acts.map(a => {
+                    const norm = (a.nota / a.notaMaxima) * 10;
+                    return { norm: norm.toFixed(2), peso: a.peso };
+                });
+                let formulaNumerator = formulaItems.map(f => `${f.norm}\u00d7${f.peso}`).join(' + ');
+                let formulaDenominator = formulaItems.map(f => f.peso).join(' + ');
+
+                tableHtml = `
+                    <div class="table-scroll overflow-x-auto">
+                        <table class="w-full text-xs">
+                            <thead>
+                                <tr class="border-b border-white/10">
+                                    <th class="text-left py-2 px-2 text-[10px] text-slate-500 font-semibold">Nome</th>
+                                    <th class="text-left py-2 px-2 text-[10px] text-slate-500 font-semibold">Descri&ccedil;&atilde;o</th>
+                                    <th class="text-center py-2 px-2 text-[10px] text-slate-500 font-semibold">Data</th>
+                                    <th class="text-center py-2 px-2 text-[10px] text-slate-500 font-semibold">Nota</th>
+                                    <th class="text-center py-2 px-2 text-[10px] text-slate-500 font-semibold">M&aacute;x</th>
+                                    <th class="text-center py-2 px-2 text-[10px] text-slate-500 font-semibold">Peso</th>
+                                    <th class="text-center py-2 px-2 text-[10px] text-slate-500 font-semibold">Norm.</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                    <div class="formula-box text-[10px] mt-2 p-2 rounded-lg bg-white/[0.02] border border-white/5 text-slate-500">
+                        M = &Sigma;(nota_norm &times; peso) / &Sigma;(peso)<br>
+                        <span class="text-slate-400">= (${formulaNumerator}) / (${formulaDenominator})</span>
+                    </div>`;
+            }
+
+            return `
+                <div class="glass rounded-2xl p-4 flex flex-col border ${type.borderClass}">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h4 class="text-sm font-bold ${type.textClass}">${type.name}</h4>
+                            <span class="text-[10px] text-slate-500">Peso na m&eacute;dia: ${type.weight}</span>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-extrabold tabular-nums ${typeAvg !== null ? type.textClass : 'text-slate-500'}">${typeAvg !== null ? typeAvg.toFixed(2) : '\u2014'}</div>
+                            <span class="text-[10px] text-slate-500">${acts.length} atividade${acts.length !== 1 ? 's' : ''}</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 mb-2 max-h-64 overflow-y-auto">
+                        ${tableHtml}
+                    </div>
+                </div>`;
+        }
+
+        function renderFinalAverage() {
+            const section = document.getElementById('finalAverageSection');
+            const finalAvg = calcFinalAverage(selectedSubject);
+
+            let bimValues = [];
+            let hasAnyBim = false;
+            for (let b = 1; b <= 4; b++) {
+                const avg = calcBimestreAverage(selectedSubject, b);
+                bimValues.push({ bimestre: b, avg, weight: BIMESTER_WEIGHTS[b] });
+                if (avg !== null) hasAnyBim = true;
+            }
+
+            if (!hasAnyBim) {
+                section.classList.add('hidden');
+                section.innerHTML = '';
+                return;
+            }
+
+            section.classList.remove('hidden');
+
+            // Build formula with real numbers
+            let numParts = [];
+            let denomParts = [];
+            for (const bv of bimValues) {
+                if (bv.avg !== null) {
+                    numParts.push(`<span class="${gradeColorClass(bv.avg)}">${bv.avg.toFixed(2)}</span> <span class="text-slate-500">\u00d7</span> <span class="text-slate-400">${bv.weight}</span>`);
+                    denomParts.push(bv.weight);
+                }
+            }
+
+            // Status determination
+            let statusHtml = '';
+            if (finalAvg !== null) {
+                if (finalAvg >= 7) {
+                    statusHtml = '<span class="inline-flex items-center gap-2 text-emerald-400 text-sm font-bold"><i class="fa-solid fa-circle-check"></i> Acima da m\u00e9dia</span>';
+                } else if (finalAvg >= 6) {
+                    statusHtml = '<span class="inline-flex items-center gap-2 text-blue-400 text-sm font-bold"><i class="fa-solid fa-circle-check"></i> Aprovado</span>';
+                } else if (finalAvg >= 5) {
+                    statusHtml = '<span class="inline-flex items-center gap-2 text-amber-400 text-sm font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Aten\u00e7\u00e3o</span>';
+                } else {
+                    statusHtml = '<span class="inline-flex items-center gap-2 text-red-400 text-sm font-bold"><i class="fa-solid fa-circle-xmark"></i> Abaixo da m\u00e9dia</span>';
+                }
+            }
+
+            section.innerHTML = `
+                <div class="glass-strong rounded-3xl p-6 mb-8">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
+                        <div>
+                            <h2 class="text-lg font-bold"><i class="fa-solid fa-calculator mr-2 text-blue-400"></i>M&eacute;dia Final - ${escapeHtml(selectedSubject)}</h2>
+                            <p class="text-xs text-slate-400 mt-1">C&aacute;lculo ponderado dos 4 bimestres</p>
+                        </div>
+                        <div class="text-right">
+                            ${statusHtml}
+                        </div>
+                    </div>
+
+                    <!-- Bimester summary cards -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                        ${bimValues.map(bv => `
+                            <div class="glass rounded-xl p-3 text-center">
+                                <div class="text-[10px] text-slate-500 mb-1">${BIMESTER_LABELS[bv.bimestre]} Bimestre (Peso ${bv.weight})</div>
+                                <div class="text-xl font-extrabold tabular-nums ${gradeColorClass(bv.avg)}">${bv.avg !== null ? bv.avg.toFixed(2) : '\u2014'}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Formula -->
+                    <div class="formula-box p-4 rounded-xl bg-white/[0.03] border border-white/5 mb-5">
+                        <div class="text-xs text-slate-500 mb-2">F&oacute;rmula da M&eacute;dia Final:</div>
+                        <div class="text-sm text-slate-400 mb-2">M<sub>final</sub> = (B1\u00d72 + B2\u00d72 + B3\u00d73 + B4\u00d73) / (2+2+3+3)</div>
+                        <div class="text-sm text-slate-300 mb-2">M<sub>final</sub> = ( ${numParts.join(' <span class="text-slate-600">+</span> ')} ) / <span class="text-slate-400">${denomParts.join('+')}</span></div>
+                        <div class="text-lg font-extrabold ${gradeColorClass(finalAvg)}">M<sub>final</sub> = ${formatGrade(finalAvg)}</div>
+                    </div>
+
+                    <!-- Big final number -->
+                    <div class="text-center">
+                        <div class="text-xs text-slate-500 mb-2">M&eacute;dia Final</div>
+                        <div class="text-5xl sm:text-6xl font-extrabold tabular-nums ${gradeColorClass(finalAvg)}">${formatGrade(finalAvg)}</div>
+                    </div>
+                </div>`;
+        }
+
+        // ========== Helper: color class getters (for Tailwind dynamic classes) ==========
+        function getTypeTextClass(color) {
+            const map = { blue: 'text-blue-400', amber: 'text-amber-400', emerald: 'text-emerald-400' };
+            return map[color] || 'text-slate-400';
+        }
+        function getBgDotClass(color) {
+            const map = { blue: 'bg-blue-400', amber: 'bg-amber-400', emerald: 'bg-emerald-400' };
+            return map[color] || 'bg-slate-400';
+        }
+
+        // ========== Init ==========
+        renderYears();
+        renderSubjects();
+        renderContent();
+    </script>
+</body>
+</html>
