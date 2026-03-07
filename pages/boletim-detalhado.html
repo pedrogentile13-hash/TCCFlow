@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boletim Detalhado - GentileOrganization</title>
+    <title>Boletim Detalhado - TCCFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -37,8 +37,8 @@
     <header class="lg:hidden fixed top-0 w-full z-50 glass">
         <div class="flex items-center justify-between px-4 h-14">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-book-open text-xs"></i></div>
-                <span class="text-sm font-bold">Gentile<span class="text-blue-400">Org</span></span>
+                <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-graduation-cap text-xs"></i></div>
+                <span class="text-sm font-bold">TCC<span class="text-blue-400">Flow</span></span>
             </div>
             <button id="sidebarToggle" class="text-slate-300 hover:text-white"><i class="fa-solid fa-bars text-lg"></i></button>
         </div>
@@ -48,9 +48,9 @@
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
         <div class="p-6">
             <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-book-open text-sm"></i></div>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center"><i class="fa-solid fa-graduation-cap text-sm"></i></div>
                 <div>
-                    <span class="text-base font-bold block">Gentile<span class="text-blue-400">Org</span></span>
+                    <span class="text-base font-bold block">TCC<span class="text-blue-400">Flow</span></span>
                     <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
                 </div>
             </div>
@@ -158,7 +158,7 @@
 
     <script>
         // ========== Auth ==========
-        const currentUser = JSON.parse(localStorage.getItem('gentile_current_user'));
+        const currentUser = JSON.parse(localStorage.getItem('tccflow_current_user'));
         if (!currentUser) window.location.href = 'login.html';
         if (currentUser) document.getElementById('sidebarUserName').textContent = currentUser.name;
 
@@ -173,7 +173,7 @@
             document.getElementById('sidebarOverlay').classList.add('hidden');
         });
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('gentile_current_user');
+            localStorage.removeItem('tccflow_current_user');
             window.location.href = 'login.html';
         });
 
@@ -186,9 +186,9 @@
             { key: 'qualitativa', name: 'Qualitativa', weight: 30, color: 'amber', bgClass: 'bg-amber-600/20', textClass: 'text-amber-400', borderClass: 'border-amber-500/30' },
             { key: 'va', name: 'VA', weight: 35, color: 'emerald', bgClass: 'bg-emerald-600/20', textClass: 'text-emerald-400', borderClass: 'border-emerald-500/30' }
         ];
-        const BOLETIM_KEY = 'gentile_boletim';
-        const YEARS_KEY = 'gentile_years';
-        const TEACHERS_KEY = 'gentile_teachers';
+        const BOLETIM_KEY = 'tccflow_boletim';
+        const YEARS_KEY = 'tccflow_years';
+        const TEACHERS_KEY = 'tccflow_teachers';
 
         // ========== State ==========
         let activeYear = null;

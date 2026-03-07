@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debug - GentileOrganization</title>
+    <title>Debug - TCCFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -49,9 +49,9 @@
         <div class="flex items-center justify-between px-4 h-14">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-xs"></i>
+                    <i class="fa-solid fa-graduation-cap text-xs"></i>
                 </div>
-                <span class="text-sm font-bold">Gentile<span class="text-blue-400">Org</span></span>
+                <span class="text-sm font-bold">TCC<span class="text-blue-400">Flow</span></span>
             </div>
             <button id="sidebarToggle" class="text-slate-300 hover:text-white">
                 <i class="fa-solid fa-bars text-lg"></i>
@@ -64,10 +64,10 @@
         <div class="p-6">
             <div class="flex items-center gap-3 mb-10">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-sm"></i>
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
                 </div>
                 <div>
-                    <span class="text-base font-bold block">Gentile<span class="text-blue-400">Org</span></span>
+                    <span class="text-base font-bold block">TCC<span class="text-blue-400">Flow</span></span>
                     <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
                 </div>
             </div>
@@ -151,7 +151,7 @@
             <div class="glass rounded-3xl p-6 mb-6">
                 <h2 class="text-lg font-bold mb-4">
                     <i class="fa-solid fa-users mr-2 text-blue-400"></i>Utilizadores Registados
-                    <span class="text-xs text-slate-500 font-normal ml-2">(gentile_users)</span>
+                    <span class="text-xs text-slate-500 font-normal ml-2">(tccflow_users)</span>
                 </h2>
 
                 <div class="overflow-x-auto">
@@ -177,9 +177,9 @@
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold">
                         <i class="fa-solid fa-book mr-2 text-emerald-400"></i>Sessões de Estudo
-                        <span class="text-xs text-slate-500 font-normal ml-2">(gentile_sessions)</span>
+                        <span class="text-xs text-slate-500 font-normal ml-2">(tccflow_sessions)</span>
                     </h2>
-                    <button class="copy-btn bg-white/5 hover:bg-white/10 text-xs px-3 py-1.5 rounded-lg transition" data-key="gentile_sessions">
+                    <button class="copy-btn bg-white/5 hover:bg-white/10 text-xs px-3 py-1.5 rounded-lg transition" data-key="tccflow_sessions">
                         <i class="fa-regular fa-copy mr-1"></i>Copiar
                     </button>
                 </div>
@@ -191,9 +191,9 @@
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold">
                         <i class="fa-solid fa-bullseye mr-2 text-amber-400"></i>Metas
-                        <span class="text-xs text-slate-500 font-normal ml-2">(gentile_goals)</span>
+                        <span class="text-xs text-slate-500 font-normal ml-2">(tccflow_goals)</span>
                     </h2>
-                    <button class="copy-btn bg-white/5 hover:bg-white/10 text-xs px-3 py-1.5 rounded-lg transition" data-key="gentile_goals">
+                    <button class="copy-btn bg-white/5 hover:bg-white/10 text-xs px-3 py-1.5 rounded-lg transition" data-key="tccflow_goals">
                         <i class="fa-regular fa-copy mr-1"></i>Copiar
                     </button>
                 </div>
@@ -205,9 +205,9 @@
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold">
                         <i class="fa-solid fa-code mr-2 text-purple-400"></i>Raw JSON - Utilizadores
-                        <span class="text-xs text-slate-500 font-normal ml-2">(gentile_users)</span>
+                        <span class="text-xs text-slate-500 font-normal ml-2">(tccflow_users)</span>
                     </h2>
-                    <button class="copy-btn bg-white/5 hover:bg-white/10 text-xs px-3 py-1.5 rounded-lg transition" data-key="gentile_users">
+                    <button class="copy-btn bg-white/5 hover:bg-white/10 text-xs px-3 py-1.5 rounded-lg transition" data-key="tccflow_users">
                         <i class="fa-regular fa-copy mr-1"></i>Copiar
                     </button>
                 </div>
@@ -219,7 +219,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold">
                         <i class="fa-solid fa-user-check mr-2 text-cyan-400"></i>Sessão Atual
-                        <span class="text-xs text-slate-500 font-normal ml-2">(gentile_current_user)</span>
+                        <span class="text-xs text-slate-500 font-normal ml-2">(tccflow_current_user)</span>
                     </h2>
                 </div>
                 <div id="currentUserJson" class="json-viewer rounded-2xl p-4 max-h-40 overflow-y-auto text-slate-300">null</div>
@@ -230,7 +230,7 @@
 
     <script>
         // ========== Auth Check ==========
-        const currentUser = JSON.parse(localStorage.getItem('gentile_current_user'));
+        const currentUser = JSON.parse(localStorage.getItem('tccflow_current_user'));
         if (!currentUser) window.location.href = 'login.html';
 
         if (currentUser) {
@@ -248,7 +248,7 @@
             document.getElementById('sidebarOverlay').classList.add('hidden');
         });
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('gentile_current_user');
+            localStorage.removeItem('tccflow_current_user');
             window.location.href = 'login.html';
         });
 
@@ -260,11 +260,11 @@
         }
 
         function refreshData() {
-            const users = JSON.parse(localStorage.getItem('gentile_users') || '[]');
-            const sessions = JSON.parse(localStorage.getItem('gentile_sessions') || '[]');
-            const goals = JSON.parse(localStorage.getItem('gentile_goals') || '[]');
-            const pomodoros = localStorage.getItem('gentile_pomodoro_count') || '0';
-            const currentSession = JSON.parse(localStorage.getItem('gentile_current_user') || 'null');
+            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]');
+            const sessions = JSON.parse(localStorage.getItem('tccflow_sessions') || '[]');
+            const goals = JSON.parse(localStorage.getItem('tccflow_goals') || '[]');
+            const pomodoros = localStorage.getItem('tccflow_pomodoro_count') || '0';
+            const currentSession = JSON.parse(localStorage.getItem('tccflow_current_user') || 'null');
 
             // Stats
             document.getElementById('statUsers').textContent = users.length;
@@ -306,11 +306,11 @@
 
         document.getElementById('clearAllBtn').addEventListener('click', () => {
             if (!confirm('Tem certeza? Isto irá eliminar TODOS os dados do LocalStorage (utilizadores, sessões, metas).')) return;
-            localStorage.removeItem('gentile_users');
-            localStorage.removeItem('gentile_sessions');
-            localStorage.removeItem('gentile_goals');
-            localStorage.removeItem('gentile_pomodoro_count');
-            localStorage.removeItem('gentile_current_user');
+            localStorage.removeItem('tccflow_users');
+            localStorage.removeItem('tccflow_sessions');
+            localStorage.removeItem('tccflow_goals');
+            localStorage.removeItem('tccflow_pomodoro_count');
+            localStorage.removeItem('tccflow_current_user');
             refreshData();
             alert('Todos os dados foram eliminados. Será redirecionado para a página inicial.');
             window.location.href = '../index.html';

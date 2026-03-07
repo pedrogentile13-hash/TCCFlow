@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Definições - GentileOrganization</title>
+    <title>Definições - TCCFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -41,9 +41,9 @@
         <div class="flex items-center justify-between px-4 h-14">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-xs"></i>
+                    <i class="fa-solid fa-graduation-cap text-xs"></i>
                 </div>
-                <span class="text-sm font-bold">Gentile<span class="text-blue-400">Org</span></span>
+                <span class="text-sm font-bold">TCC<span class="text-blue-400">Flow</span></span>
             </div>
             <button id="sidebarToggle" class="text-slate-300 hover:text-white">
                 <i class="fa-solid fa-bars text-lg"></i>
@@ -56,10 +56,10 @@
         <div class="p-6">
             <div class="flex items-center gap-3 mb-10">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-sm"></i>
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
                 </div>
                 <div>
-                    <span class="text-base font-bold block">Gentile<span class="text-blue-400">Org</span></span>
+                    <span class="text-base font-bold block">TCC<span class="text-blue-400">Flow</span></span>
                     <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
                 </div>
             </div>
@@ -197,12 +197,12 @@
 
     <script>
         // ========== Auth Check ==========
-        const currentUser = JSON.parse(localStorage.getItem('gentile_current_user'));
+        const currentUser = JSON.parse(localStorage.getItem('tccflow_current_user'));
         if (!currentUser) window.location.href = 'login.html';
 
         // ========== UI Setup ==========
         function loadProfile() {
-            const users = JSON.parse(localStorage.getItem('gentile_users') || '[]');
+            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]');
             const user = users.find(u => u.id === currentUser.id);
             if (!user) return;
 
@@ -230,7 +230,7 @@
             document.getElementById('sidebarOverlay').classList.add('hidden');
         });
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('gentile_current_user');
+            localStorage.removeItem('tccflow_current_user');
             window.location.href = 'login.html';
         });
 
@@ -248,7 +248,7 @@
             const newName = document.getElementById('editName').value.trim();
             const newEmail = document.getElementById('editEmail').value.trim().toLowerCase();
 
-            const users = JSON.parse(localStorage.getItem('gentile_users') || '[]');
+            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]');
             const userIndex = users.findIndex(u => u.id === currentUser.id);
             if (userIndex === -1) return;
 
@@ -260,12 +260,12 @@
 
             users[userIndex].name = newName;
             users[userIndex].email = newEmail;
-            localStorage.setItem('gentile_users', JSON.stringify(users));
+            localStorage.setItem('tccflow_users', JSON.stringify(users));
 
             // Update current session
             currentUser.name = newName;
             currentUser.email = newEmail;
-            localStorage.setItem('gentile_current_user', JSON.stringify(currentUser));
+            localStorage.setItem('tccflow_current_user', JSON.stringify(currentUser));
 
             loadProfile();
             showMsg('profileMsg', 'Perfil atualizado com sucesso!', 'success');
@@ -279,7 +279,7 @@
             const newPass = document.getElementById('newPassword').value;
             const confirm = document.getElementById('confirmNewPassword').value;
 
-            const users = JSON.parse(localStorage.getItem('gentile_users') || '[]');
+            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]');
             const user = users.find(u => u.id === currentUser.id);
 
             if (!user || user.password !== current) {
@@ -298,7 +298,7 @@
             }
 
             user.password = newPass;
-            localStorage.setItem('gentile_users', JSON.stringify(users));
+            localStorage.setItem('tccflow_users', JSON.stringify(users));
 
             document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
@@ -311,13 +311,13 @@
             if (!confirm('Tem certeza? Isto irá eliminar todas as suas sessões e metas.')) return;
 
             // Remove user sessions and goals
-            const sessions = JSON.parse(localStorage.getItem('gentile_sessions') || '[]').filter(s => s.userId !== currentUser.id);
-            localStorage.setItem('gentile_sessions', JSON.stringify(sessions));
+            const sessions = JSON.parse(localStorage.getItem('tccflow_sessions') || '[]').filter(s => s.userId !== currentUser.id);
+            localStorage.setItem('tccflow_sessions', JSON.stringify(sessions));
 
-            const goals = JSON.parse(localStorage.getItem('gentile_goals') || '[]').filter(g => g.userId !== currentUser.id);
-            localStorage.setItem('gentile_goals', JSON.stringify(goals));
+            const goals = JSON.parse(localStorage.getItem('tccflow_goals') || '[]').filter(g => g.userId !== currentUser.id);
+            localStorage.setItem('tccflow_goals', JSON.stringify(goals));
 
-            localStorage.removeItem('gentile_pomodoro_count');
+            localStorage.removeItem('tccflow_pomodoro_count');
 
             alert('Dados eliminados com sucesso.');
         });
@@ -326,18 +326,18 @@
             if (!confirm('Tem CERTEZA ABSOLUTA? Esta ação é irreversível e eliminará a sua conta e todos os dados.')) return;
 
             // Remove user
-            const users = JSON.parse(localStorage.getItem('gentile_users') || '[]').filter(u => u.id !== currentUser.id);
-            localStorage.setItem('gentile_users', JSON.stringify(users));
+            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]').filter(u => u.id !== currentUser.id);
+            localStorage.setItem('tccflow_users', JSON.stringify(users));
 
             // Remove user data
-            const sessions = JSON.parse(localStorage.getItem('gentile_sessions') || '[]').filter(s => s.userId !== currentUser.id);
-            localStorage.setItem('gentile_sessions', JSON.stringify(sessions));
+            const sessions = JSON.parse(localStorage.getItem('tccflow_sessions') || '[]').filter(s => s.userId !== currentUser.id);
+            localStorage.setItem('tccflow_sessions', JSON.stringify(sessions));
 
-            const goals = JSON.parse(localStorage.getItem('gentile_goals') || '[]').filter(g => g.userId !== currentUser.id);
-            localStorage.setItem('gentile_goals', JSON.stringify(goals));
+            const goals = JSON.parse(localStorage.getItem('tccflow_goals') || '[]').filter(g => g.userId !== currentUser.id);
+            localStorage.setItem('tccflow_goals', JSON.stringify(goals));
 
-            localStorage.removeItem('gentile_current_user');
-            localStorage.removeItem('gentile_pomodoro_count');
+            localStorage.removeItem('tccflow_current_user');
+            localStorage.removeItem('tccflow_pomodoro_count');
 
             window.location.href = '../index.html';
         });

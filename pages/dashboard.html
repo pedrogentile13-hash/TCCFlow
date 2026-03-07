@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - GentileOrganization</title>
+    <title>Dashboard - TCCFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -42,9 +42,9 @@
         <div class="flex items-center justify-between px-4 h-14">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-xs"></i>
+                    <i class="fa-solid fa-graduation-cap text-xs"></i>
                 </div>
-                <span class="text-sm font-bold">Gentile<span class="text-blue-400">Org</span></span>
+                <span class="text-sm font-bold">TCC<span class="text-blue-400">Flow</span></span>
             </div>
             <button id="sidebarToggle" class="text-slate-300 hover:text-white">
                 <i class="fa-solid fa-bars text-lg"></i>
@@ -57,10 +57,10 @@
         <div class="p-6">
             <div class="flex items-center gap-3 mb-10">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-sm"></i>
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
                 </div>
                 <div>
-                    <span class="text-base font-bold block">Gentile<span class="text-blue-400">Org</span></span>
+                    <span class="text-base font-bold block">TCC<span class="text-blue-400">Flow</span></span>
                     <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
                 </div>
             </div>
@@ -260,7 +260,7 @@
 
     <script>
         // ========== Auth Check ==========
-        const currentUser = JSON.parse(localStorage.getItem('gentile_current_user'));
+        const currentUser = JSON.parse(localStorage.getItem('tccflow_current_user'));
         if (!currentUser) {
             window.location.href = 'login.html';
         }
@@ -291,12 +291,12 @@
 
         // ========== Logout ==========
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('gentile_current_user');
+            localStorage.removeItem('tccflow_current_user');
             window.location.href = 'login.html';
         });
 
         // ========== Sessions Management ==========
-        const SESSIONS_KEY = 'gentile_sessions';
+        const SESSIONS_KEY = 'tccflow_sessions';
 
         function getSessions() {
             return JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
@@ -480,8 +480,8 @@
 
                     // Increment pomodoro count if it was a focus session
                     if (pomodoroTotal === 25 * 60) {
-                        const count = parseInt(localStorage.getItem('gentile_pomodoro_count') || '0') + 1;
-                        localStorage.setItem('gentile_pomodoro_count', count.toString());
+                        const count = parseInt(localStorage.getItem('tccflow_pomodoro_count') || '0') + 1;
+                        localStorage.setItem('tccflow_pomodoro_count', count.toString());
                         document.getElementById('pomodoroCount').textContent = count;
                     }
 
@@ -545,7 +545,7 @@
         });
 
         // ========== Init ==========
-        document.getElementById('pomodoroCount').textContent = localStorage.getItem('gentile_pomodoro_count') || '0';
+        document.getElementById('pomodoroCount').textContent = localStorage.getItem('tccflow_pomodoro_count') || '0';
         updateTimerDisplay();
         renderSessions();
     </script>
