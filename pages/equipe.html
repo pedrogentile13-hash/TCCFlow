@@ -79,25 +79,73 @@
                 <p class="text-slate-500">Convide membros e organize seu grupo de TCC</p>
             </div>
 
-            <!-- Add Member Card -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
-                <h2 class="text-lg font-bold mb-4">Convidar Membro</h2>
-                <p class="text-sm text-slate-500 mb-4">Compartilhe este código com seu grupo para que entrem no projeto:</p>
-                <div class="flex items-center gap-3 p-4 bg-violet-50 rounded-xl border border-violet-200">
-                    <code class="text-lg font-bold text-violet-700 flex-1 font-mono" id="projectCode">Carregando...</code>
-                    <button onclick="copyCode()" class="bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                        <i class="fa-solid fa-copy mr-1"></i>Copiar
-                    </button>
+            <!-- No Project Panel (hidden by default) -->
+            <div id="noProjectPanel" class="hidden">
+                <div class="bg-white border border-slate-200 rounded-2xl p-8 mb-8 shadow-sm text-center">
+                    <div class="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-users text-violet-600 text-2xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">Você ainda não tem um projeto</h2>
+                    <p class="text-sm text-slate-500 mb-8">Crie um novo projeto ou entre em um existente com o código do grupo.</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                        <!-- Create New Project -->
+                        <div class="bg-gradient-to-br from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6 text-left">
+                            <h3 class="font-bold mb-2"><i class="fa-solid fa-plus-circle mr-2 text-violet-600"></i>Criar Projeto Novo</h3>
+                            <p class="text-xs text-slate-500 mb-4">Gera um código para seus colegas entrarem.</p>
+                            <div class="mb-3">
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Nome do Projeto</label>
+                                <input type="text" id="newProjectName" value="Meu TCC" placeholder="Ex: TCC Turma A"
+                                    class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                            </div>
+                            <button onclick="createNewProject()" id="createProjectBtn"
+                                class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold py-2.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm">
+                                <i class="fa-solid fa-rocket mr-2"></i>Criar Projeto
+                            </button>
+                        </div>
+
+                        <!-- Join Existing Project -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-left">
+                            <h3 class="font-bold mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-cyan-600"></i>Entrar em Projeto</h3>
+                            <p class="text-xs text-slate-500 mb-4">Cole o código que seu colega compartilhou.</p>
+                            <div class="mb-3">
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Código do Projeto</label>
+                                <input type="text" id="joinProjectCode" placeholder="Ex: TCC-A3KR"
+                                    class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-violet-500">
+                            </div>
+                            <button onclick="joinExistingProject()" id="joinProjectBtn"
+                                class="w-full bg-slate-900 text-white font-semibold py-2.5 rounded-xl transition hover:bg-slate-800 text-sm">
+                                <i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="setupMsg" class="hidden mt-4 text-sm rounded-xl px-4 py-3"></div>
                 </div>
             </div>
 
-            <!-- Team Members -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                <h2 class="text-lg font-bold mb-6">Membros da Equipe</h2>
-                <div id="membersList" class="space-y-3">
-                    <div class="text-center py-12 text-slate-400">
-                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i>
-                        <p>Carregando membros...</p>
+            <!-- Project Panel (hidden by default) -->
+            <div id="projectPanel" class="hidden">
+                <!-- Add Member Card -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-4">Convidar Membro</h2>
+                    <p class="text-sm text-slate-500 mb-4">Compartilhe este código com seu grupo para que entrem no projeto:</p>
+                    <div class="flex items-center gap-3 p-4 bg-violet-50 rounded-xl border border-violet-200">
+                        <code class="text-lg font-bold text-violet-700 flex-1 font-mono" id="projectCode">Carregando...</code>
+                        <button onclick="copyCode()" class="bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                            <i class="fa-solid fa-copy mr-1"></i>Copiar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Team Members -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold mb-6">Membros da Equipe</h2>
+                    <div id="membersList" class="space-y-3">
+                        <div class="text-center py-12 text-slate-400">
+                            <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i>
+                            <p>Carregando membros...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -118,6 +166,30 @@
             document.getElementById('mobileNav').classList.toggle('hidden');
         });
 
+        function generateCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'TCC-';
+            for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            return code;
+        }
+
+        function showSetupMsg(text, type) {
+            const el = document.getElementById('setupMsg');
+            el.className = `mt-4 text-sm rounded-xl px-4 py-3 ${type === 'success' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'}`;
+            el.textContent = text;
+            el.classList.remove('hidden');
+        }
+
+        function showProjectPanel() {
+            document.getElementById('noProjectPanel').classList.add('hidden');
+            document.getElementById('projectPanel').classList.remove('hidden');
+        }
+
+        function showNoProjectPanel() {
+            document.getElementById('noProjectPanel').classList.remove('hidden');
+            document.getElementById('projectPanel').classList.add('hidden');
+        }
+
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
             currentUser = user;
@@ -126,33 +198,119 @@
             if (isFirebaseConfigured()) {
                 try {
                     const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists) {
+                    if (userDoc.exists && userDoc.data().projectId) {
                         projectId = userDoc.data().projectId;
                         const projectDoc = await db.collection('projects').doc(projectId).get();
                         if (projectDoc.exists) {
                             const project = projectDoc.data();
                             document.getElementById('projectCode').textContent = project.code;
+                            showProjectPanel();
                             loadMembers(project);
+                        } else {
+                            showNoProjectPanel();
                         }
                     } else {
-                        document.getElementById('projectCode').textContent = 'Sem projeto';
-                        document.getElementById('membersList').innerHTML = `
-                            <div class="text-center py-8 text-slate-400">
-                                <i class="fa-solid fa-circle-exclamation text-2xl mb-2 block"></i>
-                                <p class="text-sm">Você ainda não está em um projeto.</p>
-                                <p class="text-xs text-slate-400 mt-1">Crie uma conta com um código de projeto para entrar em uma equipe.</p>
-                            </div>`;
+                        // User exists in Auth but no Firestore doc or no projectId
+                        // Create the user doc if it doesn't exist
+                        if (!userDoc.exists) {
+                            await db.collection('users').doc(user.uid).set({
+                                name: user.displayName || 'Usuário',
+                                email: user.email,
+                                projectId: null,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                        showNoProjectPanel();
                     }
                 } catch (err) {
-                    console.log('Error:', err.message);
-                    document.getElementById('membersList').innerHTML = `
-                        <div class="text-center py-8 text-red-500">
-                            <i class="fa-solid fa-circle-exclamation text-2xl mb-2 block"></i>
-                            <p class="text-sm">Erro ao carregar equipe: ${err.message}</p>
-                        </div>`;
+                    console.error('Error:', err);
+                    showNoProjectPanel();
+                    showSetupMsg('Erro: ' + err.message, 'error');
                 }
             }
         });
+
+        // ========== Create New Project ==========
+        window.createNewProject = async function() {
+            const btn = document.getElementById('createProjectBtn');
+            const projectName = document.getElementById('newProjectName').value.trim() || 'Meu TCC';
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Criando...';
+
+            try {
+                const code = generateCode();
+                const projectRef = await db.collection('projects').add({
+                    name: projectName,
+                    code: code,
+                    ownerId: currentUser.uid,
+                    members: [currentUser.uid],
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                await db.collection('users').doc(currentUser.uid).set({
+                    name: currentUser.displayName || 'Usuário',
+                    email: currentUser.email,
+                    projectId: projectRef.id,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                projectId = projectRef.id;
+                document.getElementById('projectCode').textContent = code;
+                showProjectPanel();
+
+                const projectDoc = await db.collection('projects').doc(projectId).get();
+                loadMembers(projectDoc.data());
+            } catch (err) {
+                console.error('Error creating project:', err);
+                showSetupMsg('Erro ao criar projeto: ' + err.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-rocket mr-2"></i>Criar Projeto';
+            }
+        };
+
+        // ========== Join Existing Project ==========
+        window.joinExistingProject = async function() {
+            const btn = document.getElementById('joinProjectBtn');
+            const code = document.getElementById('joinProjectCode').value.trim().toUpperCase();
+
+            if (!code) { showSetupMsg('Digite o código do projeto.', 'error'); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Entrando...';
+
+            try {
+                const snap = await db.collection('projects').where('code', '==', code).get();
+                if (snap.empty) {
+                    showSetupMsg('Código não encontrado: ' + code, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto';
+                    return;
+                }
+
+                const projDoc = snap.docs[0];
+                await db.collection('projects').doc(projDoc.id).update({
+                    members: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+                });
+
+                await db.collection('users').doc(currentUser.uid).set({
+                    name: currentUser.displayName || 'Usuário',
+                    email: currentUser.email,
+                    projectId: projDoc.id,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                projectId = projDoc.id;
+                const updatedDoc = await db.collection('projects').doc(projectId).get();
+                document.getElementById('projectCode').textContent = updatedDoc.data().code;
+                showProjectPanel();
+                loadMembers(updatedDoc.data());
+            } catch (err) {
+                console.error('Error joining project:', err);
+                showSetupMsg('Erro ao entrar no projeto: ' + err.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto';
+            }
+        };
 
         function copyCode() {
             const code = document.getElementById('projectCode').textContent;
