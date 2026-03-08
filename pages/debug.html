@@ -31,7 +31,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .sidebar-link.active { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .sidebar-link.active { background: rgba(139,92,246,0.15); color: #a78bfa; }
         .json-viewer {
             background: rgba(0,0,0,0.3);
             font-family: 'JetBrains Mono', 'Fira Code', monospace;
@@ -48,10 +48,10 @@
     <header class="lg:hidden fixed top-0 w-full z-50 glass">
         <div class="flex items-center justify-between px-4 h-14">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
+                <div class="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center">
                     <i class="fa-solid fa-graduation-cap text-xs"></i>
                 </div>
-                <span class="text-sm font-bold">TCC<span class="text-blue-400">Flow</span></span>
+                <span class="text-sm font-bold">TCC<span class="text-violet-400">Flow</span></span>
             </div>
             <button id="sidebarToggle" class="text-slate-300 hover:text-white">
                 <i class="fa-solid fa-bars text-lg"></i>
@@ -63,11 +63,11 @@
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
         <div class="p-6">
             <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                <div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center">
                     <i class="fa-solid fa-graduation-cap text-sm"></i>
                 </div>
                 <div>
-                    <span class="text-base font-bold block">TCC<span class="text-blue-400">Flow</span></span>
+                    <span class="text-base font-bold block">TCC<span class="text-violet-400">Flow</span></span>
                     <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
                 </div>
             </div>
@@ -75,18 +75,14 @@
                 <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
                     <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
                 </a>
-                <div>
-                    <a href="boletim.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                        <i class="fa-solid fa-clipboard-list w-5 text-center"></i> Boletim
-                    </a>
-                    <div class="ml-9 mt-1 space-y-0.5">
-                        <a href="boletim.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300"><i class="fa-solid fa-table w-4 text-center mr-1.5"></i>Visão Geral</a>
-                        <a href="boletim-detalhado.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300"><i class="fa-solid fa-magnifying-glass-chart w-4 text-center mr-1.5"></i>Detalhado</a>
-                        <a href="desempenho.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300"><i class="fa-solid fa-chart-pie w-4 text-center mr-1.5"></i>Desempenho</a>
-                    </div>
-                </div>
+                <a href="pesquisa.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-flask w-5 text-center"></i> Hub de Pesquisa
+                </a>
                 <a href="calendario.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
                     <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
+                </a>
+                <a href="google.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-brands fa-google w-5 text-center"></i> Google
                 </a>
                 <a href="admin.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
                     <i class="fa-solid fa-gear w-5 text-center"></i> Definições
@@ -119,7 +115,7 @@
 
             <!-- Action buttons -->
             <div class="flex flex-wrap gap-3 mb-6">
-                <button id="refreshBtn" class="bg-blue-600 hover:bg-blue-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                <button id="refreshBtn" class="bg-violet-600 hover:bg-violet-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
                     <i class="fa-solid fa-rotate mr-2"></i>Atualizar
                 </button>
                 <button id="clearAllBtn" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 text-sm font-semibold px-4 py-2 rounded-xl transition border border-red-500/20">
@@ -131,7 +127,7 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <div class="glass rounded-2xl p-4">
                     <div class="text-xs text-slate-400 mb-1">Utilizadores</div>
-                    <div class="text-xl font-bold text-blue-400" id="statUsers">0</div>
+                    <div class="text-xl font-bold text-violet-400" id="statUsers">0</div>
                 </div>
                 <div class="glass rounded-2xl p-4">
                     <div class="text-xs text-slate-400 mb-1">Sessões</div>
@@ -150,7 +146,7 @@
             <!-- Users Table -->
             <div class="glass rounded-3xl p-6 mb-6">
                 <h2 class="text-lg font-bold mb-4">
-                    <i class="fa-solid fa-users mr-2 text-blue-400"></i>Utilizadores Registados
+                    <i class="fa-solid fa-users mr-2 text-violet-400"></i>Utilizadores Registados
                     <span class="text-xs text-slate-500 font-normal ml-2">(tccflow_users)</span>
                 </h2>
 
@@ -285,7 +281,7 @@
                     <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
                         <td class="py-3 px-3 text-xs text-slate-500 font-mono">${escapeHtml(user.id)}</td>
                         <td class="py-3 px-3 font-medium">${escapeHtml(user.name)}</td>
-                        <td class="py-3 px-3 text-blue-400">${escapeHtml(user.email)}</td>
+                        <td class="py-3 px-3 text-violet-400">${escapeHtml(user.email)}</td>
                         <td class="py-3 px-3">
                             <span class="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-lg text-xs font-mono">${escapeHtml(user.password)}</span>
                         </td>

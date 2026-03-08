@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google - TCCFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .glass-strong {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-link.active { background: rgba(139,92,246,0.15); color: #a78bfa; }
+        .google-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen antialiased">
+
+    <!-- Mobile header -->
+    <header class="lg:hidden fixed top-0 w-full z-50 glass">
+        <div class="flex items-center justify-between px-4 h-14">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-xs"></i>
+                </div>
+                <span class="text-sm font-bold">TCC<span class="text-violet-400">Flow</span></span>
+            </div>
+            <button id="sidebarToggle" class="text-slate-300 hover:text-white">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+                </div>
+                <div>
+                    <span class="text-base font-bold block">TCC<span class="text-violet-400">Flow</span></span>
+                    <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
+                </div>
+            </div>
+            <nav class="space-y-1">
+                <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
+                </a>
+                <a href="pesquisa.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-flask w-5 text-center"></i> Hub de Pesquisa
+                </a>
+                <a href="calendario.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
+                </a>
+                <a href="google.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
+                    <i class="fa-brands fa-google w-5 text-center"></i> Google
+                </a>
+                <a href="admin.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-gear w-5 text-center"></i> Definições
+                </a>
+                <a href="debug.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-bug w-5 text-center"></i> Debug
+                </a>
+            </nav>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-6">
+            <button id="logoutBtn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition">
+                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Sair
+            </button>
+        </div>
+    </aside>
+
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
+        <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+
+            <div class="mb-8">
+                <h1 class="text-2xl sm:text-3xl font-bold"><span class="gradient-text">Integrações Google</span></h1>
+                <p class="text-sm text-slate-400 mt-1">Conecte suas ferramentas do Google para potencializar o trabalho no TCC</p>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="glass-strong rounded-3xl p-6 sm:p-8 mb-8">
+                <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-bolt mr-2 text-amber-400"></i>Ações Rápidas</h2>
+                <p class="text-xs text-slate-400 mb-6">Crie documentos e eventos diretamente do TCCFlow</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Create Google Doc -->
+                    <button id="createDocBtn" class="google-card glass rounded-2xl p-5 text-left transition group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-file-word text-blue-400 text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold group-hover:text-white transition">Novo Documento</h3>
+                                <p class="text-xs text-slate-400">Cria um Google Docs em branco para seu TCC</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- Create Google Sheet -->
+                    <button id="createSheetBtn" class="google-card glass rounded-2xl p-5 text-left transition group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-table text-emerald-400 text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold group-hover:text-white transition">Nova Planilha</h3>
+                                <p class="text-xs text-slate-400">Google Sheets para dados e tabulações</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- Create Google Slides -->
+                    <button id="createSlidesBtn" class="google-card glass rounded-2xl p-5 text-left transition group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-display text-amber-400 text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold group-hover:text-white transition">Nova Apresentação</h3>
+                                <p class="text-xs text-slate-400">Google Slides para a defesa do TCC</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- Create Calendar Event -->
+                    <button id="createEventBtn" class="google-card glass rounded-2xl p-5 text-left transition group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-violet-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-calendar-plus text-violet-400 text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold group-hover:text-white transition">Novo Evento</h3>
+                                <p class="text-xs text-slate-400">Agende reunião ou prazo no Google Calendar</p>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calendar Event Form (hidden) -->
+            <div id="eventForm" class="hidden glass rounded-3xl p-6 mb-8">
+                <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-calendar-plus mr-2 text-violet-400"></i>Criar Evento no Google Calendar</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Título do Evento</label>
+                        <input type="text" id="eventTitle" placeholder="Ex: Reunião com orientador"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Local (opcional)</label>
+                        <input type="text" id="eventLocation" placeholder="Ex: Sala 201, Escola..."
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Data e Hora Início</label>
+                        <input type="datetime-local" id="eventStart"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Data e Hora Fim</label>
+                        <input type="datetime-local" id="eventEnd"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Descrição (opcional)</label>
+                        <textarea id="eventDetails" rows="2" placeholder="Detalhes do evento..."
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button id="openCalendarEvent" class="bg-violet-600 hover:bg-violet-500 text-sm font-semibold px-5 py-2 rounded-xl transition">
+                        <i class="fa-brands fa-google mr-1"></i> Abrir no Google Calendar
+                    </button>
+                    <button id="cancelEvent" class="bg-slate-700 hover:bg-slate-600 text-sm font-semibold px-5 py-2 rounded-xl transition">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Saved Links -->
+            <div class="glass rounded-3xl p-6 sm:p-8 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold"><i class="fa-solid fa-link mr-2 text-cyan-400"></i>Links Salvos</h2>
+                        <p class="text-xs text-slate-400 mt-1">Salve links do Google Drive, Docs, Sheets e outros</p>
+                    </div>
+                    <button id="addLinkBtn" class="bg-violet-600 hover:bg-violet-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                        <i class="fa-solid fa-plus mr-1"></i> Novo Link
+                    </button>
+                </div>
+
+                <!-- Add Link Form -->
+                <div id="linkForm" class="hidden glass rounded-2xl p-5 mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Nome</label>
+                            <input type="text" id="linkName" placeholder="Ex: TCC - Documento Principal"
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">URL</label>
+                            <input type="url" id="linkUrl" placeholder="https://docs.google.com/..."
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Tipo</label>
+                            <select id="linkType"
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                                <option value="docs" class="bg-slate-900">Google Docs</option>
+                                <option value="sheets" class="bg-slate-900">Google Sheets</option>
+                                <option value="slides" class="bg-slate-900">Google Slides</option>
+                                <option value="drive" class="bg-slate-900">Google Drive</option>
+                                <option value="calendar" class="bg-slate-900">Google Calendar</option>
+                                <option value="forms" class="bg-slate-900">Google Forms</option>
+                                <option value="other" class="bg-slate-900">Outro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="saveLink" class="bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                            <i class="fa-solid fa-check mr-1"></i> Salvar
+                        </button>
+                        <button id="cancelLink" class="bg-slate-700 hover:bg-slate-600 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Links List -->
+                <div id="linksList" class="space-y-3">
+                    <div class="text-center py-8 text-slate-500">
+                        <i class="fa-solid fa-link-slash text-2xl mb-2 block"></i>
+                        <p class="text-sm">Nenhum link salvo. Adicione seus documentos do Google!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Services Grid -->
+            <div class="glass rounded-3xl p-6 sm:p-8">
+                <h2 class="text-lg font-bold mb-2"><i class="fa-brands fa-google mr-2 text-violet-400"></i>Serviços Google</h2>
+                <p class="text-xs text-slate-400 mb-6">Acesse rapidamente os serviços que você mais usa</p>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                    <a href="https://drive.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
+                        <i class="fa-brands fa-google-drive text-2xl text-emerald-400 mb-2"></i>
+                        <p class="text-xs font-semibold">Drive</p>
+                    </a>
+                    <a href="https://docs.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
+                        <i class="fa-solid fa-file-word text-2xl text-blue-400 mb-2"></i>
+                        <p class="text-xs font-semibold">Docs</p>
+                    </a>
+                    <a href="https://sheets.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
+                        <i class="fa-solid fa-table text-2xl text-emerald-400 mb-2"></i>
+                        <p class="text-xs font-semibold">Sheets</p>
+                    </a>
+                    <a href="https://slides.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
+                        <i class="fa-solid fa-display text-2xl text-amber-400 mb-2"></i>
+                        <p class="text-xs font-semibold">Slides</p>
+                    </a>
+                    <a href="https://calendar.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
+                        <i class="fa-solid fa-calendar text-2xl text-violet-400 mb-2"></i>
+                        <p class="text-xs font-semibold">Calendar</p>
+                    </a>
+                    <a href="https://forms.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
+                        <i class="fa-solid fa-square-poll-vertical text-2xl text-purple-400 mb-2"></i>
+                        <p class="text-xs font-semibold">Forms</p>
+                    </a>
+                    <a href="https://scholar.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
+                        <i class="fa-solid fa-graduation-cap text-2xl text-cyan-400 mb-2"></i>
+                        <p class="text-xs font-semibold">Scholar</p>
+                    </a>
+                    <a href="https://meet.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
+                        <i class="fa-solid fa-video text-2xl text-rose-400 mb-2"></i>
+                        <p class="text-xs font-semibold">Meet</p>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // ========== Auth Check ==========
+        const currentUser = JSON.parse(localStorage.getItem('tccflow_current_user'));
+        if (!currentUser) window.location.href = 'login.html';
+
+        if (currentUser) {
+            document.getElementById('sidebarUserName').textContent = currentUser.name;
+        }
+
+        // ========== Sidebar ==========
+        const sidebar = document.getElementById('sidebar');
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        });
+        document.getElementById('sidebarOverlay').addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('tccflow_current_user');
+            window.location.href = 'login.html';
+        });
+
+        // ========== Quick Actions ==========
+        document.getElementById('createDocBtn').addEventListener('click', () => {
+            window.open('https://docs.google.com/document/create', '_blank');
+        });
+
+        document.getElementById('createSheetBtn').addEventListener('click', () => {
+            window.open('https://sheets.google.com/create', '_blank');
+        });
+
+        document.getElementById('createSlidesBtn').addEventListener('click', () => {
+            window.open('https://slides.google.com/create', '_blank');
+        });
+
+        // Calendar Event
+        document.getElementById('createEventBtn').addEventListener('click', () => {
+            document.getElementById('eventForm').classList.toggle('hidden');
+        });
+        document.getElementById('cancelEvent').addEventListener('click', () => {
+            document.getElementById('eventForm').classList.add('hidden');
+        });
+
+        document.getElementById('openCalendarEvent').addEventListener('click', () => {
+            const title = encodeURIComponent(document.getElementById('eventTitle').value || 'TCC');
+            const location = encodeURIComponent(document.getElementById('eventLocation').value || '');
+            const details = encodeURIComponent(document.getElementById('eventDetails').value || '');
+
+            const startInput = document.getElementById('eventStart').value;
+            const endInput = document.getElementById('eventEnd').value;
+
+            function toGoogleDate(dt) {
+                if (!dt) return '';
+                return dt.replace(/[-:]/g, '').replace('T', 'T') + '00';
+            }
+
+            const start = toGoogleDate(startInput);
+            const end = toGoogleDate(endInput);
+
+            let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}`;
+            if (start && end) url += `&dates=${start}/${end}`;
+            if (location) url += `&location=${location}`;
+            if (details) url += `&details=${details}`;
+
+            window.open(url, '_blank');
+        });
+
+        // ========== Saved Links ==========
+        const LINKS_KEY = 'tccflow_google_links';
+
+        const linkIcons = {
+            docs: { icon: 'fa-file-word', color: 'text-blue-400', bg: 'bg-blue-500/20' },
+            sheets: { icon: 'fa-table', color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
+            slides: { icon: 'fa-display', color: 'text-amber-400', bg: 'bg-amber-500/20' },
+            drive: { icon: 'fa-hard-drive', color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
+            calendar: { icon: 'fa-calendar', color: 'text-violet-400', bg: 'bg-violet-500/20' },
+            forms: { icon: 'fa-square-poll-vertical', color: 'text-purple-400', bg: 'bg-purple-500/20' },
+            other: { icon: 'fa-link', color: 'text-cyan-400', bg: 'bg-cyan-500/20' }
+        };
+
+        function getLinks() {
+            return JSON.parse(localStorage.getItem(LINKS_KEY) || '[]').filter(l => l.userId === currentUser.id);
+        }
+
+        function saveLinks(links) {
+            const allLinks = JSON.parse(localStorage.getItem(LINKS_KEY) || '[]').filter(l => l.userId !== currentUser.id);
+            localStorage.setItem(LINKS_KEY, JSON.stringify([...allLinks, ...links]));
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderLinks() {
+            const links = getLinks();
+            const list = document.getElementById('linksList');
+
+            if (links.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-500">
+                    <i class="fa-solid fa-link-slash text-2xl mb-2 block"></i>
+                    <p class="text-sm">Nenhum link salvo. Adicione seus documentos do Google!</p>
+                </div>`;
+                return;
+            }
+
+            list.innerHTML = links.map(link => {
+                const icon = linkIcons[link.type] || linkIcons.other;
+                return `
+                <div class="glass rounded-2xl p-4 flex items-center justify-between gap-3 group">
+                    <div class="flex items-center gap-4 flex-1 min-w-0">
+                        <div class="w-10 h-10 ${icon.bg} rounded-xl flex items-center justify-center shrink-0">
+                            <i class="fa-solid ${icon.icon} ${icon.color}"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-sm font-semibold truncate">${escapeHtml(link.name)}</h4>
+                            <p class="text-xs text-slate-500 truncate">${escapeHtml(link.url)}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <a href="${escapeHtml(link.url)}" target="_blank" class="bg-violet-600/20 hover:bg-violet-600/30 text-violet-400 text-xs font-medium px-3 py-1.5 rounded-lg transition">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                        <button onclick="deleteLink('${link.id}')" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 text-xs font-medium px-3 py-1.5 rounded-lg transition opacity-0 group-hover:opacity-100">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Add link form
+        document.getElementById('addLinkBtn').addEventListener('click', () => {
+            document.getElementById('linkForm').classList.toggle('hidden');
+        });
+        document.getElementById('cancelLink').addEventListener('click', () => {
+            document.getElementById('linkForm').classList.add('hidden');
+        });
+
+        document.getElementById('saveLink').addEventListener('click', () => {
+            const name = document.getElementById('linkName').value.trim();
+            const url = document.getElementById('linkUrl').value.trim();
+            const type = document.getElementById('linkType').value;
+
+            if (!name || !url) {
+                alert('Preencha o nome e a URL.');
+                return;
+            }
+
+            const links = getLinks();
+            links.push({
+                id: Date.now().toString(),
+                userId: currentUser.id,
+                name,
+                url,
+                type,
+                createdAt: new Date().toISOString()
+            });
+
+            saveLinks(links);
+
+            document.getElementById('linkName').value = '';
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkType').value = 'docs';
+            document.getElementById('linkForm').classList.add('hidden');
+
+            renderLinks();
+        });
+
+        window.deleteLink = function(id) {
+            if (!confirm('Remover este link?')) return;
+            const links = getLinks().filter(l => l.id !== id);
+            saveLinks(links);
+            renderLinks();
+        };
+
+        // ========== Init ==========
+        renderLinks();
+    </script>
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Pesquisa - TCCFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .glass-strong {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-link.active { background: rgba(139,92,246,0.15); color: #a78bfa; }
+        .kanban-col { min-height: 200px; }
+        .note-card { cursor: grab; }
+        .note-card:active { cursor: grabbing; }
+        .drop-zone.drag-over { border: 2px dashed #8b5cf6; background: rgba(139,92,246,0.05); }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen antialiased">
+
+    <!-- Mobile header -->
+    <header class="lg:hidden fixed top-0 w-full z-50 glass">
+        <div class="flex items-center justify-between px-4 h-14">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-xs"></i>
+                </div>
+                <span class="text-sm font-bold">TCC<span class="text-violet-400">Flow</span></span>
+            </div>
+            <button id="sidebarToggle" class="text-slate-300 hover:text-white">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+                </div>
+                <div>
+                    <span class="text-base font-bold block">TCC<span class="text-violet-400">Flow</span></span>
+                    <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
+                </div>
+            </div>
+            <nav class="space-y-1">
+                <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
+                </a>
+                <a href="pesquisa.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
+                    <i class="fa-solid fa-flask w-5 text-center"></i> Hub de Pesquisa
+                </a>
+                <a href="calendario.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
+                </a>
+                <a href="google.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-brands fa-google w-5 text-center"></i> Google
+                </a>
+                <a href="admin.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-gear w-5 text-center"></i> Definições
+                </a>
+                <a href="debug.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-bug w-5 text-center"></i> Debug
+                </a>
+            </nav>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-6">
+            <button id="logoutBtn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition">
+                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Sair
+            </button>
+        </div>
+    </aside>
+
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
+        <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+            <div class="mb-8">
+                <h1 class="text-2xl sm:text-3xl font-bold"><span class="gradient-text">Hub de Pesquisa</span></h1>
+                <p class="text-sm text-slate-400 mt-1">Organize suas anotações, referências e achados do TCC em um quadro Kanban</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="glass rounded-2xl p-4">
+                    <div class="text-xs text-slate-400 mb-1">Total de Notas</div>
+                    <div class="text-xl font-bold text-violet-400" id="statTotal">0</div>
+                </div>
+                <div class="glass rounded-2xl p-4">
+                    <div class="text-xs text-slate-400 mb-1">Para Pesquisar</div>
+                    <div class="text-xl font-bold text-amber-400" id="statTodo">0</div>
+                </div>
+                <div class="glass rounded-2xl p-4">
+                    <div class="text-xs text-slate-400 mb-1">Em Andamento</div>
+                    <div class="text-xl font-bold text-cyan-400" id="statProgress">0</div>
+                </div>
+                <div class="glass rounded-2xl p-4">
+                    <div class="text-xs text-slate-400 mb-1">Concluído</div>
+                    <div class="text-xl font-bold text-emerald-400" id="statDone">0</div>
+                </div>
+            </div>
+
+            <!-- Add Note Button -->
+            <div class="mb-6">
+                <button id="addNoteBtn" class="bg-violet-600 hover:bg-violet-500 text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+                    <i class="fa-solid fa-plus mr-2"></i>Nova Anotação de Pesquisa
+                </button>
+            </div>
+
+            <!-- Add Note Form -->
+            <div id="noteForm" class="hidden glass rounded-3xl p-6 mb-8">
+                <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-pen mr-2 text-violet-400"></i>Nova Anotação</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Título</label>
+                        <input type="text" id="noteTitle" placeholder="Ex: Artigo sobre IA na educação"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Categoria</label>
+                        <select id="noteCategory"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            <option value="artigo" class="bg-slate-900">Artigo / Paper</option>
+                            <option value="dado" class="bg-slate-900">Dado Estatístico</option>
+                            <option value="citacao" class="bg-slate-900">Citação</option>
+                            <option value="ideia" class="bg-slate-900">Ideia / Insight</option>
+                            <option value="referencia" class="bg-slate-900">Referência Bibliográfica</option>
+                            <option value="entrevista" class="bg-slate-900">Entrevista / Questionário</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Conteúdo / Anotação</label>
+                        <textarea id="noteContent" rows="3" placeholder="Escreva suas anotações, citações ou achados aqui..."
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Fonte / URL (opcional)</label>
+                        <input type="text" id="noteSource" placeholder="Ex: https://..."
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Status</label>
+                        <select id="noteStatus"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            <option value="todo" class="bg-slate-900">Para Pesquisar</option>
+                            <option value="progress" class="bg-slate-900">Em Andamento</option>
+                            <option value="done" class="bg-slate-900">Concluído</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button id="saveNote" class="bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold px-5 py-2 rounded-xl transition">
+                        <i class="fa-solid fa-check mr-1"></i> Salvar
+                    </button>
+                    <button id="cancelNote" class="bg-slate-700 hover:bg-slate-600 text-sm font-semibold px-5 py-2 rounded-xl transition">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kanban Board -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Column: Para Pesquisar -->
+                <div class="glass rounded-3xl p-5">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
+                        <h3 class="text-sm font-bold">Para Pesquisar</h3>
+                        <span class="text-xs text-slate-500 ml-auto" id="countTodo">0</span>
+                    </div>
+                    <div id="colTodo" class="kanban-col drop-zone space-y-3 rounded-xl p-1 transition" data-status="todo">
+                    </div>
+                </div>
+
+                <!-- Column: Em Andamento -->
+                <div class="glass rounded-3xl p-5">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                        <h3 class="text-sm font-bold">Em Andamento</h3>
+                        <span class="text-xs text-slate-500 ml-auto" id="countProgress">0</span>
+                    </div>
+                    <div id="colProgress" class="kanban-col drop-zone space-y-3 rounded-xl p-1 transition" data-status="progress">
+                    </div>
+                </div>
+
+                <!-- Column: Concluído -->
+                <div class="glass rounded-3xl p-5">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-3 h-3 bg-emerald-400 rounded-full"></div>
+                        <h3 class="text-sm font-bold">Concluído</h3>
+                        <span class="text-xs text-slate-500 ml-auto" id="countDone">0</span>
+                    </div>
+                    <div id="colDone" class="kanban-col drop-zone space-y-3 rounded-xl p-1 transition" data-status="done">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // ========== Auth Check ==========
+        const currentUser = JSON.parse(localStorage.getItem('tccflow_current_user'));
+        if (!currentUser) window.location.href = 'login.html';
+
+        if (currentUser) {
+            document.getElementById('sidebarUserName').textContent = currentUser.name;
+        }
+
+        // ========== Sidebar ==========
+        const sidebar = document.getElementById('sidebar');
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        });
+        document.getElementById('sidebarOverlay').addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('tccflow_current_user');
+            window.location.href = 'login.html';
+        });
+
+        // ========== Research Notes ==========
+        const NOTES_KEY = 'tccflow_research_notes';
+
+        const categoryIcons = {
+            artigo: { icon: 'fa-file-lines', color: 'text-violet-400' },
+            dado: { icon: 'fa-chart-bar', color: 'text-cyan-400' },
+            citacao: { icon: 'fa-quote-left', color: 'text-amber-400' },
+            ideia: { icon: 'fa-lightbulb', color: 'text-yellow-400' },
+            referencia: { icon: 'fa-book', color: 'text-rose-400' },
+            entrevista: { icon: 'fa-microphone', color: 'text-emerald-400' }
+        };
+
+        const categoryLabels = {
+            artigo: 'Artigo',
+            dado: 'Dado',
+            citacao: 'Citação',
+            ideia: 'Ideia',
+            referencia: 'Referência',
+            entrevista: 'Entrevista'
+        };
+
+        function getNotes() {
+            return JSON.parse(localStorage.getItem(NOTES_KEY) || '[]').filter(n => n.userId === currentUser.id);
+        }
+
+        function saveNotes(notes) {
+            const allNotes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]').filter(n => n.userId !== currentUser.id);
+            localStorage.setItem(NOTES_KEY, JSON.stringify([...allNotes, ...notes]));
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderBoard() {
+            const notes = getNotes();
+
+            const todo = notes.filter(n => n.status === 'todo');
+            const progress = notes.filter(n => n.status === 'progress');
+            const done = notes.filter(n => n.status === 'done');
+
+            // Stats
+            document.getElementById('statTotal').textContent = notes.length;
+            document.getElementById('statTodo').textContent = todo.length;
+            document.getElementById('statProgress').textContent = progress.length;
+            document.getElementById('statDone').textContent = done.length;
+            document.getElementById('countTodo').textContent = todo.length;
+            document.getElementById('countProgress').textContent = progress.length;
+            document.getElementById('countDone').textContent = done.length;
+
+            // Render columns
+            renderColumn('colTodo', todo);
+            renderColumn('colProgress', progress);
+            renderColumn('colDone', done);
+        }
+
+        function renderColumn(colId, notes) {
+            const col = document.getElementById(colId);
+
+            if (notes.length === 0) {
+                col.innerHTML = `<div class="text-center py-8 text-slate-600 text-xs">
+                    <i class="fa-solid fa-inbox text-lg mb-2 block"></i>
+                    Arraste cards aqui
+                </div>`;
+                return;
+            }
+
+            notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            col.innerHTML = notes.map(note => {
+                const cat = categoryIcons[note.category] || categoryIcons.ideia;
+                const label = categoryLabels[note.category] || note.category;
+
+                return `
+                <div class="note-card glass-strong rounded-2xl p-4 group" draggable="true" data-id="${note.id}">
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid ${cat.icon} ${cat.color} text-xs"></i>
+                            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-500">${label}</span>
+                        </div>
+                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                            <button onclick="moveNote('${note.id}', 'prev')" class="text-slate-500 hover:text-white text-xs p-1" title="Mover para trás">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <button onclick="moveNote('${note.id}', 'next')" class="text-slate-500 hover:text-white text-xs p-1" title="Mover para frente">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button onclick="deleteNote('${note.id}')" class="text-slate-500 hover:text-red-400 text-xs p-1" title="Excluir">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <h4 class="text-sm font-semibold mb-1 ${note.status === 'done' ? 'line-through opacity-60' : ''}">${escapeHtml(note.title)}</h4>
+                    ${note.content ? `<p class="text-xs text-slate-400 leading-relaxed mb-2 line-clamp-3">${escapeHtml(note.content)}</p>` : ''}
+                    ${note.source ? `<a href="${escapeHtml(note.source)}" target="_blank" class="inline-flex items-center gap-1 text-[10px] text-violet-400 hover:text-violet-300 transition truncate max-w-full">
+                        <i class="fa-solid fa-link"></i> ${escapeHtml(note.source.replace(/^https?:\/\//, '').substring(0, 40))}
+                    </a>` : ''}
+                    <div class="text-[10px] text-slate-600 mt-2">${new Date(note.createdAt).toLocaleDateString('pt-BR')}</div>
+                </div>`;
+            }).join('');
+
+            // Add drag events to cards
+            col.querySelectorAll('.note-card').forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+        }
+
+        // ========== Drag & Drop ==========
+        let draggedId = null;
+
+        function handleDragStart(e) {
+            draggedId = e.target.dataset.id;
+            e.target.style.opacity = '0.4';
+        }
+
+        function handleDragEnd(e) {
+            e.target.style.opacity = '1';
+            document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+        }
+
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drag-over');
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                if (!draggedId) return;
+
+                const newStatus = zone.dataset.status;
+                const notes = getNotes();
+                const note = notes.find(n => n.id === draggedId);
+                if (note) {
+                    note.status = newStatus;
+                    saveNotes(notes);
+                    renderBoard();
+                }
+                draggedId = null;
+            });
+        });
+
+        // ========== Move Note (buttons) ==========
+        const statusOrder = ['todo', 'progress', 'done'];
+
+        window.moveNote = function(id, direction) {
+            const notes = getNotes();
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+
+            const currentIndex = statusOrder.indexOf(note.status);
+            const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+
+            if (newIndex < 0 || newIndex >= statusOrder.length) return;
+
+            note.status = statusOrder[newIndex];
+            saveNotes(notes);
+            renderBoard();
+        };
+
+        // ========== Delete Note ==========
+        window.deleteNote = function(id) {
+            if (!confirm('Excluir esta anotação?')) return;
+            const notes = getNotes().filter(n => n.id !== id);
+            saveNotes(notes);
+            renderBoard();
+        };
+
+        // ========== Add Note Form ==========
+        document.getElementById('addNoteBtn').addEventListener('click', () => {
+            document.getElementById('noteForm').classList.toggle('hidden');
+        });
+        document.getElementById('cancelNote').addEventListener('click', () => {
+            document.getElementById('noteForm').classList.add('hidden');
+        });
+
+        document.getElementById('saveNote').addEventListener('click', () => {
+            const title = document.getElementById('noteTitle').value.trim();
+            const content = document.getElementById('noteContent').value.trim();
+            const source = document.getElementById('noteSource').value.trim();
+            const category = document.getElementById('noteCategory').value;
+            const status = document.getElementById('noteStatus').value;
+
+            if (!title) {
+                alert('Dê um título para a anotação.');
+                return;
+            }
+
+            const notes = getNotes();
+            notes.push({
+                id: Date.now().toString(),
+                userId: currentUser.id,
+                title,
+                content,
+                source,
+                category,
+                status,
+                createdAt: new Date().toISOString()
+            });
+
+            saveNotes(notes);
+
+            // Clear form
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            document.getElementById('noteSource').value = '';
+            document.getElementById('noteCategory').value = 'artigo';
+            document.getElementById('noteStatus').value = 'todo';
+            document.getElementById('noteForm').classList.add('hidden');
+
+            renderBoard();
+        });
+
+        // ========== Init ==========
+        renderBoard();
+    </script>
+</body>
+</html>

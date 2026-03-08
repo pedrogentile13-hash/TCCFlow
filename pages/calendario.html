@@ -27,13 +27,13 @@
             border: 1px solid rgba(255,255,255,0.12);
         }
         .gradient-text {
-            background: linear-gradient(135deg, #3b82f6, #10b981);
+            background: linear-gradient(135deg, #8b5cf6, #10b981);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .sidebar-link.active { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .sidebar-link.active { background: rgba(139,92,246,0.15); color: #a78bfa; }
         .calendar-day:hover { background: rgba(255,255,255,0.08); }
-        .calendar-day.today { border: 2px solid #3b82f6; }
+        .calendar-day.today { border: 2px solid #8b5cf6; }
         .calendar-day.has-session { position: relative; }
         .calendar-day.has-session::after {
             content: '';
@@ -44,7 +44,7 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: #3b82f6;
+            background: #8b5cf6;
         }
         .calendar-day.has-completed::after { background: #10b981; }
     </style>
@@ -55,10 +55,10 @@
     <header class="lg:hidden fixed top-0 w-full z-50 glass">
         <div class="flex items-center justify-between px-4 h-14">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
+                <div class="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center">
                     <i class="fa-solid fa-graduation-cap text-xs"></i>
                 </div>
-                <span class="text-sm font-bold">TCC<span class="text-blue-400">Flow</span></span>
+                <span class="text-sm font-bold">TCC<span class="text-violet-400">Flow</span></span>
             </div>
             <button id="sidebarToggle" class="text-slate-300 hover:text-white">
                 <i class="fa-solid fa-bars text-lg"></i>
@@ -70,11 +70,11 @@
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
         <div class="p-6">
             <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                <div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center">
                     <i class="fa-solid fa-graduation-cap text-sm"></i>
                 </div>
                 <div>
-                    <span class="text-base font-bold block">TCC<span class="text-blue-400">Flow</span></span>
+                    <span class="text-base font-bold block">TCC<span class="text-violet-400">Flow</span></span>
                     <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
                 </div>
             </div>
@@ -82,18 +82,14 @@
                 <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
                     <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
                 </a>
-                <div>
-                    <a href="boletim.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                        <i class="fa-solid fa-clipboard-list w-5 text-center"></i> Boletim
-                    </a>
-                    <div class="ml-9 mt-1 space-y-0.5">
-                        <a href="boletim.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300"><i class="fa-solid fa-table w-4 text-center mr-1.5"></i>Visão Geral</a>
-                        <a href="boletim-detalhado.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300"><i class="fa-solid fa-magnifying-glass-chart w-4 text-center mr-1.5"></i>Detalhado</a>
-                        <a href="desempenho.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300"><i class="fa-solid fa-chart-pie w-4 text-center mr-1.5"></i>Desempenho</a>
-                    </div>
-                </div>
+                <a href="pesquisa.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-flask w-5 text-center"></i> Hub de Pesquisa
+                </a>
                 <a href="calendario.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
                     <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
+                </a>
+                <a href="google.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-brands fa-google w-5 text-center"></i> Google
                 </a>
                 <a href="admin.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
                     <i class="fa-solid fa-gear w-5 text-center"></i> Definições
@@ -154,7 +150,7 @@
                     <h2 class="text-lg font-bold">
                         <i class="fa-solid fa-bullseye mr-2 text-emerald-400"></i>Metas
                     </h2>
-                    <button id="addGoalBtn" class="bg-blue-600 hover:bg-blue-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                    <button id="addGoalBtn" class="bg-violet-600 hover:bg-violet-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
                         <i class="fa-solid fa-plus mr-1"></i> Nova Meta
                     </button>
                 </div>
@@ -165,12 +161,12 @@
                         <div>
                             <label class="block text-xs font-medium text-slate-400 mb-1">Meta</label>
                             <input type="text" id="goalTitle" placeholder="Ex: Terminar capítulo 5"
-                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-400 mb-1">Prazo</label>
                             <input type="date" id="goalDeadline"
-                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                     </div>
                     <div class="flex gap-3">
@@ -267,7 +263,7 @@
                 else if (hasSession) classes += ' has-session';
 
                 html += `<div class="${classes}" onclick="showDaySessions('${dateStr}', ${day})">
-                    <span class="text-sm font-medium ${isToday ? 'text-blue-400' : ''}">${day}</span>
+                    <span class="text-sm font-medium ${isToday ? 'text-violet-400' : ''}">${day}</span>
                     ${hasSession ? `<div class="text-[10px] text-slate-500 mt-1 hidden sm:block">${daySessions.length} sessão${daySessions.length > 1 ? 'ões' : ''}</div>` : ''}
                 </div>`;
             }
@@ -349,8 +345,8 @@
 
             list.innerHTML = goals.map(goal => {
                 const isOverdue = new Date(goal.deadline) < new Date() && !goal.completed;
-                const statusClass = goal.completed ? 'text-emerald-400' : isOverdue ? 'text-red-400' : 'text-blue-400';
-                const bgClass = goal.completed ? 'bg-emerald-500/10 border-emerald-500/20' : isOverdue ? 'bg-red-500/10 border-red-500/20' : 'bg-blue-500/10 border-blue-500/20';
+                const statusClass = goal.completed ? 'text-emerald-400' : isOverdue ? 'text-red-400' : 'text-violet-400';
+                const bgClass = goal.completed ? 'bg-emerald-500/10 border-emerald-500/20' : isOverdue ? 'bg-red-500/10 border-red-500/20' : 'bg-violet-500/10 border-violet-500/20';
 
                 return `
                 <div class="glass rounded-2xl p-4 flex items-center justify-between gap-3">

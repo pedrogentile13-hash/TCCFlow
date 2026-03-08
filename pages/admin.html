@@ -27,11 +27,11 @@
             border: 1px solid rgba(255,255,255,0.12);
         }
         .gradient-text {
-            background: linear-gradient(135deg, #3b82f6, #10b981);
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .sidebar-link.active { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .sidebar-link.active { background: rgba(139,92,246,0.15); color: #a78bfa; }
     </style>
 </head>
 <body class="bg-slate-950 text-white min-h-screen antialiased">
@@ -40,10 +40,10 @@
     <header class="lg:hidden fixed top-0 w-full z-50 glass">
         <div class="flex items-center justify-between px-4 h-14">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
+                <div class="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center">
                     <i class="fa-solid fa-graduation-cap text-xs"></i>
                 </div>
-                <span class="text-sm font-bold">TCC<span class="text-blue-400">Flow</span></span>
+                <span class="text-sm font-bold">TCC<span class="text-violet-400">Flow</span></span>
             </div>
             <button id="sidebarToggle" class="text-slate-300 hover:text-white">
                 <i class="fa-solid fa-bars text-lg"></i>
@@ -55,11 +55,11 @@
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
         <div class="p-6">
             <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                <div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center">
                     <i class="fa-solid fa-graduation-cap text-sm"></i>
                 </div>
                 <div>
-                    <span class="text-base font-bold block">TCC<span class="text-blue-400">Flow</span></span>
+                    <span class="text-base font-bold block">TCC<span class="text-violet-400">Flow</span></span>
                     <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
                 </div>
             </div>
@@ -67,18 +67,14 @@
                 <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
                     <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
                 </a>
-                <div>
-                    <a href="boletim.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                        <i class="fa-solid fa-clipboard-list w-5 text-center"></i> Boletim
-                    </a>
-                    <div class="ml-9 mt-1 space-y-0.5">
-                        <a href="boletim.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300"><i class="fa-solid fa-table w-4 text-center mr-1.5"></i>Visão Geral</a>
-                        <a href="boletim-detalhado.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300"><i class="fa-solid fa-magnifying-glass-chart w-4 text-center mr-1.5"></i>Detalhado</a>
-                        <a href="desempenho.html" class="sub-link block text-xs font-medium text-slate-500 px-3 py-1.5 rounded-lg transition hover:bg-white/5 hover:text-slate-300"><i class="fa-solid fa-chart-pie w-4 text-center mr-1.5"></i>Desempenho</a>
-                    </div>
-                </div>
+                <a href="pesquisa.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-solid fa-flask w-5 text-center"></i> Hub de Pesquisa
+                </a>
                 <a href="calendario.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
                     <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
+                </a>
+                <a href="google.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
+                    <i class="fa-brands fa-google w-5 text-center"></i> Google
                 </a>
                 <a href="admin.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
                     <i class="fa-solid fa-gear w-5 text-center"></i> Definições
@@ -109,8 +105,8 @@
             <!-- Profile Card -->
             <div class="glass rounded-3xl p-6 sm:p-8 mb-6">
                 <div class="flex items-center gap-5 mb-8">
-                    <div class="w-20 h-20 bg-blue-600/20 rounded-2xl flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-user text-blue-400 text-2xl"></i>
+                    <div class="w-20 h-20 bg-violet-600/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-user text-violet-400 text-2xl"></i>
                     </div>
                     <div>
                         <h2 class="text-xl font-bold" id="profileName">Utilizador</h2>
@@ -122,23 +118,23 @@
                 <form id="profileForm" class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-slate-300 mb-2">
-                            <i class="fa-solid fa-user mr-1 text-blue-400"></i> Nome
+                            <i class="fa-solid fa-user mr-1 text-violet-400"></i> Nome
                         </label>
                         <input type="text" id="editName" required
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-300 mb-2">
-                            <i class="fa-solid fa-envelope mr-1 text-blue-400"></i> Email
+                            <i class="fa-solid fa-envelope mr-1 text-violet-400"></i> Email
                         </label>
                         <input type="email" id="editEmail" required
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
 
                     <div id="profileMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
 
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 font-semibold px-6 py-3 rounded-xl transition shadow-lg shadow-blue-600/25 text-sm">
+                    <button type="submit" class="bg-violet-600 hover:bg-violet-500 font-semibold px-6 py-3 rounded-xl transition shadow-lg shadow-violet-600/25 text-sm">
                         <i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Alterações
                     </button>
                 </form>
@@ -154,17 +150,17 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-300 mb-2">Senha Atual</label>
                         <input type="password" id="currentPassword" required
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300 mb-2">Nova Senha</label>
                         <input type="password" id="newPassword" required minlength="6"
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-300 mb-2">Confirmar Nova Senha</label>
                         <input type="password" id="confirmNewPassword" required
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
 
                     <div id="passwordMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
