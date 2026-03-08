@@ -7,543 +7,224 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } }
-        }
-    </script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .glass-strong {
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .sidebar-link.active { background: rgba(139,92,246,0.15); color: #a78bfa; }
-        .pomodoro-ring { transition: stroke-dashoffset 1s linear; }
-    </style>
+    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen antialiased">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen antialiased">
 
-    <!-- Mobile header -->
-    <header class="lg:hidden fixed top-0 w-full z-50 glass">
-        <div class="flex items-center justify-between px-4 h-14">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-graduation-cap text-xs"></i>
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="text-lg font-bold">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center gap-1">
+                    <a href="dashboard.html" class="px-3 py-2 rounded-lg text-sm font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10">Dashboard</a>
+                    <a href="organizacao.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Organização</a>
+                    <a href="pesquisa.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Pesquisa</a>
+                    <a href="calendario.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Calendário</a>
+                    <a href="equipe.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Equipe</a>
+                    <a href="google.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Google</a>
                 </div>
-                <span class="text-sm font-bold">TCC<span class="text-violet-400">Flow</span></span>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500 dark:text-slate-400" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                        <i class="fa-solid fa-gear text-sm"></i>
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                </div>
             </div>
-            <button id="sidebarToggle" class="text-slate-300 hover:text-white">
-                <i class="fa-solid fa-bars text-lg"></i>
-            </button>
         </div>
-    </header>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-graduation-cap text-sm"></i>
-                </div>
-                <div>
-                    <span class="text-base font-bold block">TCC<span class="text-violet-400">Flow</span></span>
-                    <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
-                </div>
-            </div>
-
-            <nav class="space-y-1">
-                <a href="dashboard.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
-                    <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
-                </a>
-                <a href="pesquisa.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-flask w-5 text-center"></i> Hub de Pesquisa
-                </a>
-                <a href="calendario.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
-                </a>
-                <a href="google.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-brands fa-google w-5 text-center"></i> Google
-                </a>
-                <a href="admin.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-gear w-5 text-center"></i> Definições
-                </a>
-                <a href="debug.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-bug w-5 text-center"></i> Debug
-                </a>
-            </nav>
-        </div>
-
-        <div class="absolute bottom-0 left-0 right-0 p-6">
-            <button id="logoutBtn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition">
-                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Sair
-            </button>
-        </div>
-    </aside>
-
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+    </nav>
 
     <!-- Main Content -->
-    <main class="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
-        <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+    <main class="pt-16 min-h-screen pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-            <!-- Welcome header -->
+            <!-- Header -->
             <div class="mb-8">
-                <h1 class="text-2xl sm:text-3xl font-bold">Olá, <span class="gradient-text" id="welcomeName">Utilizador</span></h1>
-                <p class="text-sm text-slate-400 mt-1" id="currentDate"></p>
+                <h1 class="text-3xl font-bold mb-2">Bem-vindo ao seu TCC! 👋</h1>
+                <p class="text-slate-500 dark:text-slate-400" id="projectInfo">Carregando...</p>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="glass rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 bg-violet-600/20 rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-book text-violet-400 text-sm"></i>
-                        </div>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-slate-500 dark:text-slate-400">Membros da Equipe</span>
+                        <i class="fa-solid fa-users text-violet-600 dark:text-violet-400 text-lg"></i>
                     </div>
-                    <div class="text-2xl font-bold" id="totalSessions">0</div>
-                    <div class="text-xs text-slate-400 mt-1">Total de Sessões</div>
+                    <div class="text-3xl font-bold" id="memberCount">0</div>
                 </div>
-                <div class="glass rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 bg-emerald-600/20 rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-check text-emerald-400 text-sm"></i>
-                        </div>
+                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-slate-500 dark:text-slate-400">Tarefas Atribuídas</span>
+                        <i class="fa-solid fa-list-check text-cyan-600 dark:text-cyan-400 text-lg"></i>
                     </div>
-                    <div class="text-2xl font-bold text-emerald-400" id="completedSessions">0</div>
-                    <div class="text-xs text-slate-400 mt-1">Concluídas</div>
+                    <div class="text-3xl font-bold" id="taskCount">0</div>
                 </div>
-                <div class="glass rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 bg-amber-600/20 rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-clock text-amber-400 text-sm"></i>
-                        </div>
+                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-slate-500 dark:text-slate-400">Concluídas</span>
+                        <i class="fa-solid fa-check-circle text-emerald-600 dark:text-emerald-400 text-lg"></i>
                     </div>
-                    <div class="text-2xl font-bold text-amber-400" id="pendingSessions">0</div>
-                    <div class="text-xs text-slate-400 mt-1">Pendentes</div>
+                    <div class="text-3xl font-bold" id="completedCount">0</div>
                 </div>
-                <div class="glass rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 bg-purple-600/20 rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-fire text-purple-400 text-sm"></i>
-                        </div>
+                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-slate-500 dark:text-slate-400">Progresso</span>
+                        <i class="fa-solid fa-chart-pie text-amber-600 dark:text-amber-400 text-lg"></i>
                     </div>
-                    <div class="text-2xl font-bold text-purple-400" id="pomodoroCount">0</div>
-                    <div class="text-xs text-slate-400 mt-1">Pomodoros</div>
+                    <div class="text-3xl font-bold" id="progressPercent">0%</div>
                 </div>
             </div>
 
-            <!-- Main Grid: Sessions + Pomodoro -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                <!-- Sessions Table (2 columns) -->
-                <div class="lg:col-span-2 glass rounded-3xl p-6">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                        <h2 class="text-lg font-bold">
-                            <i class="fa-solid fa-list-check mr-2 text-violet-400"></i>Cronograma de Estudos
-                        </h2>
-                        <button id="addSessionBtn" class="bg-violet-600 hover:bg-violet-500 text-sm font-semibold px-4 py-2 rounded-xl transition flex items-center gap-2">
-                            <i class="fa-solid fa-plus"></i> Nova Sessão
-                        </button>
-                    </div>
-
-                    <!-- Add session form (hidden by default) -->
-                    <div id="sessionForm" class="hidden glass rounded-2xl p-5 mb-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-400 mb-1">Disciplina</label>
-                                <input type="text" id="sessionSubject" placeholder="Ex: Matemática"
-                                    class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-400 mb-1">Tópico</label>
-                                <input type="text" id="sessionTopic" placeholder="Ex: Álgebra Linear"
-                                    class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-400 mb-1">Data</label>
-                                <input type="date" id="sessionDate"
-                                    class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-400 mb-1">Horário</label>
-                                <input type="time" id="sessionTime"
-                                    class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                            </div>
+                <!-- Minhas Tarefas -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-violet-600 dark:text-violet-400"></i>
+                                Minhas Tarefas
+                            </h2>
+                            <a href="organizacao.html" class="text-sm text-violet-600 dark:text-violet-400 hover:underline">Ver Todas</a>
                         </div>
-                        <div class="flex gap-3">
-                            <button id="saveSession" class="bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
-                                <i class="fa-solid fa-check mr-1"></i> Salvar
-                            </button>
-                            <button id="cancelSession" class="bg-slate-700 hover:bg-slate-600 text-sm font-semibold px-4 py-2 rounded-xl transition">
-                                Cancelar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Sessions list -->
-                    <div id="sessionsList" class="space-y-3 max-h-96 overflow-y-auto pr-1">
-                        <div class="text-center py-8 text-slate-500">
-                            <i class="fa-solid fa-inbox text-3xl mb-3"></i>
-                            <p class="text-sm">Nenhuma sessão registada. Adicione a primeira!</p>
+                        <div id="myTasksList" class="space-y-3">
+                            <div class="text-center py-8 text-slate-500">
+                                <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
+                                <p class="text-sm">Nenhuma tarefa atribuída</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pomodoro Timer -->
-                <div class="glass rounded-3xl p-6 flex flex-col items-center">
-                    <h2 class="text-lg font-bold mb-6 self-start">
-                        <i class="fa-solid fa-stopwatch mr-2 text-emerald-400"></i>Pomodoro
-                    </h2>
-
-                    <!-- Timer display -->
-                    <div class="relative w-48 h-48 mb-6">
-                        <svg class="w-48 h-48 transform -rotate-90" viewBox="0 0 200 200">
-                            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
-                            <circle id="pomodoroRing" cx="100" cy="100" r="90" fill="none" stroke="#8b5cf6" stroke-width="8"
-                                stroke-dasharray="565.48" stroke-dashoffset="0" stroke-linecap="round" class="pomodoro-ring"/>
-                        </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span id="timerDisplay" class="text-4xl font-bold tabular-nums">25:00</span>
-                            <span id="timerLabel" class="text-xs text-slate-400 mt-1">Foco</span>
+                <!-- Equipe -->
+                <div>
+                    <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-people-group text-cyan-600 dark:text-cyan-400"></i>
+                                Equipe
+                            </h2>
+                            <a href="equipe.html" class="text-sm text-violet-600 dark:text-violet-400 hover:underline">Gerenciar</a>
+                        </div>
+                        <div id="teamList" class="space-y-2">
+                            <div class="text-center py-6 text-slate-500 text-sm">Carregando...</div>
                         </div>
                     </div>
-
-                    <!-- Timer controls -->
-                    <div class="flex items-center gap-3 mb-6">
-                        <button id="pomodoroStart" class="bg-violet-600 hover:bg-violet-500 font-semibold px-6 py-2.5 rounded-xl transition text-sm">
-                            <i class="fa-solid fa-play mr-1"></i> Iniciar
-                        </button>
-                        <button id="pomodoroPause" class="hidden bg-amber-600 hover:bg-amber-500 font-semibold px-6 py-2.5 rounded-xl transition text-sm">
-                            <i class="fa-solid fa-pause mr-1"></i> Pausar
-                        </button>
-                        <button id="pomodoroReset" class="bg-slate-700 hover:bg-slate-600 font-semibold px-4 py-2.5 rounded-xl transition text-sm">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </button>
-                    </div>
-
-                    <!-- Mode selector -->
-                    <div class="flex gap-2 w-full">
-                        <button class="pomodoro-mode flex-1 bg-violet-600/20 text-violet-400 text-xs font-semibold py-2 rounded-xl transition" data-minutes="25" data-label="Foco">
-                            25min
-                        </button>
-                        <button class="pomodoro-mode flex-1 bg-white/5 text-slate-400 text-xs font-semibold py-2 rounded-xl transition hover:bg-white/10" data-minutes="5" data-label="Pausa Curta">
-                            5min
-                        </button>
-                        <button class="pomodoro-mode flex-1 bg-white/5 text-slate-400 text-xs font-semibold py-2 rounded-xl transition hover:bg-white/10" data-minutes="15" data-label="Pausa Longa">
-                            15min
-                        </button>
-                    </div>
                 </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="mt-8 bg-gradient-to-r from-violet-50 to-cyan-50 dark:from-violet-500/10 dark:to-cyan-500/10 border border-violet-200 dark:border-violet-500/20 rounded-2xl p-6">
+                <h3 class="font-bold mb-2"><i class="fa-solid fa-lightbulb mr-2 text-amber-600 dark:text-amber-400"></i>Dica:</h3>
+                <p class="text-sm text-slate-600 dark:text-slate-300">Acesse a página de <strong>Organização</strong> para ver todas as tarefas do projeto, atribuir atividades e acompanhar o progresso de cada membro da equipe.</p>
             </div>
 
         </div>
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-init.js"></script>
     <script>
-        // ========== Auth Check ==========
-        const currentUser = JSON.parse(localStorage.getItem('tccflow_current_user'));
-        if (!currentUser) {
-            window.location.href = 'login.html';
-        }
-
-        // ========== UI Setup ==========
-        if (currentUser) {
-            document.getElementById('welcomeName').textContent = currentUser.name.split(' ')[0];
-            document.getElementById('sidebarUserName').textContent = currentUser.name;
-        }
-
-        const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('currentDate').textContent = now.toLocaleDateString('pt-BR', options);
-
-        // ========== Sidebar Toggle ==========
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            sidebarOverlay.classList.toggle('hidden');
-        });
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
-        });
-
-        // ========== Logout ==========
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('tccflow_current_user');
-            window.location.href = 'login.html';
-        });
-
-        // ========== Sessions Management ==========
-        const SESSIONS_KEY = 'tccflow_sessions';
-
-        function getSessions() {
-            return JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
-        }
-
-        function saveSessions(sessions) {
-            localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
-        }
-
-        function renderSessions() {
-            const sessions = getSessions().filter(s => s.userId === currentUser.id);
-            const list = document.getElementById('sessionsList');
-
-            const total = sessions.length;
-            const completed = sessions.filter(s => s.completed).length;
-            const pending = total - completed;
-
-            document.getElementById('totalSessions').textContent = total;
-            document.getElementById('completedSessions').textContent = completed;
-            document.getElementById('pendingSessions').textContent = pending;
-
-            if (total === 0) {
-                list.innerHTML = `
-                    <div class="text-center py-8 text-slate-500">
-                        <i class="fa-solid fa-inbox text-3xl mb-3 block"></i>
-                        <p class="text-sm">Nenhuma sessão registada. Adicione a primeira!</p>
-                    </div>`;
+        // Auth check
+        let currentUser = null;
+        auth.onAuthStateChanged(async user => {
+            if (!user) {
+                window.location.href = 'login.html';
                 return;
             }
+            currentUser = user;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
-            // Sort by date descending
-            sessions.sort((a, b) => new Date(b.date + 'T' + (b.time || '00:00')) - new Date(a.date + 'T' + (a.time || '00:00')));
+            if (isFirebaseConfigured()) {
+                // Load data from Firestore
+                try {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const projectId = userDoc.data().projectId;
+                        const projectDoc = await db.collection('projects').doc(projectId).get();
+                        if (projectDoc.exists) {
+                            const project = projectDoc.data();
+                            document.getElementById('projectInfo').innerHTML =
+                                `<strong>${project.name}</strong> • Código: <code class="bg-slate-100 dark:bg-white/5 px-2 py-1 rounded">${project.code}</code>`;
 
-            list.innerHTML = sessions.map(session => {
-                const statusClass = session.completed ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-                const statusText = session.completed ? 'Concluída' : 'Pendente';
-                const statusIcon = session.completed ? 'fa-check-circle' : 'fa-clock';
-                const lineThrough = session.completed ? 'line-through opacity-60' : '';
+                            // Load members
+                            document.getElementById('memberCount').textContent = project.members.length;
 
-                return `
-                <div class="glass rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 group">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-3 mb-1">
-                            <h3 class="text-sm font-semibold truncate ${lineThrough}">${escapeHtml(session.subject)}</h3>
-                            <span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-lg border ${statusClass}">
-                                <i class="fa-solid ${statusIcon} text-[10px]"></i> ${statusText}
-                            </span>
-                        </div>
-                        <p class="text-xs text-slate-400 truncate ${lineThrough}">${escapeHtml(session.topic)}</p>
-                        <p class="text-xs text-slate-500 mt-1">
-                            <i class="fa-regular fa-calendar mr-1"></i>${formatDate(session.date)}
-                            ${session.time ? '<i class="fa-regular fa-clock ml-2 mr-1"></i>' + session.time : ''}
-                        </p>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        ${!session.completed ? `
-                        <button onclick="toggleSession('${session.id}')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 text-xs font-medium px-3 py-1.5 rounded-lg transition" title="Marcar como concluída">
-                            <i class="fa-solid fa-check"></i>
-                        </button>` : `
-                        <button onclick="toggleSession('${session.id}')" class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 text-xs font-medium px-3 py-1.5 rounded-lg transition" title="Marcar como pendente">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </button>`}
-                        <button onclick="deleteSession('${session.id}')" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 text-xs font-medium px-3 py-1.5 rounded-lg transition" title="Eliminar">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
+                            // Load tasks for this user
+                            const tasksSnap = await db.collection('tasks')
+                                .where('projectId', '==', projectId)
+                                .where('assignedTo', '==', user.uid)
+                                .get();
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+                            document.getElementById('taskCount').textContent = tasksSnap.docs.length;
 
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            const d = new Date(dateStr + 'T00:00:00');
-            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-        }
+                            const completed = tasksSnap.docs.filter(t => t.data().status === 'done').length;
+                            document.getElementById('completedCount').textContent = completed;
+                            document.getElementById('progressPercent').textContent =
+                                tasksSnap.docs.length > 0 ? Math.round((completed / tasksSnap.docs.length) * 100) + '%' : '0%';
 
-        // Add session form toggle
-        const addBtn = document.getElementById('addSessionBtn');
-        const sessionForm = document.getElementById('sessionForm');
-        const cancelBtn = document.getElementById('cancelSession');
+                            // Display tasks
+                            if (tasksSnap.docs.length === 0) {
+                                document.getElementById('myTasksList').innerHTML = `
+                                    <div class="text-center py-8 text-slate-500">
+                                        <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
+                                        <p class="text-sm">Nenhuma tarefa atribuída</p>
+                                        <a href="equipe.html" class="text-sm text-violet-600 dark:text-violet-400 hover:underline mt-2 block">Entrar na equipe →</a>
+                                    </div>`;
+                            } else {
+                                document.getElementById('myTasksList').innerHTML = tasksSnap.docs.map(doc => {
+                                    const task = doc.data();
+                                    const status = task.status === 'done' ? '✓' : task.status === 'progress' ? '◐' : '○';
+                                    const statusColor = task.status === 'done' ? 'text-emerald-600 dark:text-emerald-400' :
+                                                        task.status === 'progress' ? 'text-cyan-600 dark:text-cyan-400' :
+                                                        'text-amber-600 dark:text-amber-400';
+                                    return `
+                                        <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5">
+                                            <span class="text-2xl ${statusColor} flex-shrink-0">${status}</span>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium">${task.title}</p>
+                                                <p class="text-xs text-slate-500">Prazo: ${new Date(task.dueDate).toLocaleDateString('pt-BR')}</p>
+                                            </div>
+                                        </div>`;
+                                }).join('');
+                            }
 
-        addBtn.addEventListener('click', () => {
-            sessionForm.classList.toggle('hidden');
-            if (!sessionForm.classList.contains('hidden')) {
-                document.getElementById('sessionDate').valueAsDate = new Date();
-            }
-        });
-        cancelBtn.addEventListener('click', () => sessionForm.classList.add('hidden'));
-
-        // Save session
-        document.getElementById('saveSession').addEventListener('click', () => {
-            const subject = document.getElementById('sessionSubject').value.trim();
-            const topic = document.getElementById('sessionTopic').value.trim();
-            const date = document.getElementById('sessionDate').value;
-            const time = document.getElementById('sessionTime').value;
-
-            if (!subject || !date) {
-                alert('Preencha pelo menos a disciplina e a data.');
-                return;
-            }
-
-            const sessions = getSessions();
-            sessions.push({
-                id: Date.now().toString(),
-                userId: currentUser.id,
-                subject,
-                topic,
-                date,
-                time,
-                completed: false,
-                createdAt: new Date().toISOString()
-            });
-
-            saveSessions(sessions);
-            sessionForm.classList.add('hidden');
-            document.getElementById('sessionSubject').value = '';
-            document.getElementById('sessionTopic').value = '';
-            document.getElementById('sessionTime').value = '';
-            renderSessions();
-        });
-
-        // Toggle session completion
-        window.toggleSession = function(id) {
-            const sessions = getSessions();
-            const session = sessions.find(s => s.id === id);
-            if (session) {
-                session.completed = !session.completed;
-                saveSessions(sessions);
-                renderSessions();
-            }
-        };
-
-        // Delete session
-        window.deleteSession = function(id) {
-            if (!confirm('Tem certeza que deseja eliminar esta sessão?')) return;
-            const sessions = getSessions().filter(s => s.id !== id);
-            saveSessions(sessions);
-            renderSessions();
-        };
-
-        // ========== Pomodoro Timer ==========
-        let pomodoroInterval = null;
-        let pomodoroSeconds = 25 * 60;
-        let pomodoroTotal = 25 * 60;
-        let pomodoroRunning = false;
-
-        const timerDisplay = document.getElementById('timerDisplay');
-        const timerLabel = document.getElementById('timerLabel');
-        const pomodoroRing = document.getElementById('pomodoroRing');
-        const startBtn = document.getElementById('pomodoroStart');
-        const pauseBtn = document.getElementById('pomodoroPause');
-        const resetBtn = document.getElementById('pomodoroReset');
-        const circumference = 2 * Math.PI * 90;
-
-        function updateTimerDisplay() {
-            const min = Math.floor(pomodoroSeconds / 60).toString().padStart(2, '0');
-            const sec = (pomodoroSeconds % 60).toString().padStart(2, '0');
-            timerDisplay.textContent = `${min}:${sec}`;
-
-            const progress = pomodoroSeconds / pomodoroTotal;
-            pomodoroRing.style.strokeDashoffset = circumference * (1 - progress);
-        }
-
-        function startPomodoro() {
-            pomodoroRunning = true;
-            startBtn.classList.add('hidden');
-            pauseBtn.classList.remove('hidden');
-
-            pomodoroInterval = setInterval(() => {
-                if (pomodoroSeconds <= 0) {
-                    clearInterval(pomodoroInterval);
-                    pomodoroRunning = false;
-                    startBtn.classList.remove('hidden');
-                    pauseBtn.classList.add('hidden');
-
-                    // Increment pomodoro count if it was a focus session
-                    if (pomodoroTotal === 25 * 60) {
-                        const count = parseInt(localStorage.getItem('tccflow_pomodoro_count') || '0') + 1;
-                        localStorage.setItem('tccflow_pomodoro_count', count.toString());
-                        document.getElementById('pomodoroCount').textContent = count;
+                            // Load team members
+                            const teamList = document.getElementById('teamList');
+                            if (project.members.length === 0) {
+                                teamList.innerHTML = '<p class="text-sm text-slate-500">Sem membros</p>';
+                            } else {
+                                teamList.innerHTML = '<p class="text-xs text-slate-500 mb-3">' + project.members.length + ' membro' + (project.members.length > 1 ? 's' : '') + '</p>';
+                            }
+                        }
                     }
-
-                    alert('Tempo esgotado!');
-                    return;
+                } catch (err) {
+                    console.log('Firebase not configured or error:', err.message);
+                    document.getElementById('projectInfo').innerHTML =
+                        '<span class="text-amber-600 dark:text-amber-400">⚠️ Configure Firebase em js/firebase-init.js para sincronizar dados</span>';
                 }
-                pomodoroSeconds--;
-                updateTimerDisplay();
-            }, 1000);
-        }
-
-        function pausePomodoro() {
-            clearInterval(pomodoroInterval);
-            pomodoroRunning = false;
-            startBtn.classList.remove('hidden');
-            pauseBtn.classList.add('hidden');
-        }
-
-        function resetPomodoro() {
-            clearInterval(pomodoroInterval);
-            pomodoroRunning = false;
-            pomodoroSeconds = pomodoroTotal;
-            startBtn.classList.remove('hidden');
-            pauseBtn.classList.add('hidden');
-            updateTimerDisplay();
-        }
-
-        startBtn.addEventListener('click', startPomodoro);
-        pauseBtn.addEventListener('click', pausePomodoro);
-        resetBtn.addEventListener('click', resetPomodoro);
-
-        // Mode buttons
-        document.querySelectorAll('.pomodoro-mode').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.pomodoro-mode').forEach(b => {
-                    b.classList.remove('bg-violet-600/20', 'text-violet-400');
-                    b.classList.add('bg-white/5', 'text-slate-400');
-                });
-                btn.classList.remove('bg-white/5', 'text-slate-400');
-                btn.classList.add('bg-violet-600/20', 'text-violet-400');
-
-                const minutes = parseInt(btn.dataset.minutes);
-                timerLabel.textContent = btn.dataset.label;
-                pomodoroTotal = minutes * 60;
-                pomodoroSeconds = pomodoroTotal;
-
-                if (minutes === 25) {
-                    pomodoroRing.style.stroke = '#8b5cf6';
-                } else if (minutes === 5) {
-                    pomodoroRing.style.stroke = '#06b6d4';
-                } else {
-                    pomodoroRing.style.stroke = '#8b5cf6';
-                }
-
-                clearInterval(pomodoroInterval);
-                pomodoroRunning = false;
-                startBtn.classList.remove('hidden');
-                pauseBtn.classList.add('hidden');
-                updateTimerDisplay();
-            });
+            } else {
+                document.getElementById('projectInfo').innerHTML =
+                    '<span class="text-amber-600 dark:text-amber-400">⚠️ Configure Firebase em js/firebase-init.js</span>';
+            }
         });
 
-        // ========== Init ==========
-        document.getElementById('pomodoroCount').textContent = localStorage.getItem('tccflow_pomodoro_count') || '0';
-        updateTimerDisplay();
-        renderSessions();
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
     </script>
 </body>
 </html>
