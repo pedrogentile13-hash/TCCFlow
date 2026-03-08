@@ -108,25 +108,28 @@
             try {
                 if (!isFirebaseConfigured()) throw { message: 'Firebase nao configurado. Edite js/firebase-init.js' };
 
-                // Create auth user
+                console.log('[TCCFlow] Passo 1: Criando usuario no Auth...');
                 const cred = await auth.createUserWithEmailAndPassword(email, password);
+                console.log('[TCCFlow] Passo 1 OK - UID:', cred.user.uid);
+
                 await cred.user.updateProfile({ displayName: name });
+                console.log('[TCCFlow] Passo 2: Nome atualizado');
 
                 let projectId = null;
 
                 if (projectCode) {
-                    // Try to join existing project
+                    console.log('[TCCFlow] Passo 3: Buscando projeto com codigo:', projectCode);
                     const snap = await db.collection('projects').where('code', '==', projectCode).get();
                     if (snap.empty) {
                         throw { message: 'Codigo de projeto nao encontrado: ' + projectCode };
                     }
                     projectId = snap.docs[0].id;
-                    // Add user to project members
                     await db.collection('projects').doc(projectId).update({
                         members: firebase.firestore.FieldValue.arrayUnion(cred.user.uid)
                     });
+                    console.log('[TCCFlow] Passo 3 OK - Entrou no projeto:', projectId);
                 } else {
-                    // Create new project
+                    console.log('[TCCFlow] Passo 3: Criando novo projeto...');
                     const code = generateCode();
                     const projectRef = await db.collection('projects').add({
                         name: 'Meu TCC',
@@ -136,25 +139,29 @@
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     projectId = projectRef.id;
+                    console.log('[TCCFlow] Passo 3 OK - Projeto criado:', projectId, 'Codigo:', code);
                 }
 
-                // Save user profile in Firestore
+                console.log('[TCCFlow] Passo 4: Salvando perfil no Firestore...');
                 await db.collection('users').doc(cred.user.uid).set({
                     name: name,
                     email: email,
                     projectId: projectId,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
+                console.log('[TCCFlow] Passo 4 OK - Perfil salvo!');
 
-                successMsg.textContent = 'Conta criada com sucesso! Redirecionando...';
+                successMsg.textContent = 'Conta criada com sucesso! Codigo do projeto gerado. Redirecionando...';
                 successMsg.classList.remove('hidden');
 
                 setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
             } catch (err) {
-                // If auth user was created but Firestore failed, we still have the user
+                console.error('[TCCFlow] ERRO:', err);
                 let msg = 'Erro ao criar conta.';
                 if (err.code === 'auth/email-already-in-use') msg = 'Este email ja esta em uso.';
                 else if (err.code === 'auth/weak-password') msg = 'Senha muito fraca. Use pelo menos 6 caracteres.';
+                else if (err.code === 'permission-denied' || (err.message && err.message.includes('permission'))) msg = 'Erro de permissao no Firestore. Verifique as Security Rules no Firebase Console.';
+                else if (err.code === 'not-found' || (err.message && err.message.includes('NOT_FOUND'))) msg = 'Firestore Database nao encontrado. Crie o banco no Firebase Console.';
                 else if (err.message) msg = err.message;
                 errorMsg.textContent = msg;
                 errorMsg.classList.remove('hidden');
