@@ -7,254 +7,225 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } }
-        }
-    </script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .glass-strong {
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .sidebar-link.active { background: rgba(139,92,246,0.15); color: #a78bfa; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
         .google-card:hover { transform: translateY(-2px); }
     </style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen antialiased">
+<body class="bg-white text-slate-900 min-h-screen antialiased">
 
-    <!-- Mobile header -->
-    <header class="lg:hidden fixed top-0 w-full z-50 glass">
-        <div class="flex items-center justify-between px-4 h-14">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-graduation-cap text-xs"></i>
+    <!-- Liquid Grass Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Organização</a>
+                    <a href="pesquisa.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Pesquisa</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Google</a>
                 </div>
-                <span class="text-sm font-bold">TCC<span class="text-violet-400">Flow</span></span>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-gear text-sm"></i>
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
             </div>
-            <button id="sidebarToggle" class="text-slate-300 hover:text-white">
-                <i class="fa-solid fa-bars text-lg"></i>
-            </button>
         </div>
-    </header>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-graduation-cap text-sm"></i>
-                </div>
-                <div>
-                    <span class="text-base font-bold block">TCC<span class="text-violet-400">Flow</span></span>
-                    <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
-                </div>
-            </div>
-            <nav class="space-y-1">
-                <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
-                </a>
-                <a href="pesquisa.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-flask w-5 text-center"></i> Hub de Pesquisa
-                </a>
-                <a href="calendario.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
-                </a>
-                <a href="google.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
-                    <i class="fa-brands fa-google w-5 text-center"></i> Google
-                </a>
-                <a href="admin.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-gear w-5 text-center"></i> Definições
-                </a>
-                <a href="debug.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-bug w-5 text-center"></i> Debug
-                </a>
-            </nav>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Organização</a>
+            <a href="pesquisa.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Pesquisa</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Google</a>
         </div>
-        <div class="absolute bottom-0 left-0 right-0 p-6">
-            <button id="logoutBtn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition">
-                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Sair
-            </button>
-        </div>
-    </aside>
-
-    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+    </nav>
 
     <!-- Main Content -->
-    <main class="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
-        <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
             <div class="mb-8">
-                <h1 class="text-2xl sm:text-3xl font-bold"><span class="gradient-text">Integrações Google</span></h1>
-                <p class="text-sm text-slate-400 mt-1">Conecte suas ferramentas do Google para potencializar o trabalho no TCC</p>
+                <h1 class="text-3xl font-bold">Integrações Google</h1>
+                <p class="text-slate-500 mt-1">Conecte suas ferramentas do Google para potencializar o trabalho no TCC</p>
             </div>
 
             <!-- Quick Actions -->
-            <div class="glass-strong rounded-3xl p-6 sm:p-8 mb-8">
-                <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-bolt mr-2 text-amber-400"></i>Ações Rápidas</h2>
-                <p class="text-xs text-slate-400 mb-6">Crie documentos e eventos diretamente do TCCFlow</p>
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-8 shadow-sm">
+                <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-bolt mr-2 text-amber-600"></i>Ações Rápidas</h2>
+                <p class="text-xs text-slate-500 mb-6">Crie documentos e eventos diretamente do TCCFlow</p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Create Google Doc -->
-                    <button id="createDocBtn" class="google-card glass rounded-2xl p-5 text-left transition group">
+                    <button id="createDocBtn" class="google-card bg-slate-50 border border-slate-200 rounded-xl p-5 text-left transition group">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-file-word text-blue-400 text-lg"></i>
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-file-word text-blue-600 text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold group-hover:text-white transition">Novo Documento</h3>
-                                <p class="text-xs text-slate-400">Cria um Google Docs em branco para seu TCC</p>
+                                <h3 class="text-sm font-bold group-hover:text-violet-600 transition">Novo Documento</h3>
+                                <p class="text-xs text-slate-500">Cria um Google Docs em branco para seu TCC</p>
                             </div>
                         </div>
                     </button>
 
-                    <!-- Create Google Sheet -->
-                    <button id="createSheetBtn" class="google-card glass rounded-2xl p-5 text-left transition group">
+                    <button id="createSheetBtn" class="google-card bg-slate-50 border border-slate-200 rounded-xl p-5 text-left transition group">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-table text-emerald-400 text-lg"></i>
+                            <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-table text-emerald-600 text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold group-hover:text-white transition">Nova Planilha</h3>
-                                <p class="text-xs text-slate-400">Google Sheets para dados e tabulações</p>
+                                <h3 class="text-sm font-bold group-hover:text-violet-600 transition">Nova Planilha</h3>
+                                <p class="text-xs text-slate-500">Google Sheets para dados e tabulações</p>
                             </div>
                         </div>
                     </button>
 
-                    <!-- Create Google Slides -->
-                    <button id="createSlidesBtn" class="google-card glass rounded-2xl p-5 text-left transition group">
+                    <button id="createSlidesBtn" class="google-card bg-slate-50 border border-slate-200 rounded-xl p-5 text-left transition group">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-display text-amber-400 text-lg"></i>
+                            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-display text-amber-600 text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold group-hover:text-white transition">Nova Apresentação</h3>
-                                <p class="text-xs text-slate-400">Google Slides para a defesa do TCC</p>
+                                <h3 class="text-sm font-bold group-hover:text-violet-600 transition">Nova Apresentação</h3>
+                                <p class="text-xs text-slate-500">Google Slides para a defesa do TCC</p>
                             </div>
                         </div>
                     </button>
 
-                    <!-- Create Calendar Event -->
-                    <button id="createEventBtn" class="google-card glass rounded-2xl p-5 text-left transition group">
+                    <button id="createEventBtn" class="google-card bg-slate-50 border border-slate-200 rounded-xl p-5 text-left transition group">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-violet-500/20 rounded-xl flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-calendar-plus text-violet-400 text-lg"></i>
+                            <div class="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-calendar-plus text-violet-600 text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold group-hover:text-white transition">Novo Evento</h3>
-                                <p class="text-xs text-slate-400">Agende reunião ou prazo no Google Calendar</p>
+                                <h3 class="text-sm font-bold group-hover:text-violet-600 transition">Novo Evento</h3>
+                                <p class="text-xs text-slate-500">Agende reunião ou prazo no Google Calendar</p>
                             </div>
                         </div>
                     </button>
                 </div>
             </div>
 
-            <!-- Calendar Event Form (hidden) -->
-            <div id="eventForm" class="hidden glass rounded-3xl p-6 mb-8">
-                <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-calendar-plus mr-2 text-violet-400"></i>Criar Evento no Google Calendar</h3>
+            <!-- Calendar Event Form -->
+            <div id="eventForm" class="hidden bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-calendar-plus mr-2 text-violet-600"></i>Criar Evento no Google Calendar</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Título do Evento</label>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Título do Evento</label>
                         <input type="text" id="eventTitle" placeholder="Ex: Reunião com orientador"
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Local (opcional)</label>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Local (opcional)</label>
                         <input type="text" id="eventLocation" placeholder="Ex: Sala 201, Escola..."
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Data e Hora Início</label>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Data e Hora Início</label>
                         <input type="datetime-local" id="eventStart"
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Data e Hora Fim</label>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Data e Hora Fim</label>
                         <input type="datetime-local" id="eventEnd"
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Descrição (opcional)</label>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Descrição (opcional)</label>
                         <textarea id="eventDetails" rows="2" placeholder="Detalhes do evento..."
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
                     </div>
                 </div>
                 <div class="flex gap-3">
-                    <button id="openCalendarEvent" class="bg-violet-600 hover:bg-violet-500 text-sm font-semibold px-5 py-2 rounded-xl transition">
+                    <button id="openCalendarEvent" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-5 py-2 rounded-xl transition">
                         <i class="fa-brands fa-google mr-1"></i> Abrir no Google Calendar
                     </button>
-                    <button id="cancelEvent" class="bg-slate-700 hover:bg-slate-600 text-sm font-semibold px-5 py-2 rounded-xl transition">
+                    <button id="cancelEvent" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold px-5 py-2 rounded-xl transition">
                         Cancelar
                     </button>
                 </div>
             </div>
 
             <!-- Saved Links -->
-            <div class="glass rounded-3xl p-6 sm:p-8 mb-8">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-8 shadow-sm">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2 class="text-lg font-bold"><i class="fa-solid fa-link mr-2 text-cyan-400"></i>Links Salvos</h2>
-                        <p class="text-xs text-slate-400 mt-1">Salve links do Google Drive, Docs, Sheets e outros</p>
+                        <h2 class="text-lg font-bold"><i class="fa-solid fa-link mr-2 text-cyan-600"></i>Links Salvos</h2>
+                        <p class="text-xs text-slate-500 mt-1">Salve links do Google Drive, Docs, Sheets e outros</p>
                     </div>
-                    <button id="addLinkBtn" class="bg-violet-600 hover:bg-violet-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                    <button id="addLinkBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-4 py-2 rounded-xl transition">
                         <i class="fa-solid fa-plus mr-1"></i> Novo Link
                     </button>
                 </div>
 
-                <!-- Add Link Form -->
-                <div id="linkForm" class="hidden glass rounded-2xl p-5 mb-6">
+                <div id="linkForm" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Nome</label>
+                            <label class="block text-xs font-medium text-slate-500 mb-1">Nome</label>
                             <input type="text" id="linkName" placeholder="Ex: TCC - Documento Principal"
-                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">URL</label>
+                            <label class="block text-xs font-medium text-slate-500 mb-1">URL</label>
                             <input type="url" id="linkUrl" placeholder="https://docs.google.com/..."
-                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Tipo</label>
+                            <label class="block text-xs font-medium text-slate-500 mb-1">Tipo</label>
                             <select id="linkType"
-                                class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                                <option value="docs" class="bg-slate-900">Google Docs</option>
-                                <option value="sheets" class="bg-slate-900">Google Sheets</option>
-                                <option value="slides" class="bg-slate-900">Google Slides</option>
-                                <option value="drive" class="bg-slate-900">Google Drive</option>
-                                <option value="calendar" class="bg-slate-900">Google Calendar</option>
-                                <option value="forms" class="bg-slate-900">Google Forms</option>
-                                <option value="other" class="bg-slate-900">Outro</option>
+                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                                <option value="docs">Google Docs</option>
+                                <option value="sheets">Google Sheets</option>
+                                <option value="slides">Google Slides</option>
+                                <option value="drive">Google Drive</option>
+                                <option value="calendar">Google Calendar</option>
+                                <option value="forms">Google Forms</option>
+                                <option value="other">Outro</option>
                             </select>
                         </div>
                     </div>
                     <div class="flex gap-3">
-                        <button id="saveLink" class="bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                        <button id="saveLink" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition">
                             <i class="fa-solid fa-check mr-1"></i> Salvar
                         </button>
-                        <button id="cancelLink" class="bg-slate-700 hover:bg-slate-600 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                        <button id="cancelLink" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold px-4 py-2 rounded-xl transition">
                             Cancelar
                         </button>
                     </div>
                 </div>
 
-                <!-- Links List -->
                 <div id="linksList" class="space-y-3">
-                    <div class="text-center py-8 text-slate-500">
+                    <div class="text-center py-8 text-slate-400">
                         <i class="fa-solid fa-link-slash text-2xl mb-2 block"></i>
                         <p class="text-sm">Nenhum link salvo. Adicione seus documentos do Google!</p>
                     </div>
@@ -262,42 +233,42 @@
             </div>
 
             <!-- Google Services Grid -->
-            <div class="glass rounded-3xl p-6 sm:p-8">
-                <h2 class="text-lg font-bold mb-2"><i class="fa-brands fa-google mr-2 text-violet-400"></i>Serviços Google</h2>
-                <p class="text-xs text-slate-400 mb-6">Acesse rapidamente os serviços que você mais usa</p>
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                <h2 class="text-lg font-bold mb-2"><i class="fa-brands fa-google mr-2 text-violet-600"></i>Serviços Google</h2>
+                <p class="text-xs text-slate-500 mb-6">Acesse rapidamente os serviços que você mais usa</p>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    <a href="https://drive.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
-                        <i class="fa-brands fa-google-drive text-2xl text-emerald-400 mb-2"></i>
-                        <p class="text-xs font-semibold">Drive</p>
+                    <a href="https://drive.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
+                        <i class="fa-brands fa-google-drive text-2xl text-emerald-600 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-700">Drive</p>
                     </a>
-                    <a href="https://docs.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
-                        <i class="fa-solid fa-file-word text-2xl text-blue-400 mb-2"></i>
-                        <p class="text-xs font-semibold">Docs</p>
+                    <a href="https://docs.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
+                        <i class="fa-solid fa-file-word text-2xl text-blue-600 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-700">Docs</p>
                     </a>
-                    <a href="https://sheets.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
-                        <i class="fa-solid fa-table text-2xl text-emerald-400 mb-2"></i>
-                        <p class="text-xs font-semibold">Sheets</p>
+                    <a href="https://sheets.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
+                        <i class="fa-solid fa-table text-2xl text-emerald-600 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-700">Sheets</p>
                     </a>
-                    <a href="https://slides.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
-                        <i class="fa-solid fa-display text-2xl text-amber-400 mb-2"></i>
-                        <p class="text-xs font-semibold">Slides</p>
+                    <a href="https://slides.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
+                        <i class="fa-solid fa-display text-2xl text-amber-600 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-700">Slides</p>
                     </a>
-                    <a href="https://calendar.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
-                        <i class="fa-solid fa-calendar text-2xl text-violet-400 mb-2"></i>
-                        <p class="text-xs font-semibold">Calendar</p>
+                    <a href="https://calendar.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
+                        <i class="fa-solid fa-calendar text-2xl text-violet-600 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-700">Calendar</p>
                     </a>
-                    <a href="https://forms.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
-                        <i class="fa-solid fa-square-poll-vertical text-2xl text-purple-400 mb-2"></i>
-                        <p class="text-xs font-semibold">Forms</p>
+                    <a href="https://forms.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
+                        <i class="fa-solid fa-square-poll-vertical text-2xl text-purple-600 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-700">Forms</p>
                     </a>
-                    <a href="https://scholar.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
-                        <i class="fa-solid fa-graduation-cap text-2xl text-cyan-400 mb-2"></i>
-                        <p class="text-xs font-semibold">Scholar</p>
+                    <a href="https://scholar.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
+                        <i class="fa-solid fa-graduation-cap text-2xl text-cyan-600 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-700">Scholar</p>
                     </a>
-                    <a href="https://meet.google.com" target="_blank" class="glass rounded-2xl p-4 text-center hover:bg-white/10 transition group">
-                        <i class="fa-solid fa-video text-2xl text-rose-400 mb-2"></i>
-                        <p class="text-xs font-semibold">Meet</p>
+                    <a href="https://meet.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
+                        <i class="fa-solid fa-video text-2xl text-rose-600 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-700">Meet</p>
                     </a>
                 </div>
             </div>
@@ -305,39 +276,38 @@
         </div>
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-init.js"></script>
     <script>
         // ========== Auth Check ==========
-        const currentUser = JSON.parse(localStorage.getItem('tccflow_current_user'));
-        if (!currentUser) window.location.href = 'login.html';
+        let currentUserId = null;
 
-        if (currentUser) {
-            document.getElementById('sidebarUserName').textContent = currentUser.name;
-        }
+        auth.onAuthStateChanged(user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUserId = user.uid;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+            renderLinks();
+        });
 
-        // ========== Sidebar ==========
-        const sidebar = document.getElementById('sidebar');
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        // ========== Mobile Nav ==========
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
         });
-        document.getElementById('sidebarOverlay').addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-        });
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('tccflow_current_user');
-            window.location.href = 'login.html';
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
         });
 
         // ========== Quick Actions ==========
         document.getElementById('createDocBtn').addEventListener('click', () => {
             window.open('https://docs.google.com/document/create', '_blank');
         });
-
         document.getElementById('createSheetBtn').addEventListener('click', () => {
             window.open('https://sheets.google.com/create', '_blank');
         });
-
         document.getElementById('createSlidesBtn').addEventListener('click', () => {
             window.open('https://slides.google.com/create', '_blank');
         });
@@ -354,7 +324,6 @@
             const title = encodeURIComponent(document.getElementById('eventTitle').value || 'TCC');
             const location = encodeURIComponent(document.getElementById('eventLocation').value || '');
             const details = encodeURIComponent(document.getElementById('eventDetails').value || '');
-
             const startInput = document.getElementById('eventStart').value;
             const endInput = document.getElementById('eventEnd').value;
 
@@ -378,21 +347,21 @@
         const LINKS_KEY = 'tccflow_google_links';
 
         const linkIcons = {
-            docs: { icon: 'fa-file-word', color: 'text-blue-400', bg: 'bg-blue-500/20' },
-            sheets: { icon: 'fa-table', color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-            slides: { icon: 'fa-display', color: 'text-amber-400', bg: 'bg-amber-500/20' },
-            drive: { icon: 'fa-hard-drive', color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-            calendar: { icon: 'fa-calendar', color: 'text-violet-400', bg: 'bg-violet-500/20' },
-            forms: { icon: 'fa-square-poll-vertical', color: 'text-purple-400', bg: 'bg-purple-500/20' },
-            other: { icon: 'fa-link', color: 'text-cyan-400', bg: 'bg-cyan-500/20' }
+            docs: { icon: 'fa-file-word', color: 'text-blue-600', bg: 'bg-blue-100' },
+            sheets: { icon: 'fa-table', color: 'text-emerald-600', bg: 'bg-emerald-100' },
+            slides: { icon: 'fa-display', color: 'text-amber-600', bg: 'bg-amber-100' },
+            drive: { icon: 'fa-hard-drive', color: 'text-emerald-600', bg: 'bg-emerald-100' },
+            calendar: { icon: 'fa-calendar', color: 'text-violet-600', bg: 'bg-violet-100' },
+            forms: { icon: 'fa-square-poll-vertical', color: 'text-purple-600', bg: 'bg-purple-100' },
+            other: { icon: 'fa-link', color: 'text-cyan-600', bg: 'bg-cyan-100' }
         };
 
         function getLinks() {
-            return JSON.parse(localStorage.getItem(LINKS_KEY) || '[]').filter(l => l.userId === currentUser.id);
+            return JSON.parse(localStorage.getItem(LINKS_KEY) || '[]').filter(l => l.userId === currentUserId);
         }
 
         function saveLinks(links) {
-            const allLinks = JSON.parse(localStorage.getItem(LINKS_KEY) || '[]').filter(l => l.userId !== currentUser.id);
+            const allLinks = JSON.parse(localStorage.getItem(LINKS_KEY) || '[]').filter(l => l.userId !== currentUserId);
             localStorage.setItem(LINKS_KEY, JSON.stringify([...allLinks, ...links]));
         }
 
@@ -407,7 +376,7 @@
             const list = document.getElementById('linksList');
 
             if (links.length === 0) {
-                list.innerHTML = `<div class="text-center py-8 text-slate-500">
+                list.innerHTML = `<div class="text-center py-8 text-slate-400">
                     <i class="fa-solid fa-link-slash text-2xl mb-2 block"></i>
                     <p class="text-sm">Nenhum link salvo. Adicione seus documentos do Google!</p>
                 </div>`;
@@ -417,21 +386,21 @@
             list.innerHTML = links.map(link => {
                 const icon = linkIcons[link.type] || linkIcons.other;
                 return `
-                <div class="glass rounded-2xl p-4 flex items-center justify-between gap-3 group">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-3 group">
                     <div class="flex items-center gap-4 flex-1 min-w-0">
                         <div class="w-10 h-10 ${icon.bg} rounded-xl flex items-center justify-center shrink-0">
                             <i class="fa-solid ${icon.icon} ${icon.color}"></i>
                         </div>
                         <div class="min-w-0">
                             <h4 class="text-sm font-semibold truncate">${escapeHtml(link.name)}</h4>
-                            <p class="text-xs text-slate-500 truncate">${escapeHtml(link.url)}</p>
+                            <p class="text-xs text-slate-400 truncate">${escapeHtml(link.url)}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
-                        <a href="${escapeHtml(link.url)}" target="_blank" class="bg-violet-600/20 hover:bg-violet-600/30 text-violet-400 text-xs font-medium px-3 py-1.5 rounded-lg transition">
+                        <a href="${escapeHtml(link.url)}" target="_blank" class="bg-violet-100 hover:bg-violet-200 text-violet-600 text-xs font-medium px-3 py-1.5 rounded-lg transition">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
-                        <button onclick="deleteLink('${link.id}')" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 text-xs font-medium px-3 py-1.5 rounded-lg transition opacity-0 group-hover:opacity-100">
+                        <button onclick="deleteLink('${link.id}')" class="bg-red-100 hover:bg-red-200 text-red-600 text-xs font-medium px-3 py-1.5 rounded-lg transition opacity-0 group-hover:opacity-100">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>
@@ -439,7 +408,6 @@
             }).join('');
         }
 
-        // Add link form
         document.getElementById('addLinkBtn').addEventListener('click', () => {
             document.getElementById('linkForm').classList.toggle('hidden');
         });
@@ -451,29 +419,19 @@
             const name = document.getElementById('linkName').value.trim();
             const url = document.getElementById('linkUrl').value.trim();
             const type = document.getElementById('linkType').value;
-
-            if (!name || !url) {
-                alert('Preencha o nome e a URL.');
-                return;
-            }
+            if (!name || !url) { alert('Preencha o nome e a URL.'); return; }
 
             const links = getLinks();
             links.push({
-                id: Date.now().toString(),
-                userId: currentUser.id,
-                name,
-                url,
-                type,
-                createdAt: new Date().toISOString()
+                id: Date.now().toString(), userId: currentUserId,
+                name, url, type, createdAt: new Date().toISOString()
             });
-
             saveLinks(links);
 
             document.getElementById('linkName').value = '';
             document.getElementById('linkUrl').value = '';
             document.getElementById('linkType').value = 'docs';
             document.getElementById('linkForm').classList.add('hidden');
-
             renderLinks();
         });
 
@@ -483,9 +441,6 @@
             saveLinks(links);
             renderLinks();
         };
-
-        // ========== Init ==========
-        renderLinks();
     </script>
 </body>
 </html>

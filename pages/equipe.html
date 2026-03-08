@@ -7,57 +7,84 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+    </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen antialiased">
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <!-- Liquid Grass Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10">
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.html" class="flex items-center gap-2.5">
                     <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
                         <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
                     </div>
-                    <span class="text-lg font-bold">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
-                <div class="hidden lg:flex items-center gap-1">
-                    <a href="dashboard.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Dashboard</a>
-                    <a href="organizacao.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Organização</a>
-                    <a href="pesquisa.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Pesquisa</a>
-                    <a href="calendario.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Calendário</a>
-                    <a href="equipe.html" class="px-3 py-2 rounded-lg text-sm font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10">Equipe</a>
-                    <a href="google.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Google</a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Organização</a>
+                    <a href="pesquisa.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Pesquisa</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Equipe</a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500 dark:text-slate-400" id="userName"></span>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-gear text-sm"></i>
                     </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition">
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
                         <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
                     </button>
                 </div>
             </div>
         </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Organização</a>
+            <a href="pesquisa.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Pesquisa</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
+        </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-16 min-h-screen pb-12">
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-            <!-- Header -->
             <div class="mb-8">
                 <h1 class="text-3xl font-bold mb-2">Gerenciar Equipe</h1>
-                <p class="text-slate-500 dark:text-slate-400">Invite membros e organize seu grupo de TCC</p>
+                <p class="text-slate-500">Convide membros e organize seu grupo de TCC</p>
             </div>
 
             <!-- Add Member Card -->
-            <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 mb-8 shadow-sm">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
                 <h2 class="text-lg font-bold mb-4">Convidar Membro</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Compartilhe este código com seu grupo para que entrem no projeto:</p>
-                <div class="flex items-center gap-3 p-4 bg-violet-50 dark:bg-violet-500/10 rounded-xl border border-violet-200 dark:border-violet-500/20">
-                    <code class="text-lg font-bold text-violet-700 dark:text-violet-300 flex-1" id="projectCode">Carregando...</code>
+                <p class="text-sm text-slate-500 mb-4">Compartilhe este código com seu grupo para que entrem no projeto:</p>
+                <div class="flex items-center gap-3 p-4 bg-violet-50 rounded-xl border border-violet-200">
+                    <code class="text-lg font-bold text-violet-700 flex-1 font-mono" id="projectCode">Carregando...</code>
                     <button onclick="copyCode()" class="bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                         <i class="fa-solid fa-copy mr-1"></i>Copiar
                     </button>
@@ -65,10 +92,10 @@
             </div>
 
             <!-- Team Members -->
-            <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                 <h2 class="text-lg font-bold mb-6">Membros da Equipe</h2>
                 <div id="membersList" class="space-y-3">
-                    <div class="text-center py-12 text-slate-500">
+                    <div class="text-center py-12 text-slate-400">
                         <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i>
                         <p>Carregando membros...</p>
                     </div>
@@ -86,11 +113,13 @@
         let currentUser = null;
         let projectId = null;
 
+        // Mobile Nav
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
         auth.onAuthStateChanged(async user => {
-            if (!user) {
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!user) { window.location.href = 'login.html'; return; }
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
@@ -100,12 +129,27 @@
                     if (userDoc.exists) {
                         projectId = userDoc.data().projectId;
                         const projectDoc = await db.collection('projects').doc(projectId).get();
-                        const project = projectDoc.data();
-                        document.getElementById('projectCode').textContent = project.code;
-                        loadMembers();
+                        if (projectDoc.exists) {
+                            const project = projectDoc.data();
+                            document.getElementById('projectCode').textContent = project.code;
+                            loadMembers(project);
+                        }
+                    } else {
+                        document.getElementById('projectCode').textContent = 'Sem projeto';
+                        document.getElementById('membersList').innerHTML = `
+                            <div class="text-center py-8 text-slate-400">
+                                <i class="fa-solid fa-circle-exclamation text-2xl mb-2 block"></i>
+                                <p class="text-sm">Você ainda não está em um projeto.</p>
+                                <p class="text-xs text-slate-400 mt-1">Crie uma conta com um código de projeto para entrar em uma equipe.</p>
+                            </div>`;
                     }
                 } catch (err) {
                     console.log('Error:', err.message);
+                    document.getElementById('membersList').innerHTML = `
+                        <div class="text-center py-8 text-red-500">
+                            <i class="fa-solid fa-circle-exclamation text-2xl mb-2 block"></i>
+                            <p class="text-sm">Erro ao carregar equipe: ${err.message}</p>
+                        </div>`;
                 }
             }
         });
@@ -117,54 +161,41 @@
             });
         }
 
-        async function loadMembers() {
-            if (!projectId || !isFirebaseConfigured()) return;
+        async function loadMembers(project) {
+            const membersList = document.getElementById('membersList');
 
-            try {
-                const projectDoc = await db.collection('projects').doc(projectId).get();
-                const project = projectDoc.data();
-                const membersList = document.getElementById('membersList');
+            if (!project.members || project.members.length === 0) {
+                membersList.innerHTML = '<p class="text-center text-slate-400 py-6">Nenhum membro ainda</p>';
+                return;
+            }
 
-                if (project.members.length === 0) {
-                    membersList.innerHTML = '<p class="text-center text-slate-500">Nenhum membro ainda</p>';
-                    return;
-                }
+            membersList.innerHTML = '';
 
-                const html = project.members.map(uid => {
-                    return `
-                        <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200 dark:border-white/5">
+            for (const uid of project.members) {
+                try {
+                    const userDoc = await db.collection('users').doc(uid).get();
+                    const data = userDoc.exists ? userDoc.data() : { name: 'Desconhecido', email: '' };
+                    const initial = (data.name || '?').charAt(0).toUpperCase();
+                    const isMe = uid === currentUser.uid;
+
+                    membersList.innerHTML += `
+                        <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border border-slate-200">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                    <i class="fa-solid fa-user text-xs"></i>
+                                    ${initial}
                                 </div>
                                 <div>
-                                    <p class="font-medium" id="name-${uid}">Carregando...</p>
-                                    <p class="text-xs text-slate-500" id="email-${uid}"></p>
+                                    <p class="font-medium">${data.name || 'Sem nome'}</p>
+                                    <p class="text-xs text-slate-400">${data.email || ''}</p>
                                 </div>
                             </div>
-                            <span class="text-xs px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300">
-                                ${uid === currentUser.uid ? 'Você' : 'Membro'}
+                            <span class="text-xs px-3 py-1 rounded-full ${isMe ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-600'}">
+                                ${isMe ? 'Você' : 'Membro'}
                             </span>
                         </div>`;
-                }).join('');
-
-                membersList.innerHTML = html;
-
-                // Load user names
-                for (const uid of project.members) {
-                    try {
-                        const userDoc = await db.collection('users').doc(uid).get();
-                        if (userDoc.exists) {
-                            const data = userDoc.data();
-                            document.getElementById(`name-${uid}`).textContent = data.name || 'Sem nome';
-                            document.getElementById(`email-${uid}`).textContent = data.email;
-                        }
-                    } catch (err) {
-                        console.log('Error loading user:', err);
-                    }
+                } catch (err) {
+                    console.log('Error loading user:', err);
                 }
-            } catch (err) {
-                console.log('Error loading members:', err);
             }
         }
 

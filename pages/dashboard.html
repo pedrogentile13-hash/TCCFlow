@@ -7,78 +7,105 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+    </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen antialiased">
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <!-- Liquid Grass Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10">
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.html" class="flex items-center gap-2.5">
                     <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
                         <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
                     </div>
-                    <span class="text-lg font-bold">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
-                <div class="hidden lg:flex items-center gap-1">
-                    <a href="dashboard.html" class="px-3 py-2 rounded-lg text-sm font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10">Dashboard</a>
-                    <a href="organizacao.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Organização</a>
-                    <a href="pesquisa.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Pesquisa</a>
-                    <a href="calendario.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Calendário</a>
-                    <a href="equipe.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Equipe</a>
-                    <a href="google.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Google</a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Dashboard</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Organização</a>
+                    <a href="pesquisa.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Pesquisa</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500 dark:text-slate-400" id="userName"></span>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-gear text-sm"></i>
                     </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition">
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
                         <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
                     </button>
                 </div>
             </div>
         </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Dashboard</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Organização</a>
+            <a href="pesquisa.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Pesquisa</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
+        </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-16 min-h-screen pb-12">
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-            <!-- Header -->
             <div class="mb-8">
-                <h1 class="text-3xl font-bold mb-2">Bem-vindo ao seu TCC! 👋</h1>
-                <p class="text-slate-500 dark:text-slate-400" id="projectInfo">Carregando...</p>
+                <h1 class="text-3xl font-bold mb-2">Bem-vindo ao seu TCC!</h1>
+                <p class="text-slate-500" id="projectInfo">Carregando...</p>
             </div>
 
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500 dark:text-slate-400">Membros da Equipe</span>
-                        <i class="fa-solid fa-users text-violet-600 dark:text-violet-400 text-lg"></i>
+                        <span class="text-sm text-slate-500">Membros da Equipe</span>
+                        <i class="fa-solid fa-users text-violet-600 text-lg"></i>
                     </div>
                     <div class="text-3xl font-bold" id="memberCount">0</div>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500 dark:text-slate-400">Tarefas Atribuídas</span>
-                        <i class="fa-solid fa-list-check text-cyan-600 dark:text-cyan-400 text-lg"></i>
+                        <span class="text-sm text-slate-500">Tarefas Atribuídas</span>
+                        <i class="fa-solid fa-list-check text-cyan-600 text-lg"></i>
                     </div>
                     <div class="text-3xl font-bold" id="taskCount">0</div>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500 dark:text-slate-400">Concluídas</span>
-                        <i class="fa-solid fa-check-circle text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                        <span class="text-sm text-slate-500">Concluídas</span>
+                        <i class="fa-solid fa-check-circle text-emerald-600 text-lg"></i>
                     </div>
                     <div class="text-3xl font-bold" id="completedCount">0</div>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500 dark:text-slate-400">Progresso</span>
-                        <i class="fa-solid fa-chart-pie text-amber-600 dark:text-amber-400 text-lg"></i>
+                        <span class="text-sm text-slate-500">Progresso</span>
+                        <i class="fa-solid fa-chart-pie text-amber-600 text-lg"></i>
                     </div>
                     <div class="text-3xl font-bold" id="progressPercent">0%</div>
                 </div>
@@ -86,19 +113,17 @@
 
             <!-- Content Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                <!-- Minhas Tarefas -->
                 <div class="lg:col-span-2">
-                    <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                         <div class="flex items-center justify-between mb-6">
                             <h2 class="text-lg font-bold flex items-center gap-2">
-                                <i class="fa-solid fa-circle-check text-violet-600 dark:text-violet-400"></i>
+                                <i class="fa-solid fa-circle-check text-violet-600"></i>
                                 Minhas Tarefas
                             </h2>
-                            <a href="organizacao.html" class="text-sm text-violet-600 dark:text-violet-400 hover:underline">Ver Todas</a>
+                            <a href="organizacao.html" class="text-sm text-violet-600 hover:underline">Ver Todas</a>
                         </div>
                         <div id="myTasksList" class="space-y-3">
-                            <div class="text-center py-8 text-slate-500">
+                            <div class="text-center py-8 text-slate-400">
                                 <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
                                 <p class="text-sm">Nenhuma tarefa atribuída</p>
                             </div>
@@ -106,27 +131,25 @@
                     </div>
                 </div>
 
-                <!-- Equipe -->
                 <div>
-                    <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                         <div class="flex items-center justify-between mb-6">
                             <h2 class="text-lg font-bold flex items-center gap-2">
-                                <i class="fa-solid fa-people-group text-cyan-600 dark:text-cyan-400"></i>
+                                <i class="fa-solid fa-people-group text-cyan-600"></i>
                                 Equipe
                             </h2>
-                            <a href="equipe.html" class="text-sm text-violet-600 dark:text-violet-400 hover:underline">Gerenciar</a>
+                            <a href="equipe.html" class="text-sm text-violet-600 hover:underline">Gerenciar</a>
                         </div>
                         <div id="teamList" class="space-y-2">
-                            <div class="text-center py-6 text-slate-500 text-sm">Carregando...</div>
+                            <div class="text-center py-6 text-slate-400 text-sm">Carregando...</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Info Box -->
-            <div class="mt-8 bg-gradient-to-r from-violet-50 to-cyan-50 dark:from-violet-500/10 dark:to-cyan-500/10 border border-violet-200 dark:border-violet-500/20 rounded-2xl p-6">
-                <h3 class="font-bold mb-2"><i class="fa-solid fa-lightbulb mr-2 text-amber-600 dark:text-amber-400"></i>Dica:</h3>
-                <p class="text-sm text-slate-600 dark:text-slate-300">Acesse a página de <strong>Organização</strong> para ver todas as tarefas do projeto, atribuir atividades e acompanhar o progresso de cada membro da equipe.</p>
+            <div class="mt-8 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6">
+                <h3 class="font-bold mb-2"><i class="fa-solid fa-lightbulb mr-2 text-amber-600"></i>Dica:</h3>
+                <p class="text-sm text-slate-600">Acesse a página de <strong>Organização</strong> para ver todas as tarefas do projeto, atribuir atividades e acompanhar o progresso de cada membro da equipe.</p>
             </div>
 
         </div>
@@ -137,18 +160,19 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-init.js"></script>
     <script>
-        // Auth check
         let currentUser = null;
+
+        // Mobile Nav
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
         auth.onAuthStateChanged(async user => {
-            if (!user) {
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!user) { window.location.href = 'login.html'; return; }
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
             if (isFirebaseConfigured()) {
-                // Load data from Firestore
                 try {
                     const userDoc = await db.collection('users').doc(user.uid).get();
                     if (userDoc.exists) {
@@ -157,45 +181,40 @@
                         if (projectDoc.exists) {
                             const project = projectDoc.data();
                             document.getElementById('projectInfo').innerHTML =
-                                `<strong>${project.name}</strong> • Código: <code class="bg-slate-100 dark:bg-white/5 px-2 py-1 rounded">${project.code}</code>`;
+                                `<strong>${project.name}</strong> &bull; Código: <code class="bg-slate-100 px-2 py-1 rounded text-violet-600 font-mono">${project.code}</code>`;
 
-                            // Load members
                             document.getElementById('memberCount').textContent = project.members.length;
 
-                            // Load tasks for this user
                             const tasksSnap = await db.collection('tasks')
                                 .where('projectId', '==', projectId)
                                 .where('assignedTo', '==', user.uid)
                                 .get();
 
                             document.getElementById('taskCount').textContent = tasksSnap.docs.length;
-
                             const completed = tasksSnap.docs.filter(t => t.data().status === 'done').length;
                             document.getElementById('completedCount').textContent = completed;
                             document.getElementById('progressPercent').textContent =
                                 tasksSnap.docs.length > 0 ? Math.round((completed / tasksSnap.docs.length) * 100) + '%' : '0%';
 
-                            // Display tasks
                             if (tasksSnap.docs.length === 0) {
                                 document.getElementById('myTasksList').innerHTML = `
-                                    <div class="text-center py-8 text-slate-500">
+                                    <div class="text-center py-8 text-slate-400">
                                         <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
                                         <p class="text-sm">Nenhuma tarefa atribuída</p>
-                                        <a href="equipe.html" class="text-sm text-violet-600 dark:text-violet-400 hover:underline mt-2 block">Entrar na equipe →</a>
+                                        <a href="equipe.html" class="text-sm text-violet-600 hover:underline mt-2 block">Entrar na equipe</a>
                                     </div>`;
                             } else {
                                 document.getElementById('myTasksList').innerHTML = tasksSnap.docs.map(doc => {
                                     const task = doc.data();
-                                    const status = task.status === 'done' ? '✓' : task.status === 'progress' ? '◐' : '○';
-                                    const statusColor = task.status === 'done' ? 'text-emerald-600 dark:text-emerald-400' :
-                                                        task.status === 'progress' ? 'text-cyan-600 dark:text-cyan-400' :
-                                                        'text-amber-600 dark:text-amber-400';
+                                    const status = task.status === 'done' ? 'check' : task.status === 'progress' ? 'spinner' : 'circle';
+                                    const statusColor = task.status === 'done' ? 'text-emerald-600' :
+                                                        task.status === 'progress' ? 'text-cyan-600' : 'text-amber-600';
                                     return `
-                                        <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5">
-                                            <span class="text-2xl ${statusColor} flex-shrink-0">${status}</span>
+                                        <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50">
+                                            <i class="fa-solid fa-${status} ${statusColor} mt-0.5"></i>
                                             <div class="flex-1 min-w-0">
                                                 <p class="text-sm font-medium">${task.title}</p>
-                                                <p class="text-xs text-slate-500">Prazo: ${new Date(task.dueDate).toLocaleDateString('pt-BR')}</p>
+                                                <p class="text-xs text-slate-400">Prazo: ${new Date(task.dueDate).toLocaleDateString('pt-BR')}</p>
                                             </div>
                                         </div>`;
                                 }).join('');
@@ -204,20 +223,38 @@
                             // Load team members
                             const teamList = document.getElementById('teamList');
                             if (project.members.length === 0) {
-                                teamList.innerHTML = '<p class="text-sm text-slate-500">Sem membros</p>';
+                                teamList.innerHTML = '<p class="text-sm text-slate-400">Sem membros</p>';
                             } else {
-                                teamList.innerHTML = '<p class="text-xs text-slate-500 mb-3">' + project.members.length + ' membro' + (project.members.length > 1 ? 's' : '') + '</p>';
+                                teamList.innerHTML = '';
+                                for (const uid of project.members) {
+                                    try {
+                                        const memberDoc = await db.collection('users').doc(uid).get();
+                                        if (memberDoc.exists) {
+                                            const data = memberDoc.data();
+                                            teamList.innerHTML += `
+                                                <div class="flex items-center gap-3 p-2 rounded-lg">
+                                                    <div class="w-8 h-8 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                                        ${(data.name || '?').charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm font-medium">${data.name || 'Sem nome'}</p>
+                                                        <p class="text-xs text-slate-400">${uid === user.uid ? 'Você' : 'Membro'}</p>
+                                                    </div>
+                                                </div>`;
+                                        }
+                                    } catch (err) { console.log('Error loading member:', err); }
+                                }
                             }
                         }
                     }
                 } catch (err) {
-                    console.log('Firebase not configured or error:', err.message);
+                    console.log('Firebase error:', err.message);
                     document.getElementById('projectInfo').innerHTML =
-                        '<span class="text-amber-600 dark:text-amber-400">⚠️ Configure Firebase em js/firebase-init.js para sincronizar dados</span>';
+                        '<span class="text-amber-600">Configure Firebase em js/firebase-init.js para sincronizar dados</span>';
                 }
             } else {
                 document.getElementById('projectInfo').innerHTML =
-                    '<span class="text-amber-600 dark:text-amber-400">⚠️ Configure Firebase em js/firebase-init.js</span>';
+                    '<span class="text-amber-600">Configure Firebase em js/firebase-init.js</span>';
             }
         });
 

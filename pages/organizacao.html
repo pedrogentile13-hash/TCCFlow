@@ -7,50 +7,77 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+    </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen antialiased">
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <!-- Liquid Grass Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10">
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.html" class="flex items-center gap-2.5">
                     <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
                         <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
                     </div>
-                    <span class="text-lg font-bold">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
-                <div class="hidden lg:flex items-center gap-1">
-                    <a href="dashboard.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Dashboard</a>
-                    <a href="organizacao.html" class="px-3 py-2 rounded-lg text-sm font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10">Organização</a>
-                    <a href="pesquisa.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Pesquisa</a>
-                    <a href="calendario.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Calendário</a>
-                    <a href="equipe.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Equipe</a>
-                    <a href="google.html" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">Google</a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Organização</a>
+                    <a href="pesquisa.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Pesquisa</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500 dark:text-slate-400" id="userName"></span>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-gear text-sm"></i>
                     </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition">
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
                         <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
                     </button>
                 </div>
             </div>
         </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Organização</a>
+            <a href="pesquisa.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Pesquisa</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
+        </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-16 min-h-screen pb-12">
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-            <!-- Header -->
             <div class="flex items-center justify-between mb-8">
                 <div>
                     <h1 class="text-3xl font-bold mb-2">Organização do Projeto</h1>
-                    <p class="text-slate-500 dark:text-slate-400">Tarefas, atribuições e progresso do TCC</p>
+                    <p class="text-slate-500">Tarefas, atribuições e progresso do TCC</p>
                 </div>
                 <button id="addTaskBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-violet-500/25 transition">
                     <i class="fa-solid fa-plus mr-2"></i>Nova Tarefa
@@ -59,81 +86,78 @@
 
             <!-- Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
-                    <div class="text-sm text-slate-500 dark:text-slate-400 mb-1">Total de Tarefas</div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="text-sm text-slate-500 mb-1">Total de Tarefas</div>
                     <div class="text-3xl font-bold" id="totalTasks">0</div>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
-                    <div class="text-sm text-slate-500 dark:text-slate-400 mb-1">Concluídas</div>
-                    <div class="text-3xl font-bold text-emerald-600 dark:text-emerald-400" id="completedTasks">0</div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="text-sm text-slate-500 mb-1">Concluídas</div>
+                    <div class="text-3xl font-bold text-emerald-600" id="completedTasks">0</div>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
-                    <div class="text-sm text-slate-500 dark:text-slate-400 mb-1">Progresso</div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="text-sm text-slate-500 mb-1">Progresso</div>
                     <div class="text-3xl font-bold" id="progressBar">0%</div>
                 </div>
             </div>
 
             <!-- Tasks By Status -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- To Do -->
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <h2 class="font-bold mb-4 flex items-center gap-2">
                         <span class="w-3 h-3 bg-amber-500 rounded-full"></span>
                         A Fazer
                     </h2>
                     <div id="todoTasks" class="space-y-2">
-                        <div class="text-center py-6 text-slate-500 text-sm">Carregando...</div>
+                        <div class="text-center py-6 text-slate-400 text-sm">Carregando...</div>
                     </div>
                 </div>
 
-                <!-- In Progress -->
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <h2 class="font-bold mb-4 flex items-center gap-2">
                         <span class="w-3 h-3 bg-cyan-500 rounded-full"></span>
                         Em Andamento
                     </h2>
                     <div id="progressTasks" class="space-y-2">
-                        <div class="text-center py-6 text-slate-500 text-sm">Carregando...</div>
+                        <div class="text-center py-6 text-slate-400 text-sm">Carregando...</div>
                     </div>
                 </div>
 
-                <!-- Done -->
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <h2 class="font-bold mb-4 flex items-center gap-2">
                         <span class="w-3 h-3 bg-emerald-500 rounded-full"></span>
                         Concluído
                     </h2>
                     <div id="doneTasks" class="space-y-2">
-                        <div class="text-center py-6 text-slate-500 text-sm">Carregando...</div>
+                        <div class="text-center py-6 text-slate-400 text-sm">Carregando...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Add Task Modal (hidden) -->
+            <!-- Add Task Modal -->
             <div id="taskModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md w-full">
+                <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
                     <h2 class="text-xl font-bold mb-4">Nova Tarefa</h2>
                     <form id="taskForm" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Título</label>
                             <input type="text" id="taskTitle" required placeholder="Descrição da tarefa"
-                                class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Atribuído a</label>
                             <select id="taskAssignee" required
-                                class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                                 <option value="">Selecione um membro...</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Prazo</label>
                             <input type="date" id="taskDueDate" required
-                                class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                         </div>
                         <div class="flex gap-3">
                             <button type="submit" class="flex-1 bg-violet-600 hover:bg-violet-500 text-white font-medium py-2 rounded-lg transition">Criar</button>
-                            <button type="button" onclick="closeTaskModal()" class="flex-1 bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 font-medium py-2 rounded-lg transition">Cancelar</button>
+                            <button type="button" onclick="closeTaskModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 font-medium py-2 rounded-lg transition">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -151,11 +175,13 @@
         let projectId = null;
         let projectMembers = [];
 
+        // Mobile Nav
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
         auth.onAuthStateChanged(async user => {
-            if (!user) {
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!user) { window.location.href = 'login.html'; return; }
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
@@ -176,12 +202,11 @@
             if (!projectId || !isFirebaseConfigured()) return;
 
             try {
-                // Load project members
                 const projectDoc = await db.collection('projects').doc(projectId).get();
                 projectMembers = projectDoc.data().members || [];
 
-                // Populate assignee dropdown
                 const assigneeSelect = document.getElementById('taskAssignee');
+                assigneeSelect.innerHTML = '<option value="">Selecione um membro...</option>';
                 for (const uid of projectMembers) {
                     const userDoc = await db.collection('users').doc(uid).get();
                     if (userDoc.exists) {
@@ -192,7 +217,6 @@
                     }
                 }
 
-                // Load tasks
                 const tasksSnap = await db.collection('tasks')
                     .where('projectId', '==', projectId)
                     .get();
@@ -202,13 +226,11 @@
                 const progress = tasks.filter(t => t.status === 'progress');
                 const done = tasks.filter(t => t.status === 'done');
 
-                // Update stats
                 document.getElementById('totalTasks').textContent = tasks.length;
                 document.getElementById('completedTasks').textContent = done.length;
                 document.getElementById('progressBar').textContent = tasks.length > 0 ?
                     Math.round((done.length / tasks.length) * 100) + '%' : '0%';
 
-                // Render task lists
                 renderTaskList('todoTasks', todo);
                 renderTaskList('progressTasks', progress);
                 renderTaskList('doneTasks', done);
@@ -220,18 +242,15 @@
         function renderTaskList(elementId, tasks) {
             const el = document.getElementById(elementId);
             if (tasks.length === 0) {
-                el.innerHTML = '<div class="text-center py-6 text-slate-500 text-sm">Sem tarefas</div>';
+                el.innerHTML = '<div class="text-center py-6 text-slate-400 text-sm">Sem tarefas</div>';
                 return;
             }
 
-            el.innerHTML = tasks.map(task => {
-                const memberName = projectMembers.length > 0 ? `Atribuído` : '';
-                return `
-                    <div class="p-3 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10">
-                        <p class="text-sm font-medium">${task.title}</p>
-                        <p class="text-xs text-slate-500 mt-1">Prazo: ${new Date(task.dueDate).toLocaleDateString('pt-BR')}</p>
-                    </div>`;
-            }).join('');
+            el.innerHTML = tasks.map(task => `
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <p class="text-sm font-medium">${task.title}</p>
+                    <p class="text-xs text-slate-400 mt-1">Prazo: ${new Date(task.dueDate).toLocaleDateString('pt-BR')}</p>
+                </div>`).join('');
         }
 
         document.getElementById('addTaskBtn').addEventListener('click', () => {

@@ -19,10 +19,14 @@
     </script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .hero-glow {
-            position: absolute; width: 600px; height: 600px; border-radius: 50%;
-            filter: blur(140px); opacity: 0.10; pointer-events: none;
-        }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
         .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
         .fade-in-delay-1 { animation-delay: 0.2s; }
         .fade-in-delay-2 { animation-delay: 0.4s; }
@@ -30,7 +34,14 @@
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-white dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen antialiased">
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <!-- Liquid Grass Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
     <!-- Navbar -->
     <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10">
@@ -62,10 +73,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-        <div class="hero-glow bg-violet-500 top-1/4 left-1/4"></div>
-        <div class="hero-glow bg-cyan-500 bottom-1/4 right-1/4"></div>
-
+    <section class="relative z-10 min-h-screen flex items-center justify-center overflow-hidden pt-16">
         <div class="relative z-10 max-w-4xl mx-auto px-4 text-center">
             <div class="fade-in inline-flex items-center gap-2 bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 px-4 py-2 rounded-full mb-8">
                 <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
@@ -110,7 +118,7 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-24 relative">
+    <section id="features" class="py-24 relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl sm:text-4xl font-bold mb-4">Tudo para o seu <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">TCC fluir</span></h2>
@@ -165,7 +173,7 @@
     </section>
 
     <!-- CTA Section -->
-    <section id="about" class="py-24">
+    <section id="about" class="py-24 relative z-10">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <div class="bg-gradient-to-br from-violet-600 to-cyan-500 rounded-3xl p-8 sm:p-16 text-white shadow-2xl shadow-violet-500/20">
                 <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-8 backdrop-blur">

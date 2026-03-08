@@ -3,186 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Definições - TCCFlow</title>
+    <title>Configurações - TCCFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } }
-        }
-    </script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .glass-strong {
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .sidebar-link.active { background: rgba(139,92,246,0.15); color: #a78bfa; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
     </style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen antialiased">
+<body class="bg-white text-slate-900 min-h-screen antialiased">
 
-    <!-- Mobile header -->
-    <header class="lg:hidden fixed top-0 w-full z-50 glass">
-        <div class="flex items-center justify-between px-4 h-14">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-graduation-cap text-xs"></i>
+    <!-- Liquid Grass Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Organização</a>
+                    <a href="pesquisa.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Pesquisa</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
                 </div>
-                <span class="text-sm font-bold">TCC<span class="text-violet-400">Flow</span></span>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-violet-600 bg-violet-50">
+                        <i class="fa-solid fa-gear text-sm"></i>
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
             </div>
-            <button id="sidebarToggle" class="text-slate-300 hover:text-white">
-                <i class="fa-solid fa-bars text-lg"></i>
-            </button>
         </div>
-    </header>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 glass-strong z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-graduation-cap text-sm"></i>
-                </div>
-                <div>
-                    <span class="text-base font-bold block">TCC<span class="text-violet-400">Flow</span></span>
-                    <span class="text-xs text-slate-500" id="sidebarUserName">Utilizador</span>
-                </div>
-            </div>
-            <nav class="space-y-1">
-                <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-gauge w-5 text-center"></i> Dashboard
-                </a>
-                <a href="pesquisa.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-flask w-5 text-center"></i> Hub de Pesquisa
-                </a>
-                <a href="calendario.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendário
-                </a>
-                <a href="google.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-brands fa-google w-5 text-center"></i> Google
-                </a>
-                <a href="admin.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-white/5">
-                    <i class="fa-solid fa-gear w-5 text-center"></i> Definições
-                </a>
-                <a href="debug.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <i class="fa-solid fa-bug w-5 text-center"></i> Debug
-                </a>
-            </nav>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Organização</a>
+            <a href="pesquisa.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Pesquisa</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
         </div>
-        <div class="absolute bottom-0 left-0 right-0 p-6">
-            <button id="logoutBtn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition">
-                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Sair
-            </button>
-        </div>
-    </aside>
-
-    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+    </nav>
 
     <!-- Main Content -->
-    <main class="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
-        <div class="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
             <div class="mb-8">
-                <h1 class="text-2xl sm:text-3xl font-bold"><span class="gradient-text">Definições</span></h1>
-                <p class="text-sm text-slate-400 mt-1">Gerencie o seu perfil e preferências</p>
+                <h1 class="text-3xl font-bold">Configurações</h1>
+                <p class="text-slate-500 mt-1">Gerencie o seu perfil e preferências</p>
             </div>
 
             <!-- Profile Card -->
-            <div class="glass rounded-3xl p-6 sm:p-8 mb-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <div class="flex items-center gap-5 mb-8">
-                    <div class="w-20 h-20 bg-violet-600/20 rounded-2xl flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-user text-violet-400 text-2xl"></i>
+                    <div class="w-20 h-20 bg-violet-100 rounded-2xl flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-user text-violet-600 text-2xl"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold" id="profileName">Utilizador</h2>
-                        <p class="text-sm text-slate-400" id="profileEmail">email@example.com</p>
-                        <p class="text-xs text-slate-500 mt-1" id="profileDate">Membro desde ...</p>
+                        <h2 class="text-xl font-bold" id="profileName">Usuário</h2>
+                        <p class="text-sm text-slate-500" id="profileEmail">email@example.com</p>
                     </div>
                 </div>
 
                 <form id="profileForm" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-2">
-                            <i class="fa-solid fa-user mr-1 text-violet-400"></i> Nome
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            <i class="fa-solid fa-user mr-1 text-violet-600"></i> Nome
                         </label>
                         <input type="text" id="editName" required
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-2">
-                            <i class="fa-solid fa-envelope mr-1 text-violet-400"></i> Email
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            <i class="fa-solid fa-envelope mr-1 text-violet-600"></i> Email
                         </label>
-                        <input type="email" id="editEmail" required
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        <input type="email" id="editEmail" disabled
+                            class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-500 cursor-not-allowed">
                     </div>
 
                     <div id="profileMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
 
-                    <button type="submit" class="bg-violet-600 hover:bg-violet-500 font-semibold px-6 py-3 rounded-xl transition shadow-lg shadow-violet-600/25 text-sm">
+                    <button type="submit" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
                         <i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Alterações
                     </button>
                 </form>
             </div>
 
             <!-- Change Password -->
-            <div class="glass rounded-3xl p-6 sm:p-8 mb-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <h3 class="text-lg font-bold mb-6">
-                    <i class="fa-solid fa-key mr-2 text-amber-400"></i>Alterar Senha
+                    <i class="fa-solid fa-key mr-2 text-amber-600"></i>Alterar Senha
                 </h3>
 
                 <form id="passwordForm" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-2">Senha Atual</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Senha Atual</label>
                         <input type="password" id="currentPassword" required
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-2">Nova Senha</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Nova Senha</label>
                         <input type="password" id="newPassword" required minlength="6"
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-2">Confirmar Nova Senha</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Confirmar Nova Senha</label>
                         <input type="password" id="confirmNewPassword" required
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
 
                     <div id="passwordMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
 
-                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 font-semibold px-6 py-3 rounded-xl transition text-sm">
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
                         <i class="fa-solid fa-key mr-2"></i>Alterar Senha
                     </button>
                 </form>
             </div>
 
             <!-- Danger Zone -->
-            <div class="glass rounded-3xl p-6 sm:p-8 border border-red-500/10">
-                <h3 class="text-lg font-bold text-red-400 mb-4">
+            <div class="bg-white border border-red-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                <h3 class="text-lg font-bold text-red-600 mb-4">
                     <i class="fa-solid fa-triangle-exclamation mr-2"></i>Zona de Perigo
                 </h3>
-                <p class="text-sm text-slate-400 mb-6">Ações irreversíveis para a sua conta.</p>
+                <p class="text-sm text-slate-500 mb-6">Ações irreversíveis para a sua conta.</p>
 
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <button id="clearDataBtn" class="bg-red-600/20 hover:bg-red-600/30 text-red-400 font-semibold px-5 py-2.5 rounded-xl transition text-sm border border-red-500/20">
+                    <button id="clearDataBtn" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-5 py-2.5 rounded-xl transition text-sm border border-red-200">
                         <i class="fa-solid fa-broom mr-2"></i>Limpar Meus Dados
                     </button>
-                    <button id="deleteAccountBtn" class="bg-red-600 hover:bg-red-500 font-semibold px-5 py-2.5 rounded-xl transition text-sm">
+                    <button id="deleteAccountBtn" class="bg-red-600 hover:bg-red-500 text-white font-semibold px-5 py-2.5 rounded-xl transition text-sm">
                         <i class="fa-solid fa-trash mr-2"></i>Eliminar Conta
                     </button>
                 </div>
@@ -191,151 +167,141 @@
         </div>
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-init.js"></script>
     <script>
         // ========== Auth Check ==========
-        const currentUser = JSON.parse(localStorage.getItem('tccflow_current_user'));
-        if (!currentUser) window.location.href = 'login.html';
+        let currentUser = null;
 
-        // ========== UI Setup ==========
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+            loadProfile();
+        });
+
+        // ========== Mobile Nav ==========
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        // ========== Profile ==========
         function loadProfile() {
-            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]');
-            const user = users.find(u => u.id === currentUser.id);
-            if (!user) return;
-
-            document.getElementById('profileName').textContent = user.name;
-            document.getElementById('profileEmail').textContent = user.email;
-            document.getElementById('sidebarUserName').textContent = user.name;
-            document.getElementById('editName').value = user.name;
-            document.getElementById('editEmail').value = user.email;
-
-            if (user.createdAt) {
-                document.getElementById('profileDate').textContent = 'Membro desde ' + new Date(user.createdAt).toLocaleDateString('pt-BR');
-            }
+            document.getElementById('profileName').textContent = currentUser.displayName || 'Usuário';
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('editName').value = currentUser.displayName || '';
+            document.getElementById('editEmail').value = currentUser.email;
         }
 
-        loadProfile();
-
-        // ========== Sidebar ==========
-        const sidebar = document.getElementById('sidebar');
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            document.getElementById('sidebarOverlay').classList.toggle('hidden');
-        });
-        document.getElementById('sidebarOverlay').addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-        });
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('tccflow_current_user');
-            window.location.href = 'login.html';
-        });
-
-        // ========== Profile Update ==========
         function showMsg(id, text, type) {
             const el = document.getElementById(id);
-            el.className = `text-sm rounded-xl px-4 py-3 ${type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border border-red-500/20 text-red-400'}`;
+            el.className = `text-sm rounded-xl px-4 py-3 ${type === 'success' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'}`;
             el.textContent = text;
             el.classList.remove('hidden');
             setTimeout(() => el.classList.add('hidden'), 4000);
         }
 
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const newName = document.getElementById('editName').value.trim();
-            const newEmail = document.getElementById('editEmail').value.trim().toLowerCase();
+            if (!newName) return;
 
-            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]');
-            const userIndex = users.findIndex(u => u.id === currentUser.id);
-            if (userIndex === -1) return;
+            try {
+                await currentUser.updateProfile({ displayName: newName });
 
-            // Check email conflict
-            if (newEmail !== users[userIndex].email && users.find(u => u.email === newEmail)) {
-                showMsg('profileMsg', 'Este email já está em uso.', 'error');
-                return;
+                // Also update Firestore user doc
+                if (isFirebaseConfigured()) {
+                    await db.collection('users').doc(currentUser.uid).update({ name: newName });
+                }
+
+                loadProfile();
+                showMsg('profileMsg', 'Perfil atualizado com sucesso!', 'success');
+            } catch (err) {
+                showMsg('profileMsg', 'Erro ao atualizar perfil: ' + err.message, 'error');
             }
-
-            users[userIndex].name = newName;
-            users[userIndex].email = newEmail;
-            localStorage.setItem('tccflow_users', JSON.stringify(users));
-
-            // Update current session
-            currentUser.name = newName;
-            currentUser.email = newEmail;
-            localStorage.setItem('tccflow_current_user', JSON.stringify(currentUser));
-
-            loadProfile();
-            showMsg('profileMsg', 'Perfil atualizado com sucesso!', 'success');
         });
 
         // ========== Password Change ==========
-        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const current = document.getElementById('currentPassword').value;
             const newPass = document.getElementById('newPassword').value;
-            const confirm = document.getElementById('confirmNewPassword').value;
-
-            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]');
-            const user = users.find(u => u.id === currentUser.id);
-
-            if (!user || user.password !== current) {
-                showMsg('passwordMsg', 'Senha atual incorreta.', 'error');
-                return;
-            }
+            const confirmPass = document.getElementById('confirmNewPassword').value;
 
             if (newPass.length < 6) {
                 showMsg('passwordMsg', 'A nova senha deve ter pelo menos 6 caracteres.', 'error');
                 return;
             }
-
-            if (newPass !== confirm) {
+            if (newPass !== confirmPass) {
                 showMsg('passwordMsg', 'As senhas não coincidem.', 'error');
                 return;
             }
 
-            user.password = newPass;
-            localStorage.setItem('tccflow_users', JSON.stringify(users));
+            try {
+                // Reauthenticate
+                const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, current);
+                await currentUser.reauthenticateWithCredential(credential);
 
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmNewPassword').value = '';
-            showMsg('passwordMsg', 'Senha alterada com sucesso!', 'success');
+                // Update password
+                await currentUser.updatePassword(newPass);
+
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmNewPassword').value = '';
+                showMsg('passwordMsg', 'Senha alterada com sucesso!', 'success');
+            } catch (err) {
+                if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    showMsg('passwordMsg', 'Senha atual incorreta.', 'error');
+                } else {
+                    showMsg('passwordMsg', 'Erro: ' + err.message, 'error');
+                }
+            }
         });
 
         // ========== Danger Zone ==========
         document.getElementById('clearDataBtn').addEventListener('click', () => {
-            if (!confirm('Tem certeza? Isto irá eliminar todas as suas sessões e metas.')) return;
+            if (!confirm('Tem certeza? Isto irá eliminar todas as suas sessões, metas e anotações locais.')) return;
 
-            // Remove user sessions and goals
-            const sessions = JSON.parse(localStorage.getItem('tccflow_sessions') || '[]').filter(s => s.userId !== currentUser.id);
-            localStorage.setItem('tccflow_sessions', JSON.stringify(sessions));
-
-            const goals = JSON.parse(localStorage.getItem('tccflow_goals') || '[]').filter(g => g.userId !== currentUser.id);
-            localStorage.setItem('tccflow_goals', JSON.stringify(goals));
-
-            localStorage.removeItem('tccflow_pomodoro_count');
+            const uid = currentUser.uid;
+            ['tccflow_sessions', 'tccflow_goals', 'tccflow_research_notes', 'tccflow_google_links'].forEach(key => {
+                const data = JSON.parse(localStorage.getItem(key) || '[]').filter(item => item.userId !== uid);
+                localStorage.setItem(key, JSON.stringify(data));
+            });
 
             alert('Dados eliminados com sucesso.');
         });
 
-        document.getElementById('deleteAccountBtn').addEventListener('click', () => {
+        document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
             if (!confirm('Tem CERTEZA ABSOLUTA? Esta ação é irreversível e eliminará a sua conta e todos os dados.')) return;
 
-            // Remove user
-            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]').filter(u => u.id !== currentUser.id);
-            localStorage.setItem('tccflow_users', JSON.stringify(users));
+            try {
+                const uid = currentUser.uid;
 
-            // Remove user data
-            const sessions = JSON.parse(localStorage.getItem('tccflow_sessions') || '[]').filter(s => s.userId !== currentUser.id);
-            localStorage.setItem('tccflow_sessions', JSON.stringify(sessions));
+                // Clean up Firestore
+                if (isFirebaseConfigured()) {
+                    await db.collection('users').doc(uid).delete();
+                }
 
-            const goals = JSON.parse(localStorage.getItem('tccflow_goals') || '[]').filter(g => g.userId !== currentUser.id);
-            localStorage.setItem('tccflow_goals', JSON.stringify(goals));
+                // Clean localStorage
+                ['tccflow_sessions', 'tccflow_goals', 'tccflow_research_notes', 'tccflow_google_links'].forEach(key => {
+                    const data = JSON.parse(localStorage.getItem(key) || '[]').filter(item => item.userId !== uid);
+                    localStorage.setItem(key, JSON.stringify(data));
+                });
 
-            localStorage.removeItem('tccflow_current_user');
-            localStorage.removeItem('tccflow_pomodoro_count');
-
-            window.location.href = '../index.html';
+                // Delete Firebase account
+                await currentUser.delete();
+                window.location.href = '../index.html';
+            } catch (err) {
+                alert('Erro ao eliminar conta: ' + err.message);
+            }
         });
     </script>
 </body>
