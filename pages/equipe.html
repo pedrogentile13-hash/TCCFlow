@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipe - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
@@ -21,7 +24,6 @@
 </head>
 <body class="bg-white text-slate-900 min-h-screen antialiased">
 
-    <!-- Liquid Grass Background -->
     <div class="liquid-bg">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -79,7 +81,7 @@
                 <p class="text-slate-500">Convide membros e organize seu grupo de TCC</p>
             </div>
 
-            <!-- No Project Panel (hidden by default) -->
+            <!-- No Project Panel -->
             <div id="noProjectPanel" class="hidden">
                 <div class="bg-white border border-slate-200 rounded-2xl p-8 mb-8 shadow-sm text-center">
                     <div class="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -89,7 +91,6 @@
                     <p class="text-sm text-slate-500 mb-8">Crie um novo projeto ou entre em um existente com o código do grupo.</p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                        <!-- Create New Project -->
                         <div class="bg-gradient-to-br from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6 text-left">
                             <h3 class="font-bold mb-2"><i class="fa-solid fa-plus-circle mr-2 text-violet-600"></i>Criar Projeto Novo</h3>
                             <p class="text-xs text-slate-500 mb-4">Gera um código para seus colegas entrarem.</p>
@@ -103,8 +104,6 @@
                                 <i class="fa-solid fa-rocket mr-2"></i>Criar Projeto
                             </button>
                         </div>
-
-                        <!-- Join Existing Project -->
                         <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-left">
                             <h3 class="font-bold mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-cyan-600"></i>Entrar em Projeto</h3>
                             <p class="text-xs text-slate-500 mb-4">Cole o código que seu colega compartilhou.</p>
@@ -119,14 +118,12 @@
                             </button>
                         </div>
                     </div>
-
                     <div id="setupMsg" class="hidden mt-4 text-sm rounded-xl px-4 py-3"></div>
                 </div>
             </div>
 
-            <!-- Project Panel (hidden by default) -->
+            <!-- Project Panel -->
             <div id="projectPanel" class="hidden">
-                <!-- Add Member Card -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
                     <h2 class="text-lg font-bold mb-4">Convidar Membro</h2>
                     <p class="text-sm text-slate-500 mb-4">Compartilhe este código com seu grupo para que entrem no projeto:</p>
@@ -138,7 +135,6 @@
                     </div>
                 </div>
 
-                <!-- Team Members -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <h2 class="text-lg font-bold mb-6">Membros da Equipe</h2>
                     <div id="membersList" class="space-y-3">
@@ -160,8 +156,8 @@
     <script>
         let currentUser = null;
         let projectId = null;
+        let projectOwnerId = null;
 
-        // Mobile Nav
         document.getElementById('mobileNavBtn').addEventListener('click', () => {
             document.getElementById('mobileNav').classList.toggle('hidden');
         });
@@ -203,6 +199,7 @@
                         const projectDoc = await db.collection('projects').doc(projectId).get();
                         if (projectDoc.exists) {
                             const project = projectDoc.data();
+                            projectOwnerId = project.ownerId;
                             document.getElementById('projectCode').textContent = project.code;
                             showProjectPanel();
                             loadMembers(project);
@@ -210,8 +207,6 @@
                             showNoProjectPanel();
                         }
                     } else {
-                        // User exists in Auth but no Firestore doc or no projectId
-                        // Create the user doc if it doesn't exist
                         if (!userDoc.exists) {
                             await db.collection('users').doc(user.uid).set({
                                 name: user.displayName || 'Usuário',
@@ -255,6 +250,7 @@
                 }, { merge: true });
 
                 projectId = projectRef.id;
+                projectOwnerId = currentUser.uid;
                 document.getElementById('projectCode').textContent = code;
                 showProjectPanel();
 
@@ -301,6 +297,7 @@
 
                 projectId = projDoc.id;
                 const updatedDoc = await db.collection('projects').doc(projectId).get();
+                projectOwnerId = updatedDoc.data().ownerId;
                 document.getElementById('projectCode').textContent = updatedDoc.data().code;
                 showProjectPanel();
                 loadMembers(updatedDoc.data());
@@ -328,6 +325,7 @@
             }
 
             membersList.innerHTML = '';
+            const isOwner = currentUser.uid === projectOwnerId;
 
             for (const uid of project.members) {
                 try {
@@ -335,6 +333,31 @@
                     const data = userDoc.exists ? userDoc.data() : { name: 'Desconhecido', email: '' };
                     const initial = (data.name || '?').charAt(0).toUpperCase();
                     const isMe = uid === currentUser.uid;
+                    const isProjectOwner = uid === projectOwnerId;
+
+                    let badge = '';
+                    if (isProjectOwner) {
+                        badge = '<span class="text-xs px-3 py-1 rounded-full bg-violet-100 text-violet-700">Dono</span>';
+                    } else if (isMe) {
+                        badge = '<span class="text-xs px-3 py-1 rounded-full bg-cyan-100 text-cyan-700">Você</span>';
+                    } else {
+                        badge = '<span class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600">Membro</span>';
+                    }
+
+                    let removeBtn = '';
+                    if (isOwner && !isProjectOwner) {
+                        removeBtn = `
+                            <button onclick="removeMember('${uid}', '${(data.name || 'este membro').replace(/'/g, "\\'")}')"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Remover membro">
+                                <i class="fa-solid fa-user-minus text-sm"></i>
+                            </button>`;
+                    } else if (!isOwner && isMe && !isProjectOwner) {
+                        removeBtn = `
+                            <button onclick="leaveProject()"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Sair do projeto">
+                                <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                            </button>`;
+                    }
 
                     membersList.innerHTML += `
                         <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border border-slate-200">
@@ -347,15 +370,49 @@
                                     <p class="text-xs text-slate-400">${data.email || ''}</p>
                                 </div>
                             </div>
-                            <span class="text-xs px-3 py-1 rounded-full ${isMe ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-600'}">
-                                ${isMe ? 'Você' : 'Membro'}
-                            </span>
+                            <div class="flex items-center">
+                                ${badge}
+                                ${removeBtn}
+                            </div>
                         </div>`;
                 } catch (err) {
                     console.log('Error loading user:', err);
                 }
             }
         }
+
+        // ========== Remove Member ==========
+        window.removeMember = async function(uid, name) {
+            if (!confirm(`Tem certeza que deseja remover "${name}" do projeto?`)) return;
+
+            try {
+                await db.collection('projects').doc(projectId).update({
+                    members: firebase.firestore.FieldValue.arrayRemove(uid)
+                });
+                await db.collection('users').doc(uid).update({ projectId: null });
+
+                const projectDoc = await db.collection('projects').doc(projectId).get();
+                loadMembers(projectDoc.data());
+            } catch (err) {
+                alert('Erro ao remover membro: ' + err.message);
+            }
+        };
+
+        // ========== Leave Project ==========
+        window.leaveProject = async function() {
+            if (!confirm('Tem certeza que deseja sair deste projeto?')) return;
+
+            try {
+                await db.collection('projects').doc(projectId).update({
+                    members: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
+                });
+                await db.collection('users').doc(currentUser.uid).update({ projectId: null });
+                projectId = null;
+                showNoProjectPanel();
+            } catch (err) {
+                alert('Erro ao sair do projeto: ' + err.message);
+            }
+        };
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await auth.signOut();

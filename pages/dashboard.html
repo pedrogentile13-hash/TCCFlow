@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
@@ -21,7 +24,6 @@
 </head>
 <body class="bg-white text-slate-900 min-h-screen antialiased">
 
-    <!-- Liquid Grass Background -->
     <div class="liquid-bg">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -74,23 +76,28 @@
     <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold mb-2">Bem-vindo ao seu TCC!</h1>
-                <p class="text-slate-500" id="projectInfo">Carregando...</p>
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Bem-vindo ao seu TCC!</h1>
+                    <p class="text-slate-500" id="projectInfo">Carregando...</p>
+                </div>
+                <button id="quickAddTaskBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-5 py-2.5 rounded-xl font-medium hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
+                    <i class="fa-solid fa-plus mr-2"></i>Nova Tarefa
+                </button>
             </div>
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500">Membros da Equipe</span>
+                        <span class="text-sm text-slate-500">Membros</span>
                         <i class="fa-solid fa-users text-violet-600 text-lg"></i>
                     </div>
                     <div class="text-3xl font-bold" id="memberCount">0</div>
                 </div>
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500">Tarefas Atribuídas</span>
+                        <span class="text-sm text-slate-500">Tarefas</span>
                         <i class="fa-solid fa-list-check text-cyan-600 text-lg"></i>
                     </div>
                     <div class="text-3xl font-bold" id="taskCount">0</div>
@@ -155,14 +162,55 @@
         </div>
     </main>
 
+    <!-- Quick Add Task Modal -->
+    <div id="quickTaskModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+            <h2 class="text-xl font-bold mb-4" id="dashModalTitle">Nova Tarefa</h2>
+            <form id="quickTaskForm" class="space-y-4">
+                <input type="hidden" id="dashEditTaskId" value="">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Título</label>
+                    <input type="text" id="dashTaskTitle" required placeholder="Descrição da tarefa"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Atribuído a</label>
+                    <select id="dashTaskAssignee" required
+                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                        <option value="">Selecione um membro...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Prazo</label>
+                    <input type="date" id="dashTaskDueDate" required
+                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                </div>
+                <div id="dashStatusField" class="hidden">
+                    <label class="block text-sm font-medium mb-1">Status</label>
+                    <select id="dashTaskStatus"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                        <option value="todo">A Fazer</option>
+                        <option value="progress">Em Andamento</option>
+                        <option value="done">Concluído</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit" id="dashSubmitBtn" class="flex-1 bg-violet-600 hover:bg-violet-500 text-white font-medium py-2 rounded-lg transition">Criar</button>
+                    <button type="button" onclick="closeDashModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 font-medium py-2 rounded-lg transition">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-init.js"></script>
     <script>
         let currentUser = null;
+        let projectId = null;
+        let memberNames = {};
 
-        // Mobile Nav
         document.getElementById('mobileNavBtn').addEventListener('click', () => {
             document.getElementById('mobileNav').classList.toggle('hidden');
         });
@@ -175,88 +223,195 @@
             if (isFirebaseConfigured()) {
                 try {
                     const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists) {
-                        const projectId = userDoc.data().projectId;
-                        const projectDoc = await db.collection('projects').doc(projectId).get();
-                        if (projectDoc.exists) {
-                            const project = projectDoc.data();
-                            document.getElementById('projectInfo').innerHTML =
-                                `<strong>${project.name}</strong> &bull; Código: <code class="bg-slate-100 px-2 py-1 rounded text-violet-600 font-mono">${project.code}</code>`;
-
-                            document.getElementById('memberCount').textContent = project.members.length;
-
-                            const tasksSnap = await db.collection('tasks')
-                                .where('projectId', '==', projectId)
-                                .where('assignedTo', '==', user.uid)
-                                .get();
-
-                            document.getElementById('taskCount').textContent = tasksSnap.docs.length;
-                            const completed = tasksSnap.docs.filter(t => t.data().status === 'done').length;
-                            document.getElementById('completedCount').textContent = completed;
-                            document.getElementById('progressPercent').textContent =
-                                tasksSnap.docs.length > 0 ? Math.round((completed / tasksSnap.docs.length) * 100) + '%' : '0%';
-
-                            if (tasksSnap.docs.length === 0) {
-                                document.getElementById('myTasksList').innerHTML = `
-                                    <div class="text-center py-8 text-slate-400">
-                                        <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
-                                        <p class="text-sm">Nenhuma tarefa atribuída</p>
-                                        <a href="equipe.html" class="text-sm text-violet-600 hover:underline mt-2 block">Entrar na equipe</a>
-                                    </div>`;
-                            } else {
-                                document.getElementById('myTasksList').innerHTML = tasksSnap.docs.map(doc => {
-                                    const task = doc.data();
-                                    const status = task.status === 'done' ? 'check' : task.status === 'progress' ? 'spinner' : 'circle';
-                                    const statusColor = task.status === 'done' ? 'text-emerald-600' :
-                                                        task.status === 'progress' ? 'text-cyan-600' : 'text-amber-600';
-                                    return `
-                                        <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50">
-                                            <i class="fa-solid fa-${status} ${statusColor} mt-0.5"></i>
-                                            <div class="flex-1 min-w-0">
-                                                <p class="text-sm font-medium">${task.title}</p>
-                                                <p class="text-xs text-slate-400">Prazo: ${new Date(task.dueDate).toLocaleDateString('pt-BR')}</p>
-                                            </div>
-                                        </div>`;
-                                }).join('');
-                            }
-
-                            // Load team members
-                            const teamList = document.getElementById('teamList');
-                            if (project.members.length === 0) {
-                                teamList.innerHTML = '<p class="text-sm text-slate-400">Sem membros</p>';
-                            } else {
-                                teamList.innerHTML = '';
-                                for (const uid of project.members) {
-                                    try {
-                                        const memberDoc = await db.collection('users').doc(uid).get();
-                                        if (memberDoc.exists) {
-                                            const data = memberDoc.data();
-                                            teamList.innerHTML += `
-                                                <div class="flex items-center gap-3 p-2 rounded-lg">
-                                                    <div class="w-8 h-8 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                                        ${(data.name || '?').charAt(0).toUpperCase()}
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-sm font-medium">${data.name || 'Sem nome'}</p>
-                                                        <p class="text-xs text-slate-400">${uid === user.uid ? 'Você' : 'Membro'}</p>
-                                                    </div>
-                                                </div>`;
-                                        }
-                                    } catch (err) { console.log('Error loading member:', err); }
-                                }
-                            }
-                        }
+                    if (userDoc.exists && userDoc.data().projectId) {
+                        projectId = userDoc.data().projectId;
+                        await loadDashboard();
+                    } else {
+                        document.getElementById('projectInfo').innerHTML =
+                            '<span class="text-amber-600">Você ainda não tem um projeto. <a href="equipe.html" class="underline">Criar ou entrar em um projeto</a></span>';
                     }
                 } catch (err) {
-                    console.log('Firebase error:', err.message);
+                    console.error('Firebase error:', err);
                     document.getElementById('projectInfo').innerHTML =
-                        '<span class="text-amber-600">Configure Firebase em js/firebase-init.js para sincronizar dados</span>';
+                        '<span class="text-amber-600">Erro ao carregar dados</span>';
                 }
             } else {
                 document.getElementById('projectInfo').innerHTML =
                     '<span class="text-amber-600">Configure Firebase em js/firebase-init.js</span>';
             }
         });
+
+        async function loadDashboard() {
+            const projectDoc = await db.collection('projects').doc(projectId).get();
+            if (!projectDoc.exists) return;
+            const project = projectDoc.data();
+
+            document.getElementById('projectInfo').innerHTML =
+                `<strong>${project.name}</strong> &bull; Código: <code class="bg-slate-100 px-2 py-1 rounded text-violet-600 font-mono">${project.code}</code>`;
+
+            document.getElementById('memberCount').textContent = project.members.length;
+
+            // Load member names for assignee select
+            const assigneeSelect = document.getElementById('dashTaskAssignee');
+            assigneeSelect.innerHTML = '<option value="">Selecione um membro...</option>';
+            for (const uid of project.members) {
+                try {
+                    const memberDoc = await db.collection('users').doc(uid).get();
+                    if (memberDoc.exists) {
+                        const data = memberDoc.data();
+                        memberNames[uid] = data.name;
+                        const option = document.createElement('option');
+                        option.value = uid;
+                        option.textContent = data.name;
+                        assigneeSelect.appendChild(option);
+                    }
+                } catch (err) { console.log('Error loading member:', err); }
+            }
+
+            // Load ALL tasks for the project
+            const allTasksSnap = await db.collection('tasks')
+                .where('projectId', '==', projectId)
+                .get();
+            const allTasks = allTasksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const myTasks = allTasks.filter(t => t.assignedTo === currentUser.uid);
+
+            document.getElementById('taskCount').textContent = myTasks.length;
+            const completed = myTasks.filter(t => t.status === 'done').length;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('progressPercent').textContent =
+                myTasks.length > 0 ? Math.round((completed / myTasks.length) * 100) + '%' : '0%';
+
+            // Render my tasks with edit/delete
+            if (myTasks.length === 0) {
+                document.getElementById('myTasksList').innerHTML = `
+                    <div class="text-center py-8 text-slate-400">
+                        <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
+                        <p class="text-sm">Nenhuma tarefa atribuída a você</p>
+                    </div>`;
+            } else {
+                document.getElementById('myTasksList').innerHTML = myTasks.map(task => {
+                    const statusIcon = task.status === 'done' ? 'check-circle' : task.status === 'progress' ? 'spinner' : 'circle';
+                    const statusColor = task.status === 'done' ? 'text-emerald-600' :
+                                        task.status === 'progress' ? 'text-cyan-600' : 'text-amber-600';
+                    const statusLabel = task.status === 'done' ? 'Concluído' : task.status === 'progress' ? 'Em Andamento' : 'A Fazer';
+                    return `
+                        <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 group border border-slate-100">
+                            <i class="fa-solid fa-${statusIcon} ${statusColor} mt-0.5"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium">${task.title}</p>
+                                <div class="flex items-center gap-3 mt-1">
+                                    <p class="text-xs text-slate-400">${task.dueDate ? 'Prazo: ' + new Date(task.dueDate).toLocaleDateString('pt-BR') : ''}</p>
+                                    <span class="text-xs px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-emerald-50 text-emerald-700' : task.status === 'progress' ? 'bg-cyan-50 text-cyan-700' : 'bg-amber-50 text-amber-700'}">${statusLabel}</span>
+                                </div>
+                                <div class="flex gap-1 mt-2">
+                                    ${task.status !== 'todo' ? `<button onclick="dashChangeStatus('${task.id}', 'todo')" class="text-xs px-2 py-1 rounded bg-amber-50 text-amber-700 hover:bg-amber-100 transition">A Fazer</button>` : ''}
+                                    ${task.status !== 'progress' ? `<button onclick="dashChangeStatus('${task.id}', 'progress')" class="text-xs px-2 py-1 rounded bg-cyan-50 text-cyan-700 hover:bg-cyan-100 transition">Em Andamento</button>` : ''}
+                                    ${task.status !== 'done' ? `<button onclick="dashChangeStatus('${task.id}', 'done')" class="text-xs px-2 py-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">Concluído</button>` : ''}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                                <button onclick="dashEditTask('${task.id}', '${task.title.replace(/'/g, "\\'")}', '${task.assignedTo}', '${task.dueDate}', '${task.status}')"
+                                    class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition" title="Editar">
+                                    <i class="fa-solid fa-pen text-xs"></i>
+                                </button>
+                                <button onclick="dashDeleteTask('${task.id}')"
+                                    class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition" title="Apagar">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        </div>`;
+                }).join('');
+            }
+
+            // Load team list
+            const teamList = document.getElementById('teamList');
+            if (project.members.length === 0) {
+                teamList.innerHTML = '<p class="text-sm text-slate-400">Sem membros</p>';
+            } else {
+                teamList.innerHTML = '';
+                for (const uid of project.members) {
+                    const name = memberNames[uid] || 'Desconhecido';
+                    teamList.innerHTML += `
+                        <div class="flex items-center gap-3 p-2 rounded-lg">
+                            <div class="w-8 h-8 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                ${name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">${name}</p>
+                                <p class="text-xs text-slate-400">${uid === currentUser.uid ? 'Você' : 'Membro'}</p>
+                            </div>
+                        </div>`;
+                }
+            }
+        }
+
+        // ========== Quick Task Modal ==========
+        document.getElementById('quickAddTaskBtn').addEventListener('click', () => {
+            document.getElementById('dashEditTaskId').value = '';
+            document.getElementById('dashModalTitle').textContent = 'Nova Tarefa';
+            document.getElementById('dashSubmitBtn').textContent = 'Criar';
+            document.getElementById('dashStatusField').classList.add('hidden');
+            document.getElementById('quickTaskForm').reset();
+            document.getElementById('quickTaskModal').classList.remove('hidden');
+        });
+
+        function closeDashModal() {
+            document.getElementById('quickTaskModal').classList.add('hidden');
+        }
+
+        window.dashEditTask = function(id, title, assignee, dueDate, status) {
+            document.getElementById('dashEditTaskId').value = id;
+            document.getElementById('dashModalTitle').textContent = 'Editar Tarefa';
+            document.getElementById('dashSubmitBtn').textContent = 'Salvar';
+            document.getElementById('dashTaskTitle').value = title;
+            document.getElementById('dashTaskAssignee').value = assignee;
+            document.getElementById('dashTaskDueDate').value = dueDate;
+            document.getElementById('dashTaskStatus').value = status;
+            document.getElementById('dashStatusField').classList.remove('hidden');
+            document.getElementById('quickTaskModal').classList.remove('hidden');
+        };
+
+        document.getElementById('quickTaskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!projectId || !isFirebaseConfigured()) return;
+
+            const editId = document.getElementById('dashEditTaskId').value;
+            const data = {
+                projectId,
+                title: document.getElementById('dashTaskTitle').value,
+                assignedTo: document.getElementById('dashTaskAssignee').value,
+                dueDate: document.getElementById('dashTaskDueDate').value,
+                status: editId ? document.getElementById('dashTaskStatus').value : 'todo'
+            };
+
+            try {
+                if (editId) {
+                    await db.collection('tasks').doc(editId).update(data);
+                } else {
+                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('tasks').add(data);
+                }
+                closeDashModal();
+                await loadDashboard();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
+        });
+
+        window.dashChangeStatus = async function(taskId, newStatus) {
+            try {
+                await db.collection('tasks').doc(taskId).update({ status: newStatus });
+                await loadDashboard();
+            } catch (err) { alert('Erro: ' + err.message); }
+        };
+
+        window.dashDeleteTask = async function(taskId) {
+            if (!confirm('Tem certeza que deseja apagar esta tarefa?')) return;
+            try {
+                await db.collection('tasks').doc(taskId).delete();
+                await loadDashboard();
+            } catch (err) { alert('Erro: ' + err.message); }
+        };
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await auth.signOut();

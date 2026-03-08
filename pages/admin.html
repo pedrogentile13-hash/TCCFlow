@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
@@ -17,11 +20,12 @@
         @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
         @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
         @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        .toggle-checkbox:checked { right: 0; border-color: #7c3aed; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #7c3aed; }
     </style>
 </head>
 <body class="bg-white text-slate-900 min-h-screen antialiased">
 
-    <!-- Liquid Grass Background -->
     <div class="liquid-bg">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -77,6 +81,31 @@
             <div class="mb-8">
                 <h1 class="text-3xl font-bold">Configurações</h1>
                 <p class="text-slate-500 mt-1">Gerencie o seu perfil e preferências</p>
+            </div>
+
+            <!-- Appearance / Dark Mode -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h3 class="text-lg font-bold mb-6">
+                    <i class="fa-solid fa-palette mr-2 text-violet-600"></i>Aparência
+                </h3>
+
+                <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-moon text-amber-400 text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium">Modo Escuro</p>
+                            <p class="text-xs text-slate-500">Ative o tema escuro para reduzir o cansaço visual</p>
+                        </div>
+                    </div>
+                    <div class="relative inline-block w-12 align-middle select-none">
+                        <input type="checkbox" id="darkModeToggle"
+                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-2 border-slate-300 appearance-none cursor-pointer transition-all duration-300"
+                            style="top: 2px; left: 2px;">
+                        <label for="darkModeToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                    </div>
+                </div>
             </div>
 
             <!-- Profile Card -->
@@ -172,6 +201,20 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-init.js"></script>
     <script>
+        // ========== Dark Mode Toggle ==========
+        const darkToggle = document.getElementById('darkModeToggle');
+        darkToggle.checked = localStorage.getItem('tccflow_darkmode') === 'true';
+
+        darkToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('tccflow_darkmode', 'true');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('tccflow_darkmode', 'false');
+            }
+        });
+
         // ========== Auth Check ==========
         let currentUser = null;
 
@@ -216,7 +259,6 @@
             try {
                 await currentUser.updateProfile({ displayName: newName });
 
-                // Also update Firestore user doc
                 if (isFirebaseConfigured()) {
                     await db.collection('users').doc(currentUser.uid).update({ name: newName });
                 }
@@ -246,11 +288,8 @@
             }
 
             try {
-                // Reauthenticate
                 const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, current);
                 await currentUser.reauthenticateWithCredential(credential);
-
-                // Update password
                 await currentUser.updatePassword(newPass);
 
                 document.getElementById('currentPassword').value = '';
@@ -285,18 +324,15 @@
             try {
                 const uid = currentUser.uid;
 
-                // Clean up Firestore
                 if (isFirebaseConfigured()) {
                     await db.collection('users').doc(uid).delete();
                 }
 
-                // Clean localStorage
                 ['tccflow_sessions', 'tccflow_goals', 'tccflow_research_notes', 'tccflow_google_links'].forEach(key => {
                     const data = JSON.parse(localStorage.getItem(key) || '[]').filter(item => item.userId !== uid);
                     localStorage.setItem(key, JSON.stringify(data));
                 });
 
-                // Delete Firebase account
                 await currentUser.delete();
                 window.location.href = '../index.html';
             } catch (err) {
