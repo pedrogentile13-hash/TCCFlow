@@ -1,30 +1,21 @@
-// ============================================================
-// TCCFlow - Firebase Configuration
-// ============================================================
-// INSTRUCOES:
-// 1. Acesse https://console.firebase.google.com
-// 2. Crie um novo projeto (ou use um existente)
-// 3. Ative Authentication > Email/Password
-// 4. Crie um Firestore Database (modo teste para comecar)
-// 5. Va em Project Settings > General > Your apps > Web
-// 6. Copie os valores e cole abaixo
-// ============================================================
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "SUA_API_KEY_AQUI",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    projectId: "SEU_PROJECT_ID",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "SEU_SENDER_ID",
-    appId: "SEU_APP_ID"
+  apiKey: "AIzaSyBOiwIkkFyrWhemD6cGl3A85Hvlz16NU5o",
+  authDomain: "tccflow-94be6.firebaseapp.com",
+  projectId: "tccflow-94be6",
+  storageBucket: "tccflow-94be6.firebasestorage.app",
+  messagingSenderId: "207188280509",
+  appId: "1:207188280509:web:34dc672554887295c3e3d4",
+  measurementId: "G-VR3R2TD099"
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// Check if Firebase is configured
-function isFirebaseConfigured() {
-    return firebaseConfig.apiKey !== "SUA_API_KEY_AQUI";
-}
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
