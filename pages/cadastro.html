@@ -7,176 +7,160 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } }
-        }
-    </script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .glass-strong {
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-        .hero-glow {
-            position: absolute; width: 400px; height: 400px; border-radius: 50%;
-            filter: blur(120px); opacity: 0.12; pointer-events: none;
-        }
-    </style>
+    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen antialiased flex items-center justify-center relative overflow-hidden">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen antialiased flex items-center justify-center relative overflow-hidden">
 
-    <div class="hero-glow bg-violet-600 -top-40 -left-40"></div>
-    <div class="hero-glow bg-emerald-500 -bottom-40 -right-40"></div>
+    <div class="absolute w-[500px] h-[500px] bg-violet-500 rounded-full filter blur-[140px] opacity-10 -top-40 -left-40 pointer-events-none"></div>
+    <div class="absolute w-[500px] h-[500px] bg-cyan-500 rounded-full filter blur-[140px] opacity-10 -bottom-40 -right-40 pointer-events-none"></div>
 
     <div class="relative z-10 w-full max-w-md mx-4">
-        <!-- Back link -->
-        <a href="../index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition mb-8">
-            <i class="fa-solid fa-arrow-left"></i> Voltar ao início
+        <a href="../index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition mb-8">
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao inicio
         </a>
 
-        <div class="glass-strong rounded-3xl p-8 sm:p-10">
-            <!-- Header -->
+        <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50 dark:shadow-none">
             <div class="text-center mb-8">
-                <div class="w-14 h-14 bg-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-user-plus text-xl"></i>
+                <div class="w-14 h-14 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
+                    <i class="fa-solid fa-user-plus text-white text-xl"></i>
                 </div>
                 <h1 class="text-2xl font-bold">Criar Conta</h1>
-                <p class="text-sm text-slate-400 mt-2">Preencha os dados para começar</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Preencha os dados para comecar</p>
             </div>
 
-            <!-- Form -->
             <form id="registerForm" class="space-y-5">
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">
-                        <i class="fa-solid fa-user mr-1 text-violet-400"></i> Nome Completo
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                        <i class="fa-solid fa-user mr-1 text-violet-600 dark:text-violet-400"></i> Nome Completo
                     </label>
                     <input type="text" id="name" required placeholder="Seu nome completo"
-                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
+                        class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
                 </div>
-
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">
-                        <i class="fa-solid fa-envelope mr-1 text-violet-400"></i> Email
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                        <i class="fa-solid fa-envelope mr-1 text-violet-600 dark:text-violet-400"></i> Email
                     </label>
                     <input type="email" id="email" required placeholder="seu@email.com"
-                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
+                        class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
                 </div>
-
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">
-                        <i class="fa-solid fa-lock mr-1 text-violet-400"></i> Senha
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                        <i class="fa-solid fa-lock mr-1 text-violet-600 dark:text-violet-400"></i> Senha
                     </label>
-                    <div class="relative">
-                        <input type="password" id="password" required placeholder="Mínimo 6 caracteres" minlength="6"
-                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition pr-10">
-                        <button type="button" id="togglePass" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition">
-                            <i class="fa-solid fa-eye text-sm"></i>
-                        </button>
-                    </div>
+                    <input type="password" id="password" required placeholder="Minimo 6 caracteres" minlength="6"
+                        class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
                 </div>
-
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">
-                        <i class="fa-solid fa-lock mr-1 text-violet-400"></i> Confirmar Senha
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                        <i class="fa-solid fa-key mr-1 text-violet-600 dark:text-violet-400"></i> Codigo do Projeto (opcional)
                     </label>
-                    <input type="password" id="confirmPassword" required placeholder="Repita a senha"
-                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
+                    <input type="text" id="projectCode" placeholder="Ex: TCC-ABCD (deixe vazio para criar novo)"
+                        class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
+                    <p class="text-xs text-slate-400 mt-1">Se seu grupo ja tem um projeto, cole o codigo aqui para entrar</p>
                 </div>
 
-                <!-- Error message -->
-                <div id="errorMsg" class="hidden bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3">
-                </div>
-                <!-- Success message -->
-                <div id="successMsg" class="hidden bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm rounded-xl px-4 py-3">
-                </div>
+                <div id="errorMsg" class="hidden bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm rounded-xl px-4 py-3"></div>
+                <div id="successMsg" class="hidden bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm rounded-xl px-4 py-3"></div>
 
-                <button type="submit"
-                    class="w-full bg-violet-600 hover:bg-violet-500 font-semibold py-3.5 rounded-xl transition shadow-lg shadow-violet-600/25">
+                <button type="submit" id="submitBtn"
+                    class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25">
                     <i class="fa-solid fa-check mr-2"></i>Criar Conta
                 </button>
             </form>
 
-            <p class="text-center text-sm text-slate-400 mt-6">
-                Já tem conta? <a href="login.html" class="text-violet-400 hover:text-violet-300 font-medium transition">Entrar</a>
+            <p class="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
+                Ja tem conta? <a href="login.html" class="text-violet-600 dark:text-violet-400 hover:underline font-medium">Entrar</a>
             </p>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-init.js"></script>
     <script>
-        // Toggle password visibility
-        const togglePass = document.getElementById('togglePass');
-        const passwordInput = document.getElementById('password');
-        togglePass.addEventListener('click', () => {
-            const type = passwordInput.type === 'password' ? 'text' : 'password';
-            passwordInput.type = type;
-            togglePass.querySelector('i').classList.toggle('fa-eye');
-            togglePass.querySelector('i').classList.toggle('fa-eye-slash');
+        auth.onAuthStateChanged(user => {
+            if (user) window.location.href = 'dashboard.html';
         });
 
-        // Register form
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        function generateCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'TCC-';
+            for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            return code;
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-
             const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim().toLowerCase();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
+            const projectCode = document.getElementById('projectCode').value.trim().toUpperCase();
             const errorMsg = document.getElementById('errorMsg');
             const successMsg = document.getElementById('successMsg');
+            const btn = document.getElementById('submitBtn');
+
             errorMsg.classList.add('hidden');
             successMsg.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Criando...';
 
-            // Validation
-            if (password !== confirmPassword) {
-                errorMsg.textContent = 'As senhas não coincidem.';
+            try {
+                if (!isFirebaseConfigured()) throw { message: 'Firebase nao configurado. Edite js/firebase-init.js' };
+
+                // Create auth user
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
+                await cred.user.updateProfile({ displayName: name });
+
+                let projectId = null;
+
+                if (projectCode) {
+                    // Try to join existing project
+                    const snap = await db.collection('projects').where('code', '==', projectCode).get();
+                    if (snap.empty) {
+                        throw { message: 'Codigo de projeto nao encontrado: ' + projectCode };
+                    }
+                    projectId = snap.docs[0].id;
+                    // Add user to project members
+                    await db.collection('projects').doc(projectId).update({
+                        members: firebase.firestore.FieldValue.arrayUnion(cred.user.uid)
+                    });
+                } else {
+                    // Create new project
+                    const code = generateCode();
+                    const projectRef = await db.collection('projects').add({
+                        name: 'Meu TCC',
+                        code: code,
+                        ownerId: cred.user.uid,
+                        members: [cred.user.uid],
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    projectId = projectRef.id;
+                }
+
+                // Save user profile in Firestore
+                await db.collection('users').doc(cred.user.uid).set({
+                    name: name,
+                    email: email,
+                    projectId: projectId,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                successMsg.textContent = 'Conta criada com sucesso! Redirecionando...';
+                successMsg.classList.remove('hidden');
+
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+            } catch (err) {
+                // If auth user was created but Firestore failed, we still have the user
+                let msg = 'Erro ao criar conta.';
+                if (err.code === 'auth/email-already-in-use') msg = 'Este email ja esta em uso.';
+                else if (err.code === 'auth/weak-password') msg = 'Senha muito fraca. Use pelo menos 6 caracteres.';
+                else if (err.message) msg = err.message;
+                errorMsg.textContent = msg;
                 errorMsg.classList.remove('hidden');
-                return;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Criar Conta';
             }
-
-            if (password.length < 6) {
-                errorMsg.textContent = 'A senha deve ter pelo menos 6 caracteres.';
-                errorMsg.classList.remove('hidden');
-                return;
-            }
-
-            // Get existing users
-            const users = JSON.parse(localStorage.getItem('tccflow_users') || '[]');
-
-            // Check if email already exists
-            if (users.find(u => u.email === email)) {
-                errorMsg.textContent = 'Este email já está registado.';
-                errorMsg.classList.remove('hidden');
-                return;
-            }
-
-            // Create user
-            const newUser = {
-                id: Date.now().toString(),
-                name: name,
-                email: email,
-                password: password,
-                createdAt: new Date().toISOString()
-            };
-
-            users.push(newUser);
-            localStorage.setItem('tccflow_users', JSON.stringify(users));
-
-            successMsg.textContent = 'Conta criada com sucesso! Redirecionando...';
-            successMsg.classList.remove('hidden');
-
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1500);
         });
     </script>
 </body>
