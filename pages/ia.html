@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I.A. Pesquisa - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        .typing-dot { animation: typingBounce 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce { 0%,80%,100%{transform:scale(0);opacity:0.3} 40%{transform:scale(1);opacity:1} }
+        .result-card { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas</a>
+                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">I.A.</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-gear text-sm"></i></a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-sm"></i></button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-bars text-sm"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Hero Header -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
+                    <i class="fa-solid fa-robot text-white text-2xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">Assistente de Pesquisa I.A.</h1>
+                <p class="text-slate-500 max-w-lg mx-auto">Pesquise artigos acadêmicos, encontre fontes confiáveis e explore referências para o seu TCC usando inteligência artificial.</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 mb-6 shadow-sm">
+                <form id="searchForm" class="flex gap-3">
+                    <div class="flex-1 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="searchInput" placeholder="Ex: impacto das redes sociais na saúde mental de adolescentes"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition" required>
+                    </div>
+                    <button type="submit" id="searchBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-6 py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm whitespace-nowrap">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Pesquisar
+                    </button>
+                </form>
+
+                <!-- Quick Suggestions -->
+                <div class="flex flex-wrap gap-2 mt-4">
+                    <span class="text-xs text-slate-400 mr-1 pt-1">Sugestões:</span>
+                    <button onclick="quickSearch('inteligência artificial na educação')" class="text-xs bg-violet-50 text-violet-600 px-3 py-1.5 rounded-full hover:bg-violet-100 transition">inteligência artificial na educação</button>
+                    <button onclick="quickSearch('sustentabilidade ambiental nas empresas')" class="text-xs bg-cyan-50 text-cyan-600 px-3 py-1.5 rounded-full hover:bg-cyan-100 transition">sustentabilidade nas empresas</button>
+                    <button onclick="quickSearch('saúde mental de jovens')" class="text-xs bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full hover:bg-emerald-100 transition">saúde mental de jovens</button>
+                    <button onclick="quickSearch('tecnologia e inclusão social')" class="text-xs bg-amber-50 text-amber-600 px-3 py-1.5 rounded-full hover:bg-amber-100 transition">tecnologia e inclusão social</button>
+                </div>
+            </div>
+
+            <!-- Filter Options -->
+            <div class="flex flex-wrap gap-3 mb-6">
+                <select id="filterYear" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <option value="">Qualquer ano</option>
+                    <option value="2024-2026">2024-2026</option>
+                    <option value="2020-2023">2020-2023</option>
+                    <option value="2015-2019">2015-2019</option>
+                    <option value="2010-2014">2010-2014</option>
+                </select>
+                <select id="filterType" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <option value="all">Todos os tipos</option>
+                    <option value="article">Artigos</option>
+                    <option value="book">Livros</option>
+                    <option value="thesis">Teses e Dissertações</option>
+                </select>
+                <select id="filterLang" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <option value="pt">Português</option>
+                    <option value="en">Inglês</option>
+                    <option value="all">Todos os idiomas</option>
+                </select>
+            </div>
+
+            <!-- Results Area -->
+            <div id="resultsArea">
+                <!-- Welcome State -->
+                <div id="welcomeState" class="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 shadow-sm text-center">
+                    <div class="max-w-md mx-auto">
+                        <i class="fa-solid fa-brain text-4xl text-violet-300 mb-4"></i>
+                        <h3 class="text-lg font-bold mb-2">Como funciona?</h3>
+                        <p class="text-sm text-slate-500 mb-6">Digite um tema e o assistente buscará artigos acadêmicos em bases de dados como Semantic Scholar, CrossRef e Google Scholar.</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+                            <div class="bg-violet-50 rounded-xl p-4">
+                                <div class="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center mb-2">
+                                    <i class="fa-solid fa-1 text-violet-600 text-xs font-bold"></i>
+                                </div>
+                                <p class="text-xs font-medium">Digite o tema da sua pesquisa</p>
+                            </div>
+                            <div class="bg-cyan-50 rounded-xl p-4">
+                                <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center mb-2">
+                                    <i class="fa-solid fa-2 text-cyan-600 text-xs font-bold"></i>
+                                </div>
+                                <p class="text-xs font-medium">Veja artigos e fontes encontrados</p>
+                            </div>
+                            <div class="bg-emerald-50 rounded-xl p-4">
+                                <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mb-2">
+                                    <i class="fa-solid fa-3 text-emerald-600 text-xs font-bold"></i>
+                                </div>
+                                <p class="text-xs font-medium">Salve os que forem úteis para o TCC</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-center">
+                    <div class="flex items-center justify-center gap-2 mb-4">
+                        <div class="typing-dot w-3 h-3 bg-violet-500 rounded-full"></div>
+                        <div class="typing-dot w-3 h-3 bg-cyan-500 rounded-full"></div>
+                        <div class="typing-dot w-3 h-3 bg-emerald-500 rounded-full"></div>
+                    </div>
+                    <p class="text-sm text-slate-500" id="loadingText">Buscando artigos acadêmicos...</p>
+                    <p class="text-xs text-slate-400 mt-1">Consultando Semantic Scholar e CrossRef</p>
+                </div>
+
+                <!-- Results -->
+                <div id="resultsList" class="hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold" id="resultsTitle">Resultados</h3>
+                        <span class="text-sm text-slate-400" id="resultsCount"></span>
+                    </div>
+                    <div id="resultsContainer" class="space-y-3"></div>
+                </div>
+
+                <!-- Error State -->
+                <div id="errorState" class="hidden bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+                    <i class="fa-solid fa-circle-exclamation text-red-400 text-2xl mb-2"></i>
+                    <p class="text-sm text-red-600" id="errorText">Erro ao buscar resultados</p>
+                </div>
+            </div>
+
+            <!-- Saved Papers -->
+            <div class="mt-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold"><i class="fa-solid fa-bookmark mr-2 text-amber-600"></i>Fontes Salvas</h2>
+                    <span class="text-xs text-slate-400" id="savedCount">0 salvos</span>
+                </div>
+                <div id="savedList" class="space-y-3">
+                    <div class="text-center py-6 text-slate-400">
+                        <i class="fa-solid fa-bookmark text-2xl mb-2 block opacity-30"></i>
+                        <p class="text-sm">Nenhuma fonte salva ainda. Pesquise e salve artigos relevantes!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access to Academic Databases -->
+            <div class="mt-6 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6">
+                <h3 class="font-bold mb-4"><i class="fa-solid fa-database mr-2 text-violet-600"></i>Bases Acadêmicas</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <a href="https://scholar.google.com" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
+                        <i class="fa-solid fa-graduation-cap text-lg text-blue-600 mb-1"></i>
+                        <p class="text-xs font-medium">Google Scholar</p>
+                    </a>
+                    <a href="https://www.scielo.br" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
+                        <i class="fa-solid fa-flask text-lg text-emerald-600 mb-1"></i>
+                        <p class="text-xs font-medium">SciELO</p>
+                    </a>
+                    <a href="https://www.semanticscholar.org" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
+                        <i class="fa-solid fa-brain text-lg text-violet-600 mb-1"></i>
+                        <p class="text-xs font-medium">Semantic Scholar</p>
+                    </a>
+                    <a href="https://bdtd.ibict.br" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
+                        <i class="fa-solid fa-book text-lg text-amber-600 mb-1"></i>
+                        <p class="text-xs font-medium">BDTD (Teses)</p>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-init.js"></script>
+    <script>
+        let currentUserId = null;
+        const SAVED_KEY = 'tccflow_saved_papers';
+
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        auth.onAuthStateChanged(user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUserId = user.uid;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+            renderSaved();
+        });
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ========== Search ==========
+        window.quickSearch = function(query) {
+            document.getElementById('searchInput').value = query;
+            document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+        };
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            showLoading();
+
+            const lang = document.getElementById('filterLang').value;
+            const yearRange = document.getElementById('filterYear').value;
+
+            // Build search query
+            let searchQuery = query;
+            if (lang === 'pt') searchQuery = query;
+            else if (lang === 'en') searchQuery = query;
+
+            try {
+                // Fetch from Semantic Scholar API (free, no key needed)
+                const results = await searchSemanticScholar(searchQuery, yearRange);
+
+                // Also search CrossRef for additional results
+                const crossrefResults = await searchCrossRef(searchQuery, yearRange);
+
+                // Merge and deduplicate
+                const allResults = [...results, ...crossrefResults];
+                const unique = allResults.filter((v, i, a) =>
+                    a.findIndex(t => t.title.toLowerCase() === v.title.toLowerCase()) === i
+                );
+
+                if (unique.length === 0) {
+                    showResults([], query);
+                } else {
+                    showResults(unique.slice(0, 20), query);
+                }
+            } catch (err) {
+                console.error('Search error:', err);
+                showError('Erro na busca. Verifique sua conexão e tente novamente.');
+            }
+        });
+
+        async function searchSemanticScholar(query, yearRange) {
+            try {
+                let url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=10&fields=title,authors,year,abstract,url,citationCount,externalIds`;
+
+                if (yearRange) {
+                    const [start, end] = yearRange.split('-');
+                    url += `&year=${start}-${end}`;
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Semantic Scholar error');
+                const data = await response.json();
+
+                return (data.data || []).map(paper => ({
+                    title: paper.title || 'Sem título',
+                    authors: (paper.authors || []).map(a => a.name).join(', '),
+                    year: paper.year || '',
+                    abstract: paper.abstract || '',
+                    url: paper.url || '',
+                    citations: paper.citationCount || 0,
+                    source: 'Semantic Scholar',
+                    doi: paper.externalIds?.DOI || ''
+                }));
+            } catch (err) {
+                console.warn('Semantic Scholar failed:', err);
+                return [];
+            }
+        }
+
+        async function searchCrossRef(query, yearRange) {
+            try {
+                let url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=10&sort=relevance`;
+
+                if (yearRange) {
+                    const [start, end] = yearRange.split('-');
+                    url += `&filter=from-pub-date:${start},until-pub-date:${end}`;
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('CrossRef error');
+                const data = await response.json();
+
+                return (data.message?.items || []).map(item => ({
+                    title: Array.isArray(item.title) ? item.title[0] : (item.title || 'Sem título'),
+                    authors: (item.author || []).map(a => `${a.given || ''} ${a.family || ''}`).join(', '),
+                    year: item.published?.['date-parts']?.[0]?.[0] || '',
+                    abstract: (item.abstract || '').replace(/<[^>]*>/g, '').substring(0, 300),
+                    url: item.URL || '',
+                    citations: item['is-referenced-by-count'] || 0,
+                    source: 'CrossRef',
+                    doi: item.DOI || ''
+                }));
+            } catch (err) {
+                console.warn('CrossRef failed:', err);
+                return [];
+            }
+        }
+
+        // ========== UI States ==========
+        function showLoading() {
+            document.getElementById('welcomeState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('resultsList').classList.add('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+        }
+
+        function showError(msg) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('welcomeState').classList.add('hidden');
+            document.getElementById('resultsList').classList.add('hidden');
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorState').classList.remove('hidden');
+        }
+
+        function showResults(results, query) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('welcomeState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('resultsList').classList.remove('hidden');
+
+            document.getElementById('resultsTitle').innerHTML = `<i class="fa-solid fa-sparkles text-violet-600 mr-2"></i>Resultados para "${escapeHtml(query)}"`;
+            document.getElementById('resultsCount').textContent = `${results.length} artigos encontrados`;
+
+            const container = document.getElementById('resultsContainer');
+
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+                        <i class="fa-solid fa-search text-amber-400 text-2xl mb-2"></i>
+                        <p class="text-sm text-amber-700">Nenhum resultado encontrado. Tente usar palavras-chave diferentes ou mude os filtros.</p>
+                        <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(query)}" target="_blank"
+                            class="inline-block mt-3 text-xs bg-amber-100 text-amber-700 px-4 py-2 rounded-lg hover:bg-amber-200 transition">
+                            <i class="fa-solid fa-external-link-alt mr-1"></i>Tentar no Google Scholar
+                        </a>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = results.map((paper, i) => {
+                const isSaved = getSavedPapers().some(s => s.title.toLowerCase() === paper.title.toLowerCase());
+                const abstractPreview = paper.abstract ? paper.abstract.substring(0, 200) + (paper.abstract.length > 200 ? '...' : '') : '';
+
+                return `
+                <div class="result-card bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md transition group" style="animation-delay: ${i * 0.05}s">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${paper.source === 'Semantic Scholar' ? 'bg-violet-100 text-violet-600' : 'bg-cyan-100 text-cyan-600'}">${paper.source}</span>
+                                ${paper.year ? `<span class="text-[10px] text-slate-400">${paper.year}</span>` : ''}
+                                ${paper.citations > 0 ? `<span class="text-[10px] text-slate-400"><i class="fa-solid fa-quote-right mr-0.5"></i>${paper.citations} citações</span>` : ''}
+                            </div>
+                            <h4 class="text-sm font-bold mb-1 leading-snug">${escapeHtml(paper.title)}</h4>
+                            ${paper.authors ? `<p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-users text-slate-300 mr-1"></i>${escapeHtml(paper.authors.substring(0, 100))}${paper.authors.length > 100 ? '...' : ''}</p>` : ''}
+                            ${abstractPreview ? `<p class="text-xs text-slate-400 leading-relaxed">${escapeHtml(abstractPreview)}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
+                        ${paper.url ? `<a href="${escapeHtml(paper.url)}" target="_blank" class="text-xs bg-violet-50 text-violet-600 px-3 py-1.5 rounded-lg hover:bg-violet-100 transition"><i class="fa-solid fa-external-link-alt mr-1"></i>Abrir</a>` : ''}
+                        ${paper.doi ? `<a href="https://doi.org/${escapeHtml(paper.doi)}" target="_blank" class="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-200 transition"><i class="fa-solid fa-link mr-1"></i>DOI</a>` : ''}
+                        <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(paper.title)}" target="_blank" class="text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition"><i class="fa-solid fa-graduation-cap mr-1"></i>Scholar</a>
+                        <button onclick='savePaper(${JSON.stringify(paper).replace(/'/g, "&apos;")})' class="text-xs ${isSaved ? 'bg-amber-100 text-amber-700' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'} px-3 py-1.5 rounded-lg transition ml-auto">
+                            <i class="fa-solid ${isSaved ? 'fa-check' : 'fa-bookmark'} mr-1"></i>${isSaved ? 'Salvo' : 'Salvar'}
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ========== Saved Papers ==========
+        function getSavedPapers() {
+            return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]').filter(p => p.userId === currentUserId);
+        }
+
+        function saveSavedPapers(papers) {
+            const all = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]').filter(p => p.userId !== currentUserId);
+            localStorage.setItem(SAVED_KEY, JSON.stringify([...all, ...papers]));
+        }
+
+        window.savePaper = function(paper) {
+            const papers = getSavedPapers();
+            if (papers.some(p => p.title.toLowerCase() === paper.title.toLowerCase())) return;
+
+            papers.push({
+                ...paper,
+                id: Date.now().toString(),
+                userId: currentUserId,
+                savedAt: new Date().toISOString()
+            });
+            saveSavedPapers(papers);
+            renderSaved();
+
+            // Re-render results to update button states
+            const query = document.getElementById('searchInput').value;
+            if (query && !document.getElementById('resultsList').classList.contains('hidden')) {
+                // Just update the button for this paper
+            }
+        };
+
+        window.removeSaved = function(id) {
+            const papers = getSavedPapers().filter(p => p.id !== id);
+            saveSavedPapers(papers);
+            renderSaved();
+        };
+
+        function renderSaved() {
+            const papers = getSavedPapers();
+            const list = document.getElementById('savedList');
+            document.getElementById('savedCount').textContent = `${papers.length} salvos`;
+
+            if (papers.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-6 text-slate-400">
+                        <i class="fa-solid fa-bookmark text-2xl mb-2 block opacity-30"></i>
+                        <p class="text-sm">Nenhuma fonte salva ainda. Pesquise e salve artigos relevantes!</p>
+                    </div>`;
+                return;
+            }
+
+            list.innerHTML = papers.map(paper => `
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start justify-between gap-3 group">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-semibold leading-snug">${escapeHtml(paper.title)}</h4>
+                        <div class="flex items-center gap-2 mt-1 flex-wrap">
+                            ${paper.authors ? `<span class="text-xs text-slate-400 truncate max-w-[200px]">${escapeHtml(paper.authors.substring(0, 60))}</span>` : ''}
+                            ${paper.year ? `<span class="text-xs text-slate-400">(${paper.year})</span>` : ''}
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-violet-100 text-violet-600">${paper.source}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        ${paper.url ? `<a href="${escapeHtml(paper.url)}" target="_blank" class="w-8 h-8 rounded-lg flex items-center justify-center text-violet-600 hover:bg-violet-50 transition"><i class="fa-solid fa-external-link-alt text-xs"></i></a>` : ''}
+                        <button onclick="removeSaved('${paper.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 transition opacity-0 group-hover:opacity-100">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

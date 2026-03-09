@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        .phase-bar { transition: width 0.6s ease; }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Projeto</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas</a>
+                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-gear text-sm"></i></a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-sm"></i></button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-bars text-sm"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold">Visão Geral do Projeto</h1>
+                    <p class="text-slate-500 mt-1">Configure os detalhes gerais do seu TCC</p>
+                </div>
+                <button id="saveAllBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-5 py-2.5 rounded-xl font-medium hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
+                    <i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Tudo
+                </button>
+            </div>
+
+            <!-- Project Info Card -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h2 class="text-lg font-bold mb-6"><i class="fa-solid fa-book mr-2 text-violet-600"></i>Informações do TCC</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Título / Tema do TCC</label>
+                        <input type="text" id="tccTitle" placeholder="Ex: A influência das redes sociais na educação"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Instituição / Escola</label>
+                        <input type="text" id="tccInstitution" placeholder="Ex: ETEC Prof. Carmelino Corrêa Júnior"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Curso / Turma</label>
+                        <input type="text" id="tccCourse" placeholder="Ex: Desenvolvimento de Sistemas - 3DS"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Tipo de Trabalho</label>
+                        <select id="tccType" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            <option value="tcc">TCC</option>
+                            <option value="monografia">Monografia</option>
+                            <option value="artigo">Artigo Científico</option>
+                            <option value="relatorio">Relatório Técnico</option>
+                            <option value="projeto">Projeto Integrador</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Metodologia</label>
+                        <select id="tccMethodology" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            <option value="">Selecione...</option>
+                            <option value="qualitativa">Pesquisa Qualitativa</option>
+                            <option value="quantitativa">Pesquisa Quantitativa</option>
+                            <option value="mista">Pesquisa Mista</option>
+                            <option value="bibliografica">Pesquisa Bibliográfica</option>
+                            <option value="experimental">Pesquisa Experimental</option>
+                            <option value="estudo-caso">Estudo de Caso</option>
+                            <option value="pesquisa-acao">Pesquisa-Ação</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Resumo / Objetivo Geral</label>
+                        <textarea id="tccAbstract" rows="3" placeholder="Descreva brevemente o objetivo e a proposta do seu TCC..."
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orientador & Professor -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold mb-5"><i class="fa-solid fa-chalkboard-user mr-2 text-cyan-600"></i>Orientador</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Nome do Orientador</label>
+                            <input type="text" id="advisorName" placeholder="Prof. Dr. João da Silva"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Email do Orientador</label>
+                            <input type="email" id="advisorEmail" placeholder="orientador@escola.com"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Dia de Orientação</label>
+                            <input type="text" id="advisorDay" placeholder="Ex: Terças às 14h"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold mb-5"><i class="fa-solid fa-user-tie mr-2 text-amber-600"></i>Professor Avaliador</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Nome do Professor</label>
+                            <input type="text" id="professorName" placeholder="Prof. Maria Oliveira"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Email do Professor</label>
+                            <input type="email" id="professorEmail" placeholder="professor@escola.com"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Disciplina</label>
+                            <input type="text" id="professorSubject" placeholder="Ex: Metodologia Científica"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prazos Gerais -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h2 class="text-lg font-bold mb-6"><i class="fa-solid fa-calendar-check mr-2 text-rose-600"></i>Prazos e Datas Importantes</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Data de Início</label>
+                        <input type="date" id="dateStart" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Prazo de Entrega Final</label>
+                        <input type="date" id="dateDeadline" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Data da Defesa / Apresentação</label>
+                        <input type="date" id="dateDefense" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                </div>
+
+                <!-- Countdown -->
+                <div id="countdownPanel" class="hidden mt-6 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-xl p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-bold text-violet-700"><i class="fa-solid fa-hourglass-half mr-2"></i>Tempo Restante para Entrega</p>
+                            <p class="text-xs text-slate-500 mt-1" id="countdownText">Calculando...</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500" id="countdownDays">--</p>
+                            <p class="text-xs text-slate-500">dias restantes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fases do TCC (Progress Tracker) -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold"><i class="fa-solid fa-bars-progress mr-2 text-emerald-600"></i>Fases do TCC</h2>
+                    <span class="text-sm font-bold text-violet-600" id="overallProgress">0%</span>
+                </div>
+
+                <!-- Overall Progress Bar -->
+                <div class="w-full bg-slate-100 rounded-full h-3 mb-8">
+                    <div id="overallBar" class="phase-bar bg-gradient-to-r from-violet-600 to-cyan-500 h-3 rounded-full" style="width: 0%"></div>
+                </div>
+
+                <div id="phasesList" class="space-y-4"></div>
+            </div>
+
+            <!-- Anotações Gerais -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-sticky-note mr-2 text-amber-600"></i>Anotações & Observações</h2>
+                <textarea id="projectNotes" rows="5" placeholder="Escreva anotações importantes, feedback do orientador, lembranças gerais..."
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
+                <p class="text-xs text-slate-400 mt-2">As anotações são salvas automaticamente junto com o projeto.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Save Feedback -->
+    <div id="saveFeedback" class="hidden fixed bottom-6 right-6 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-lg z-50 text-sm font-medium">
+        <i class="fa-solid fa-check mr-2"></i>Salvo com sucesso!
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-init.js"></script>
+    <script>
+        let currentUser = null;
+        let projectId = null;
+
+        // Default TCC phases
+        const defaultPhases = [
+            { id: 'escolha-tema', name: 'Escolha do Tema', progress: 0, icon: 'fa-lightbulb', color: 'from-amber-400 to-amber-500' },
+            { id: 'revisao-lit', name: 'Revisão Bibliográfica', progress: 0, icon: 'fa-book-open', color: 'from-violet-400 to-violet-500' },
+            { id: 'metodologia', name: 'Metodologia', progress: 0, icon: 'fa-flask', color: 'from-cyan-400 to-cyan-500' },
+            { id: 'desenvolvimento', name: 'Desenvolvimento / Resultados', progress: 0, icon: 'fa-code', color: 'from-emerald-400 to-emerald-500' },
+            { id: 'conclusao', name: 'Conclusão', progress: 0, icon: 'fa-flag-checkered', color: 'from-rose-400 to-rose-500' },
+            { id: 'formatacao', name: 'Formatação ABNT', progress: 0, icon: 'fa-file-lines', color: 'from-blue-400 to-blue-500' },
+            { id: 'revisao-final', name: 'Revisão Final & Defesa', progress: 0, icon: 'fa-star', color: 'from-purple-400 to-purple-500' }
+        ];
+
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            if (isFirebaseConfigured()) {
+                try {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists && userDoc.data().projectId) {
+                        projectId = userDoc.data().projectId;
+                        await loadProjectData();
+                    }
+                } catch (err) { console.error('Error:', err); }
+            }
+            renderPhases();
+        });
+
+        async function loadProjectData() {
+            try {
+                const doc = await db.collection('projects').doc(projectId).get();
+                if (!doc.exists) return;
+                const data = doc.data();
+                const info = data.projectInfo || {};
+
+                document.getElementById('tccTitle').value = info.tccTitle || '';
+                document.getElementById('tccInstitution').value = info.tccInstitution || '';
+                document.getElementById('tccCourse').value = info.tccCourse || '';
+                document.getElementById('tccType').value = info.tccType || 'tcc';
+                document.getElementById('tccMethodology').value = info.tccMethodology || '';
+                document.getElementById('tccAbstract').value = info.tccAbstract || '';
+                document.getElementById('advisorName').value = info.advisorName || '';
+                document.getElementById('advisorEmail').value = info.advisorEmail || '';
+                document.getElementById('advisorDay').value = info.advisorDay || '';
+                document.getElementById('professorName').value = info.professorName || '';
+                document.getElementById('professorEmail').value = info.professorEmail || '';
+                document.getElementById('professorSubject').value = info.professorSubject || '';
+                document.getElementById('dateStart').value = info.dateStart || '';
+                document.getElementById('dateDeadline').value = info.dateDeadline || '';
+                document.getElementById('dateDefense').value = info.dateDefense || '';
+                document.getElementById('projectNotes').value = info.projectNotes || '';
+
+                if (info.phases && info.phases.length > 0) {
+                    info.phases.forEach(saved => {
+                        const phase = defaultPhases.find(p => p.id === saved.id);
+                        if (phase) phase.progress = saved.progress;
+                    });
+                }
+
+                updateCountdown();
+            } catch (err) { console.error('Load error:', err); }
+        }
+
+        function renderPhases() {
+            const container = document.getElementById('phasesList');
+            container.innerHTML = defaultPhases.map(phase => `
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 bg-gradient-to-br ${phase.color} rounded-lg flex items-center justify-center">
+                                <i class="fa-solid ${phase.icon} text-white text-xs"></i>
+                            </div>
+                            <span class="text-sm font-semibold">${phase.name}</span>
+                        </div>
+                        <span class="text-sm font-bold text-slate-500" id="label-${phase.id}">${phase.progress}%</span>
+                    </div>
+                    <input type="range" min="0" max="100" step="5" value="${phase.progress}" data-phase="${phase.id}"
+                        class="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-violet-600"
+                        oninput="updatePhase('${phase.id}', this.value)">
+                </div>
+            `).join('');
+            updateOverall();
+        }
+
+        window.updatePhase = function(id, value) {
+            const phase = defaultPhases.find(p => p.id === id);
+            if (phase) phase.progress = parseInt(value);
+            document.getElementById('label-' + id).textContent = value + '%';
+            updateOverall();
+        };
+
+        function updateOverall() {
+            const total = defaultPhases.reduce((sum, p) => sum + p.progress, 0);
+            const avg = Math.round(total / defaultPhases.length);
+            document.getElementById('overallProgress').textContent = avg + '%';
+            document.getElementById('overallBar').style.width = avg + '%';
+        }
+
+        function updateCountdown() {
+            const deadline = document.getElementById('dateDeadline').value;
+            if (!deadline) return;
+
+            const panel = document.getElementById('countdownPanel');
+            const now = new Date();
+            const target = new Date(deadline + 'T23:59:59');
+            const diff = target - now;
+
+            if (diff <= 0) {
+                document.getElementById('countdownDays').textContent = '0';
+                document.getElementById('countdownText').textContent = 'O prazo já passou!';
+                panel.classList.remove('hidden');
+                panel.className = panel.className.replace('from-violet-50 to-cyan-50 border-violet-200', 'from-red-50 to-rose-50 border-red-200');
+                return;
+            }
+
+            const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('countdownDays').textContent = days;
+
+            const deadlineDate = new Date(deadline + 'T00:00:00');
+            document.getElementById('countdownText').textContent =
+                `Entrega: ${deadlineDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+            panel.classList.remove('hidden');
+        }
+
+        // Listen for deadline changes
+        document.getElementById('dateDeadline').addEventListener('change', updateCountdown);
+
+        // ========== Save All ==========
+        document.getElementById('saveAllBtn').addEventListener('click', async () => {
+            if (!projectId || !isFirebaseConfigured()) {
+                alert('Você precisa estar em um projeto para salvar.');
+                return;
+            }
+
+            const info = {
+                tccTitle: document.getElementById('tccTitle').value,
+                tccInstitution: document.getElementById('tccInstitution').value,
+                tccCourse: document.getElementById('tccCourse').value,
+                tccType: document.getElementById('tccType').value,
+                tccMethodology: document.getElementById('tccMethodology').value,
+                tccAbstract: document.getElementById('tccAbstract').value,
+                advisorName: document.getElementById('advisorName').value,
+                advisorEmail: document.getElementById('advisorEmail').value,
+                advisorDay: document.getElementById('advisorDay').value,
+                professorName: document.getElementById('professorName').value,
+                professorEmail: document.getElementById('professorEmail').value,
+                professorSubject: document.getElementById('professorSubject').value,
+                dateStart: document.getElementById('dateStart').value,
+                dateDeadline: document.getElementById('dateDeadline').value,
+                dateDefense: document.getElementById('dateDefense').value,
+                projectNotes: document.getElementById('projectNotes').value,
+                phases: defaultPhases.map(p => ({ id: p.id, progress: p.progress })),
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                await db.collection('projects').doc(projectId).update({ projectInfo: info });
+                const fb = document.getElementById('saveFeedback');
+                fb.classList.remove('hidden');
+                setTimeout(() => fb.classList.add('hidden'), 2500);
+            } catch (err) {
+                alert('Erro ao salvar: ' + err.message);
+            }
+        });
+    </script>
+</body>
+</html>
