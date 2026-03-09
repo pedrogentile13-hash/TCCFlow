@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TCCFlow - Planeje seu TCC</title>
+    <script src="js/darkmode.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/dark.css">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] }
@@ -36,7 +39,7 @@
 </head>
 <body class="bg-white text-slate-900 min-h-screen antialiased">
 
-    <!-- Liquid Grass Background -->
+    <!-- Liquid Background -->
     <div class="liquid-bg">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -44,7 +47,7 @@
     </div>
 
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10">
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="index.html" class="flex items-center gap-2.5">
@@ -54,17 +57,17 @@
                     <span class="text-lg font-bold">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
                 <div class="hidden md:flex items-center gap-6">
-                    <a href="#features" class="text-sm text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition">Funcionalidades</a>
-                    <a href="#about" class="text-sm text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition">Sobre</a>
-                    <a href="pages/login.html" class="text-sm text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition">Entrar</a>
+                    <a href="#features" class="text-sm text-slate-500 hover:text-violet-600 transition">Funcionalidades</a>
+                    <a href="#about" class="text-sm text-slate-500 hover:text-violet-600 transition">Sobre</a>
+                    <a href="pages/login.html" class="text-sm text-slate-500 hover:text-violet-600 transition">Entrar</a>
                     <a href="pages/cadastro.html" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold px-5 py-2 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25">Criar Conta</a>
                 </div>
-                <button id="mobileMenuBtn" class="md:hidden text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                <button id="mobileMenuBtn" class="md:hidden text-slate-400 hover:text-slate-600">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
             </div>
         </div>
-        <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2 border-t border-slate-100 dark:border-white/5">
+        <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2 border-t border-slate-100">
             <a href="#features" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Funcionalidades</a>
             <a href="#about" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Sobre</a>
             <a href="pages/login.html" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Entrar</a>
@@ -75,9 +78,9 @@
     <!-- Hero Section -->
     <section class="relative z-10 min-h-screen flex items-center justify-center overflow-hidden pt-16">
         <div class="relative z-10 max-w-4xl mx-auto px-4 text-center">
-            <div class="fade-in inline-flex items-center gap-2 bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 px-4 py-2 rounded-full mb-8">
+            <div class="fade-in inline-flex items-center gap-2 bg-violet-50 border border-violet-200 px-4 py-2 rounded-full mb-8">
                 <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span class="text-xs text-violet-700 dark:text-violet-300 font-medium">Planner Completo para TCC</span>
+                <span class="text-xs text-violet-700 font-medium">Planner Completo para TCC</span>
             </div>
 
             <h1 class="fade-in fade-in-delay-1 text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-tight mb-6">
@@ -85,7 +88,7 @@
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">do inicio ao fim</span>
             </h1>
 
-            <p class="fade-in fade-in-delay-2 text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+            <p class="fade-in fade-in-delay-2 text-base sm:text-lg text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
                 Organize cronogramas, gerencie tarefas em grupo, acompanhe prazos e
                 mantenha todo o planejamento do TCC em um so lugar. Com Firebase e Google integrados.
             </p>
@@ -94,23 +97,23 @@
                 <a href="pages/cadastro.html" class="w-full sm:w-auto bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-8 py-3.5 rounded-2xl transition hover:shadow-xl hover:shadow-violet-500/25 text-center">
                     <i class="fa-solid fa-rocket mr-2"></i>Comecar Agora
                 </a>
-                <a href="#features" class="w-full sm:w-auto bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-semibold px-8 py-3.5 rounded-2xl transition text-center border border-slate-200 dark:border-white/10">
+                <a href="#features" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-8 py-3.5 rounded-2xl transition text-center border border-slate-200">
                     <i class="fa-solid fa-circle-play mr-2"></i>Saber Mais
                 </a>
             </div>
 
             <!-- Stats -->
             <div class="fade-in fade-in-delay-3 grid grid-cols-3 gap-4 mt-16 max-w-lg mx-auto">
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm">
-                    <div class="text-2xl font-bold text-violet-600 dark:text-violet-400">100%</div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <div class="text-2xl font-bold text-violet-600">100%</div>
                     <div class="text-xs text-slate-500 mt-1">Gratuito</div>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm">
-                    <div class="text-2xl font-bold text-cyan-600 dark:text-cyan-400">4</div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <div class="text-2xl font-bold text-cyan-600">4</div>
                     <div class="text-xs text-slate-500 mt-1">Membros</div>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm">
-                    <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Firebase</div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <div class="text-2xl font-bold text-emerald-600">Firebase</div>
                     <div class="text-xs text-slate-500 mt-1">Integrado</div>
                 </div>
             </div>
@@ -122,51 +125,51 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl sm:text-4xl font-bold mb-4">Tudo para o seu <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">TCC fluir</span></h2>
-                <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">Ferramentas pensadas para organizar cada etapa do Trabalho de Conclusao de Curso.</p>
+                <p class="text-slate-500 max-w-xl mx-auto">Ferramentas pensadas para organizar cada etapa do Trabalho de Conclusao de Curso.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-8 hover:shadow-lg hover:shadow-violet-500/5 transition group">
-                    <div class="w-14 h-14 bg-violet-100 dark:bg-violet-500/20 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-users text-violet-600 dark:text-violet-400 text-xl"></i>
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-violet-500/5 transition group">
+                    <div class="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-users text-violet-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Equipe & Membros</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Adicione integrantes, atribua tarefas e acompanhe o progresso de cada membro do grupo.</p>
+                    <p class="text-sm text-slate-500 leading-relaxed">Adicione integrantes, atribua tarefas e acompanhe o progresso de cada membro do grupo.</p>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-8 hover:shadow-lg hover:shadow-cyan-500/5 transition group">
-                    <div class="w-14 h-14 bg-cyan-100 dark:bg-cyan-500/20 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-diagram-project text-cyan-600 dark:text-cyan-400 text-xl"></i>
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-cyan-500/5 transition group">
+                    <div class="w-14 h-14 bg-cyan-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-diagram-project text-cyan-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Organizacao do Projeto</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Dashboard completo com estatisticas, tarefas por membro e visao geral do andamento.</p>
+                    <p class="text-sm text-slate-500 leading-relaxed">Dashboard completo com estatisticas, tarefas por membro e visao geral do andamento.</p>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-8 hover:shadow-lg hover:shadow-emerald-500/5 transition group">
-                    <div class="w-14 h-14 bg-emerald-100 dark:bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-flask text-emerald-600 dark:text-emerald-400 text-xl"></i>
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-emerald-500/5 transition group">
+                    <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-flask text-emerald-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Hub de Pesquisa</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Quadro Kanban para organizar anotacoes, referencias e achados da pesquisa.</p>
+                    <p class="text-sm text-slate-500 leading-relaxed">Quadro Kanban para organizar anotacoes, referencias e achados da pesquisa.</p>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-8 hover:shadow-lg hover:shadow-amber-500/5 transition group">
-                    <div class="w-14 h-14 bg-amber-100 dark:bg-amber-500/20 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-calendar-days text-amber-600 dark:text-amber-400 text-xl"></i>
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-amber-500/5 transition group">
+                    <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-calendar-days text-amber-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Calendario de Prazos</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Visualize entregas, defesas e marcos importantes no calendario interativo.</p>
+                    <p class="text-sm text-slate-500 leading-relaxed">Visualize entregas, defesas e marcos importantes no calendario interativo.</p>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-8 hover:shadow-lg hover:shadow-rose-500/5 transition group">
-                    <div class="w-14 h-14 bg-rose-100 dark:bg-rose-500/20 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fa-brands fa-google text-rose-600 dark:text-rose-400 text-xl"></i>
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-rose-500/5 transition group">
+                    <div class="w-14 h-14 bg-rose-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-brands fa-google text-rose-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Google Integrado</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Crie Docs, Sheets, Slides e eventos no Calendar direto do TCCFlow.</p>
+                    <p class="text-sm text-slate-500 leading-relaxed">Crie Docs, Sheets, Slides e eventos no Calendar direto do TCCFlow.</p>
                 </div>
-                <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-8 hover:shadow-lg hover:shadow-violet-500/5 transition group">
-                    <div class="w-14 h-14 bg-orange-100 dark:bg-orange-500/20 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-fire text-orange-600 dark:text-orange-400 text-xl"></i>
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-violet-500/5 transition group">
+                    <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-fire text-orange-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Firebase Cloud</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Dados na nuvem com Firebase. Login seguro e sincronizacao entre todos os membros.</p>
+                    <p class="text-sm text-slate-500 leading-relaxed">Dados na nuvem com Firebase. Login seguro e sincronizacao entre todos os membros.</p>
                 </div>
             </div>
         </div>
@@ -196,7 +199,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-200 dark:border-white/5 py-8">
+    <footer class="border-t border-slate-200 py-8">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-2">
                 <div class="w-7 h-7 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-lg flex items-center justify-center">
