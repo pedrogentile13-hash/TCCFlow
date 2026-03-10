@@ -18,9 +18,14 @@ const DB = {
         async getAll(projectId) {
             const snap = await db.collection('googleLinks')
                 .where('projectId', '==', projectId)
-                .orderBy('createdAt', 'desc')
                 .get();
-            return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            docs.sort((a, b) => {
+                const ta = a.createdAt?.toMillis?.() || 0;
+                const tb = b.createdAt?.toMillis?.() || 0;
+                return tb - ta;
+            });
+            return docs;
         },
 
         async add(projectId, link) {
@@ -44,9 +49,14 @@ const DB = {
         async getAll(projectId) {
             const snap = await db.collection('savedPapers')
                 .where('projectId', '==', projectId)
-                .orderBy('savedAt', 'desc')
                 .get();
-            return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            docs.sort((a, b) => {
+                const ta = a.savedAt?.toMillis?.() || 0;
+                const tb = b.savedAt?.toMillis?.() || 0;
+                return tb - ta;
+            });
+            return docs;
         },
 
         async add(projectId, paper) {
@@ -84,9 +94,10 @@ const DB = {
         async getAll(projectId) {
             const snap = await db.collection('calendarGoals')
                 .where('projectId', '==', projectId)
-                .orderBy('deadline', 'asc')
                 .get();
-            return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            docs.sort((a, b) => (a.deadline || '').localeCompare(b.deadline || ''));
+            return docs;
         },
 
         async add(projectId, goal) {
