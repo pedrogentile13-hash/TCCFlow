@@ -285,15 +285,21 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-init.js"></script>
+    <script src="../js/db-service.js"></script>
     <script>
         // ========== Auth Check ==========
         let currentUserId = null;
+        let projectId = null;
 
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
             currentUserId = user.uid;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
-            renderLinks();
+
+            if (isFirebaseConfigured()) {
+                projectId = await DB.getProjectId();
+            }
+            await renderLinks();
         });
 
         // ========== Mobile Nav ==========
@@ -348,9 +354,7 @@
             window.open(url, '_blank');
         });
 
-        // ========== Saved Links ==========
-        const LINKS_KEY = 'tccflow_google_links';
-
+        // ========== Saved Links (Firestore) ==========
         const linkIcons = {
             docs: { icon: 'fa-file-word', color: 'text-blue-600', bg: 'bg-blue-100' },
             sheets: { icon: 'fa-table', color: 'text-emerald-600', bg: 'bg-emerald-100' },
@@ -361,56 +365,60 @@
             other: { icon: 'fa-link', color: 'text-cyan-600', bg: 'bg-cyan-100' }
         };
 
-        function getLinks() {
-            return JSON.parse(localStorage.getItem(LINKS_KEY) || '[]').filter(l => l.userId === currentUserId);
-        }
-
-        function saveLinks(links) {
-            const allLinks = JSON.parse(localStorage.getItem(LINKS_KEY) || '[]').filter(l => l.userId !== currentUserId);
-            localStorage.setItem(LINKS_KEY, JSON.stringify([...allLinks, ...links]));
-        }
-
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        function renderLinks() {
-            const links = getLinks();
+        async function renderLinks() {
             const list = document.getElementById('linksList');
 
-            if (links.length === 0) {
+            if (!projectId || !isFirebaseConfigured()) {
                 list.innerHTML = `<div class="text-center py-8 text-slate-400">
                     <i class="fa-solid fa-link-slash text-2xl mb-2 block"></i>
-                    <p class="text-sm">Nenhum link salvo. Adicione seus documentos do Google!</p>
+                    <p class="text-sm">Entre em um projeto para salvar links.</p>
                 </div>`;
                 return;
             }
 
-            list.innerHTML = links.map(link => {
-                const icon = linkIcons[link.type] || linkIcons.other;
-                return `
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-3 group">
-                    <div class="flex items-center gap-4 flex-1 min-w-0">
-                        <div class="w-10 h-10 ${icon.bg} rounded-xl flex items-center justify-center shrink-0">
-                            <i class="fa-solid ${icon.icon} ${icon.color}"></i>
+            try {
+                const links = await DB.googleLinks.getAll(projectId);
+
+                if (links.length === 0) {
+                    list.innerHTML = `<div class="text-center py-8 text-slate-400">
+                        <i class="fa-solid fa-link-slash text-2xl mb-2 block"></i>
+                        <p class="text-sm">Nenhum link salvo. Adicione seus documentos do Google!</p>
+                    </div>`;
+                    return;
+                }
+
+                list.innerHTML = links.map(link => {
+                    const icon = linkIcons[link.type] || linkIcons.other;
+                    return `
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-3 group">
+                        <div class="flex items-center gap-4 flex-1 min-w-0">
+                            <div class="w-10 h-10 ${icon.bg} rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid ${icon.icon} ${icon.color}"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-sm font-semibold truncate">${escapeHtml(link.name)}</h4>
+                                <p class="text-xs text-slate-400 truncate">${escapeHtml(link.url)}</p>
+                            </div>
                         </div>
-                        <div class="min-w-0">
-                            <h4 class="text-sm font-semibold truncate">${escapeHtml(link.name)}</h4>
-                            <p class="text-xs text-slate-400 truncate">${escapeHtml(link.url)}</p>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <a href="${escapeHtml(link.url)}" target="_blank" class="bg-violet-100 hover:bg-violet-200 text-violet-600 text-xs font-medium px-3 py-1.5 rounded-lg transition">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                            <button onclick="deleteLink('${link.id}')" class="bg-red-100 hover:bg-red-200 text-red-600 text-xs font-medium px-3 py-1.5 rounded-lg transition opacity-0 group-hover:opacity-100">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <a href="${escapeHtml(link.url)}" target="_blank" class="bg-violet-100 hover:bg-violet-200 text-violet-600 text-xs font-medium px-3 py-1.5 rounded-lg transition">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
-                        <button onclick="deleteLink('${link.id}')" class="bg-red-100 hover:bg-red-200 text-red-600 text-xs font-medium px-3 py-1.5 rounded-lg transition opacity-0 group-hover:opacity-100">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>`;
-            }).join('');
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading links:', err);
+            }
         }
 
         document.getElementById('addLinkBtn').addEventListener('click', () => {
@@ -420,31 +428,33 @@
             document.getElementById('linkForm').classList.add('hidden');
         });
 
-        document.getElementById('saveLink').addEventListener('click', () => {
+        document.getElementById('saveLink').addEventListener('click', async () => {
             const name = document.getElementById('linkName').value.trim();
             const url = document.getElementById('linkUrl').value.trim();
             const type = document.getElementById('linkType').value;
             if (!name || !url) { alert('Preencha o nome e a URL.'); return; }
+            if (!projectId) { alert('Você precisa estar em um projeto.'); return; }
 
-            const links = getLinks();
-            links.push({
-                id: Date.now().toString(), userId: currentUserId,
-                name, url, type, createdAt: new Date().toISOString()
-            });
-            saveLinks(links);
-
-            document.getElementById('linkName').value = '';
-            document.getElementById('linkUrl').value = '';
-            document.getElementById('linkType').value = 'docs';
-            document.getElementById('linkForm').classList.add('hidden');
-            renderLinks();
+            try {
+                await DB.googleLinks.add(projectId, { name, url, type });
+                document.getElementById('linkName').value = '';
+                document.getElementById('linkUrl').value = '';
+                document.getElementById('linkType').value = 'docs';
+                document.getElementById('linkForm').classList.add('hidden');
+                await renderLinks();
+            } catch (err) {
+                alert('Erro ao salvar link: ' + err.message);
+            }
         });
 
-        window.deleteLink = function(id) {
+        window.deleteLink = async function(id) {
             if (!confirm('Remover este link?')) return;
-            const links = getLinks().filter(l => l.id !== id);
-            saveLinks(links);
-            renderLinks();
+            try {
+                await DB.googleLinks.remove(id);
+                await renderLinks();
+            } catch (err) {
+                alert('Erro ao remover link: ' + err.message);
+            }
         };
     </script>
 </body>

@@ -236,9 +236,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-init.js"></script>
+    <script src="../js/db-service.js"></script>
     <script>
         let currentUserId = null;
-        const SAVED_KEY = 'tccflow_saved_papers';
+        let projectId = null;
+        let cachedSavedPapers = [];
 
         document.getElementById('mobileNavBtn').addEventListener('click', () => {
             document.getElementById('mobileNav').classList.toggle('hidden');
@@ -248,11 +250,15 @@
             window.location.href = '../index.html';
         });
 
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
             currentUserId = user.uid;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
-            renderSaved();
+
+            if (isFirebaseConfigured()) {
+                projectId = await DB.getProjectId();
+            }
+            await loadAndRenderSaved();
         });
 
         function escapeHtml(text) {
@@ -435,44 +441,50 @@
             }).join('');
         }
 
-        // ========== Saved Papers ==========
+        // ========== Saved Papers (Firestore) ==========
         function getSavedPapers() {
-            return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]').filter(p => p.userId === currentUserId);
+            return cachedSavedPapers;
         }
 
-        function saveSavedPapers(papers) {
-            const all = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]').filter(p => p.userId !== currentUserId);
-            localStorage.setItem(SAVED_KEY, JSON.stringify([...all, ...papers]));
-        }
-
-        window.savePaper = function(paper) {
-            const papers = getSavedPapers();
-            if (papers.some(p => p.title.toLowerCase() === paper.title.toLowerCase())) return;
-
-            papers.push({
-                ...paper,
-                id: Date.now().toString(),
-                userId: currentUserId,
-                savedAt: new Date().toISOString()
-            });
-            saveSavedPapers(papers);
+        async function loadAndRenderSaved() {
+            if (!projectId || !isFirebaseConfigured()) {
+                cachedSavedPapers = [];
+                renderSaved();
+                return;
+            }
+            try {
+                cachedSavedPapers = await DB.savedPapers.getAll(projectId);
+            } catch (err) {
+                console.error('Error loading saved papers:', err);
+                cachedSavedPapers = [];
+            }
             renderSaved();
+        }
 
-            // Re-render results to update button states
-            const query = document.getElementById('searchInput').value;
-            if (query && !document.getElementById('resultsList').classList.contains('hidden')) {
-                // Just update the button for this paper
+        window.savePaper = async function(paper) {
+            if (!projectId) { alert('Você precisa estar em um projeto para salvar.'); return; }
+
+            if (cachedSavedPapers.some(p => p.title.toLowerCase() === paper.title.toLowerCase())) return;
+
+            try {
+                await DB.savedPapers.add(projectId, paper);
+                await loadAndRenderSaved();
+            } catch (err) {
+                alert('Erro ao salvar: ' + err.message);
             }
         };
 
-        window.removeSaved = function(id) {
-            const papers = getSavedPapers().filter(p => p.id !== id);
-            saveSavedPapers(papers);
-            renderSaved();
+        window.removeSaved = async function(id) {
+            try {
+                await DB.savedPapers.remove(id);
+                await loadAndRenderSaved();
+            } catch (err) {
+                alert('Erro ao remover: ' + err.message);
+            }
         };
 
         function renderSaved() {
-            const papers = getSavedPapers();
+            const papers = cachedSavedPapers;
             const list = document.getElementById('savedList');
             document.getElementById('savedCount').textContent = `${papers.length} salvos`;
 

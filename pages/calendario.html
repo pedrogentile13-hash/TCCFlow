@@ -171,14 +171,26 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-init.js"></script>
+    <script src="../js/db-service.js"></script>
     <script>
         // ========== Auth Check ==========
         let currentUserId = null;
+        let projectId = null;
+        let cachedSessions = [];
+        let cachedGoals = [];
 
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
             currentUserId = user.uid;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            if (isFirebaseConfigured()) {
+                projectId = await DB.getProjectId();
+                if (projectId) {
+                    await loadSessions();
+                    await loadGoals();
+                }
+            }
             renderCalendar();
             renderGoals();
         });
@@ -200,8 +212,14 @@
         const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
             'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
-        function getSessions() {
-            return JSON.parse(localStorage.getItem('tccflow_sessions') || '[]').filter(s => s.userId === currentUserId);
+        async function loadSessions() {
+            if (!projectId) { cachedSessions = []; return; }
+            try {
+                cachedSessions = await DB.calendarSessions.getAll(projectId);
+            } catch (err) {
+                console.error('Error loading sessions:', err);
+                cachedSessions = [];
+            }
         }
 
         function renderCalendar() {
@@ -212,7 +230,6 @@
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const today = new Date();
-            const sessions = getSessions();
 
             let html = '';
             for (let i = 0; i < firstDay; i++) {
@@ -221,7 +238,7 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const daySessions = sessions.filter(s => s.date === dateStr);
+                const daySessions = cachedSessions.filter(s => s.date === dateStr);
                 const isToday = day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
                 const hasSession = daySessions.length > 0;
                 const allCompleted = hasSession && daySessions.every(s => s.completed);
@@ -241,11 +258,11 @@
         }
 
         window.showDaySessions = function(dateStr, day) {
-            const sessions = getSessions().filter(s => s.date === dateStr);
+            const sessions = cachedSessions.filter(s => s.date === dateStr);
             const panel = document.getElementById('dayPanel');
             const list = document.getElementById('daySessionsList');
-            const title = document.getElementById('dayPanelTitle');
-            title.textContent = `Sessões de ${day} de ${monthNames[currentMonth]}`;
+            const titleEl = document.getElementById('dayPanelTitle');
+            titleEl.textContent = `Sessões de ${day} de ${monthNames[currentMonth]}`;
 
             if (sessions.length === 0) {
                 list.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Nenhuma sessão neste dia.</p>';
@@ -283,20 +300,19 @@
             renderCalendar();
         });
 
-        // ========== Goals ==========
-        const GOALS_KEY = 'tccflow_goals';
-
-        function getGoals() {
-            return JSON.parse(localStorage.getItem(GOALS_KEY) || '[]').filter(g => g.userId === currentUserId);
-        }
-
-        function saveGoals(goals) {
-            const allGoals = JSON.parse(localStorage.getItem(GOALS_KEY) || '[]').filter(g => g.userId !== currentUserId);
-            localStorage.setItem(GOALS_KEY, JSON.stringify([...allGoals, ...goals]));
+        // ========== Goals (Firestore) ==========
+        async function loadGoals() {
+            if (!projectId) { cachedGoals = []; return; }
+            try {
+                cachedGoals = await DB.calendarGoals.getAll(projectId);
+            } catch (err) {
+                console.error('Error loading goals:', err);
+                cachedGoals = [];
+            }
         }
 
         function renderGoals() {
-            const goals = getGoals();
+            const goals = cachedGoals;
             const list = document.getElementById('goalsList');
 
             if (goals.length === 0) {
@@ -306,8 +322,6 @@
                 </div>`;
                 return;
             }
-
-            goals.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
 
             list.innerHTML = goals.map(goal => {
                 const isOverdue = new Date(goal.deadline) < new Date() && !goal.completed;
@@ -339,35 +353,45 @@
             document.getElementById('goalForm').classList.add('hidden');
         });
 
-        document.getElementById('saveGoal').addEventListener('click', () => {
+        document.getElementById('saveGoal').addEventListener('click', async () => {
             const title = document.getElementById('goalTitle').value.trim();
             const deadline = document.getElementById('goalDeadline').value;
             if (!title || !deadline) { alert('Preencha a meta e o prazo.'); return; }
+            if (!projectId) { alert('Você precisa estar em um projeto.'); return; }
 
-            const goals = getGoals();
-            goals.push({
-                id: Date.now().toString(), userId: currentUserId,
-                title, deadline, completed: false,
-                createdAt: new Date().toISOString()
-            });
-            saveGoals(goals);
-            document.getElementById('goalTitle').value = '';
-            document.getElementById('goalDeadline').value = '';
-            document.getElementById('goalForm').classList.add('hidden');
-            renderGoals();
+            try {
+                await DB.calendarGoals.add(projectId, { title, deadline });
+                document.getElementById('goalTitle').value = '';
+                document.getElementById('goalDeadline').value = '';
+                document.getElementById('goalForm').classList.add('hidden');
+                await loadGoals();
+                renderGoals();
+            } catch (err) {
+                alert('Erro ao salvar meta: ' + err.message);
+            }
         });
 
-        window.toggleGoal = function(id) {
-            const goals = getGoals();
-            const goal = goals.find(g => g.id === id);
-            if (goal) { goal.completed = !goal.completed; saveGoals(goals); renderGoals(); }
+        window.toggleGoal = async function(id) {
+            const goal = cachedGoals.find(g => g.id === id);
+            if (!goal) return;
+            try {
+                await DB.calendarGoals.update(id, { completed: !goal.completed });
+                await loadGoals();
+                renderGoals();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
         };
 
-        window.deleteGoal = function(id) {
+        window.deleteGoal = async function(id) {
             if (!confirm('Eliminar esta meta?')) return;
-            const goals = getGoals().filter(g => g.id !== id);
-            saveGoals(goals);
-            renderGoals();
+            try {
+                await DB.calendarGoals.remove(id);
+                await loadGoals();
+                renderGoals();
+            } catch (err) {
+                alert('Erro ao remover meta: ' + err.message);
+            }
         };
     </script>
 </body>
