@@ -219,14 +219,16 @@
 
             if (isFirebaseConfigured()) {
                 try {
+                    // Check if user is PRO - block if not
+                    const isPro = await DB.subscriptions.isPro(user.uid);
+                    if (!isPro) {
+                        document.getElementById('proGateOverlay').classList.remove('hidden');
+                        return;
+                    }
+
                     const userDoc = await db.collection('users').doc(user.uid).get();
                     if (userDoc.exists && userDoc.data().projectId) {
                         projectId = userDoc.data().projectId;
-                        const isPro = await DB.isProByProject(projectId);
-                        if (!isPro) {
-                            document.getElementById('proGateOverlay').classList.remove('hidden');
-                            return;
-                        }
                         await loadData();
                     }
                 } catch (err) {

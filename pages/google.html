@@ -396,14 +396,14 @@
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
             if (isFirebaseConfigured()) {
-                projectId = await DB.getProjectId();
-                if (projectId) {
-                    const isPro = await DB.isProByProject(projectId);
-                    if (!isPro) {
-                        document.getElementById('proGateOverlay').classList.remove('hidden');
-                        return;
-                    }
+                // Check if user is PRO - block if not
+                const isPro = await DB.subscriptions.isPro(user.uid);
+                if (!isPro) {
+                    document.getElementById('proGateOverlay').classList.remove('hidden');
+                    return;
                 }
+
+                projectId = await DB.getProjectId();
             }
             await renderLinks();
         });
