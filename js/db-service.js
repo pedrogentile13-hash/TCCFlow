@@ -237,7 +237,34 @@ const DB = {
         }
     },
 
+    // ===================== Google Drive =====================
+    googleDrive: {
+        async setFolder(projectId, folderId, folderUrl) {
+            await db.collection('projects').doc(projectId).update({
+                googleDriveFolderId: folderId,
+                googleDriveFolderUrl: folderUrl
+            });
+        },
+
+        async getFolder(projectId) {
+            const doc = await db.collection('projects').doc(projectId).get();
+            if (!doc.exists) return null;
+            const data = doc.data();
+            return data.googleDriveFolderId
+                ? { id: data.googleDriveFolderId, url: data.googleDriveFolderUrl }
+                : null;
+        }
+    },
+
     // ===================== Helpers =====================
+    async isProByProject(projectId) {
+        const projDoc = await db.collection('projects').doc(projectId).get();
+        if (!projDoc.exists) return false;
+        const ownerId = projDoc.data().ownerId;
+        if (!ownerId) return false;
+        return await DB.subscriptions.isPro(ownerId);
+    },
+
     async getProjectId() {
         const user = auth.currentUser;
         if (!user) return null;

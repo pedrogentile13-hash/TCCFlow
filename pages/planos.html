@@ -88,8 +88,71 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="relative z-10 pt-16 min-h-screen pb-12">
+    <!-- My Plan View (PRO users) -->
+    <div id="myPlanView" class="hidden relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fa-solid fa-crown text-violet-600 text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-extrabold mb-2">Meu Plano</h1>
+                <p class="text-slate-500">Gerencie sua assinatura PRO do TCCFlow</p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold">Detalhes da Assinatura</h2>
+                    <span class="text-xs font-bold uppercase bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-4 py-1.5 rounded-full">PRO Ativo</span>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between py-3 border-b border-slate-100">
+                        <span class="text-sm text-slate-500">Plano</span>
+                        <span class="text-sm font-bold">TCCFlow Pro</span>
+                    </div>
+                    <div class="flex items-center justify-between py-3 border-b border-slate-100">
+                        <span class="text-sm text-slate-500">Assentos</span>
+                        <span class="text-sm font-bold" id="myPlanSeats">-</span>
+                    </div>
+                    <div class="flex items-center justify-between py-3 border-b border-slate-100">
+                        <span class="text-sm text-slate-500">Status</span>
+                        <span class="text-sm font-bold text-emerald-600"><i class="fa-solid fa-circle-check mr-1"></i>Ativo</span>
+                    </div>
+                    <div class="flex items-center justify-between py-3">
+                        <span class="text-sm text-slate-500">E-mail</span>
+                        <span class="text-sm font-bold" id="myPlanEmail">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Included -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm mb-6">
+                <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-check-double text-emerald-500 mr-2"></i>Recursos Inclusos</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Dashboard compartilhado</div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Tarefas e organização</div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> 100 buscas I.A./mês</div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Google Drive integrado</div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Google Calendar sync</div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Gerenciamento de equipe</div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Projeto e fases do TCC</div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Suporte prioritário</div>
+                </div>
+            </div>
+
+            <!-- Cancel Plan -->
+            <div class="bg-white border border-red-100 rounded-2xl p-8 shadow-sm">
+                <h2 class="text-lg font-bold mb-2 text-red-600"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Cancelar Plano</h2>
+                <p class="text-sm text-slate-500 mb-4">Para cancelar sua assinatura, entre em contato conosco por e-mail. O acesso PRO continua até o fim do período pago.</p>
+                <a href="mailto:suporte@tccflow.com?subject=Cancelar%20Plano%20PRO" class="inline-block bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-sm px-6 py-3 rounded-xl transition border border-red-200">
+                    <i class="fa-solid fa-envelope mr-2"></i>Solicitar Cancelamento
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content (Pricing - for FREE users) -->
+    <main id="pricingView" class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
             <!-- Hero -->
@@ -311,14 +374,23 @@
             // Check current plan
             if (isFirebaseConfigured()) {
                 try {
-                    const projectId = await DB.getProjectId();
-                    if (projectId) {
-                        const sub = await db.collection('subscriptions').doc(projectId).get();
-                        if (sub.exists && sub.data().status === 'active') {
-                            document.getElementById('currentPlanBtn').textContent = 'Plano Grátis';
-                            document.getElementById('checkoutBtn').innerHTML = '<i class="fa-solid fa-check-circle mr-2"></i>Você já é Pro!';
-                            document.getElementById('checkoutBtn').classList.add('opacity-60');
+                    const isPro = await DB.subscriptions.isPro(user.uid);
+                    if (isPro) {
+                        // Show "My Plan" view instead of pricing
+                        document.getElementById('pricingView').classList.add('hidden');
+                        document.getElementById('myPlanView').classList.remove('hidden');
+
+                        // Fill plan details
+                        const sub = await DB.subscriptions.get(user.uid);
+                        if (sub) {
+                            document.getElementById('myPlanSeats').textContent = (sub.seats || 1) + (sub.seats > 1 ? ' membros' : ' membro');
+                            document.getElementById('myPlanEmail').textContent = sub.userEmail || user.email;
                         }
+
+                        // Update navbar to show "Meu Plano"
+                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
+                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
+                        });
                     }
                 } catch (err) { console.log(err); }
             }

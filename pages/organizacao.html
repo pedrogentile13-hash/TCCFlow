@@ -76,6 +76,21 @@
         </div>
     </nav>
 
+    <!-- PRO Gate Overlay -->
+    <div id="proGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
+        <div class="text-center max-w-md px-6">
+            <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-lock text-violet-600 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-3">Recurso Exclusivo PRO</h2>
+            <p class="text-sm text-slate-500 mb-8">A organização avançada de tarefas é exclusiva do plano PRO. Assine para gerenciar tarefas, atribuir responsáveis e acompanhar o progresso.</p>
+            <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
+                <i class="fa-solid fa-crown mr-2"></i>Assinar Plano PRO
+            </a>
+            <p class="text-xs text-slate-400 mt-4">A partir de R$ 97,00/ano</p>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -186,6 +201,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-init.js"></script>
+    <script src="../js/db-service.js"></script>
     <script>
         let currentUser = null;
         let projectId = null;
@@ -206,6 +222,11 @@
                     const userDoc = await db.collection('users').doc(user.uid).get();
                     if (userDoc.exists && userDoc.data().projectId) {
                         projectId = userDoc.data().projectId;
+                        const isPro = await DB.isProByProject(projectId);
+                        if (!isPro) {
+                            document.getElementById('proGateOverlay').classList.remove('hidden');
+                            return;
+                        }
                         await loadData();
                     }
                 } catch (err) {
