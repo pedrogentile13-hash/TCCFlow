@@ -9,6 +9,8 @@
 //   savedPapers/{paperId} - projectId, title, authors, year, abstract, url, citations, source, doi, savedBy, savedAt
 //   calendarGoals/{id}    - projectId, title, deadline, completed, createdBy, createdAt
 //   calendarSessions/{id} - projectId, subject, topic, date, time, completed, createdBy, createdAt
+//   subscriptions/{uid}   - status, plan, seats, stripeCustomerId, stripeSubscriptionId, userId, userEmail
+//   aiUsage/{projectId}   - projectId, month (YYYY-MM), count, lastReset
 // ============================================================
 
 const DB = {
@@ -156,6 +158,82 @@ const DB = {
 
         async remove(sessionId) {
             await db.collection('calendarSessions').doc(sessionId).delete();
+        }
+    },
+
+    // ===================== Subscriptions =====================
+    subscriptions: {
+        async get(userId) {
+            const doc = await db.collection('subscriptions').doc(userId).get();
+            if (doc.exists) return { id: doc.id, ...doc.data() };
+            return null;
+        },
+
+        async getByProject(projectId) {
+            // Get project owner, then check their subscription
+            const projDoc = await db.collection('projects').doc(projectId).get();
+            if (!projDoc.exists) return null;
+            const ownerId = projDoc.data().ownerId;
+            if (!ownerId) return null;
+            return await DB.subscriptions.get(ownerId);
+        },
+
+        async isPro(userId) {
+            const sub = await DB.subscriptions.get(userId);
+            return sub && sub.status === 'active' && sub.plan === 'pro';
+        },
+
+        async getSeats(userId) {
+            const sub = await DB.subscriptions.get(userId);
+            if (!sub || sub.status !== 'active') return 0;
+            return sub.seats || 1;
+        }
+    },
+
+    // ===================== AI Usage / Rate Limiting =====================
+    aiUsage: {
+        async getUsage(projectId) {
+            const now = new Date();
+            const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const docId = `${projectId}_${month}`;
+            const doc = await db.collection('aiUsage').doc(docId).get();
+            if (doc.exists) return doc.data();
+            return { projectId, month, count: 0 };
+        },
+
+        async increment(projectId) {
+            const now = new Date();
+            const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const docId = `${projectId}_${month}`;
+            const ref = db.collection('aiUsage').doc(docId);
+            const doc = await ref.get();
+
+            if (doc.exists) {
+                await ref.update({
+                    count: firebase.firestore.FieldValue.increment(1)
+                });
+            } else {
+                await ref.set({
+                    projectId,
+                    month,
+                    count: 1
+                });
+            }
+        },
+
+        async canSearch(projectId) {
+            // Check if project owner has pro subscription
+            const projDoc = await db.collection('projects').doc(projectId).get();
+            if (!projDoc.exists) return { allowed: false, remaining: 0, limit: 0 };
+
+            const ownerId = projDoc.data().ownerId;
+            const isPro = await DB.subscriptions.isPro(ownerId);
+            const limit = isPro ? 100 : 10;
+
+            const usage = await DB.aiUsage.getUsage(projectId);
+            const remaining = Math.max(0, limit - usage.count);
+
+            return { allowed: remaining > 0, remaining, limit, count: usage.count };
         }
     },
 

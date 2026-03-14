@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planos - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            cursor: pointer; box-shadow: 0 4px 12px rgba(124,58,237,0.4);
+            border: 3px solid white; transition: transform 0.15s;
+        }
+        .slider-thumb::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        .slider-thumb::-moz-range-thumb {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            cursor: pointer; box-shadow: 0 4px 12px rgba(124,58,237,0.4);
+            border: 3px solid white;
+        }
+        .price-pulse { animation: pricePulse 0.3s ease; }
+        @keyframes pricePulse { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+        .seat-dot { transition: all 0.3s ease; }
+        .seat-dot.active { background: linear-gradient(135deg, #7c3aed, #06b6d4); transform: scale(1.1); }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas</a>
+                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
+                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Planos</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-gear text-sm"></i></a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-sm"></i></button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-bars text-sm"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Planos</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Hero -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 bg-violet-100 text-violet-700 text-xs font-bold px-4 py-1.5 rounded-full mb-4">
+                    <i class="fa-solid fa-sparkles"></i> Plano Anual
+                </div>
+                <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">
+                    Potencialize seu <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">TCC</span>
+                </h1>
+                <p class="text-slate-500 max-w-lg mx-auto">Organize seu trabalho, colabore com sua equipe e use I.A. para pesquisar fontes acadêmicas. Tudo em um só lugar.</p>
+            </div>
+
+            <!-- Pricing Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+
+                <!-- Free Plan -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-user text-slate-500 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">Grátis</h3>
+                            <p class="text-xs text-slate-400">Para experimentar</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <span class="text-4xl font-extrabold">R$ 0</span>
+                        <span class="text-slate-400 text-sm">/sempre</span>
+                    </div>
+
+                    <ul class="space-y-3 mb-8 text-sm">
+                        <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> 1 usuário</li>
+                        <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Dashboard e Tarefas</li>
+                        <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Calendário básico</li>
+                        <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> 10 buscas I.A./mês</li>
+                        <li class="flex items-center gap-2 text-slate-300"><i class="fa-solid fa-xmark text-slate-300 w-4"></i> Sem equipe</li>
+                        <li class="flex items-center gap-2 text-slate-300"><i class="fa-solid fa-xmark text-slate-300 w-4"></i> Sem Google integrado</li>
+                        <li class="flex items-center gap-2 text-slate-300"><i class="fa-solid fa-xmark text-slate-300 w-4"></i> Sem suporte prioritário</li>
+                    </ul>
+
+                    <button class="w-full bg-slate-100 text-slate-600 font-semibold py-3 rounded-xl transition hover:bg-slate-200 text-sm" id="currentPlanBtn">
+                        Plano Atual
+                    </button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl p-[2px] shadow-xl shadow-violet-500/20">
+                    <div class="bg-white rounded-[14px] p-8 h-full">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-xl flex items-center justify-center">
+                                    <i class="fa-solid fa-crown text-violet-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold">Pro</h3>
+                                    <p class="text-xs text-slate-400">Para equipes de TCC</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-3 py-1 rounded-full">Popular</span>
+                        </div>
+
+                        <!-- Dynamic Price Display -->
+                        <div class="mb-2">
+                            <span class="text-4xl font-extrabold" id="totalPrice">R$ 97</span>
+                            <span class="text-slate-400 text-sm">/ano</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-6" id="priceBreakdown">R$ 97,00 base (1 pessoa)</p>
+
+                        <!-- Seats Slider -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-bold text-slate-700">Membros do grupo</span>
+                                <span class="text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500" id="seatCount">1 pessoa</span>
+                            </div>
+
+                            <!-- Seat Dots Visualization -->
+                            <div class="flex items-center justify-center gap-2 mb-4" id="seatDots">
+                                <div class="seat-dot active w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-white text-xs font-bold"><i class="fa-solid fa-user text-[10px]"></i></div>
+                                <div class="seat-dot w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold"><i class="fa-solid fa-user text-[10px]"></i></div>
+                                <div class="seat-dot w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold"><i class="fa-solid fa-user text-[10px]"></i></div>
+                                <div class="seat-dot w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold"><i class="fa-solid fa-user text-[10px]"></i></div>
+                                <div class="seat-dot w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold"><i class="fa-solid fa-user text-[10px]"></i></div>
+                                <div class="seat-dot w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold"><i class="fa-solid fa-user text-[10px]"></i></div>
+                                <div class="seat-dot w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold"><i class="fa-solid fa-user text-[10px]"></i></div>
+                                <div class="seat-dot w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold"><i class="fa-solid fa-user text-[10px]"></i></div>
+                            </div>
+
+                            <input type="range" min="1" max="8" value="1" id="seatSlider"
+                                class="slider-thumb w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-violet-600">
+
+                            <div class="flex items-center justify-between mt-2 text-[10px] text-slate-400">
+                                <span>1</span>
+                                <span>2</span>
+                                <span>3</span>
+                                <span>4</span>
+                                <span>5</span>
+                                <span>6</span>
+                                <span>7</span>
+                                <span>8</span>
+                            </div>
+
+                            <!-- Price per person -->
+                            <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
+                                <span class="text-xs text-slate-500">Custo por pessoa</span>
+                                <span class="text-sm font-bold text-violet-600" id="perPersonPrice">R$ 97,00</span>
+                            </div>
+                        </div>
+
+                        <ul class="space-y-3 mb-8 text-sm">
+                            <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span id="featureSeats">Até 1 membro</span></li>
+                            <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Tudo do plano Grátis</li>
+                            <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Dashboard compartilhado</li>
+                            <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> 100 buscas I.A./mês (grupo)</li>
+                            <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Integração Google completa</li>
+                            <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Projeto e fases do TCC</li>
+                            <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Suporte prioritário</li>
+                        </ul>
+
+                        <button id="checkoutBtn" class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm">
+                            <i class="fa-solid fa-bolt mr-2"></i>Assinar Plano Pro — <span id="btnPrice">R$ 97,00</span>
+                        </button>
+
+                        <p class="text-[10px] text-slate-400 text-center mt-3">
+                            <i class="fa-solid fa-lock mr-1"></i>Pagamento seguro via Stripe. Cancele quando quiser.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
+                <h2 class="text-lg font-bold mb-6 text-center">Comparação Detalhada</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-200">
+                                <th class="text-left py-3 px-4 font-semibold text-slate-600">Recurso</th>
+                                <th class="text-center py-3 px-4 font-semibold text-slate-400">Grátis</th>
+                                <th class="text-center py-3 px-4 font-semibold text-violet-600">Pro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-100"><td class="py-3 px-4">Membros do grupo</td><td class="py-3 px-4 text-center">1</td><td class="py-3 px-4 text-center font-semibold">Até 8</td></tr>
+                            <tr class="border-b border-slate-100"><td class="py-3 px-4">Buscas I.A./mês</td><td class="py-3 px-4 text-center">10</td><td class="py-3 px-4 text-center font-semibold">100</td></tr>
+                            <tr class="border-b border-slate-100"><td class="py-3 px-4">Dashboard</td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td></tr>
+                            <tr class="border-b border-slate-100"><td class="py-3 px-4">Tarefas</td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td></tr>
+                            <tr class="border-b border-slate-100"><td class="py-3 px-4">Calendário</td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td></tr>
+                            <tr class="border-b border-slate-100"><td class="py-3 px-4">Projeto & Fases</td><td class="py-3 px-4 text-center"><i class="fa-solid fa-xmark text-slate-300"></i></td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td></tr>
+                            <tr class="border-b border-slate-100"><td class="py-3 px-4">Google Integração</td><td class="py-3 px-4 text-center"><i class="fa-solid fa-xmark text-slate-300"></i></td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td></tr>
+                            <tr class="border-b border-slate-100"><td class="py-3 px-4">Equipe compartilhada</td><td class="py-3 px-4 text-center"><i class="fa-solid fa-xmark text-slate-300"></i></td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td></tr>
+                            <tr><td class="py-3 px-4">Suporte prioritário</td><td class="py-3 px-4 text-center"><i class="fa-solid fa-xmark text-slate-300"></i></td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                <h2 class="text-lg font-bold mb-6 text-center">Perguntas Frequentes</h2>
+                <div class="space-y-4 max-w-2xl mx-auto">
+                    <div class="border border-slate-200 rounded-xl">
+                        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-4 text-left text-sm font-semibold hover:bg-slate-50 transition rounded-xl">
+                            Como funciona o grupo?
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+                        </button>
+                        <div class="hidden px-4 pb-4 text-sm text-slate-500">O líder assina o plano escolhendo quantas vagas precisa. Depois, convida os colegas pelo e-mail. Todos compartilham o mesmo Dashboard, Calendário e Fontes de I.A.</div>
+                    </div>
+                    <div class="border border-slate-200 rounded-xl">
+                        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-4 text-left text-sm font-semibold hover:bg-slate-50 transition rounded-xl">
+                            O que acontece com as 100 buscas I.A.?
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+                        </button>
+                        <div class="hidden px-4 pb-4 text-sm text-slate-500">O grupo todo compartilha 100 buscas por mês. O contador reseta no dia 1 de cada mês. Cada busca na aba I.A. consome 1 crédito.</div>
+                    </div>
+                    <div class="border border-slate-200 rounded-xl">
+                        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-4 text-left text-sm font-semibold hover:bg-slate-50 transition rounded-xl">
+                            Posso cancelar a qualquer momento?
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+                        </button>
+                        <div class="hidden px-4 pb-4 text-sm text-slate-500">Sim! Você pode cancelar quando quiser. O acesso Pro continua até o fim do período pago. Seus dados nunca são apagados.</div>
+                    </div>
+                    <div class="border border-slate-200 rounded-xl">
+                        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-4 text-left text-sm font-semibold hover:bg-slate-50 transition rounded-xl">
+                            Posso adicionar mais membros depois?
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+                        </button>
+                        <div class="hidden px-4 pb-4 text-sm text-slate-500">Sim! Você pode fazer upgrade a qualquer momento pagando a diferença proporcional ao número de novos membros.</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        const BASE_PRICE = 97;
+        const SEAT_PRICE = 30;
+
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            // Check current plan
+            if (isFirebaseConfigured()) {
+                try {
+                    const projectId = await DB.getProjectId();
+                    if (projectId) {
+                        const sub = await db.collection('subscriptions').doc(projectId).get();
+                        if (sub.exists && sub.data().status === 'active') {
+                            document.getElementById('currentPlanBtn').textContent = 'Plano Grátis';
+                            document.getElementById('checkoutBtn').innerHTML = '<i class="fa-solid fa-check-circle mr-2"></i>Você já é Pro!';
+                            document.getElementById('checkoutBtn').classList.add('opacity-60');
+                        }
+                    }
+                } catch (err) { console.log(err); }
+            }
+        });
+
+        // ========== Dynamic Pricing ==========
+        const slider = document.getElementById('seatSlider');
+        const dots = document.getElementById('seatDots').children;
+
+        slider.addEventListener('input', updatePricing);
+
+        function updatePricing() {
+            const seats = parseInt(slider.value);
+            const extra = seats > 1 ? (seats - 1) * SEAT_PRICE : 0;
+            const total = BASE_PRICE + extra;
+            const perPerson = (total / seats).toFixed(2).replace('.', ',');
+
+            // Update price with animation
+            const priceEl = document.getElementById('totalPrice');
+            priceEl.textContent = `R$ ${total}`;
+            priceEl.classList.remove('price-pulse');
+            void priceEl.offsetWidth;
+            priceEl.classList.add('price-pulse');
+
+            // Update breakdown
+            const breakdown = seats === 1
+                ? `R$ ${BASE_PRICE},00 base (1 pessoa)`
+                : `R$ ${BASE_PRICE},00 base + R$ ${extra},00 (${seats - 1} extra${seats > 2 ? 's' : ''} × R$ ${SEAT_PRICE})`;
+            document.getElementById('priceBreakdown').textContent = breakdown;
+
+            // Update seat count
+            document.getElementById('seatCount').textContent = seats === 1 ? '1 pessoa' : `${seats} pessoas`;
+
+            // Update per person
+            document.getElementById('perPersonPrice').textContent = `R$ ${perPerson}`;
+
+            // Update feature text
+            document.getElementById('featureSeats').textContent = seats === 1 ? 'Até 1 membro' : `Até ${seats} membros`;
+
+            // Update button
+            document.getElementById('btnPrice').textContent = `R$ ${total},00`;
+
+            // Update seat dots
+            for (let i = 0; i < dots.length; i++) {
+                if (i < seats) {
+                    dots[i].classList.add('active');
+                    dots[i].querySelector('i').classList.remove('text-slate-400');
+                    dots[i].querySelector('i').classList.add('text-white');
+                } else {
+                    dots[i].classList.remove('active');
+                    dots[i].querySelector('i').classList.add('text-slate-400');
+                    dots[i].querySelector('i').classList.remove('text-white');
+                }
+            }
+        }
+
+        // ========== Stripe Checkout ==========
+        document.getElementById('checkoutBtn').addEventListener('click', async () => {
+            const seats = parseInt(slider.value);
+            const total = BASE_PRICE + (seats > 1 ? (seats - 1) * SEAT_PRICE : 0);
+
+            const user = auth.currentUser;
+            if (!user) { window.location.href = 'login.html'; return; }
+
+            const btn = document.getElementById('checkoutBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Redirecionando...';
+
+            try {
+                // Call Netlify Function to create Stripe Checkout Session
+                const response = await fetch('/.netlify/functions/create-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        seats,
+                        totalCents: total * 100,
+                        userId: user.uid,
+                        userEmail: user.email,
+                        userName: user.displayName || 'Usuário'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    throw new Error(data.error || 'Erro ao criar sessão de pagamento');
+                }
+            } catch (err) {
+                console.error('Checkout error:', err);
+                alert('Erro ao iniciar checkout: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-bolt mr-2"></i>Assinar Plano Pro — <span id="btnPrice">R$ ${total},00</span>`;
+            }
+        });
+
+        // ========== FAQ Toggle ==========
+        window.toggleFaq = function(btn) {
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector('i');
+            content.classList.toggle('hidden');
+            icon.style.transform = content.classList.contains('hidden') ? '' : 'rotate(180deg)';
+        };
+    </script>
+</body>
+</html>

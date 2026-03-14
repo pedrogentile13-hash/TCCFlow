@@ -55,6 +55,7 @@
                     <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
                     <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
                     <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
+                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
@@ -72,6 +73,7 @@
             <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
             <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
             <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
         </div>
     </nav>
 
@@ -206,6 +208,28 @@
                 </div>
             </div>
 
+            <!-- AI Usage Counter -->
+            <div id="usageBanner" class="hidden mt-6 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-semibold"><i class="fa-solid fa-chart-simple text-violet-600 mr-2"></i>Pesquisas este mês</span>
+                    <span class="text-xs font-bold" id="usageText">0 / 10</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                    <div id="usageBar" class="h-2 rounded-full bg-gradient-to-r from-violet-500 to-cyan-500 transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p class="text-xs text-slate-400 mt-2" id="usageHint">Plano gratuito: 10 pesquisas/mês. <a href="planos.html" class="text-violet-600 hover:underline font-medium">Upgrade para Pro →</a></p>
+            </div>
+
+            <!-- Rate Limit Reached -->
+            <div id="rateLimitBanner" class="hidden mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
+                <i class="fa-solid fa-lock text-amber-500 text-2xl mb-2"></i>
+                <h3 class="text-sm font-bold text-amber-800 mb-1">Limite de pesquisas atingido</h3>
+                <p class="text-xs text-amber-600 mb-3">Você usou todas as pesquisas do plano gratuito este mês.</p>
+                <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:shadow-lg transition">
+                    <i class="fa-solid fa-crown mr-2"></i>Fazer upgrade para Pro
+                </a>
+            </div>
+
             <!-- Quick Access to Academic Databases -->
             <div class="mt-6 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6">
                 <h3 class="font-bold mb-4"><i class="fa-solid fa-database mr-2 text-violet-600"></i>Bases Acadêmicas</h3>
@@ -259,6 +283,7 @@
                 projectId = await DB.getProjectId();
             }
             await loadAndRenderSaved();
+            await updateUsageBanner();
         });
 
         function escapeHtml(text) {
@@ -278,6 +303,19 @@
             e.preventDefault();
             const query = document.getElementById('searchInput').value.trim();
             if (!query) return;
+
+            // Rate limit check
+            if (projectId && isFirebaseConfigured()) {
+                try {
+                    const usage = await DB.aiUsage.canSearch(projectId);
+                    if (!usage.allowed) {
+                        document.getElementById('rateLimitBanner').classList.remove('hidden');
+                        return;
+                    }
+                } catch (err) {
+                    console.warn('Rate limit check failed, allowing search:', err);
+                }
+            }
 
             showLoading();
 
@@ -306,6 +344,16 @@
                     showResults([], query);
                 } else {
                     showResults(unique.slice(0, 20), query);
+                }
+
+                // Increment usage counter
+                if (projectId && isFirebaseConfigured()) {
+                    try {
+                        await DB.aiUsage.increment(projectId);
+                        await updateUsageBanner();
+                    } catch (err) {
+                        console.warn('Failed to increment usage:', err);
+                    }
                 }
             } catch (err) {
                 console.error('Search error:', err);
@@ -482,6 +530,30 @@
                 alert('Erro ao remover: ' + err.message);
             }
         };
+
+        async function updateUsageBanner() {
+            if (!projectId || !isFirebaseConfigured()) return;
+            try {
+                const usage = await DB.aiUsage.canSearch(projectId);
+                const banner = document.getElementById('usageBanner');
+                banner.classList.remove('hidden');
+
+                document.getElementById('usageText').textContent = `${usage.count || 0} / ${usage.limit}`;
+                const pct = Math.min(100, ((usage.count || 0) / usage.limit) * 100);
+                document.getElementById('usageBar').style.width = pct + '%';
+
+                if (pct >= 80) {
+                    document.getElementById('usageBar').classList.add('from-amber-500', 'to-red-500');
+                    document.getElementById('usageBar').classList.remove('from-violet-500', 'to-cyan-500');
+                }
+
+                if (usage.limit === 100) {
+                    document.getElementById('usageHint').innerHTML = 'Plano Pro: 100 pesquisas/mês. <span class="text-emerald-600 font-medium"><i class="fa-solid fa-crown mr-1"></i>Ativo</span>';
+                }
+            } catch (err) {
+                console.warn('Failed to load usage:', err);
+            }
+        }
 
         function renderSaved() {
             const papers = cachedSavedPapers;

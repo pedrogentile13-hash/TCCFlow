@@ -48,6 +48,7 @@
                     <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
                     <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Equipe</a>
                     <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
+                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
@@ -71,6 +72,7 @@
             <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
             <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Equipe</a>
             <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
         </div>
     </nav>
 
@@ -137,6 +139,45 @@
                     </div>
                 </div>
 
+                <!-- Subscription & Seats Banner -->
+                <div id="seatsBanner" class="hidden bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold"><i class="fa-solid fa-chair text-violet-600 mr-2"></i>Assentos do Plano</h2>
+                        <span id="planBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Free</span>
+                    </div>
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="flex-1">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-slate-500">Membros</span>
+                                <span class="font-bold" id="seatsText">0 / 1</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2.5">
+                                <div id="seatsBar" class="h-2.5 rounded-full bg-gradient-to-r from-violet-500 to-cyan-500 transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="seatsWarning" class="hidden text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-2">
+                        <i class="fa-solid fa-exclamation-triangle mr-1"></i>Limite de assentos atingido. <a href="planos.html" class="text-violet-600 font-medium hover:underline">Upgrade para mais assentos →</a>
+                    </div>
+                    <div id="freeUpgrade" class="hidden text-xs text-slate-500 mt-2">
+                        Plano gratuito: máx. 2 membros. <a href="planos.html" class="text-violet-600 font-medium hover:underline">Fazer upgrade →</a>
+                    </div>
+                </div>
+
+                <!-- Invite by Email (Owner only) -->
+                <div id="inviteByEmail" class="hidden bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-envelope text-cyan-600 mr-2"></i>Convidar por E-mail</h2>
+                    <p class="text-xs text-slate-500 mb-4">Envie o código do projeto diretamente por e-mail.</p>
+                    <div class="flex gap-3">
+                        <input type="email" id="inviteEmail" placeholder="email@exemplo.com"
+                            class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                        <button onclick="sendInvite()" id="inviteBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:shadow-lg transition whitespace-nowrap">
+                            <i class="fa-solid fa-paper-plane mr-2"></i>Enviar
+                        </button>
+                    </div>
+                    <div id="inviteMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
+                </div>
+
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <h2 class="text-lg font-bold mb-6">Membros da Equipe</h2>
                     <div id="membersList" class="space-y-3">
@@ -155,6 +196,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-init.js"></script>
+    <script src="../js/db-service.js"></script>
     <script>
         let currentUser = null;
         let projectId = null;
@@ -205,6 +247,7 @@
                             document.getElementById('projectCode').textContent = project.code;
                             showProjectPanel();
                             loadMembers(project);
+                            updateSeatsBanner(project);
                         } else {
                             showNoProjectPanel();
                         }
@@ -414,6 +457,84 @@
             } catch (err) {
                 alert('Erro ao sair do projeto: ' + err.message);
             }
+        };
+
+        // ========== Seat Management ==========
+        async function updateSeatsBanner(project) {
+            const banner = document.getElementById('seatsBanner');
+            if (!project || !projectOwnerId) return;
+
+            const memberCount = (project.members || []).length;
+            let maxSeats = 2; // Free plan default
+            let isPro = false;
+
+            try {
+                const sub = await DB.subscriptions.get(projectOwnerId);
+                if (sub && sub.status === 'active' && sub.plan === 'pro') {
+                    isPro = true;
+                    maxSeats = sub.seats || 1;
+                }
+            } catch (err) {
+                console.warn('Could not check subscription:', err);
+            }
+
+            banner.classList.remove('hidden');
+
+            const badge = document.getElementById('planBadge');
+            if (isPro) {
+                badge.textContent = 'Pro';
+                badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-violet-100 text-violet-700';
+                document.getElementById('freeUpgrade').classList.add('hidden');
+            } else {
+                badge.textContent = 'Free';
+                badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600';
+                document.getElementById('freeUpgrade').classList.remove('hidden');
+            }
+
+            document.getElementById('seatsText').textContent = `${memberCount} / ${maxSeats}`;
+            const pct = Math.min(100, (memberCount / maxSeats) * 100);
+            document.getElementById('seatsBar').style.width = pct + '%';
+
+            if (memberCount >= maxSeats) {
+                document.getElementById('seatsWarning').classList.remove('hidden');
+                document.getElementById('seatsBar').classList.add('from-amber-500', 'to-red-500');
+                document.getElementById('seatsBar').classList.remove('from-violet-500', 'to-cyan-500');
+            } else {
+                document.getElementById('seatsWarning').classList.add('hidden');
+            }
+
+            // Show invite by email only for owner
+            if (currentUser.uid === projectOwnerId) {
+                document.getElementById('inviteByEmail').classList.remove('hidden');
+            }
+        }
+
+        // ========== Invite by Email ==========
+        window.sendInvite = async function() {
+            const email = document.getElementById('inviteEmail').value.trim();
+            const msgEl = document.getElementById('inviteMsg');
+            if (!email) return;
+
+            const code = document.getElementById('projectCode').textContent;
+            const btn = document.getElementById('inviteBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Enviando...';
+
+            // Use mailto as a simple invite mechanism
+            const subject = encodeURIComponent('Convite para o TCCFlow');
+            const body = encodeURIComponent(
+                `Olá!\n\nVocê foi convidado(a) para participar de um projeto no TCCFlow.\n\nCódigo do projeto: ${code}\n\nPara entrar:\n1. Acesse o TCCFlow e faça login\n2. Vá para a aba "Equipe"\n3. Cole o código: ${code}\n\nAté mais!`
+            );
+
+            window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+
+            msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700';
+            msgEl.innerHTML = `<i class="fa-solid fa-check mr-1"></i>Convite preparado para ${email}`;
+            msgEl.classList.remove('hidden');
+            document.getElementById('inviteEmail').value = '';
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar';
         };
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
