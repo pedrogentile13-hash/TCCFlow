@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politica de Privacidade - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar simples -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="flex items-center gap-4">
+                    <a href="termos.html" class="text-sm text-slate-500 hover:text-violet-600 transition">Termos de Servico</a>
+                    <a href="../index.html" class="text-sm font-medium text-violet-600 hover:text-violet-700 transition">Voltar ao Inicio</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+            <div class="mb-10">
+                <h1 class="text-3xl font-extrabold mb-2">Politica de Privacidade</h1>
+                <p class="text-sm text-slate-400">Ultima atualizacao: 14 de marco de 2026</p>
+            </div>
+
+            <div class="space-y-8">
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">1. Introducao</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed">O TCCFlow ("nos", "nosso" ou "Plataforma") respeita a sua privacidade e esta comprometido em proteger seus dados pessoais. Esta Politica de Privacidade explica como coletamos, usamos, armazenamos e protegemos suas informacoes quando voce utiliza nossos servicos.</p>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">2. Dados que Coletamos</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Coletamos os seguintes tipos de informacoes:</p>
+
+                    <h3 class="text-sm font-bold mt-4 mb-2">2.1 Dados fornecidos por voce:</h3>
+                    <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
+                        <li>Nome completo</li>
+                        <li>Endereco de e-mail</li>
+                        <li>Senha (armazenada de forma criptografada pelo Firebase Auth)</li>
+                        <li>Conteudo de projetos, tarefas, metas e documentos criados na Plataforma</li>
+                    </ul>
+
+                    <h3 class="text-sm font-bold mt-4 mb-2">2.2 Dados coletados automaticamente:</h3>
+                    <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
+                        <li>Dados de uso (paginas visitadas, funcionalidades utilizadas)</li>
+                        <li>Informacoes do dispositivo (navegador, sistema operacional)</li>
+                        <li>Endereco IP</li>
+                    </ul>
+
+                    <h3 class="text-sm font-bold mt-4 mb-2">2.3 Dados de terceiros:</h3>
+                    <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
+                        <li><strong>Google OAuth:</strong> Ao conectar sua conta Google, recebemos seu nome, e-mail e foto de perfil</li>
+                        <li><strong>Google Calendar:</strong> Acesso para criar eventos em seu nome (somente com sua autorizacao explicita)</li>
+                        <li><strong>Google Drive:</strong> Acesso para criar e gerenciar arquivos em pastas especificas do TCC (somente com sua autorizacao explicita)</li>
+                        <li><strong>Processadores de pagamento:</strong> Dados de transacao (nao armazenamos dados de cartao de credito)</li>
+                    </ul>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">3. Como Usamos seus Dados</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Utilizamos suas informacoes para:</p>
+                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
+                        <li>Fornecer, manter e melhorar a Plataforma</li>
+                        <li>Autenticar seu acesso e gerenciar sua conta</li>
+                        <li>Processar pagamentos de assinaturas</li>
+                        <li>Sincronizar dados com Google Calendar e Google Drive quando autorizado</li>
+                        <li>Enviar comunicacoes sobre sua conta ou alteracoes no servico</li>
+                        <li>Prevenir fraudes e garantir a seguranca da Plataforma</li>
+                    </ul>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">4. Uso dos Dados do Google</h2>
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+                        <p class="text-sm text-blue-700"><i class="fa-brands fa-google mr-2"></i><strong>Conformidade com a Politica de Dados de Usuario do Google:</strong></p>
+                    </div>
+                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
+                        <li>O TCCFlow solicita acesso ao Google Calendar e Google Drive <strong>somente quando o usuario autoriza explicitamente</strong> clicando no botao "Conectar"</li>
+                        <li>Os dados do Google sao utilizados <strong>exclusivamente</strong> para as funcionalidades solicitadas (criar eventos no calendario, gerenciar arquivos do TCC)</li>
+                        <li><strong>Nao vendemos, compartilhamos ou transferimos</strong> seus dados do Google para terceiros</li>
+                        <li><strong>Nao utilizamos</strong> dados do Google para publicidade, marketing ou qualquer finalidade nao relacionada ao servico</li>
+                        <li>Os tokens de acesso do Google sao armazenados <strong>apenas na sessao do navegador</strong> e nao sao persistidos em nossos servidores</li>
+                        <li>Voce pode revogar o acesso a qualquer momento nas <a href="https://myaccount.google.com/permissions" target="_blank" class="text-violet-600 hover:underline">configuracoes da sua conta Google</a></li>
+                    </ul>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">5. Armazenamento e Seguranca</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Seus dados sao armazenados utilizando os seguintes servicos:</p>
+                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
+                        <li><strong>Firebase (Google Cloud):</strong> Autenticacao e banco de dados (Firestore)</li>
+                        <li><strong>Netlify:</strong> Hospedagem da aplicacao</li>
+                    </ul>
+                    <p class="text-sm text-slate-600 leading-relaxed mt-3">Adotamos medidas de seguranca como:</p>
+                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside mt-2">
+                        <li>Conexoes criptografadas via HTTPS</li>
+                        <li>Autenticacao segura via Firebase Auth</li>
+                        <li>Regras de seguranca no Firestore para controle de acesso</li>
+                        <li>Senhas nunca armazenadas em texto puro</li>
+                    </ul>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">6. Compartilhamento de Dados</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-3"><strong>Nao vendemos seus dados pessoais.</strong> Compartilhamos informacoes apenas nas seguintes situacoes:</p>
+                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
+                        <li><strong>Membros da equipe:</strong> Dados do projeto sao compartilhados com membros convidados por voce</li>
+                        <li><strong>Processadores de pagamento:</strong> Dados necessarios para processar transacoes (Stripe, Mercado Pago)</li>
+                        <li><strong>Google APIs:</strong> Dados enviados para o Google Calendar e Drive somente quando voce autorizar</li>
+                        <li><strong>Obrigacao legal:</strong> Quando exigido por lei ou ordem judicial</li>
+                    </ul>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">7. Seus Direitos</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-3">De acordo com a Lei Geral de Protecao de Dados (LGPD), voce tem direito a:</p>
+                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
+                        <li><strong>Acesso:</strong> Solicitar uma copia dos seus dados pessoais</li>
+                        <li><strong>Correcao:</strong> Solicitar a correcao de dados incorretos</li>
+                        <li><strong>Exclusao:</strong> Solicitar a exclusao dos seus dados pessoais</li>
+                        <li><strong>Portabilidade:</strong> Solicitar a transferencia dos seus dados</li>
+                        <li><strong>Revogacao:</strong> Revogar o consentimento para o uso dos seus dados</li>
+                    </ul>
+                    <p class="text-sm text-slate-600 leading-relaxed mt-3">Para exercer seus direitos, entre em contato pelo e-mail <a href="mailto:pedrogentile13@gmail.com" class="text-violet-600 hover:underline">pedrogentile13@gmail.com</a>.</p>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">8. Cookies e Armazenamento Local</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed">O TCCFlow utiliza armazenamento local do navegador (localStorage) para salvar preferencias como o modo escuro. Nao utilizamos cookies de rastreamento ou publicidade. O Firebase pode utilizar cookies para gerenciar sessoes de autenticacao.</p>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">9. Menores de Idade</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed">O TCCFlow e destinado a estudantes e pode ser utilizado por menores de 18 anos. Caso voce seja menor de idade, recomendamos que utilize a Plataforma com o conhecimento e consentimento de seus pais ou responsaveis legais.</p>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">10. Alteracoes nesta Politica</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed">Podemos atualizar esta Politica de Privacidade periodicamente. Alteracoes significativas serao comunicadas por e-mail ou aviso na Plataforma. Recomendamos que revise esta pagina regularmente.</p>
+                </section>
+
+                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3">11. Contato</h2>
+                    <p class="text-sm text-slate-600 leading-relaxed">Para duvidas sobre esta Politica de Privacidade ou sobre o tratamento dos seus dados:</p>
+                    <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <p class="text-sm font-medium mb-1"><i class="fa-solid fa-envelope mr-2 text-violet-600"></i>E-mail: <a href="mailto:pedrogentile13@gmail.com" class="text-violet-600 hover:underline">pedrogentile13@gmail.com</a></p>
+                        <p class="text-sm font-medium"><i class="fa-solid fa-user mr-2 text-violet-600"></i>Responsavel: Pedro Gentile</p>
+                    </div>
+                </section>
+
+            </div>
+
+            <div class="mt-10 text-center">
+                <a href="termos.html" class="text-sm text-violet-600 hover:underline font-medium"><i class="fa-solid fa-file-contract mr-1"></i>Ver Termos de Servico</a>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
