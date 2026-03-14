@@ -72,6 +72,14 @@
                     <p class="text-xs text-slate-400 mt-1">Se seu grupo ja tem um projeto, cole o codigo aqui para entrar</p>
                 </div>
 
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="acceptTerms" required
+                        class="w-4 h-4 mt-0.5 rounded border-slate-300 text-violet-600 focus:ring-violet-500 cursor-pointer shrink-0">
+                    <label for="acceptTerms" class="text-xs text-slate-500 leading-relaxed cursor-pointer">
+                        Li e concordo com os <a href="termos.html" target="_blank" class="text-violet-600 hover:underline font-medium">Termos de Servico</a> e a <a href="privacidade.html" target="_blank" class="text-violet-600 hover:underline font-medium">Politica de Privacidade</a> do TCCFlow.
+                    </label>
+                </div>
+
                 <div id="errorMsg" class="hidden bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3"></div>
                 <div id="successMsg" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-600 text-sm rounded-xl px-4 py-3"></div>
 
@@ -131,6 +139,9 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Criando...';
 
             try {
+                if (!document.getElementById('acceptTerms').checked) {
+                    throw { message: 'Voce precisa aceitar os Termos de Servico e a Politica de Privacidade.' };
+                }
                 if (!isFirebaseConfigured()) throw { message: 'Firebase nao configurado. Edite js/firebase-init.js' };
 
                 const cred = await auth.createUserWithEmailAndPassword(email, password);
@@ -186,6 +197,9 @@
             errorMsg.classList.add('hidden');
 
             try {
+                if (!document.getElementById('acceptTerms').checked) {
+                    throw { message: 'Voce precisa aceitar os Termos de Servico e a Politica de Privacidade.' };
+                }
                 if (!isFirebaseConfigured()) throw { message: 'Firebase nao configurado. Edite js/firebase-init.js' };
 
                 const provider = new firebase.auth.GoogleAuthProvider();
