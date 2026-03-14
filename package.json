@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "TCCFlow - Gerenciamento de TCC",
   "dependencies": {
-    "stripe": "^14.0.0"
+    "mercadopago": "^2.0.0"
   }
 }

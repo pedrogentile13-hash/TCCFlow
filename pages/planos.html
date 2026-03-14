@@ -279,7 +279,7 @@
                         </button>
 
                         <p class="text-[10px] text-slate-400 text-center mt-3">
-                            <i class="fa-solid fa-lock mr-1"></i>Pagamento seguro via Stripe. Cancele quando quiser.
+                            <i class="fa-solid fa-lock mr-1"></i>Pagamento seguro via Mercado Pago (PIX ou cartao). Cancele quando quiser.
                         </p>
                     </div>
                 </div>
@@ -447,7 +447,7 @@
             }
         }
 
-        // ========== Stripe Checkout ==========
+        // ========== Mercado Pago Checkout ==========
         document.getElementById('checkoutBtn').addEventListener('click', async () => {
             const seats = parseInt(slider.value);
             const total = BASE_PRICE + (seats > 1 ? (seats - 1) * SEAT_PRICE : 0);
@@ -457,11 +457,11 @@
 
             const btn = document.getElementById('checkoutBtn');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Redirecionando...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Redirecionando ao Mercado Pago...';
 
             try {
-                // Call Netlify Function to create Stripe Checkout Session
-                const response = await fetch('/.netlify/functions/create-checkout', {
+                // Call Netlify Function to create Mercado Pago Checkout
+                const response = await fetch('/.netlify/functions/create-preference', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

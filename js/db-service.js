@@ -9,7 +9,7 @@
 //   savedPapers/{paperId} - projectId, title, authors, year, abstract, url, citations, source, doi, savedBy, savedAt
 //   calendarGoals/{id}    - projectId, title, deadline, completed, createdBy, createdAt
 //   calendarSessions/{id} - projectId, subject, topic, date, time, completed, createdBy, createdAt
-//   subscriptions/{uid}   - status, plan, seats, stripeCustomerId, stripeSubscriptionId, userId, userEmail
+//   subscriptions/{uid}   - status, plan, seats, paymentId, paymentMethod, userId, userEmail
 //   aiUsage/{projectId}   - projectId, month (YYYY-MM), count, lastReset
 // ============================================================
 

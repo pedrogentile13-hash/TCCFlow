@@ -87,7 +87,7 @@
                         <li><strong>Google OAuth:</strong> Ao conectar sua conta Google, recebemos seu nome, e-mail e foto de perfil</li>
                         <li><strong>Google Calendar:</strong> Acesso para criar e gerenciar eventos em seu nome</li>
                         <li><strong>Google Drive:</strong> Acesso para criar e gerenciar arquivos (Docs, Sheets, Slides) em pastas especificas do TCC</li>
-                        <li><strong>Processadores de pagamento (Stripe/Mercado Pago):</strong> Dados de transacao — <strong>nao armazenamos dados de cartao de credito</strong></li>
+                        <li><strong>Mercado Pago:</strong> Dados de transacao para processamento de pagamentos (PIX e cartao) — <strong>nao armazenamos dados de cartao de credito</strong></li>
                     </ul>
                 </section>
 
@@ -133,7 +133,7 @@
                         <li>Autenticacao segura via Firebase Auth com suporte a login Google</li>
                         <li>Regras de seguranca no Firestore (Security Rules) para controle granular de acesso</li>
                         <li>Senhas nunca armazenadas em texto puro — hash criptografico gerenciado pelo Firebase</li>
-                        <li>Tokens de pagamento processados exclusivamente pelos gateways (Stripe/Mercado Pago)</li>
+                        <li>Tokens de pagamento processados exclusivamente pelo Mercado Pago</li>
                     </ul>
                 </section>
 
@@ -142,7 +142,7 @@
                     <p class="text-sm text-slate-600 leading-relaxed mb-3"><strong>Nao vendemos, alugamos ou comercializamos seus dados pessoais.</strong> Compartilhamos informacoes apenas nas seguintes situacoes:</p>
                     <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
                         <li><strong>Membros da equipe:</strong> Dados do projeto (tarefas, metas, progresso) sao compartilhados com membros convidados por voce dentro da Plataforma</li>
-                        <li><strong>Processadores de pagamento:</strong> Dados estritamente necessarios para processar transacoes (Stripe e/ou Mercado Pago)</li>
+                        <li><strong>Mercado Pago:</strong> Dados estritamente necessarios para processar pagamentos (nome, e-mail, CPF para transacoes)</li>
                         <li><strong>Google APIs:</strong> Dados enviados para o Google Calendar e Drive somente quando voce autorizar explicitamente</li>
                         <li><strong>Firebase/Google Cloud:</strong> Infraestrutura de armazenamento e autenticacao</li>
                         <li><strong>Obrigacao legal:</strong> Quando exigido por lei, regulamento ou ordem judicial brasileira</li>
@@ -197,7 +197,7 @@
 
                 <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
                     <h2 class="text-lg font-bold mb-3">11. Transferencia Internacional de Dados</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">Seus dados podem ser armazenados e processados em servidores localizados fora do Brasil (Google Cloud/Firebase, Netlify, Stripe). Essas transferencias sao realizadas para provedores que adotam padroes adequados de protecao de dados, em conformidade com o artigo 33 da LGPD.</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">Seus dados podem ser armazenados e processados em servidores localizados fora do Brasil (Google Cloud/Firebase, Netlify). O Mercado Pago processa os pagamentos no Brasil. Transferencias internacionais sao realizadas para provedores que adotam padroes adequados de protecao de dados, em conformidade com o artigo 33 da LGPD.</p>
                 </section>
 
                 <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
