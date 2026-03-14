@@ -3,7 +3,7 @@
 // ============================================================
 // Environment variables needed in Netlify:
 //   STRIPE_SECRET_KEY - Stripe secret key (sk_live_... or sk_test_...)
-//   SITE_URL          - Your site URL (e.g. https://tccflow.netlify.app)
+//   SITE_URL          - Your site URL (default: https://tccflow.com.br)
 // ============================================================
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -57,7 +57,7 @@ exports.handler = async (event) => {
             };
         }
 
-        const siteUrl = process.env.SITE_URL || 'https://tccflow.netlify.app';
+        const siteUrl = process.env.SITE_URL || 'https://tccflow.com.br';
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],

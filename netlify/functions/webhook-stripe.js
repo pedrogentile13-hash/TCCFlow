@@ -10,7 +10,7 @@
 // ============================================================
 // Setup in Stripe Dashboard:
 //   1. Go to Developers > Webhooks
-//   2. Add endpoint: https://yoursite.netlify.app/.netlify/functions/webhook-stripe
+//   2. Add endpoint: https://tccflow.com.br/.netlify/functions/webhook-stripe
 //   3. Listen for: checkout.session.completed, customer.subscription.updated,
 //      customer.subscription.deleted
 // ============================================================
