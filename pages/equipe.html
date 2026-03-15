@@ -391,9 +391,23 @@
 
                 const proj = projects[0];
 
-                // Add current user to members (deduplicated)
+                // Check if user is already a member (by UID or by email)
                 const currentMembers = proj.members || [];
-                const newMembers = [...new Set([...currentMembers, currentUser.uid])];
+                let alreadyMember = currentMembers.includes(currentUser.uid);
+
+                if (!alreadyMember && currentUser.email) {
+                    // Check if another UID with same email is already a member
+                    for (const uid of currentMembers) {
+                        const { data: u } = await _supa.from('users').select('email').eq('id', uid).maybeSingle();
+                        if (u && u.email === currentUser.email) {
+                            alreadyMember = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Add current user to members (deduplicated by UID)
+                const newMembers = alreadyMember ? [...new Set(currentMembers)] : [...new Set([...currentMembers, currentUser.uid])];
 
                 const { error: updateErr } = await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
                 if (updateErr) throw updateErr;
@@ -495,10 +509,10 @@
             const membersList = document.getElementById('membersList');
             const members = projectData.members || [];
 
-            // Deduplicate
-            const uniqueMembers = [...new Set(members)];
+            // Deduplicate by UID first
+            const uniqueUids = [...new Set(members)];
 
-            if (uniqueMembers.length === 0) {
+            if (uniqueUids.length === 0) {
                 membersList.innerHTML = '<p class="text-center text-slate-400 py-6">Nenhum membro ainda</p>';
                 return;
             }
@@ -507,59 +521,81 @@
             const ownerId = projectData.owner_id || projectOwnerId;
             const isOwner = currentUser.uid === ownerId;
 
-            for (const uid of uniqueMembers) {
+            // Load all user data first, then deduplicate by email
+            const memberData = [];
+            const seenEmails = new Set();
+
+            for (const uid of uniqueUids) {
                 try {
-                    // Load user directly from Supabase
                     const { data: userData } = await _supa.from('users').select('name, email').eq('id', uid).maybeSingle();
-                    const name = userData?.name || 'Desconhecido';
                     const email = userData?.email || '';
-                    const initial = name.charAt(0).toUpperCase();
-                    const isMe = uid === currentUser.uid;
-                    const isProjectOwner = uid === ownerId;
+                    const name = userData?.name || 'Desconhecido';
 
-                    let badge = '';
-                    if (isProjectOwner) {
-                        badge = '<span class="text-xs px-3 py-1 rounded-full bg-violet-100 text-violet-700">Dono</span>';
-                    } else if (isMe) {
-                        badge = '<span class="text-xs px-3 py-1 rounded-full bg-cyan-100 text-cyan-700">Você</span>';
-                    } else {
-                        badge = '<span class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600">Membro</span>';
+                    // Skip duplicate emails (same person with different auth UIDs)
+                    if (email && seenEmails.has(email)) {
+                        continue;
                     }
+                    if (email) seenEmails.add(email);
 
-                    let removeBtn = '';
-                    if (isOwner && !isProjectOwner) {
-                        removeBtn = `
-                            <button onclick="removeMember('${uid}', '${name.replace(/'/g, "\\'")}')"
-                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Remover membro">
-                                <i class="fa-solid fa-user-minus text-sm"></i>
-                            </button>`;
-                    } else if (!isOwner && isMe && !isProjectOwner) {
-                        removeBtn = `
-                            <button onclick="leaveProject()"
-                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Sair do projeto">
-                                <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                            </button>`;
-                    }
-
-                    membersList.innerHTML += `
-                        <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border border-slate-200">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                    ${initial}
-                                </div>
-                                <div>
-                                    <p class="font-medium">${name}</p>
-                                    <p class="text-xs text-slate-400">${email}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center">
-                                ${badge}
-                                ${removeBtn}
-                            </div>
-                        </div>`;
+                    memberData.push({ uid, name, email });
                 } catch (err) {
                     console.log('Error loading user:', err);
                 }
+            }
+
+            // Also clean the members array in DB if we removed duplicates
+            if (memberData.length < uniqueUids.length) {
+                const cleanUids = memberData.map(m => m.uid);
+                await _supa.from('projects').update({ members: cleanUids }).eq('id', projectId).catch(() => {});
+                projectData.members = cleanUids;
+            }
+
+            for (const member of memberData) {
+                const { uid, name, email } = member;
+                const initial = name.charAt(0).toUpperCase();
+                const isMe = uid === currentUser.uid;
+                const isProjectOwner = uid === ownerId;
+
+                let badge = '';
+                if (isProjectOwner) {
+                    badge = '<span class="text-xs px-3 py-1 rounded-full bg-violet-100 text-violet-700">Dono</span>';
+                } else if (isMe) {
+                    badge = '<span class="text-xs px-3 py-1 rounded-full bg-cyan-100 text-cyan-700">Você</span>';
+                } else {
+                    badge = '<span class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600">Membro</span>';
+                }
+
+                let removeBtn = '';
+                if (isOwner && !isProjectOwner) {
+                    removeBtn = `
+                        <button onclick="removeMember('${uid}', '${name.replace(/'/g, "\\'")}')"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Remover membro">
+                            <i class="fa-solid fa-user-minus text-sm"></i>
+                        </button>`;
+                } else if (!isOwner && isMe && !isProjectOwner) {
+                    removeBtn = `
+                        <button onclick="leaveProject()"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Sair do projeto">
+                            <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                        </button>`;
+                }
+
+                membersList.innerHTML += `
+                    <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border border-slate-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                ${initial}
+                            </div>
+                            <div>
+                                <p class="font-medium">${name}</p>
+                                <p class="text-xs text-slate-400">${email}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            ${badge}
+                            ${removeBtn}
+                        </div>
+                    </div>`;
             }
         }
 
@@ -604,7 +640,20 @@
             const ownerId = projectData.owner_id || projectOwnerId;
             if (!projectData || !ownerId) return;
 
-            const memberCount = [...new Set(projectData.members || [])].length;
+            // Count unique members by email to avoid counting duplicate auth accounts
+            const uniqueUids = [...new Set(projectData.members || [])];
+            const seenEmails = new Set();
+            let memberCount = 0;
+            for (const uid of uniqueUids) {
+                try {
+                    const { data: u } = await _supa.from('users').select('email').eq('id', uid).maybeSingle();
+                    const email = u?.email || uid;
+                    if (!seenEmails.has(email)) {
+                        seenEmails.add(email);
+                        memberCount++;
+                    }
+                } catch (e) { memberCount++; }
+            }
             let maxSeats = 2; // Free plan default
             let isPro = false;
 

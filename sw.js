@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tccflow-v2';
+const CACHE_NAME = 'tccflow-v3';
 const OFFLINE_URL = '/pages/login.html';
 
 // Assets to cache on install
