@@ -260,8 +260,14 @@
             document.getElementById('projectPanel').classList.add('hidden');
         }
 
+        // Guard against multiple onAuthStateChanged calls
+        let _initialized = false;
+
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
+            if (_initialized) return;
+            _initialized = true;
+
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
@@ -274,27 +280,39 @@
                         return;
                     }
 
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists && userDoc.data().projectId) {
-                        projectId = userDoc.data().projectId;
-                        const projectDoc = await db.collection('projects').doc(projectId).get();
-                        if (projectDoc.exists) {
-                            const project = projectDoc.data();
-                            projectOwnerId = project.ownerId;
-                            document.getElementById('projectCode').textContent = project.code;
+                    // Load user data directly from Supabase
+                    const { data: userData } = await _supa.from('users').select('*').eq('id', user.uid).maybeSingle();
+
+                    if (userData && userData.project_id) {
+                        projectId = userData.project_id;
+
+                        // Load project directly from Supabase
+                        const { data: projectData } = await _supa.from('projects').select('*').eq('id', projectId).maybeSingle();
+
+                        if (projectData) {
+                            // Clean duplicates from members array
+                            const cleanMembers = [...new Set(projectData.members || [])];
+                            if (cleanMembers.length !== (projectData.members || []).length) {
+                                await _supa.from('projects').update({ members: cleanMembers }).eq('id', projectId);
+                                projectData.members = cleanMembers;
+                            }
+
+                            projectOwnerId = projectData.owner_id;
+                            document.getElementById('projectCode').textContent = projectData.code;
                             showProjectPanel();
-                            loadMembers(project);
-                            updateSeatsBanner(project);
+                            loadMembersFromData(projectData);
+                            updateSeatsBannerFromData(projectData);
                         } else {
                             showNoProjectPanel();
                         }
                     } else {
-                        if (!userDoc.exists) {
-                            await db.collection('users').doc(user.uid).set({
+                        if (!userData) {
+                            await _supa.from('users').upsert({
+                                id: user.uid,
                                 name: user.displayName || 'Usuário',
                                 email: user.email,
-                                projectId: null,
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                project_id: null,
+                                created_at: new Date().toISOString()
                             });
                         }
                         showNoProjectPanel();
@@ -316,28 +334,31 @@
 
             try {
                 const code = generateCode();
-                const projectRef = await db.collection('projects').add({
+
+                // Create project directly via Supabase
+                const { data: newProj, error: createErr } = await _supa.from('projects').insert({
                     name: projectName,
                     code: code,
-                    ownerId: currentUser.uid,
+                    owner_id: currentUser.uid,
                     members: [currentUser.uid],
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                    created_at: new Date().toISOString()
+                }).select().maybeSingle();
+                if (createErr) throw createErr;
 
-                await db.collection('users').doc(currentUser.uid).set({
+                // Update user's project_id
+                await _supa.from('users').upsert({
+                    id: currentUser.uid,
                     name: currentUser.displayName || 'Usuário',
                     email: currentUser.email,
-                    projectId: projectRef.id,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
+                    project_id: newProj.id
+                });
 
-                projectId = projectRef.id;
+                projectId = newProj.id;
                 projectOwnerId = currentUser.uid;
                 document.getElementById('projectCode').textContent = code;
                 showProjectPanel();
-
-                const projectDoc = await db.collection('projects').doc(projectId).get();
-                loadMembers(projectDoc.data());
+                loadMembersFromData(newProj);
+                updateSeatsBannerFromData(newProj);
             } catch (err) {
                 console.error('Error creating project:', err);
                 showSetupMsg('Erro ao criar projeto: ' + err.message, 'error');
@@ -357,33 +378,41 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Entrando...';
 
             try {
-                const snap = await db.collection('projects').where('code', '==', code).get();
-                if (snap.empty) {
+                // Find project by code directly via Supabase
+                const { data: projects, error: findErr } = await _supa.from('projects').select('*').eq('code', code);
+                if (findErr) throw findErr;
+
+                if (!projects || projects.length === 0) {
                     showSetupMsg('Código não encontrado: ' + code, 'error');
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto';
                     return;
                 }
 
-                const projDoc = snap.docs[0];
-                await db.collection('projects').doc(projDoc.id).update({
-                    members: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
-                });
+                const proj = projects[0];
 
-                await db.collection('users').doc(currentUser.uid).set({
+                // Add current user to members (deduplicated)
+                const currentMembers = proj.members || [];
+                const newMembers = [...new Set([...currentMembers, currentUser.uid])];
+
+                const { error: updateErr } = await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
+                if (updateErr) throw updateErr;
+
+                // Update user's project_id
+                await _supa.from('users').upsert({
+                    id: currentUser.uid,
                     name: currentUser.displayName || 'Usuário',
                     email: currentUser.email,
-                    projectId: projDoc.id,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
+                    project_id: proj.id
+                });
 
-                projectId = projDoc.id;
-                const updatedDoc = await db.collection('projects').doc(projectId).get();
-                projectOwnerId = updatedDoc.data().ownerId;
-                document.getElementById('projectCode').textContent = updatedDoc.data().code;
+                projectId = proj.id;
+                proj.members = newMembers;
+                projectOwnerId = proj.owner_id;
+                document.getElementById('projectCode').textContent = proj.code;
                 showProjectPanel();
-                loadMembers(updatedDoc.data());
-                updateSeatsBanner(updatedDoc.data());
+                loadMembersFromData(proj);
+                updateSeatsBannerFromData(proj);
             } catch (err) {
                 console.error('Error joining project:', err);
                 showSetupMsg('Erro ao entrar no projeto: ' + err.message, 'error');
@@ -409,8 +438,11 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Entrando...';
 
             try {
-                const snap = await db.collection('projects').where('code', '==', code).get();
-                if (snap.empty) {
+                // Find project by code directly via Supabase
+                const { data: projects, error: findErr } = await _supa.from('projects').select('*').eq('code', code);
+                if (findErr) throw findErr;
+
+                if (!projects || projects.length === 0) {
                     msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
                     msgEl.textContent = 'Código não encontrado: ' + code;
                     msgEl.classList.remove('hidden');
@@ -419,21 +451,21 @@
                     return;
                 }
 
-                const projDoc = snap.docs[0];
-                await db.collection('projects').doc(projDoc.id).update({
-                    members: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
-                });
+                const proj = projects[0];
 
-                await db.collection('users').doc(currentUser.uid).set({
-                    projectId: projDoc.id
-                }, { merge: true });
+                // Add current user to members (deduplicated)
+                const newMembers = [...new Set([...(proj.members || []), currentUser.uid])];
+                await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
 
-                projectId = projDoc.id;
-                const updatedDoc = await db.collection('projects').doc(projectId).get();
-                projectOwnerId = updatedDoc.data().ownerId;
-                document.getElementById('projectCode').textContent = updatedDoc.data().code;
-                loadMembers(updatedDoc.data());
-                updateSeatsBanner(updatedDoc.data());
+                // Update user's project_id
+                await _supa.from('users').update({ project_id: proj.id }).eq('id', currentUser.uid);
+
+                projectId = proj.id;
+                proj.members = newMembers;
+                projectOwnerId = proj.owner_id;
+                document.getElementById('projectCode').textContent = proj.code;
+                loadMembersFromData(proj);
+                updateSeatsBannerFromData(proj);
 
                 msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
                 msgEl.textContent = 'Projeto trocado com sucesso!';
@@ -458,32 +490,32 @@
             });
         }
 
-        async function loadMembers(project) {
+        // New function that works directly with Supabase data (snake_case keys)
+        async function loadMembersFromData(projectData) {
             const membersList = document.getElementById('membersList');
+            const members = projectData.members || [];
 
-            if (!project.members || project.members.length === 0) {
+            // Deduplicate
+            const uniqueMembers = [...new Set(members)];
+
+            if (uniqueMembers.length === 0) {
                 membersList.innerHTML = '<p class="text-center text-slate-400 py-6">Nenhum membro ainda</p>';
                 return;
             }
 
-            // Deduplicate members array
-            const uniqueMembers = [...new Set(project.members)];
-
-            // If there were duplicates, clean them up in Firestore
-            if (uniqueMembers.length !== project.members.length && projectId) {
-                db.collection('projects').doc(projectId).update({ members: uniqueMembers }).catch(err => console.warn('Could not clean duplicates:', err));
-            }
-
             membersList.innerHTML = '';
-            const isOwner = currentUser.uid === projectOwnerId;
+            const ownerId = projectData.owner_id || projectOwnerId;
+            const isOwner = currentUser.uid === ownerId;
 
             for (const uid of uniqueMembers) {
                 try {
-                    const userDoc = await db.collection('users').doc(uid).get();
-                    const data = userDoc.exists ? userDoc.data() : { name: 'Desconhecido', email: '' };
-                    const initial = (data.name || '?').charAt(0).toUpperCase();
+                    // Load user directly from Supabase
+                    const { data: userData } = await _supa.from('users').select('name, email').eq('id', uid).maybeSingle();
+                    const name = userData?.name || 'Desconhecido';
+                    const email = userData?.email || '';
+                    const initial = name.charAt(0).toUpperCase();
                     const isMe = uid === currentUser.uid;
-                    const isProjectOwner = uid === projectOwnerId;
+                    const isProjectOwner = uid === ownerId;
 
                     let badge = '';
                     if (isProjectOwner) {
@@ -497,7 +529,7 @@
                     let removeBtn = '';
                     if (isOwner && !isProjectOwner) {
                         removeBtn = `
-                            <button onclick="removeMember('${uid}', '${(data.name || 'este membro').replace(/'/g, "\\'")}')"
+                            <button onclick="removeMember('${uid}', '${name.replace(/'/g, "\\'")}')"
                                 class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Remover membro">
                                 <i class="fa-solid fa-user-minus text-sm"></i>
                             </button>`;
@@ -516,8 +548,8 @@
                                     ${initial}
                                 </div>
                                 <div>
-                                    <p class="font-medium">${data.name || 'Sem nome'}</p>
-                                    <p class="text-xs text-slate-400">${data.email || ''}</p>
+                                    <p class="font-medium">${name}</p>
+                                    <p class="text-xs text-slate-400">${email}</p>
                                 </div>
                             </div>
                             <div class="flex items-center">
@@ -536,13 +568,15 @@
             if (!confirm(`Tem certeza que deseja remover "${name}" do projeto?`)) return;
 
             try {
-                await db.collection('projects').doc(projectId).update({
-                    members: firebase.firestore.FieldValue.arrayRemove(uid)
-                });
-                await db.collection('users').doc(uid).update({ projectId: null });
+                // Get current members, remove the UID, deduplicate
+                const { data: proj } = await _supa.from('projects').select('members').eq('id', projectId).maybeSingle();
+                const newMembers = [...new Set((proj?.members || []).filter(m => m !== uid))];
+                await _supa.from('projects').update({ members: newMembers }).eq('id', projectId);
+                await _supa.from('users').update({ project_id: null }).eq('id', uid);
 
-                const projectDoc = await db.collection('projects').doc(projectId).get();
-                loadMembers(projectDoc.data());
+                const { data: updatedProj } = await _supa.from('projects').select('*').eq('id', projectId).maybeSingle();
+                loadMembersFromData(updatedProj);
+                updateSeatsBannerFromData(updatedProj);
             } catch (err) {
                 alert('Erro ao remover membro: ' + err.message);
             }
@@ -553,10 +587,10 @@
             if (!confirm('Tem certeza que deseja sair deste projeto?')) return;
 
             try {
-                await db.collection('projects').doc(projectId).update({
-                    members: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
-                });
-                await db.collection('users').doc(currentUser.uid).update({ projectId: null });
+                const { data: proj } = await _supa.from('projects').select('members').eq('id', projectId).maybeSingle();
+                const newMembers = [...new Set((proj?.members || []).filter(m => m !== currentUser.uid))];
+                await _supa.from('projects').update({ members: newMembers }).eq('id', projectId);
+                await _supa.from('users').update({ project_id: null }).eq('id', currentUser.uid);
                 projectId = null;
                 showNoProjectPanel();
             } catch (err) {
@@ -565,16 +599,17 @@
         };
 
         // ========== Seat Management ==========
-        async function updateSeatsBanner(project) {
+        async function updateSeatsBannerFromData(projectData) {
             const banner = document.getElementById('seatsBanner');
-            if (!project || !projectOwnerId) return;
+            const ownerId = projectData.owner_id || projectOwnerId;
+            if (!projectData || !ownerId) return;
 
-            const memberCount = [...new Set(project.members || [])].length;
+            const memberCount = [...new Set(projectData.members || [])].length;
             let maxSeats = 2; // Free plan default
             let isPro = false;
 
             try {
-                const sub = await DB.subscriptions.get(projectOwnerId);
+                const sub = await DB.subscriptions.get(ownerId);
                 if (sub && sub.status === 'active' && sub.plan === 'pro') {
                     isPro = true;
                     maxSeats = sub.seats || 1;
@@ -609,7 +644,7 @@
             }
 
             // Show invite by email only for owner
-            if (currentUser.uid === projectOwnerId) {
+            if (currentUser.uid === ownerId) {
                 document.getElementById('inviteByEmail').classList.remove('hidden');
             }
         }
