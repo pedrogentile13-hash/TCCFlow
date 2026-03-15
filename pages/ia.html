@@ -123,18 +123,50 @@
                     <option value="2020-2023">2020-2023</option>
                     <option value="2015-2019">2015-2019</option>
                     <option value="2010-2014">2010-2014</option>
+                    <option value="2000-2009">2000-2009</option>
                 </select>
                 <select id="filterType" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                     <option value="all">Todos os tipos</option>
                     <option value="article">Artigos</option>
+                    <option value="review">Artigos de Revisão</option>
                     <option value="book">Livros</option>
                     <option value="thesis">Teses e Dissertações</option>
+                    <option value="conference">Conferências</option>
                 </select>
                 <select id="filterLang" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                     <option value="pt">Português</option>
                     <option value="en">Inglês</option>
+                    <option value="es">Espanhol</option>
                     <option value="all">Todos os idiomas</option>
                 </select>
+                <select id="filterArea" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <option value="">Todas as áreas</option>
+                    <option value="Computer Science">Ciência da Computação</option>
+                    <option value="Education">Educação</option>
+                    <option value="Psychology">Psicologia</option>
+                    <option value="Medicine">Medicina/Saúde</option>
+                    <option value="Business">Administração/Negócios</option>
+                    <option value="Engineering">Engenharia</option>
+                    <option value="Sociology">Sociologia</option>
+                    <option value="Environmental Science">Ciências Ambientais</option>
+                    <option value="Economics">Economia</option>
+                    <option value="Law">Direito</option>
+                </select>
+                <select id="filterSort" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <option value="relevance">Mais relevantes</option>
+                    <option value="citations">Mais citados</option>
+                    <option value="year">Mais recentes</option>
+                </select>
+                <label id="filterOpenAccess" class="hidden items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm cursor-pointer hover:bg-slate-50 transition">
+                    <input type="checkbox" id="openAccessCheck" class="accent-violet-600">
+                    <span>Acesso aberto</span>
+                </label>
+            </div>
+
+            <!-- Pro Search Info Banner -->
+            <div id="proSearchBanner" class="hidden mb-6 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-xl px-4 py-3 flex items-center gap-3">
+                <i class="fa-solid fa-crown text-amber-500"></i>
+                <p class="text-xs text-slate-600"><span class="font-bold text-violet-700">Pro ativo</span> — Até 50 artigos por seção, 1.000 buscas/mês com filtros avançados</p>
             </div>
 
             <!-- Results Area -->
@@ -264,6 +296,7 @@
     <script>
         let currentUserId = null;
         let projectId = null;
+        let userIsPro = false;
         let cachedSavedPapers = [];
 
         document.getElementById('mobileNavBtn').addEventListener('click', () => {
@@ -285,9 +318,14 @@
                 if (pid) {
                     const isPro = await DB.isProByProject(pid);
                     if (isPro) {
+                        userIsPro = true;
                         document.querySelectorAll('a[href="planos.html"]').forEach(el => {
                             el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
                         });
+                        document.getElementById('proSearchBanner').classList.remove('hidden');
+                        document.getElementById('proSearchBanner').classList.add('flex');
+                        document.getElementById('filterOpenAccess').classList.remove('hidden');
+                        document.getElementById('filterOpenAccess').classList.add('flex');
                     }
                 }
             } catch(e) { console.log(e); }
@@ -334,29 +372,38 @@
 
             const lang = document.getElementById('filterLang').value;
             const yearRange = document.getElementById('filterYear').value;
+            const area = document.getElementById('filterArea').value;
+            const sortBy = document.getElementById('filterSort').value;
+            const openAccess = document.getElementById('openAccessCheck').checked;
+            const maxResults = userIsPro ? 50 : 20;
 
             // Build search query
             let searchQuery = query;
-            if (lang === 'pt') searchQuery = query;
-            else if (lang === 'en') searchQuery = query;
 
             try {
                 // Fetch from Semantic Scholar API (free, no key needed)
-                const results = await searchSemanticScholar(searchQuery, yearRange);
+                const results = await searchSemanticScholar(searchQuery, yearRange, area, openAccess);
 
                 // Also search CrossRef for additional results
-                const crossrefResults = await searchCrossRef(searchQuery, yearRange);
+                const crossrefResults = await searchCrossRef(searchQuery, yearRange, openAccess);
 
                 // Merge and deduplicate
                 const allResults = [...results, ...crossrefResults];
-                const unique = allResults.filter((v, i, a) =>
+                let unique = allResults.filter((v, i, a) =>
                     a.findIndex(t => t.title.toLowerCase() === v.title.toLowerCase()) === i
                 );
+
+                // Sort results
+                if (sortBy === 'citations') {
+                    unique.sort((a, b) => (b.citations || 0) - (a.citations || 0));
+                } else if (sortBy === 'year') {
+                    unique.sort((a, b) => (b.year || 0) - (a.year || 0));
+                }
 
                 if (unique.length === 0) {
                     showResults([], query);
                 } else {
-                    showResults(unique.slice(0, 20), query);
+                    showResults(unique.slice(0, maxResults), query);
                 }
 
                 // Increment usage counter
@@ -374,20 +421,27 @@
             }
         });
 
-        async function searchSemanticScholar(query, yearRange) {
+        async function searchSemanticScholar(query, yearRange, area, openAccess) {
             try {
-                let url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=10&fields=title,authors,year,abstract,url,citationCount,externalIds`;
+                const limit = userIsPro ? 30 : 10;
+                let url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=${limit}&fields=title,authors,year,abstract,url,citationCount,externalIds,isOpenAccess,fieldsOfStudy`;
 
                 if (yearRange) {
                     const [start, end] = yearRange.split('-');
                     url += `&year=${start}-${end}`;
+                }
+                if (area) {
+                    url += `&fieldsOfStudy=${encodeURIComponent(area)}`;
+                }
+                if (openAccess) {
+                    url += `&openAccessPdf`;
                 }
 
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Semantic Scholar error');
                 const data = await response.json();
 
-                return (data.data || []).map(paper => ({
+                let results = (data.data || []).map(paper => ({
                     title: paper.title || 'Sem título',
                     authors: (paper.authors || []).map(a => a.name).join(', '),
                     year: paper.year || '',
@@ -395,21 +449,37 @@
                     url: paper.url || '',
                     citations: paper.citationCount || 0,
                     source: 'Semantic Scholar',
-                    doi: paper.externalIds?.DOI || ''
+                    doi: paper.externalIds?.DOI || '',
+                    isOpenAccess: paper.isOpenAccess || false,
+                    fields: (paper.fieldsOfStudy || []).join(', ')
                 }));
+
+                if (openAccess) {
+                    results = results.filter(r => r.isOpenAccess);
+                }
+
+                return results;
             } catch (err) {
                 console.warn('Semantic Scholar failed:', err);
                 return [];
             }
         }
 
-        async function searchCrossRef(query, yearRange) {
+        async function searchCrossRef(query, yearRange, openAccess) {
             try {
-                let url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=10&sort=relevance`;
+                const rows = userIsPro ? 30 : 10;
+                let url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=${rows}&sort=relevance`;
 
+                let filters = [];
                 if (yearRange) {
                     const [start, end] = yearRange.split('-');
-                    url += `&filter=from-pub-date:${start},until-pub-date:${end}`;
+                    filters.push(`from-pub-date:${start}`, `until-pub-date:${end}`);
+                }
+                if (openAccess) {
+                    filters.push('is-open-access:true');
+                }
+                if (filters.length > 0) {
+                    url += `&filter=${filters.join(',')}`;
                 }
 
                 const response = await fetch(url);
@@ -424,7 +494,8 @@
                     url: item.URL || '',
                     citations: item['is-referenced-by-count'] || 0,
                     source: 'CrossRef',
-                    doi: item.DOI || ''
+                    doi: item.DOI || '',
+                    isOpenAccess: item['is-open-access'] || false
                 }));
             } catch (err) {
                 console.warn('CrossRef failed:', err);
@@ -484,6 +555,7 @@
                                 <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${paper.source === 'Semantic Scholar' ? 'bg-violet-100 text-violet-600' : 'bg-cyan-100 text-cyan-600'}">${paper.source}</span>
                                 ${paper.year ? `<span class="text-[10px] text-slate-400">${paper.year}</span>` : ''}
                                 ${paper.citations > 0 ? `<span class="text-[10px] text-slate-400"><i class="fa-solid fa-quote-right mr-0.5"></i>${paper.citations} citações</span>` : ''}
+                                ${paper.isOpenAccess ? `<span class="text-[10px] bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded-full font-medium"><i class="fa-solid fa-lock-open mr-0.5"></i>Acesso aberto</span>` : ''}
                             </div>
                             <h4 class="text-sm font-bold mb-1 leading-snug">${escapeHtml(paper.title)}</h4>
                             ${paper.authors ? `<p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-users text-slate-300 mr-1"></i>${escapeHtml(paper.authors.substring(0, 100))}${paper.authors.length > 100 ? '...' : ''}</p>` : ''}
@@ -560,8 +632,8 @@
                     document.getElementById('usageBar').classList.remove('from-violet-500', 'to-cyan-500');
                 }
 
-                if (usage.limit === 100) {
-                    document.getElementById('usageHint').innerHTML = 'Plano Pro: 100 pesquisas/mês. <span class="text-emerald-600 font-medium"><i class="fa-solid fa-crown mr-1"></i>Ativo</span>';
+                if (usage.limit === 1000) {
+                    document.getElementById('usageHint').innerHTML = 'Plano Pro: 1.000 pesquisas/mês · até 50 artigos por seção. <span class="text-emerald-600 font-medium"><i class="fa-solid fa-crown mr-1"></i>Ativo</span>';
                 }
             } catch (err) {
                 console.warn('Failed to load usage:', err);

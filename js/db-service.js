@@ -302,7 +302,7 @@ const DB = {
             if (error || !project) return { allowed: false, remaining: 0, limit: 0 };
 
             const isPro = await DB.subscriptions.isPro(project.owner_id);
-            const limit = isPro ? 100 : 10;
+            const limit = isPro ? 1000 : 10;
 
             const usage = await DB.aiUsage.getUsage(projectId);
             const remaining = Math.max(0, limit - usage.count);
