@@ -290,18 +290,11 @@
                         const { data: projectData } = await _supa.from('projects').select('*').eq('id', projectId).maybeSingle();
 
                         if (projectData) {
-                            // Clean duplicates from members array
-                            const cleanMembers = [...new Set(projectData.members || [])];
-                            if (cleanMembers.length !== (projectData.members || []).length) {
-                                await _supa.from('projects').update({ members: cleanMembers }).eq('id', projectId);
-                                projectData.members = cleanMembers;
-                            }
-
                             projectOwnerId = projectData.owner_id;
                             document.getElementById('projectCode').textContent = projectData.code;
                             showProjectPanel();
-                            loadMembersFromData(projectData);
-                            updateSeatsBannerFromData(projectData);
+                            await loadMembersFromProject(projectId, projectData.owner_id);
+                            await updateSeatsBanner(projectId, projectData.owner_id);
                         } else {
                             showNoProjectPanel();
                         }
@@ -345,7 +338,7 @@
                 }).select().maybeSingle();
                 if (createErr) throw createErr;
 
-                // Update user's project_id
+                // Update user's project_id (user updates own record - RLS allows this)
                 await _supa.from('users').upsert({
                     id: currentUser.uid,
                     name: currentUser.displayName || 'Usuário',
@@ -357,8 +350,8 @@
                 projectOwnerId = currentUser.uid;
                 document.getElementById('projectCode').textContent = code;
                 showProjectPanel();
-                loadMembersFromData(newProj);
-                updateSeatsBannerFromData(newProj);
+                await loadMembersFromProject(projectId, currentUser.uid);
+                await updateSeatsBanner(projectId, currentUser.uid);
             } catch (err) {
                 console.error('Error creating project:', err);
                 showSetupMsg('Erro ao criar projeto: ' + err.message, 'error');
@@ -391,42 +384,33 @@
 
                 const proj = projects[0];
 
-                // Check if user is already a member (by UID or by email)
-                const currentMembers = proj.members || [];
-                let alreadyMember = currentMembers.includes(currentUser.uid);
-
-                if (!alreadyMember && currentUser.email) {
-                    // Check if another UID with same email is already a member
-                    for (const uid of currentMembers) {
-                        const { data: u } = await _supa.from('users').select('email').eq('id', uid).maybeSingle();
-                        if (u && u.email === currentUser.email) {
-                            alreadyMember = true;
-                            break;
-                        }
-                    }
-                }
-
-                // Add current user to members (deduplicated by UID)
-                const newMembers = alreadyMember ? [...new Set(currentMembers)] : [...new Set([...currentMembers, currentUser.uid])];
-
-                const { error: updateErr } = await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
-                if (updateErr) throw updateErr;
-
-                // Update user's project_id
-                await _supa.from('users').upsert({
+                // KEY FIX: Only update the user's OWN record (RLS always allows this)
+                // This is the source of truth for membership - not the projects.members array
+                const { error: userErr } = await _supa.from('users').upsert({
                     id: currentUser.uid,
                     name: currentUser.displayName || 'Usuário',
                     email: currentUser.email,
                     project_id: proj.id
                 });
+                if (userErr) throw userErr;
+
+                // Try to also update projects.members (best effort - may fail due to RLS)
+                try {
+                    const currentMembers = proj.members || [];
+                    if (!currentMembers.includes(currentUser.uid)) {
+                        const newMembers = [...new Set([...currentMembers, currentUser.uid])];
+                        await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
+                    }
+                } catch (e) {
+                    console.log('Could not update projects.members (RLS), but user.project_id was set:', e);
+                }
 
                 projectId = proj.id;
-                proj.members = newMembers;
                 projectOwnerId = proj.owner_id;
                 document.getElementById('projectCode').textContent = proj.code;
                 showProjectPanel();
-                loadMembersFromData(proj);
-                updateSeatsBannerFromData(proj);
+                await loadMembersFromProject(projectId, proj.owner_id);
+                await updateSeatsBanner(projectId, proj.owner_id);
             } catch (err) {
                 console.error('Error joining project:', err);
                 showSetupMsg('Erro ao entrar no projeto: ' + err.message, 'error');
@@ -467,19 +451,22 @@
 
                 const proj = projects[0];
 
-                // Add current user to members (deduplicated)
-                const newMembers = [...new Set([...(proj.members || []), currentUser.uid])];
-                await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
-
-                // Update user's project_id
+                // Only update user's OWN record (RLS allows this)
                 await _supa.from('users').update({ project_id: proj.id }).eq('id', currentUser.uid);
 
+                // Best effort: also update projects.members
+                try {
+                    const currentMembers = proj.members || [];
+                    if (!currentMembers.includes(currentUser.uid)) {
+                        await _supa.from('projects').update({ members: [...new Set([...currentMembers, currentUser.uid])] }).eq('id', proj.id);
+                    }
+                } catch (e) { console.log('Could not update projects.members:', e); }
+
                 projectId = proj.id;
-                proj.members = newMembers;
                 projectOwnerId = proj.owner_id;
                 document.getElementById('projectCode').textContent = proj.code;
-                loadMembersFromData(proj);
-                updateSeatsBannerFromData(proj);
+                await loadMembersFromProject(projectId, proj.owner_id);
+                await updateSeatsBanner(projectId, proj.owner_id);
 
                 msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
                 msgEl.textContent = 'Projeto trocado com sucesso!';
@@ -504,57 +491,47 @@
             });
         }
 
-        // New function that works directly with Supabase data (snake_case keys)
-        async function loadMembersFromData(projectData) {
+        // Load members by querying the USERS table (source of truth)
+        // This avoids RLS issues - we don't depend on projects.members array
+        async function loadMembersFromProject(projId, ownerId) {
             const membersList = document.getElementById('membersList');
-            const members = projectData.members || [];
 
-            // Deduplicate by UID first
-            const uniqueUids = [...new Set(members)];
+            // Query all users that have this project_id - THIS is the source of truth
+            const { data: members, error } = await _supa
+                .from('users')
+                .select('id, name, email')
+                .eq('project_id', projId);
 
-            if (uniqueUids.length === 0) {
+            if (error) {
+                console.error('Error loading members:', error);
+                membersList.innerHTML = '<p class="text-center text-red-400 py-6">Erro ao carregar membros</p>';
+                return;
+            }
+
+            // Deduplicate by email (in case of multiple auth accounts)
+            const seenEmails = new Set();
+            const uniqueMembers = [];
+            for (const m of (members || [])) {
+                const email = m.email || '';
+                if (email && seenEmails.has(email)) continue;
+                if (email) seenEmails.add(email);
+                uniqueMembers.push(m);
+            }
+
+            if (uniqueMembers.length === 0) {
                 membersList.innerHTML = '<p class="text-center text-slate-400 py-6">Nenhum membro ainda</p>';
                 return;
             }
 
             membersList.innerHTML = '';
-            const ownerId = projectData.owner_id || projectOwnerId;
             const isOwner = currentUser.uid === ownerId;
 
-            // Load all user data first, then deduplicate by email
-            const memberData = [];
-            const seenEmails = new Set();
-
-            for (const uid of uniqueUids) {
-                try {
-                    const { data: userData } = await _supa.from('users').select('name, email').eq('id', uid).maybeSingle();
-                    const email = userData?.email || '';
-                    const name = userData?.name || 'Desconhecido';
-
-                    // Skip duplicate emails (same person with different auth UIDs)
-                    if (email && seenEmails.has(email)) {
-                        continue;
-                    }
-                    if (email) seenEmails.add(email);
-
-                    memberData.push({ uid, name, email });
-                } catch (err) {
-                    console.log('Error loading user:', err);
-                }
-            }
-
-            // Also clean the members array in DB if we removed duplicates
-            if (memberData.length < uniqueUids.length) {
-                const cleanUids = memberData.map(m => m.uid);
-                await _supa.from('projects').update({ members: cleanUids }).eq('id', projectId).catch(() => {});
-                projectData.members = cleanUids;
-            }
-
-            for (const member of memberData) {
-                const { uid, name, email } = member;
+            for (const member of uniqueMembers) {
+                const name = member.name || 'Sem nome';
+                const email = member.email || '';
                 const initial = name.charAt(0).toUpperCase();
-                const isMe = uid === currentUser.uid;
-                const isProjectOwner = uid === ownerId;
+                const isMe = member.id === currentUser.uid;
+                const isProjectOwner = member.id === ownerId;
 
                 let badge = '';
                 if (isProjectOwner) {
@@ -568,7 +545,7 @@
                 let removeBtn = '';
                 if (isOwner && !isProjectOwner) {
                     removeBtn = `
-                        <button onclick="removeMember('${uid}', '${name.replace(/'/g, "\\'")}')"
+                        <button onclick="removeMember('${member.id}', '${name.replace(/'/g, "\\'")}')"
                             class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Remover membro">
                             <i class="fa-solid fa-user-minus text-sm"></i>
                         </button>`;
@@ -604,15 +581,20 @@
             if (!confirm(`Tem certeza que deseja remover "${name}" do projeto?`)) return;
 
             try {
-                // Get current members, remove the UID, deduplicate
-                const { data: proj } = await _supa.from('projects').select('members').eq('id', projectId).maybeSingle();
-                const newMembers = [...new Set((proj?.members || []).filter(m => m !== uid))];
-                await _supa.from('projects').update({ members: newMembers }).eq('id', projectId);
+                // Clear the member's project_id (owner can do this)
                 await _supa.from('users').update({ project_id: null }).eq('id', uid);
 
-                const { data: updatedProj } = await _supa.from('projects').select('*').eq('id', projectId).maybeSingle();
-                loadMembersFromData(updatedProj);
-                updateSeatsBannerFromData(updatedProj);
+                // Best effort: also remove from projects.members array
+                try {
+                    const { data: proj } = await _supa.from('projects').select('members').eq('id', projectId).maybeSingle();
+                    if (proj) {
+                        const newMembers = (proj.members || []).filter(m => m !== uid);
+                        await _supa.from('projects').update({ members: newMembers }).eq('id', projectId);
+                    }
+                } catch (e) { console.log('Could not update projects.members:', e); }
+
+                await loadMembersFromProject(projectId, projectOwnerId);
+                await updateSeatsBanner(projectId, projectOwnerId);
             } catch (err) {
                 alert('Erro ao remover membro: ' + err.message);
             }
@@ -623,10 +605,18 @@
             if (!confirm('Tem certeza que deseja sair deste projeto?')) return;
 
             try {
-                const { data: proj } = await _supa.from('projects').select('members').eq('id', projectId).maybeSingle();
-                const newMembers = [...new Set((proj?.members || []).filter(m => m !== currentUser.uid))];
-                await _supa.from('projects').update({ members: newMembers }).eq('id', projectId);
+                // User clears own project_id (RLS allows this)
                 await _supa.from('users').update({ project_id: null }).eq('id', currentUser.uid);
+
+                // Best effort: also remove from projects.members
+                try {
+                    const { data: proj } = await _supa.from('projects').select('members').eq('id', projectId).maybeSingle();
+                    if (proj) {
+                        const newMembers = (proj.members || []).filter(m => m !== currentUser.uid);
+                        await _supa.from('projects').update({ members: newMembers }).eq('id', projectId);
+                    }
+                } catch (e) { console.log('Could not update projects.members:', e); }
+
                 projectId = null;
                 showNoProjectPanel();
             } catch (err) {
@@ -635,25 +625,27 @@
         };
 
         // ========== Seat Management ==========
-        async function updateSeatsBannerFromData(projectData) {
+        async function updateSeatsBanner(projId, ownerId) {
             const banner = document.getElementById('seatsBanner');
-            const ownerId = projectData.owner_id || projectOwnerId;
-            if (!projectData || !ownerId) return;
+            if (!projId || !ownerId) return;
 
-            // Count unique members by email to avoid counting duplicate auth accounts
-            const uniqueUids = [...new Set(projectData.members || [])];
+            // Count members from USERS table (source of truth)
+            const { data: members } = await _supa
+                .from('users')
+                .select('email')
+                .eq('project_id', projId);
+
+            // Deduplicate by email
             const seenEmails = new Set();
             let memberCount = 0;
-            for (const uid of uniqueUids) {
-                try {
-                    const { data: u } = await _supa.from('users').select('email').eq('id', uid).maybeSingle();
-                    const email = u?.email || uid;
-                    if (!seenEmails.has(email)) {
-                        seenEmails.add(email);
-                        memberCount++;
-                    }
-                } catch (e) { memberCount++; }
+            for (const m of (members || [])) {
+                const email = m.email || String(memberCount);
+                if (!seenEmails.has(email)) {
+                    seenEmails.add(email);
+                    memberCount++;
+                }
             }
+
             let maxSeats = 2; // Free plan default
             let isPro = false;
 
