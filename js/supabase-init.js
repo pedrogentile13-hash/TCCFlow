@@ -142,6 +142,42 @@ const firebase = {
     }
 };
 
+// ============================================================
+// camelCase <-> snake_case conversion
+// Pages use camelCase (createdAt, projectId, ownerId...)
+// Supabase tables use snake_case (created_at, project_id, owner_id...)
+// ============================================================
+
+function toSnake(str) {
+    return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+}
+
+function toCamel(str) {
+    return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+
+// Convert object keys from camelCase to snake_case (for writing to DB)
+function keysToSnake(obj) {
+    if (obj === null || obj === undefined || typeof obj !== 'object' || obj instanceof Array) return obj;
+    if (obj.__op) return obj; // preserve FieldValue operations
+    const result = {};
+    for (const [key, value] of Object.entries(obj)) {
+        result[toSnake(key)] = value;
+    }
+    return result;
+}
+
+// Convert object keys from snake_case to camelCase (for reading from DB)
+function keysToCamel(obj) {
+    if (obj === null || obj === undefined || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(keysToCamel);
+    const result = {};
+    for (const [key, value] of Object.entries(obj)) {
+        result[toCamel(key)] = value;
+    }
+    return result;
+}
+
 // Compatibility: db object for direct Firestore-style calls
 const db = {
     collection(name) {
@@ -162,7 +198,7 @@ class SupaCollection {
 
     where(field, op, value) {
         const clone = new SupaCollection(this.table);
-        clone._filters = [...this._filters, { field, op, value }];
+        clone._filters = [...this._filters, { field: toSnake(field), op, value }];
         clone._limitVal = this._limitVal;
         return clone;
     }
@@ -197,14 +233,14 @@ class SupaCollection {
             docs: (data || []).map(row => ({
                 id: row.id,
                 exists: true,
-                data: () => row,
+                data: () => keysToCamel(row),
                 ref: { id: row.id }
             }))
         };
     }
 
     async add(docData) {
-        const cleanData = processFieldValues(docData);
+        const cleanData = processFieldValues(keysToSnake(docData));
         const { data, error } = await _supa.from(this.table).insert(cleanData).select().single();
         if (error) throw error;
         return { id: data.id };
@@ -223,18 +259,19 @@ class SupaDoc {
             return { exists: false, data: () => null, id: this.id };
         }
         if (error) throw error;
-        return { exists: true, data: () => data, id: data.id };
+        return { exists: true, data: () => keysToCamel(data), id: data.id };
     }
 
     async set(docData, options) {
-        const cleanData = processFieldValues({ ...docData, id: this.id });
+        const cleanData = processFieldValues(keysToSnake({ ...docData, id: this.id }));
         const { error } = await _supa.from(this.table).upsert(cleanData);
         if (error) throw error;
     }
 
     async update(updateData) {
+        const snakeData = keysToSnake(updateData);
         const cleanData = {};
-        for (const [key, value] of Object.entries(updateData)) {
+        for (const [key, value] of Object.entries(snakeData)) {
             if (value && typeof value === 'object' && value.__op) {
                 if (value.__op === 'arrayUnion') {
                     const { data: current } = await _supa.from(this.table).select(key).eq('id', this.id).single();
