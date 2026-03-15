@@ -226,6 +226,27 @@
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
+            // Auto-create user doc for Google OAuth users
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (!userDoc.exists) {
+                    const code = 'TCC-' + Array.from({length: 4}, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 31)]).join('');
+                    const projectRef = await db.collection('projects').add({
+                        name: 'Meu TCC',
+                        code: code,
+                        ownerId: user.uid,
+                        members: [user.uid],
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    await db.collection('users').doc(user.uid).set({
+                        name: user.displayName || 'Usuário',
+                        email: user.email,
+                        projectId: projectRef.id,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (err) { console.log('Auto-create user error:', err); }
+
             // Update navbar for PRO users
             try {
                 const pid = await DB.getProjectId();

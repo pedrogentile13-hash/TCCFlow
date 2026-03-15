@@ -36,6 +36,7 @@
         </a>
 
         <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50">
+            <div id="step1">
             <div class="text-center mb-8">
                 <div class="w-14 h-14 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
                     <i class="fa-solid fa-user-plus text-white text-xl"></i>
@@ -107,6 +108,39 @@
             <p class="text-center text-sm text-slate-500 mt-6">
                 Ja tem conta? <a href="login.html" class="text-violet-600 hover:underline font-medium">Entrar</a>
             </p>
+            </div>
+
+            <div id="step2" class="hidden">
+                <div class="text-center mb-8">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+                        <i class="fa-solid fa-envelope-circle-check text-white text-xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold">Confirme seu Email</h1>
+                    <p class="text-sm text-slate-500 mt-2">Enviamos um codigo para <span id="sentEmail" class="font-medium text-violet-600"></span></p>
+                </div>
+
+                <form id="verifyForm" class="space-y-5">
+                    <div class="flex justify-center gap-2">
+                        <input type="text" maxlength="1" class="digit-input w-12 h-12 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" maxlength="1" class="digit-input w-12 h-12 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" maxlength="1" class="digit-input w-12 h-12 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" maxlength="1" class="digit-input w-12 h-12 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" maxlength="1" class="digit-input w-12 h-12 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" inputmode="numeric" pattern="[0-9]">
+                        <input type="text" maxlength="1" class="digit-input w-12 h-12 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" inputmode="numeric" pattern="[0-9]">
+                    </div>
+
+                    <div id="errorMsg2" class="hidden bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3"></div>
+
+                    <button type="submit" id="verifyBtn"
+                        class="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-semibold py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-emerald-500/25">
+                        <i class="fa-solid fa-check mr-2"></i>Confirmar
+                    </button>
+                </form>
+
+                <div class="flex justify-center gap-4 mt-4">
+                    <button onclick="resendCode()" class="text-sm text-violet-600 hover:underline">Reenviar codigo</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -169,16 +203,17 @@
                     projectId = projectRef.id;
                 }
 
-                await db.collection('users').doc(cred.user.uid).set({
+                // Store pending data for after verification
+                window._pendingSignup = {
+                    uid: cred.user.uid,
                     name: name,
                     email: email,
-                    projectId: projectId,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                successMsg.textContent = 'Conta criada com sucesso! Redirecionando...';
-                successMsg.classList.remove('hidden');
-                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+                    projectId: projectId
+                };
+                document.getElementById('sentEmail').textContent = email;
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+                document.querySelector('.digit-input').focus();
             } catch (err) {
                 let msg = 'Erro ao criar conta.';
                 if (err.code === 'auth/email-already-in-use') msg = 'Este email ja esta em uso.';
@@ -238,6 +273,60 @@
                 errorMsg.classList.remove('hidden');
             }
         });
+        // ========== OTP Verification ==========
+        const digits = document.querySelectorAll('.digit-input');
+        digits.forEach((input, i) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value && i < digits.length - 1) digits[i + 1].focus();
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && i > 0) digits[i - 1].focus();
+            });
+        });
+
+        document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const code = Array.from(digits).map(d => d.value).join('');
+            const errorMsg2 = document.getElementById('errorMsg2');
+            const btn = document.getElementById('verifyBtn');
+
+            if (code.length < 6) {
+                errorMsg2.textContent = 'Digite o codigo completo de 6 digitos.';
+                errorMsg2.classList.remove('hidden');
+                return;
+            }
+
+            errorMsg2.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Verificando...';
+
+            try {
+                await auth.verifyOtp(window._pendingSignup.email, code);
+                // Now create user doc in DB
+                const s = window._pendingSignup;
+                await db.collection('users').doc(s.uid).set({
+                    name: s.name,
+                    email: s.email,
+                    projectId: s.projectId,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                errorMsg2.textContent = 'Codigo invalido ou expirado. Tente novamente.';
+                errorMsg2.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Confirmar';
+            }
+        });
+
+        async function resendCode() {
+            try {
+                await auth.sendOtp(window._pendingSignup.email);
+                alert('Novo codigo enviado!');
+            } catch (err) {
+                alert('Erro ao reenviar: ' + (err.message || 'Tente novamente'));
+            }
+        }
     </script>
 </body>
 </html>

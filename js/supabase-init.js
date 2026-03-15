@@ -121,6 +121,25 @@ const auth = {
     async signOut() {
         await _supa.auth.signOut();
         this.currentUser = null;
+    },
+
+    async sendOtp(email) {
+        const { error } = await _supa.auth.signInWithOtp({ email });
+        if (error) throw { code: 'auth/otp-error', message: error.message };
+    },
+
+    async verifyOtp(email, token) {
+        const { data, error } = await _supa.auth.verifyOtp({ email, token, type: 'email' });
+        if (error) throw { code: 'auth/invalid-otp', message: error.message };
+        this.currentUser = this._mapUser(data.user);
+        return { user: this.currentUser };
+    },
+
+    async resetPasswordForEmail(email) {
+        const { error } = await _supa.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + '/pages/nova-senha.html'
+        });
+        if (error) throw { code: 'auth/reset-error', message: error.message };
     }
 };
 
