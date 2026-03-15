@@ -238,7 +238,7 @@
         });
 
         async function loadData() {
-            if (!projectId || !isFirebaseConfigured()) return;
+            if (!projectId) return;
 
             try {
                 // Load members from USERS table (source of truth)
@@ -268,11 +268,22 @@
                     assigneeSelect.appendChild(option);
                 }
 
-                const tasksSnap = await db.collection('tasks')
-                    .where('projectId', '==', projectId)
-                    .get();
+                // Load tasks from Supabase
+                const { data: tasksData, error: tasksErr } = await _supa
+                    .from('tasks')
+                    .select('*')
+                    .eq('project_id', projectId);
 
-                const tasks = tasksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (tasksErr) throw tasksErr;
+
+                const tasks = (tasksData || []).map(t => ({
+                    id: t.id,
+                    title: t.title,
+                    assignedTo: t.assigned_to,
+                    dueDate: t.due_date,
+                    status: t.status,
+                    projectId: t.project_id
+                }));
                 const todo = tasks.filter(t => t.status === 'todo');
                 const progress = tasks.filter(t => t.status === 'progress');
                 const done = tasks.filter(t => t.status === 'done');
@@ -370,23 +381,26 @@
 
         document.getElementById('taskForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!projectId || !isFirebaseConfigured()) return;
+            if (!projectId) return;
 
             const editId = document.getElementById('editTaskId').value;
-            const data = {
-                projectId,
-                title: document.getElementById('taskTitle').value,
-                assignedTo: document.getElementById('taskAssignee').value,
-                dueDate: document.getElementById('taskDueDate').value,
-                status: editId ? document.getElementById('taskStatus').value : 'todo'
-            };
+            const title = document.getElementById('taskTitle').value;
+            const assigned_to = document.getElementById('taskAssignee').value || null;
+            const due_date = document.getElementById('taskDueDate').value || null;
+            const status = editId ? document.getElementById('taskStatus').value : 'todo';
 
             try {
                 if (editId) {
-                    await db.collection('tasks').doc(editId).update(data);
+                    const { error } = await _supa
+                        .from('tasks')
+                        .update({ title, assigned_to, due_date, status })
+                        .eq('id', editId);
+                    if (error) throw error;
                 } else {
-                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    await db.collection('tasks').add(data);
+                    const { error } = await _supa
+                        .from('tasks')
+                        .insert({ project_id: projectId, title, assigned_to, due_date, status });
+                    if (error) throw error;
                 }
                 closeTaskModal();
                 document.getElementById('taskForm').reset();
@@ -399,7 +413,11 @@
         // ========== Status Change ==========
         window.changeStatus = async function(taskId, newStatus) {
             try {
-                await db.collection('tasks').doc(taskId).update({ status: newStatus });
+                const { error } = await _supa
+                    .from('tasks')
+                    .update({ status: newStatus })
+                    .eq('id', taskId);
+                if (error) throw error;
                 await loadData();
             } catch (err) {
                 alert('Erro ao mudar status: ' + err.message);
@@ -410,7 +428,11 @@
         window.deleteTask = async function(taskId) {
             if (!confirm('Tem certeza que deseja apagar esta tarefa?')) return;
             try {
-                await db.collection('tasks').doc(taskId).delete();
+                const { error } = await _supa
+                    .from('tasks')
+                    .delete()
+                    .eq('id', taskId);
+                if (error) throw error;
                 await loadData();
             } catch (err) {
                 alert('Erro ao apagar tarefa: ' + err.message);
