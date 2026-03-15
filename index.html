@@ -34,11 +34,113 @@
         @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
         @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
         @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+
+        /* Hero fade-in */
         .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
         .fade-in-delay-1 { animation-delay: 0.2s; }
         .fade-in-delay-2 { animation-delay: 0.4s; }
         .fade-in-delay-3 { animation-delay: 0.6s; }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* Scroll Reveal Glass */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.85);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-scale.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 16px 48px rgba(124, 58, 237, 0.1);
+            transform: translateY(-4px);
+            transition: all 0.4s ease;
+        }
+        .glass-card-dark {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Stagger children */
+        .stagger-children .reveal { transition-delay: 0s; }
+        .stagger-children .reveal:nth-child(1) { transition-delay: 0s; }
+        .stagger-children .reveal:nth-child(2) { transition-delay: 0.1s; }
+        .stagger-children .reveal:nth-child(3) { transition-delay: 0.15s; }
+        .stagger-children .reveal:nth-child(4) { transition-delay: 0.2s; }
+        .stagger-children .reveal:nth-child(5) { transition-delay: 0.25s; }
+        .stagger-children .reveal:nth-child(6) { transition-delay: 0.3s; }
+
+        /* Pricing toggle */
+        .plan-popular {
+            background: linear-gradient(135deg, rgba(124,58,237,0.05), rgba(6,182,212,0.05));
+        }
+        .plan-badge {
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+        }
+
+        /* Comparison table row hover */
+        .compare-row {
+            transition: background 0.2s ease;
+        }
+        .compare-row:hover {
+            background: rgba(124, 58, 237, 0.03);
+        }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float-particle linear infinite;
+        }
+        @keyframes float-particle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
     </style>
 </head>
 <body class="bg-white text-slate-900 min-h-screen antialiased">
@@ -50,6 +152,9 @@
         <div class="blob blob-3"></div>
     </div>
 
+    <!-- Floating Particles -->
+    <div id="particles" class="fixed inset-0 z-0 pointer-events-none overflow-hidden"></div>
+
     <!-- Navbar -->
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,7 +165,8 @@
                 </a>
                 <div class="hidden md:flex items-center gap-6">
                     <a href="#features" class="text-sm text-slate-500 hover:text-violet-600 transition">Funcionalidades</a>
-                    <a href="#about" class="text-sm text-slate-500 hover:text-violet-600 transition">Sobre</a>
+                    <a href="#comparison" class="text-sm text-slate-500 hover:text-violet-600 transition">Comparativo</a>
+                    <a href="#pricing" class="text-sm text-slate-500 hover:text-violet-600 transition">Planos</a>
                     <a href="pages/login.html" class="text-sm text-slate-500 hover:text-violet-600 transition">Entrar</a>
                     <a href="pages/cadastro.html" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold px-5 py-2 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25">Criar Conta</a>
                 </div>
@@ -71,7 +177,8 @@
         </div>
         <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2 border-t border-slate-100">
             <a href="#features" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Funcionalidades</a>
-            <a href="#about" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Sobre</a>
+            <a href="#comparison" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Comparativo</a>
+            <a href="#pricing" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Planos</a>
             <a href="pages/login.html" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Entrar</a>
             <a href="pages/cadastro.html" class="block bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold px-5 py-2 rounded-xl text-center">Criar Conta</a>
         </div>
@@ -106,72 +213,478 @@
 
             <!-- Stats -->
             <div class="fade-in fade-in-delay-3 grid grid-cols-3 gap-4 mt-16 max-w-lg mx-auto">
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                <div class="glass-card rounded-2xl p-4">
                     <div class="text-2xl font-bold text-violet-600">100%</div>
                     <div class="text-xs text-slate-500 mt-1">Gratuito</div>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-                    <div class="text-2xl font-bold text-cyan-600">4</div>
+                <div class="glass-card rounded-2xl p-4">
+                    <div class="text-2xl font-bold text-cyan-600">8</div>
                     <div class="text-xs text-slate-500 mt-1">Membros</div>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-                    <div class="text-2xl font-bold text-emerald-600">Supabase</div>
-                    <div class="text-xs text-slate-500 mt-1">Integrado</div>
+                <div class="glass-card rounded-2xl p-4">
+                    <div class="text-2xl font-bold text-emerald-600">I.A.</div>
+                    <div class="text-xs text-slate-500 mt-1">Integrada</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+            <i class="fa-solid fa-chevron-down text-slate-300 text-lg"></i>
         </div>
     </section>
 
     <!-- Features Section -->
     <section id="features" class="py-24 relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
+            <div class="text-center mb-16 reveal">
+                <div class="inline-flex items-center gap-2 bg-violet-50 border border-violet-200 px-4 py-2 rounded-full mb-6">
+                    <i class="fa-solid fa-sparkles text-violet-600 text-xs"></i>
+                    <span class="text-xs text-violet-700 font-medium">Funcionalidades</span>
+                </div>
                 <h2 class="text-3xl sm:text-4xl font-bold mb-4">Tudo para o seu <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">TCC fluir</span></h2>
                 <p class="text-slate-500 max-w-xl mx-auto">Ferramentas pensadas para organizar cada etapa do Trabalho de Conclusao de Curso.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-violet-500/5 transition group">
-                    <div class="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+                <div class="glass-card rounded-3xl p-8 transition group reveal">
+                    <div class="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
                         <i class="fa-solid fa-users text-violet-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Equipe & Membros</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">Adicione integrantes, atribua tarefas e acompanhe o progresso de cada membro do grupo.</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-cyan-500/5 transition group">
-                    <div class="w-14 h-14 bg-cyan-100 rounded-2xl flex items-center justify-center mb-6">
+                <div class="glass-card rounded-3xl p-8 transition group reveal">
+                    <div class="w-14 h-14 bg-cyan-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
                         <i class="fa-solid fa-diagram-project text-cyan-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Organizacao do Projeto</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">Dashboard completo com estatisticas, tarefas por membro e visao geral do andamento.</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-emerald-500/5 transition group">
-                    <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
+                <div class="glass-card rounded-3xl p-8 transition group reveal">
+                    <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
                         <i class="fa-solid fa-flask text-emerald-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Hub de Pesquisa</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">Quadro Kanban para organizar anotacoes, referencias e achados da pesquisa.</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-amber-500/5 transition group">
-                    <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6">
+                <div class="glass-card rounded-3xl p-8 transition group reveal">
+                    <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
                         <i class="fa-solid fa-calendar-days text-amber-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Calendario de Prazos</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">Visualize entregas, defesas e marcos importantes no calendario interativo.</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-rose-500/5 transition group">
-                    <div class="w-14 h-14 bg-rose-100 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fa-brands fa-google text-rose-600 text-xl"></i>
+                <div class="glass-card rounded-3xl p-8 transition group reveal">
+                    <div class="w-14 h-14 bg-rose-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-robot text-rose-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3">Assistente I.A.</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">Busque fontes academicas, gere resumos e encontre referencias com inteligencia artificial.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-8 transition group reveal">
+                    <div class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
+                        <i class="fa-brands fa-google text-indigo-600 text-xl"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-3">Google Integrado</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">Crie Docs, Sheets, Slides e eventos no Calendar direto do TCCFlow.</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-lg hover:shadow-violet-500/5 transition group">
-                    <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-database text-emerald-600 text-xl"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison: Google Ecosystem vs TCCFlow -->
+    <section id="comparison" class="py-24 relative z-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <div class="inline-flex items-center gap-2 bg-cyan-50 border border-cyan-200 px-4 py-2 rounded-full mb-6">
+                    <i class="fa-solid fa-scale-balanced text-cyan-600 text-xs"></i>
+                    <span class="text-xs text-cyan-700 font-medium">Comparativo</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Por que <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">TCCFlow</span>?</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto">Compare usar varias ferramentas do Google separadas versus ter tudo integrado no TCCFlow.</p>
+            </div>
+
+            <!-- Visual Comparison -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+                <!-- Google Way -->
+                <div class="reveal-left">
+                    <div class="glass-card rounded-3xl p-8 h-full border-red-100/50">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
+                                <i class="fa-brands fa-google text-red-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-red-600">Jeito Tradicional</h3>
+                                <p class="text-xs text-slate-400">Varias ferramentas separadas</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
+                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">Google Docs + Sheets + Slides</p>
+                                    <p class="text-xs text-slate-400">Arquivos espalhados em pastas diferentes</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
+                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">Google Calendar</p>
+                                    <p class="text-xs text-slate-400">Eventos manuais sem vinculo com tarefas</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
+                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">Trello / Notion separado</p>
+                                    <p class="text-xs text-slate-400">Mais uma ferramenta para gerenciar tarefas</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
+                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">WhatsApp para comunicacao</p>
+                                    <p class="text-xs text-slate-400">Informacoes perdidas no chat</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
+                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">Sem I.A. para pesquisa</p>
+                                    <p class="text-xs text-slate-400">Buscar fontes manualmente no Google Scholar</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-5 border-t border-slate-100">
+                            <p class="text-xs text-red-500 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 5+ ferramentas diferentes para gerenciar</p>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-bold mb-3">Supabase Cloud</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">Dados na nuvem com Supabase. Login seguro e sincronizacao entre todos os membros.</p>
+                </div>
+
+                <!-- TCCFlow Way -->
+                <div class="reveal-right">
+                    <div class="glass-card rounded-3xl p-8 h-full border-violet-100/50 plan-popular">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-12 h-12 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-xl flex items-center justify-center">
+                                <img src="favicon.png" alt="TCCFlow" class="w-7 h-7 rounded-lg">
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-violet-600">TCCFlow</h3>
+                                <p class="text-xs text-slate-400">Tudo em um so lugar</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
+                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">Google Docs, Sheets & Slides integrados</p>
+                                    <p class="text-xs text-slate-400">Crie e acesse tudo direto do painel do projeto</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
+                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">Calendario vinculado ao projeto</p>
+                                    <p class="text-xs text-slate-400">Prazos, entregas e defesas sincronizados automaticamente</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
+                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">Tarefas e Kanban integrados</p>
+                                    <p class="text-xs text-slate-400">Atribua, acompanhe e conclua tudo em um Dashboard</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
+                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">Equipe centralizada</p>
+                                    <p class="text-xs text-slate-400">Todos os membros com acesso ao mesmo projeto</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
+                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700">I.A. para fontes academicas</p>
+                                    <p class="text-xs text-slate-400">Pesquise artigos, gere resumos e encontre referencias</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-5 border-t border-violet-100">
+                            <p class="text-xs text-violet-600 font-semibold"><i class="fa-solid fa-check-double mr-1"></i> 1 plataforma. Tudo integrado.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Comparison Table -->
+            <div class="reveal-scale">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 overflow-hidden">
+                    <h3 class="text-lg font-bold text-center mb-6">Comparacao Detalhada</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-200">
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-600 w-2/5">Recurso</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-red-400 w-[30%]">
+                                        <i class="fa-brands fa-google mr-1"></i>Google + Outros
+                                    </th>
+                                    <th class="text-center py-3 px-4 font-semibold text-violet-600 w-[30%]">
+                                        <img src="favicon.png" class="w-5 h-5 inline rounded mr-1">TCCFlow
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="compare-row border-b border-slate-100">
+                                    <td class="py-3 px-4 text-slate-700">Dashboard do TCC</td>
+                                    <td class="py-3 px-4 text-center text-slate-400"><i class="fa-solid fa-xmark"></i> Nao existe</td>
+                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td>
+                                </tr>
+                                <tr class="compare-row border-b border-slate-100">
+                                    <td class="py-3 px-4 text-slate-700">Tarefas por membro</td>
+                                    <td class="py-3 px-4 text-center text-slate-400">Trello/Notion separado</td>
+                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> Integrado</td>
+                                </tr>
+                                <tr class="compare-row border-b border-slate-100">
+                                    <td class="py-3 px-4 text-slate-700">Google Docs/Sheets/Slides</td>
+                                    <td class="py-3 px-4 text-center text-slate-400">Pastas manuais</td>
+                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> 1 clique</td>
+                                </tr>
+                                <tr class="compare-row border-b border-slate-100">
+                                    <td class="py-3 px-4 text-slate-700">Calendario de prazos</td>
+                                    <td class="py-3 px-4 text-center text-slate-400">Eventos manuais</td>
+                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> Automatico</td>
+                                </tr>
+                                <tr class="compare-row border-b border-slate-100">
+                                    <td class="py-3 px-4 text-slate-700">I.A. para pesquisa</td>
+                                    <td class="py-3 px-4 text-center text-slate-400"><i class="fa-solid fa-xmark"></i> Nao tem</td>
+                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> Ate 100/mes</td>
+                                </tr>
+                                <tr class="compare-row border-b border-slate-100">
+                                    <td class="py-3 px-4 text-slate-700">Fases do TCC</td>
+                                    <td class="py-3 px-4 text-center text-slate-400"><i class="fa-solid fa-xmark"></i> Nao existe</td>
+                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> Estruturado</td>
+                                </tr>
+                                <tr class="compare-row">
+                                    <td class="py-3 px-4 text-slate-700">Preco</td>
+                                    <td class="py-3 px-4 text-center text-slate-400">Gratis (disperso)</td>
+                                    <td class="py-3 px-4 text-center font-semibold text-violet-600">Gratis ou Pro</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24 relative z-10">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-full mb-6">
+                    <i class="fa-solid fa-tags text-emerald-600 text-xs"></i>
+                    <span class="text-xs text-emerald-700 font-medium">Planos</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Escolha o plano <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">ideal</span></h2>
+                <p class="text-slate-500 max-w-xl mx-auto">Comece gratis e faca upgrade quando precisar de mais recursos para sua equipe.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Free Plan -->
+                <div class="reveal-left">
+                    <div class="glass-card rounded-3xl p-8 h-full">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center">
+                                <i class="fa-solid fa-user text-slate-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold">Gratis</h3>
+                                <p class="text-xs text-slate-400">Para experimentar</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <span class="text-5xl font-extrabold">R$ 0</span>
+                            <span class="text-slate-400 text-sm">/sempre</span>
+                        </div>
+
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-center gap-3 text-sm text-slate-600">
+                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                                </div>
+                                1 usuario
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-slate-600">
+                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                                </div>
+                                Dashboard e Tarefas
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-slate-600">
+                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                                </div>
+                                Calendario basico
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-slate-600">
+                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                                </div>
+                                10 buscas I.A./mes
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-slate-300">
+                                <div class="w-6 h-6 bg-slate-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-xmark text-slate-300 text-xs"></i>
+                                </div>
+                                Sem equipe
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-slate-300">
+                                <div class="w-6 h-6 bg-slate-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-xmark text-slate-300 text-xs"></i>
+                                </div>
+                                Sem Google integrado
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-slate-300">
+                                <div class="w-6 h-6 bg-slate-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-xmark text-slate-300 text-xs"></i>
+                                </div>
+                                Sem suporte prioritario
+                            </li>
+                        </ul>
+
+                        <a href="pages/cadastro.html" class="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3.5 rounded-2xl transition text-sm border border-slate-200">
+                            <i class="fa-solid fa-arrow-right mr-2"></i>Comecar Gratis
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="reveal-right">
+                    <div class="relative rounded-3xl p-[2px] bg-gradient-to-br from-violet-600 to-cyan-500 shadow-xl shadow-violet-500/20 h-full">
+                        <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+                            <span class="plan-badge text-white text-xs font-bold uppercase px-5 py-1.5 rounded-full shadow-lg">
+                                <i class="fa-solid fa-fire mr-1"></i>Mais Popular
+                            </span>
+                        </div>
+                        <div class="bg-white rounded-[22px] p-8 h-full plan-popular">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-14 h-14 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center">
+                                    <i class="fa-solid fa-crown text-violet-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold">Pro</h3>
+                                    <p class="text-xs text-slate-400">Para equipes de TCC</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <span class="text-5xl font-extrabold">R$ 97</span>
+                                <span class="text-slate-400 text-sm">/ano</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-6">A partir de R$ 8,08/mes. Adicione membros por +R$ 30/ano cada.</p>
+
+                            <ul class="space-y-4 mb-8">
+                                <li class="flex items-center gap-3 text-sm text-slate-600">
+                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
+                                    </div>
+                                    <span class="font-medium">Ate 8 membros</span>
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-slate-600">
+                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
+                                    </div>
+                                    Tudo do plano Gratis
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-slate-600">
+                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
+                                    </div>
+                                    Dashboard compartilhado
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-slate-600">
+                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
+                                    </div>
+                                    100 buscas I.A./mes (grupo)
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-slate-600">
+                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
+                                    </div>
+                                    Integracao Google completa
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-slate-600">
+                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
+                                    </div>
+                                    Projeto e fases do TCC
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-slate-600">
+                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
+                                    </div>
+                                    Suporte prioritario
+                                </li>
+                            </ul>
+
+                            <a href="pages/cadastro.html" class="block w-full text-center bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3.5 rounded-2xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm">
+                                <i class="fa-solid fa-bolt mr-2"></i>Comecar com o Pro
+                            </a>
+                            <p class="text-[10px] text-slate-400 text-center mt-3">
+                                <i class="fa-solid fa-lock mr-1"></i>Pagamento seguro via Mercado Pago. Cancele quando quiser.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section class="py-24 relative z-10">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-full mb-6">
+                    <i class="fa-solid fa-route text-amber-600 text-xs"></i>
+                    <span class="text-xs text-amber-700 font-medium">Como funciona</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">3 passos para <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">comecar</span></h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 stagger-children">
+                <div class="text-center reveal">
+                    <div class="glass-card w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
+                        <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">1</span>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-user-plus text-violet-600 text-xs"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Crie sua conta</h3>
+                    <p class="text-sm text-slate-500">Cadastre-se gratuitamente em menos de 1 minuto.</p>
+                </div>
+                <div class="text-center reveal">
+                    <div class="glass-card w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
+                        <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">2</span>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-folder-plus text-cyan-600 text-xs"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Configure o projeto</h3>
+                    <p class="text-sm text-slate-500">Adicione o tema, membros e defina as fases do TCC.</p>
+                </div>
+                <div class="text-center reveal">
+                    <div class="glass-card w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
+                        <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">3</span>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-rocket text-emerald-600 text-xs"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Comece a planejar</h3>
+                    <p class="text-sm text-slate-500">Use o Dashboard, I.A. e Google para organizar tudo.</p>
                 </div>
             </div>
         </div>
@@ -180,28 +693,36 @@
     <!-- CTA Section -->
     <section id="about" class="py-24 relative z-10">
         <div class="max-w-4xl mx-auto px-4 text-center">
-            <div class="bg-gradient-to-br from-violet-600 to-cyan-500 rounded-3xl p-8 sm:p-16 text-white shadow-2xl shadow-violet-500/20">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-8">
-                    <img src="favicon.png" alt="TCCFlow" class="w-16 h-16 rounded-2xl">
-                </div>
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Pronto para organizar o seu TCC?</h2>
-                <p class="text-white/80 max-w-xl mx-auto mb-10">
-                    O TCCFlow foi feito para ajudar voce e seu grupo a planejar cada etapa do TCC de forma organizada e eficiente.
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="pages/cadastro.html" class="w-full sm:w-auto bg-white text-violet-700 font-semibold px-8 py-3.5 rounded-2xl transition hover:bg-white/90 text-center">
-                        <i class="fa-solid fa-user-plus mr-2"></i>Criar Conta Gratuita
-                    </a>
-                    <a href="pages/login.html" class="w-full sm:w-auto bg-white/20 hover:bg-white/30 backdrop-blur font-semibold px-8 py-3.5 rounded-2xl transition text-center">
-                        Ja tenho conta <i class="fa-solid fa-arrow-right ml-2"></i>
-                    </a>
+            <div class="reveal-scale">
+                <div class="bg-gradient-to-br from-violet-600 to-cyan-500 rounded-3xl p-8 sm:p-16 text-white shadow-2xl shadow-violet-500/20 relative overflow-hidden">
+                    <!-- Decorative elements -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+                    <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"></div>
+
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-8">
+                            <img src="favicon.png" alt="TCCFlow" class="w-16 h-16 rounded-2xl">
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-bold mb-4">Pronto para organizar o seu TCC?</h2>
+                        <p class="text-white/80 max-w-xl mx-auto mb-10">
+                            O TCCFlow foi feito para ajudar voce e seu grupo a planejar cada etapa do TCC de forma organizada e eficiente.
+                        </p>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <a href="pages/cadastro.html" class="w-full sm:w-auto bg-white text-violet-700 font-semibold px-8 py-3.5 rounded-2xl transition hover:bg-white/90 text-center">
+                                <i class="fa-solid fa-user-plus mr-2"></i>Criar Conta Gratuita
+                            </a>
+                            <a href="pages/login.html" class="w-full sm:w-auto bg-white/20 hover:bg-white/30 backdrop-blur font-semibold px-8 py-3.5 rounded-2xl transition text-center">
+                                Ja tenho conta <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-200 py-8">
+    <footer class="border-t border-slate-200 py-8 relative z-10">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-2">
                 <img src="favicon.png" alt="TCCFlow" class="w-7 h-7 rounded-lg">
@@ -217,8 +738,60 @@
     </footer>
 
     <script>
+        // Mobile menu
         document.getElementById('mobileMenuBtn').addEventListener('click', () => {
             document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+
+        // Scroll Reveal with Intersection Observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Floating Particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['rgba(139,92,246,0.3)', 'rgba(6,182,212,0.3)', 'rgba(16,185,129,0.3)'];
+
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = (100 + Math.random() * 20) + '%';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.width = (3 + Math.random() * 5) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDuration = (15 + Math.random() * 25) + 's';
+                particle.style.animationDelay = (Math.random() * 20) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Close mobile menu if open
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                }
+            });
         });
     </script>
     <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
