@@ -146,6 +146,13 @@
                     });
                 }
 
+                // Google login is beta-only
+                const isBeta = await DB.isBetaTester(user.uid);
+                if (!isBeta) {
+                    await auth.signOut();
+                    throw { message: 'Login com Google disponível apenas para beta testers. Use e-mail e senha para entrar.' };
+                }
+
                 window.location.href = 'dashboard.html';
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;

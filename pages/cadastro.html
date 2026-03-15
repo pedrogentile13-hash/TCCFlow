@@ -264,6 +264,13 @@
                     });
                 }
 
+                // Google signup is beta-only
+                const isBeta = await DB.isBetaTester(user.uid);
+                if (!isBeta) {
+                    await auth.signOut();
+                    throw { message: 'Cadastro com Google disponível apenas para beta testers. Use e-mail e senha para criar sua conta.' };
+                }
+
                 window.location.href = 'dashboard.html';
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;
