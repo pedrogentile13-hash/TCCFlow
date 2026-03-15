@@ -73,7 +73,7 @@
                     <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
                         <li>Nome completo</li>
                         <li>Endereco de e-mail</li>
-                        <li>Senha (armazenada de forma criptografada pelo Firebase Auth — nunca em texto puro)</li>
+                        <li>Senha (armazenada de forma criptografada pelo Supabase Auth — nunca em texto puro)</li>
                         <li>Conteudo de projetos, tarefas, metas, anotacoes e documentos criados na Plataforma</li>
                     </ul>
 
@@ -125,16 +125,16 @@
                     <h2 class="text-lg font-bold mb-3">5. Armazenamento e Seguranca</h2>
                     <p class="text-sm text-slate-600 leading-relaxed mb-3">Seus dados sao armazenados utilizando os seguintes servicos:</p>
                     <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li><strong>Firebase Authentication (Google Cloud):</strong> Gerenciamento seguro de contas e autenticacao</li>
-                        <li><strong>Cloud Firestore (Google Cloud):</strong> Banco de dados para projetos, tarefas e dados da Plataforma</li>
+                        <li><strong>Supabase Auth:</strong> Gerenciamento seguro de contas e autenticacao</li>
+                        <li><strong>Supabase Database (PostgreSQL):</strong> Banco de dados para projetos, tarefas e dados da Plataforma</li>
                         <li><strong>Netlify:</strong> Hospedagem da aplicacao web</li>
                     </ul>
                     <p class="text-sm text-slate-600 leading-relaxed mt-3">Medidas de seguranca adotadas:</p>
                     <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside mt-2">
                         <li>Conexoes criptografadas via HTTPS/TLS em todo o site (<a href="https://tccflow.com.br" class="text-violet-600 hover:underline">tccflow.com.br</a>)</li>
-                        <li>Autenticacao segura via Firebase Auth com suporte a login Google</li>
-                        <li>Regras de seguranca no Firestore (Security Rules) para controle granular de acesso</li>
-                        <li>Senhas nunca armazenadas em texto puro — hash criptografico gerenciado pelo Firebase</li>
+                        <li>Autenticacao segura via Supabase Auth com suporte a login Google</li>
+                        <li>Row Level Security (RLS) no Supabase para controle granular de acesso</li>
+                        <li>Senhas nunca armazenadas em texto puro — hash criptografico gerenciado pelo Supabase</li>
                         <li>Tokens de pagamento processados exclusivamente pelo Mercado Pago</li>
                     </ul>
                 </section>
@@ -146,7 +146,7 @@
                         <li><strong>Membros da equipe:</strong> Dados do projeto (tarefas, metas, progresso) sao compartilhados com membros convidados por voce dentro da Plataforma</li>
                         <li><strong>Mercado Pago:</strong> Dados estritamente necessarios para processar pagamentos (nome, e-mail, CPF para transacoes)</li>
                         <li><strong>Google APIs:</strong> Dados enviados para o Google Calendar e Drive somente quando voce autorizar explicitamente</li>
-                        <li><strong>Firebase/Google Cloud:</strong> Infraestrutura de armazenamento e autenticacao</li>
+                        <li><strong>Supabase:</strong> Infraestrutura de armazenamento e autenticacao</li>
                         <li><strong>Obrigacao legal:</strong> Quando exigido por lei, regulamento ou ordem judicial brasileira</li>
                     </ul>
                 </section>
@@ -184,7 +184,7 @@
                     <p class="text-sm text-slate-600 leading-relaxed mb-3">O TCCFlow utiliza tecnologias de armazenamento local da seguinte forma:</p>
                     <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
                         <li><strong>localStorage:</strong> Para salvar preferencias do usuario como o modo escuro (dark mode)</li>
-                        <li><strong>Firebase Auth:</strong> Pode utilizar cookies para gerenciar sessoes de autenticacao</li>
+                        <li><strong>Supabase Auth:</strong> Pode utilizar cookies para gerenciar sessoes de autenticacao</li>
                         <li><strong>Tokens Google:</strong> Armazenados temporariamente na sessao do navegador para integracoes autorizadas</li>
                     </ul>
                     <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mt-4">
@@ -199,7 +199,7 @@
 
                 <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
                     <h2 class="text-lg font-bold mb-3">11. Transferencia Internacional de Dados</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">Seus dados podem ser armazenados e processados em servidores localizados fora do Brasil (Google Cloud/Firebase, Netlify). O Mercado Pago processa os pagamentos no Brasil. Transferencias internacionais sao realizadas para provedores que adotam padroes adequados de protecao de dados, em conformidade com o artigo 33 da LGPD.</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">Seus dados podem ser armazenados e processados em servidores localizados fora do Brasil (Supabase/AWS, Netlify). O Mercado Pago processa os pagamentos no Brasil. Transferencias internacionais sao realizadas para provedores que adotam padroes adequados de protecao de dados, em conformidade com o artigo 33 da LGPD.</p>
                 </section>
 
                 <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
