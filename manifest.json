@@ -1,0 +1,18 @@
+{
+  "name": "TCCFlow - Planeje seu TCC",
+  "short_name": "TCCFlow",
+  "description": "Organize seu TCC de forma simples e eficiente",
+  "start_url": "/pages/login.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7c3aed",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

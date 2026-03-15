@@ -3,6 +3,8 @@
 <head>
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrar com Codigo - TCCFlow</title>
@@ -208,5 +210,6 @@
             document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar codigo';
         }
     </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>
