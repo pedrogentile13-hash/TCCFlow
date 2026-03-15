@@ -226,9 +226,15 @@
                         return;
                     }
 
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists && userDoc.data().projectId) {
-                        projectId = userDoc.data().projectId;
+                    // Load user data from Supabase (source of truth)
+                    const { data: userData } = await _supa
+                        .from('users')
+                        .select('project_id')
+                        .eq('id', user.uid)
+                        .maybeSingle();
+
+                    if (userData && userData.project_id) {
+                        projectId = userData.project_id;
                         await loadData();
                     }
                 } catch (err) {
