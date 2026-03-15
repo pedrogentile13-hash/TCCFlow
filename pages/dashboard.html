@@ -280,23 +280,33 @@
             document.getElementById('projectInfo').innerHTML =
                 `<strong>${project.name}</strong> &bull; Código: <code class="bg-slate-100 px-2 py-1 rounded text-violet-600 font-mono">${project.code}</code>`;
 
-            document.getElementById('memberCount').textContent = project.members.length;
+            // Load members from USERS table (source of truth)
+            const { data: projectMembers } = await _supa
+                .from('users')
+                .select('id, name, email')
+                .eq('project_id', projectId);
+
+            // Deduplicate by email
+            const seenEmails = new Set();
+            const uniqueMembers = [];
+            for (const m of (projectMembers || [])) {
+                const email = m.email || '';
+                if (email && seenEmails.has(email)) continue;
+                if (email) seenEmails.add(email);
+                uniqueMembers.push(m);
+                memberNames[m.id] = m.name || 'Desconhecido';
+            }
+
+            document.getElementById('memberCount').textContent = uniqueMembers.length;
 
             // Load member names for assignee select
             const assigneeSelect = document.getElementById('dashTaskAssignee');
             assigneeSelect.innerHTML = '<option value="">Selecione um membro...</option>';
-            for (const uid of project.members) {
-                try {
-                    const memberDoc = await db.collection('users').doc(uid).get();
-                    if (memberDoc.exists) {
-                        const data = memberDoc.data();
-                        memberNames[uid] = data.name;
-                        const option = document.createElement('option');
-                        option.value = uid;
-                        option.textContent = data.name;
-                        assigneeSelect.appendChild(option);
-                    }
-                } catch (err) { console.log('Error loading member:', err); }
+            for (const member of uniqueMembers) {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.textContent = member.name || 'Sem nome';
+                assigneeSelect.appendChild(option);
             }
 
             // Load ALL tasks for the project
@@ -354,14 +364,14 @@
                 }).join('');
             }
 
-            // Load team list
+            // Load team list from uniqueMembers (already loaded above)
             const teamList = document.getElementById('teamList');
-            if (project.members.length === 0) {
+            if (uniqueMembers.length === 0) {
                 teamList.innerHTML = '<p class="text-sm text-slate-400">Sem membros</p>';
             } else {
                 teamList.innerHTML = '';
-                for (const uid of project.members) {
-                    const name = memberNames[uid] || 'Desconhecido';
+                for (const member of uniqueMembers) {
+                    const name = member.name || 'Desconhecido';
                     teamList.innerHTML += `
                         <div class="flex items-center gap-3 p-2 rounded-lg">
                             <div class="w-8 h-8 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
@@ -369,7 +379,7 @@
                             </div>
                             <div>
                                 <p class="text-sm font-medium">${name}</p>
-                                <p class="text-xs text-slate-400">${uid === currentUser.uid ? 'Você' : 'Membro'}</p>
+                                <p class="text-xs text-slate-400">${member.id === currentUser.uid ? 'Você' : 'Membro'}</p>
                             </div>
                         </div>`;
                 }
