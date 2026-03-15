@@ -18,7 +18,7 @@ const DB = {
     // ===================== Google Links =====================
     googleLinks: {
         async getAll(projectId) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('google_links')
                 .select('*')
                 .eq('project_id', projectId)
@@ -28,7 +28,7 @@ const DB = {
         },
 
         async add(projectId, link) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('google_links')
                 .insert({
                     project_id: projectId,
@@ -44,7 +44,7 @@ const DB = {
         },
 
         async remove(linkId) {
-            const { error } = await supabase.from('google_links').delete().eq('id', linkId);
+            const { error } = await _supa.from('google_links').delete().eq('id', linkId);
             if (error) throw error;
         }
     },
@@ -52,7 +52,7 @@ const DB = {
     // ===================== Saved Papers (I.A.) =====================
     savedPapers: {
         async getAll(projectId) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('saved_papers')
                 .select('*')
                 .eq('project_id', projectId)
@@ -66,7 +66,7 @@ const DB = {
         },
 
         async add(projectId, paper) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('saved_papers')
                 .insert({
                     project_id: projectId,
@@ -87,12 +87,12 @@ const DB = {
         },
 
         async remove(paperId) {
-            const { error } = await supabase.from('saved_papers').delete().eq('id', paperId);
+            const { error } = await _supa.from('saved_papers').delete().eq('id', paperId);
             if (error) throw error;
         },
 
         async exists(projectId, title) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('saved_papers')
                 .select('id')
                 .eq('project_id', projectId)
@@ -106,7 +106,7 @@ const DB = {
     // ===================== Calendar Goals =====================
     calendarGoals: {
         async getAll(projectId) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('calendar_goals')
                 .select('*')
                 .eq('project_id', projectId)
@@ -120,7 +120,7 @@ const DB = {
         },
 
         async add(projectId, goal) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('calendar_goals')
                 .insert({
                     project_id: projectId,
@@ -140,12 +140,12 @@ const DB = {
             if (updateData.completed !== undefined) cleanData.completed = updateData.completed;
             if (updateData.title !== undefined) cleanData.title = updateData.title;
             if (updateData.deadline !== undefined) cleanData.deadline = updateData.deadline;
-            const { error } = await supabase.from('calendar_goals').update(cleanData).eq('id', goalId);
+            const { error } = await _supa.from('calendar_goals').update(cleanData).eq('id', goalId);
             if (error) throw error;
         },
 
         async remove(goalId) {
-            const { error } = await supabase.from('calendar_goals').delete().eq('id', goalId);
+            const { error } = await _supa.from('calendar_goals').delete().eq('id', goalId);
             if (error) throw error;
         }
     },
@@ -153,7 +153,7 @@ const DB = {
     // ===================== Calendar Sessions =====================
     calendarSessions: {
         async getAll(projectId) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('calendar_sessions')
                 .select('*')
                 .eq('project_id', projectId);
@@ -166,7 +166,7 @@ const DB = {
         },
 
         async getByDate(projectId, dateStr) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('calendar_sessions')
                 .select('*')
                 .eq('project_id', projectId)
@@ -180,7 +180,7 @@ const DB = {
         },
 
         async add(projectId, session) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('calendar_sessions')
                 .insert({
                     project_id: projectId,
@@ -204,12 +204,12 @@ const DB = {
             if (updateData.topic !== undefined) cleanData.topic = updateData.topic;
             if (updateData.date !== undefined) cleanData.date = updateData.date;
             if (updateData.time !== undefined) cleanData.time = updateData.time;
-            const { error } = await supabase.from('calendar_sessions').update(cleanData).eq('id', sessionId);
+            const { error } = await _supa.from('calendar_sessions').update(cleanData).eq('id', sessionId);
             if (error) throw error;
         },
 
         async remove(sessionId) {
-            const { error } = await supabase.from('calendar_sessions').delete().eq('id', sessionId);
+            const { error } = await _supa.from('calendar_sessions').delete().eq('id', sessionId);
             if (error) throw error;
         }
     },
@@ -217,7 +217,7 @@ const DB = {
     // ===================== Subscriptions =====================
     subscriptions: {
         async get(userId) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('subscriptions')
                 .select('*')
                 .eq('id', userId)
@@ -233,7 +233,7 @@ const DB = {
         },
 
         async getByProject(projectId) {
-            const { data: project, error } = await supabase
+            const { data: project, error } = await _supa
                 .from('projects')
                 .select('owner_id')
                 .eq('id', projectId)
@@ -261,7 +261,7 @@ const DB = {
             const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             const docId = `${projectId}_${month}`;
 
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('ai_usage')
                 .select('*')
                 .eq('id', docId)
@@ -276,26 +276,26 @@ const DB = {
             const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             const docId = `${projectId}_${month}`;
 
-            const { data: existing } = await supabase
+            const { data: existing } = await _supa
                 .from('ai_usage')
                 .select('count')
                 .eq('id', docId)
                 .single();
 
             if (existing) {
-                await supabase
+                await _supa
                     .from('ai_usage')
                     .update({ count: existing.count + 1 })
                     .eq('id', docId);
             } else {
-                await supabase
+                await _supa
                     .from('ai_usage')
                     .insert({ id: docId, project_id: projectId, month, count: 1 });
             }
         },
 
         async canSearch(projectId) {
-            const { data: project, error } = await supabase
+            const { data: project, error } = await _supa
                 .from('projects')
                 .select('owner_id')
                 .eq('id', projectId)
@@ -315,7 +315,7 @@ const DB = {
     // ===================== Google Drive =====================
     googleDrive: {
         async setFolder(projectId, folderId, folderUrl) {
-            const { error } = await supabase
+            const { error } = await _supa
                 .from('projects')
                 .update({
                     google_drive_folder_id: folderId,
@@ -326,7 +326,7 @@ const DB = {
         },
 
         async getFolder(projectId) {
-            const { data, error } = await supabase
+            const { data, error } = await _supa
                 .from('projects')
                 .select('google_drive_folder_id, google_drive_folder_url')
                 .eq('id', projectId)
@@ -340,7 +340,7 @@ const DB = {
 
     // ===================== Helpers =====================
     async isProByProject(projectId) {
-        const { data: project, error } = await supabase
+        const { data: project, error } = await _supa
             .from('projects')
             .select('owner_id')
             .eq('id', projectId)
@@ -352,7 +352,7 @@ const DB = {
     async getProjectId() {
         const user = auth.currentUser;
         if (!user) return null;
-        const { data, error } = await supabase
+        const { data, error } = await _supa
             .from('users')
             .select('project_id')
             .eq('id', user.uid)
