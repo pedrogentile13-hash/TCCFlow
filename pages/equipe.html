@@ -195,6 +195,21 @@
                     <div id="inviteMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
                 </div>
 
+                <!-- Switch/Join another project -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-right-to-bracket text-cyan-600 mr-2"></i>Entrar em Outro Projeto</h2>
+                    <p class="text-xs text-slate-500 mb-4">Quer trocar para o projeto de outro grupo? Cole o código abaixo.</p>
+                    <div class="flex gap-3">
+                        <input type="text" id="switchProjectCode" placeholder="Ex: TCC-A3KR"
+                            class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-violet-500">
+                        <button onclick="switchToProject()" id="switchProjectBtn"
+                            class="bg-slate-900 text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-slate-800 transition whitespace-nowrap">
+                            <i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar
+                        </button>
+                    </div>
+                    <div id="switchMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
+                </div>
+
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <h2 class="text-lg font-bold mb-6">Membros da Equipe</h2>
                     <div id="membersList" class="space-y-3">
@@ -373,6 +388,65 @@
                 showSetupMsg('Erro ao entrar no projeto: ' + err.message, 'error');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto';
+            }
+        };
+
+        // ========== Switch to Another Project (from project panel) ==========
+        window.switchToProject = async function() {
+            const btn = document.getElementById('switchProjectBtn');
+            const code = document.getElementById('switchProjectCode').value.trim().toUpperCase();
+            const msgEl = document.getElementById('switchMsg');
+
+            if (!code) {
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                msgEl.textContent = 'Digite o código do projeto.';
+                msgEl.classList.remove('hidden');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Entrando...';
+
+            try {
+                const snap = await db.collection('projects').where('code', '==', code).get();
+                if (snap.empty) {
+                    msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                    msgEl.textContent = 'Código não encontrado: ' + code;
+                    msgEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar';
+                    return;
+                }
+
+                const projDoc = snap.docs[0];
+                await db.collection('projects').doc(projDoc.id).update({
+                    members: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+                });
+
+                await db.collection('users').doc(currentUser.uid).set({
+                    projectId: projDoc.id
+                }, { merge: true });
+
+                projectId = projDoc.id;
+                const updatedDoc = await db.collection('projects').doc(projectId).get();
+                projectOwnerId = updatedDoc.data().ownerId;
+                document.getElementById('projectCode').textContent = updatedDoc.data().code;
+                loadMembers(updatedDoc.data());
+                updateSeatsBanner(updatedDoc.data());
+
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
+                msgEl.textContent = 'Projeto trocado com sucesso!';
+                msgEl.classList.remove('hidden');
+                document.getElementById('switchProjectCode').value = '';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar';
+            } catch (err) {
+                console.error('Error switching project:', err);
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                msgEl.textContent = 'Erro ao trocar de projeto: ' + err.message;
+                msgEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar';
             }
         };
 

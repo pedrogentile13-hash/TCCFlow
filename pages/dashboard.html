@@ -225,22 +225,14 @@
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
-            // Auto-create user doc for Google OAuth users
+            // Ensure user doc exists (without auto-creating a project)
             try {
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 if (!userDoc.exists) {
-                    const code = 'TCC-' + Array.from({length: 4}, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 31)]).join('');
-                    const projectRef = await db.collection('projects').add({
-                        name: 'Meu TCC',
-                        code: code,
-                        ownerId: user.uid,
-                        members: [user.uid],
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
                     await db.collection('users').doc(user.uid).set({
                         name: user.displayName || 'Usuário',
                         email: user.email,
-                        projectId: projectRef.id,
+                        projectId: null,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
@@ -267,7 +259,7 @@
                         await loadDashboard();
                     } else {
                         document.getElementById('projectInfo').innerHTML =
-                            '<span class="text-amber-600">Você ainda não tem um projeto. <a href="equipe.html" class="underline">Criar ou entrar em um projeto</a></span>';
+                            '<span class="text-amber-600">Você ainda não tem um projeto. <a href="equipe.html" class="underline font-semibold">Criar um novo</a> ou <a href="equipe.html" class="underline font-semibold">Entrar em um projeto existente</a></span>';
                     }
                 } catch (err) {
                     console.error('Supabase error:', err);
