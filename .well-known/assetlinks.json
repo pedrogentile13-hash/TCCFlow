@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.pwabuilder.tccflow",
+      "sha256_cert_fingerprints": [
+        "2C:82:D4:AD:67:BD:6C:CD:FB:61:2D:6B:3A:58:85:80:5F:C8:6C:1A:57:A2:86:2D:4C:9C:0F:A2:DE:D0:D3:C9"
+      ]
+    }
+  }
+]
