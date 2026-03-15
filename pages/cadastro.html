@@ -107,10 +107,8 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-init.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
     <script>
         auth.onAuthStateChanged(user => {
             if (user) window.location.href = 'dashboard.html';
@@ -142,7 +140,7 @@
                 if (!document.getElementById('acceptTerms').checked) {
                     throw { message: 'Voce precisa aceitar os Termos de Servico e a Politica de Privacidade.' };
                 }
-                if (!isFirebaseConfigured()) throw { message: 'Firebase nao configurado. Edite js/firebase-init.js' };
+                if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado. Edite js/supabase-init.js' };
 
                 const cred = await auth.createUserWithEmailAndPassword(email, password);
                 await cred.user.updateProfile({ displayName: name });
@@ -182,7 +180,7 @@
                 let msg = 'Erro ao criar conta.';
                 if (err.code === 'auth/email-already-in-use') msg = 'Este email ja esta em uso.';
                 else if (err.code === 'auth/weak-password') msg = 'Senha muito fraca. Use pelo menos 6 caracteres.';
-                else if (err.code === 'permission-denied' || (err.message && err.message.includes('permission'))) msg = 'Erro de permissao no Firestore. Verifique as Security Rules no Firebase Console.';
+                else if (err.code === 'permission-denied' || (err.message && err.message.includes('permission'))) msg = 'Erro de permissao no banco de dados. Verifique as politicas RLS no Supabase.';
                 else if (err.message) msg = err.message;
                 errorMsg.textContent = msg;
                 errorMsg.classList.remove('hidden');
@@ -200,7 +198,7 @@
                 if (!document.getElementById('acceptTerms').checked) {
                     throw { message: 'Voce precisa aceitar os Termos de Servico e a Politica de Privacidade.' };
                 }
-                if (!isFirebaseConfigured()) throw { message: 'Firebase nao configurado. Edite js/firebase-init.js' };
+                if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado. Edite js/supabase-init.js' };
 
                 const provider = new firebase.auth.GoogleAuthProvider();
                 const result = await auth.signInWithPopup(provider);
@@ -231,7 +229,7 @@
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;
                 let msg = 'Erro ao criar conta com Google.';
-                if (err.code === 'auth/unauthorized-domain') msg = 'Dominio nao autorizado no Firebase. Adicione este dominio nas configuracoes do Firebase Auth.';
+                if (err.code === 'auth/unauthorized-domain') msg = 'Dominio nao autorizado. Adicione este dominio nas configuracoes do Supabase Auth.';
                 else if (err.message) msg = err.message;
                 errorMsg.textContent = msg;
                 errorMsg.classList.remove('hidden');

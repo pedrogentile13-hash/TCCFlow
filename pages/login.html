@@ -83,10 +83,8 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-init.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
     <script>
         auth.onAuthStateChanged(user => {
             if (user) window.location.href = 'dashboard.html';
@@ -104,7 +102,7 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Entrando...';
 
             try {
-                if (!isFirebaseConfigured()) throw { message: 'Firebase nao configurado. Edite js/firebase-init.js' };
+                if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado. Edite js/supabase-init.js' };
                 await auth.signInWithEmailAndPassword(email, password);
                 window.location.href = 'dashboard.html';
             } catch (err) {
@@ -125,7 +123,7 @@
             errorMsg.classList.add('hidden');
 
             try {
-                if (!isFirebaseConfigured()) throw { message: 'Firebase nao configurado. Edite js/firebase-init.js' };
+                if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado. Edite js/supabase-init.js' };
 
                 const provider = new firebase.auth.GoogleAuthProvider();
                 const result = await auth.signInWithPopup(provider);
@@ -146,7 +144,7 @@
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;
                 let msg = 'Erro ao entrar com Google.';
-                if (err.code === 'auth/unauthorized-domain') msg = 'Dominio nao autorizado no Firebase. Adicione este dominio nas configuracoes do Firebase Auth.';
+                if (err.code === 'auth/unauthorized-domain') msg = 'Dominio nao autorizado. Adicione este dominio nas configuracoes do Supabase Auth.';
                 else if (err.message) msg = err.message;
                 errorMsg.textContent = msg;
                 errorMsg.classList.remove('hidden');
