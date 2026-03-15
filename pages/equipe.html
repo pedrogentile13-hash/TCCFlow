@@ -383,6 +383,7 @@
                 document.getElementById('projectCode').textContent = updatedDoc.data().code;
                 showProjectPanel();
                 loadMembers(updatedDoc.data());
+                updateSeatsBanner(updatedDoc.data());
             } catch (err) {
                 console.error('Error joining project:', err);
                 showSetupMsg('Erro ao entrar no projeto: ' + err.message, 'error');
@@ -465,10 +466,18 @@
                 return;
             }
 
+            // Deduplicate members array
+            const uniqueMembers = [...new Set(project.members)];
+
+            // If there were duplicates, clean them up in Firestore
+            if (uniqueMembers.length !== project.members.length && projectId) {
+                db.collection('projects').doc(projectId).update({ members: uniqueMembers }).catch(err => console.warn('Could not clean duplicates:', err));
+            }
+
             membersList.innerHTML = '';
             const isOwner = currentUser.uid === projectOwnerId;
 
-            for (const uid of project.members) {
+            for (const uid of uniqueMembers) {
                 try {
                     const userDoc = await db.collection('users').doc(uid).get();
                     const data = userDoc.exists ? userDoc.data() : { name: 'Desconhecido', email: '' };
@@ -560,7 +569,7 @@
             const banner = document.getElementById('seatsBanner');
             if (!project || !projectOwnerId) return;
 
-            const memberCount = (project.members || []).length;
+            const memberCount = [...new Set(project.members || [])].length;
             let maxSeats = 2; // Free plan default
             let isPro = false;
 
