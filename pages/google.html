@@ -695,12 +695,15 @@
                 // Save to Firestore
                 await DB.googleDrive.setFolder(projectId, folder.id, folderUrl);
 
-                // Share with team members
-                if (projDoc.exists) {
-                    const members = projDoc.data().members || [];
-                    for (const uid of members) {
-                        const userDoc = await db.collection('users').doc(uid).get();
-                        if (userDoc.exists && userDoc.data().email) {
+                // Share with team members (loaded from users table)
+                try {
+                    const { data: teamMembers } = await _supa
+                        .from('users')
+                        .select('id, email')
+                        .eq('project_id', projectId);
+
+                    for (const member of (teamMembers || [])) {
+                        if (member.email) {
                             try {
                                 await fetch(`https://www.googleapis.com/drive/v3/files/${folder.id}/permissions`, {
                                     method: 'POST',
@@ -711,13 +714,13 @@
                                     body: JSON.stringify({
                                         role: 'writer',
                                         type: 'user',
-                                        emailAddress: userDoc.data().email
+                                        emailAddress: member.email
                                     })
                                 });
-                            } catch (e) { console.log('Share error for', uid, e); }
+                            } catch (e) { console.log('Share error for', member.id, e); }
                         }
                     }
-                }
+                } catch (e) { console.log('Error loading members for sharing:', e); }
 
                 showDriveFolder({ id: folder.id, url: folderUrl });
                 showDriveFeedback('<i class="fa-solid fa-check-circle mr-1"></i>Pasta criada e compartilhada com a equipe!', 'success');

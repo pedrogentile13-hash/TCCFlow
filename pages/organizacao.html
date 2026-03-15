@@ -241,20 +241,31 @@
             if (!projectId || !isFirebaseConfigured()) return;
 
             try {
-                const projectDoc = await db.collection('projects').doc(projectId).get();
-                projectMembers = projectDoc.data().members || [];
+                // Load members from USERS table (source of truth)
+                const { data: dbMembers } = await _supa
+                    .from('users')
+                    .select('id, name, email')
+                    .eq('project_id', projectId);
+
+                // Deduplicate by email
+                const seenEmails = new Set();
+                const uniqueMembers = [];
+                for (const m of (dbMembers || [])) {
+                    const email = m.email || '';
+                    if (email && seenEmails.has(email)) continue;
+                    if (email) seenEmails.add(email);
+                    uniqueMembers.push(m);
+                    memberNames[m.id] = m.name || 'Desconhecido';
+                }
+                projectMembers = uniqueMembers.map(m => m.id);
 
                 const assigneeSelect = document.getElementById('taskAssignee');
                 assigneeSelect.innerHTML = '<option value="">Selecione um membro...</option>';
-                for (const uid of projectMembers) {
-                    const userDoc = await db.collection('users').doc(uid).get();
-                    if (userDoc.exists) {
-                        memberNames[uid] = userDoc.data().name;
-                        const option = document.createElement('option');
-                        option.value = uid;
-                        option.textContent = userDoc.data().name;
-                        assigneeSelect.appendChild(option);
-                    }
+                for (const member of uniqueMembers) {
+                    const option = document.createElement('option');
+                    option.value = member.id;
+                    option.textContent = member.name || 'Sem nome';
+                    assigneeSelect.appendChild(option);
                 }
 
                 const tasksSnap = await db.collection('tasks')
