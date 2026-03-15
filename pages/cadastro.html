@@ -33,7 +33,7 @@
 
     <div class="relative z-10 w-full max-w-md mx-4 my-8">
         <a href="../index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-violet-600 transition mb-8">
-            <i class="fa-solid fa-arrow-left"></i> Voltar ao inicio
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao início
         </a>
 
         <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50">
@@ -43,7 +43,7 @@
                     <i class="fa-solid fa-user-plus text-white text-xl"></i>
                 </div>
                 <h1 class="text-2xl font-bold">Criar Conta</h1>
-                <p class="text-sm text-slate-500 mt-2">Preencha os dados para comecar</p>
+                <p class="text-sm text-slate-500 mt-2">Preencha os dados para começar</p>
             </div>
 
             <form id="registerForm" class="space-y-5">
@@ -65,23 +65,23 @@
                     <label class="block text-sm font-medium text-slate-600 mb-2">
                         <i class="fa-solid fa-lock mr-1 text-violet-600"></i> Senha
                     </label>
-                    <input type="password" id="password" required placeholder="Minimo 6 caracteres" minlength="6"
+                    <input type="password" id="password" required placeholder="Mínimo 6 caracteres" minlength="6"
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-600 mb-2">
-                        <i class="fa-solid fa-key mr-1 text-violet-600"></i> Codigo do Projeto (opcional)
+                        <i class="fa-solid fa-key mr-1 text-violet-600"></i> Código do Projeto (opcional)
                     </label>
                     <input type="text" id="projectCode" placeholder="Ex: TCC-ABCD (deixe vazio para criar novo)"
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
-                    <p class="text-xs text-slate-400 mt-1">Se seu grupo ja tem um projeto, cole o codigo aqui para entrar</p>
+                    <p class="text-xs text-slate-400 mt-1">Se seu grupo já tem um projeto, cole o código aqui para entrar</p>
                 </div>
 
                 <div class="flex items-start gap-3">
                     <input type="checkbox" id="acceptTerms" required
                         class="w-4 h-4 mt-0.5 rounded border-slate-300 text-violet-600 focus:ring-violet-500 cursor-pointer shrink-0">
                     <label for="acceptTerms" class="text-xs text-slate-500 leading-relaxed cursor-pointer">
-                        Li e concordo com os <a href="termos.html" target="_blank" class="text-violet-600 hover:underline font-medium">Termos de Servico</a> e a <a href="privacidade.html" target="_blank" class="text-violet-600 hover:underline font-medium">Politica de Privacidade</a> do TCCFlow.
+                        Li e concordo com os <a href="termos.html" target="_blank" class="text-violet-600 hover:underline font-medium">Termos de Serviço</a> e a <a href="privacidade.html" target="_blank" class="text-violet-600 hover:underline font-medium">Política de Privacidade</a> do TCCFlow.
                     </label>
                 </div>
 
@@ -108,7 +108,7 @@
             </form>
 
             <p class="text-center text-sm text-slate-500 mt-6">
-                Ja tem conta? <a href="login.html" class="text-violet-600 hover:underline font-medium">Entrar</a>
+                Já tem conta? <a href="login.html" class="text-violet-600 hover:underline font-medium">Entrar</a>
             </p>
             </div>
 
@@ -118,7 +118,7 @@
                         <i class="fa-solid fa-envelope-circle-check text-white text-xl"></i>
                     </div>
                     <h1 class="text-2xl font-bold">Confirme seu Email</h1>
-                    <p class="text-sm text-slate-500 mt-2">Enviamos um codigo para <span id="sentEmail" class="font-medium text-violet-600"></span></p>
+                    <p class="text-sm text-slate-500 mt-2">Enviamos um código para <span id="sentEmail" class="font-medium text-violet-600"></span></p>
                 </div>
 
                 <form id="verifyForm" class="space-y-5">
@@ -142,7 +142,7 @@
                 </form>
 
                 <div class="flex justify-center gap-4 mt-4">
-                    <button onclick="resendCode()" class="text-sm text-violet-600 hover:underline">Reenviar codigo</button>
+                    <button onclick="resendCode()" class="text-sm text-violet-600 hover:underline">Reenviar código</button>
                 </div>
             </div>
         </div>
@@ -179,9 +179,9 @@
 
             try {
                 if (!document.getElementById('acceptTerms').checked) {
-                    throw { message: 'Voce precisa aceitar os Termos de Servico e a Politica de Privacidade.' };
+                    throw { message: 'Você precisa aceitar os Termos de Serviço e a Política de Privacidade.' };
                 }
-                if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado. Edite js/supabase-init.js' };
+                if (!isFirebaseConfigured()) throw { message: 'Supabase não configurado. Edite js/supabase-init.js' };
 
                 const cred = await auth.createUserWithEmailAndPassword(email, password);
                 await cred.user.updateProfile({ displayName: name });
@@ -190,7 +190,7 @@
 
                 if (projectCode) {
                     const snap = await db.collection('projects').where('code', '==', projectCode).get();
-                    if (snap.empty) throw { message: 'Codigo de projeto nao encontrado: ' + projectCode };
+                    if (snap.empty) throw { message: 'Código de projeto não encontrado:' + projectCode };
                     projectId = snap.docs[0].id;
                     await db.collection('projects').doc(projectId).update({
                         members: firebase.firestore.FieldValue.arrayUnion(cred.user.uid)
@@ -220,9 +220,9 @@
                 document.querySelector('.digit-input').focus();
             } catch (err) {
                 let msg = 'Erro ao criar conta.';
-                if (err.code === 'auth/email-already-in-use') msg = 'Este email ja esta em uso.';
+                if (err.code === 'auth/email-already-in-use') msg = 'Este email já está em uso.';
                 else if (err.code === 'auth/weak-password') msg = 'Senha muito fraca. Use pelo menos 6 caracteres.';
-                else if (err.code === 'permission-denied' || (err.message && err.message.includes('permission'))) msg = 'Erro de permissao no banco de dados. Verifique as politicas RLS no Supabase.';
+                else if (err.code === 'permission-denied' || (err.message && err.message.includes('permission'))) msg = 'Erro de permissão no banco de dados. Verifique as políticas RLS no Supabase.';
                 else if (err.message) msg = err.message;
                 errorMsg.textContent = msg;
                 errorMsg.classList.remove('hidden');
@@ -238,9 +238,9 @@
 
             try {
                 if (!document.getElementById('acceptTerms').checked) {
-                    throw { message: 'Voce precisa aceitar os Termos de Servico e a Politica de Privacidade.' };
+                    throw { message: 'Você precisa aceitar os Termos de Serviço e a Política de Privacidade.' };
                 }
-                if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado. Edite js/supabase-init.js' };
+                if (!isFirebaseConfigured()) throw { message: 'Supabase não configurado. Edite js/supabase-init.js' };
 
                 const provider = new firebase.auth.GoogleAuthProvider();
                 const result = await auth.signInWithPopup(provider);
@@ -271,7 +271,7 @@
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;
                 let msg = 'Erro ao criar conta com Google.';
-                if (err.code === 'auth/unauthorized-domain') msg = 'Dominio nao autorizado. Adicione este dominio nas configuracoes do Supabase Auth.';
+                if (err.code === 'auth/unauthorized-domain') msg = 'Domínio não autorizado. Adicione este domínio nas configurações do Supabase Auth.';
                 else if (err.message) msg = err.message;
                 errorMsg.textContent = msg;
                 errorMsg.classList.remove('hidden');
@@ -295,7 +295,7 @@
             const btn = document.getElementById('verifyBtn');
 
             if (code.length < 8) {
-                errorMsg2.textContent = 'Digite o codigo completo de 8 digitos.';
+                errorMsg2.textContent = 'Digite o código completo de 8 dígitos.';
                 errorMsg2.classList.remove('hidden');
                 return;
             }
@@ -316,7 +316,7 @@
                 });
                 window.location.href = 'dashboard.html';
             } catch (err) {
-                errorMsg2.textContent = 'Codigo invalido ou expirado. Tente novamente.';
+                errorMsg2.textContent = 'Código inválido ou expirado. Tente novamente.';
                 errorMsg2.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Confirmar';
@@ -326,7 +326,7 @@
         async function resendCode() {
             try {
                 await auth.sendOtp(window._pendingSignup.email);
-                alert('Novo codigo enviado!');
+                alert('Novo código enviado!');
             } catch (err) {
                 alert('Erro ao reenviar: ' + (err.message || 'Tente novamente'));
             }

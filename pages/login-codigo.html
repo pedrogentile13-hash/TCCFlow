@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#7c3aed">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar com Codigo - TCCFlow</title>
+    <title>Entrar com Código - TCCFlow</title>
     <script src="../js/darkmode.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
 
     <div class="relative z-10 w-full max-w-md mx-4">
         <a href="../index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-violet-600 transition mb-8">
-            <i class="fa-solid fa-arrow-left"></i> Voltar ao inicio
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao início
         </a>
 
         <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50">
@@ -44,8 +44,8 @@
                     <div class="w-14 h-14 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
                         <i class="fa-solid fa-envelope text-white text-xl"></i>
                     </div>
-                    <h1 class="text-2xl font-bold">Entrar com Codigo</h1>
-                    <p class="text-sm text-slate-500 mt-2">Enviaremos um codigo de acesso para seu email</p>
+                    <h1 class="text-2xl font-bold">Entrar com Código</h1>
+                    <p class="text-sm text-slate-500 mt-2">Enviaremos um código de acesso para seu email</p>
                 </div>
 
                 <form id="emailForm" class="space-y-5">
@@ -61,7 +61,7 @@
 
                     <button type="submit" id="submitBtn"
                         class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25">
-                        <i class="fa-solid fa-paper-plane mr-2"></i>Enviar codigo
+                        <i class="fa-solid fa-paper-plane mr-2"></i>Enviar código
                     </button>
                 </form>
 
@@ -76,8 +76,8 @@
                     <div class="w-14 h-14 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
                         <i class="fa-solid fa-shield-halved text-white text-xl"></i>
                     </div>
-                    <h1 class="text-2xl font-bold">Digite o Codigo</h1>
-                    <p class="text-sm text-slate-500 mt-2">Enviamos um codigo para <span id="sentEmail" class="font-medium text-violet-600"></span></p>
+                    <h1 class="text-2xl font-bold">Digite o Código</h1>
+                    <p class="text-sm text-slate-500 mt-2">Enviamos um código para <span id="sentEmail" class="font-medium text-violet-600"></span></p>
                 </div>
 
                 <form id="verifyForm" class="space-y-5">
@@ -101,7 +101,7 @@
                 </form>
 
                 <div class="flex flex-col items-center gap-2 mt-6">
-                    <a href="javascript:void(0)" onclick="resendCode()" class="text-sm text-violet-600 hover:underline font-medium"><i class="fa-solid fa-rotate-right mr-1"></i>Reenviar codigo</a>
+                    <a href="javascript:void(0)" onclick="resendCode()" class="text-sm text-violet-600 hover:underline font-medium"><i class="fa-solid fa-rotate-right mr-1"></i>Reenviar código</a>
                     <a href="javascript:void(0)" onclick="backToEmail()" class="text-sm text-slate-400 hover:text-violet-600 transition">Usar outro email</a>
                 </div>
             </div>
@@ -136,10 +136,10 @@
                 document.getElementById('step2').classList.remove('hidden');
                 document.querySelector('#step2 input').focus();
             } catch (err) {
-                errorMsg.textContent = err.message || 'Erro ao enviar codigo.';
+                errorMsg.textContent = err.message || 'Erro ao enviar código.';
                 errorMsg.classList.remove('hidden');
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar codigo';
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar código';
             }
         });
 
@@ -161,7 +161,7 @@
             const btn = document.getElementById('verifyBtn');
 
             if (code.length < 8) {
-                errorMsg.textContent = 'Digite o codigo completo de 8 digitos.';
+                errorMsg.textContent = 'Digite o código completo de 8 dígitos.';
                 errorMsg.classList.remove('hidden');
                 return;
             }
@@ -187,7 +187,7 @@
                 }
                 window.location.href = 'dashboard.html';
             } catch (err) {
-                errorMsg.textContent = 'Codigo invalido ou expirado. Tente novamente.';
+                errorMsg.textContent = 'Código inválido ou expirado. Tente novamente.';
                 errorMsg.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Verificar';
@@ -197,7 +197,7 @@
         async function resendCode() {
             try {
                 await auth.sendOtp(currentEmail);
-                alert('Novo codigo enviado!');
+                alert('Novo código enviado!');
             } catch (err) {
                 alert('Erro ao reenviar: ' + (err.message || 'Tente novamente'));
             }
@@ -207,7 +207,7 @@
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step1').classList.remove('hidden');
             document.getElementById('submitBtn').disabled = false;
-            document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar codigo';
+            document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar código';
         }
     </script>
     <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>

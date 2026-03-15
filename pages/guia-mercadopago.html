@@ -43,22 +43,22 @@
             <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <i class="fa-solid fa-credit-card text-white text-3xl"></i>
             </div>
-            <h1 class="text-4xl font-extrabold mb-4">Guia de Implementacao</h1>
+            <h1 class="text-4xl font-extrabold mb-4">Guia de Implementação</h1>
             <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 mb-4">Mercado Pago para TCCFlow</h2>
-            <p class="text-slate-500 max-w-lg mx-auto">Como integrar pagamentos com PIX e Cartao de Credito (parcelado) usando a API do Mercado Pago</p>
-            <div class="mt-6 text-xs text-slate-400">TCCFlow &bull; Guia Tecnico &bull; 2026</div>
+            <p class="text-slate-500 max-w-lg mx-auto">Como integrar pagamentos com PIX e Cartão de Crédito (parcelado) usando a API do Mercado Pago</p>
+            <div class="mt-6 text-xs text-slate-400">TCCFlow &bull; Guia Técnico &bull; 2026</div>
         </div>
 
         <!-- Table of Contents -->
         <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm mb-8">
-            <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-list mr-2 text-violet-600"></i>Indice</h2>
+            <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-list mr-2 text-violet-600"></i>Índice</h2>
             <ol class="space-y-2 text-sm">
                 <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">1</span><a href="#section1" class="text-violet-600 hover:underline">Criando a Conta no Mercado Pago</a></li>
                 <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">2</span><a href="#section2" class="text-violet-600 hover:underline">Obtendo as Credenciais (API Keys)</a></li>
                 <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">3</span><a href="#section3" class="text-violet-600 hover:underline">Pagamento via PIX</a></li>
-                <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">4</span><a href="#section4" class="text-violet-600 hover:underline">Pagamento via Cartao de Credito (Parcelado)</a></li>
-                <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">5</span><a href="#section5" class="text-violet-600 hover:underline">Integracao com o TCCFlow (Netlify Functions)</a></li>
-                <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">6</span><a href="#section6" class="text-violet-600 hover:underline">Webhook - Confirmacao de Pagamento</a></li>
+                <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">4</span><a href="#section4" class="text-violet-600 hover:underline">Pagamento via Cartão de Crédito (Parcelado)</a></li>
+                <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">5</span><a href="#section5" class="text-violet-600 hover:underline">Integração com o TCCFlow (Netlify Functions)</a></li>
+                <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">6</span><a href="#section6" class="text-violet-600 hover:underline">Webhook - Confirmação de Pagamento</a></li>
                 <li class="flex items-center gap-2"><span class="w-6 h-6 bg-violet-100 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold">7</span><a href="#section7" class="text-violet-600 hover:underline">Testes no Sandbox</a></li>
             </ol>
         </div>
@@ -72,21 +72,21 @@
 
             <ol class="space-y-3 text-sm text-slate-600 list-decimal list-inside">
                 <li>Acesse <a href="https://www.mercadopago.com.br/developers" target="_blank" class="text-violet-600 hover:underline font-medium">mercadopago.com.br/developers</a></li>
-                <li>Crie uma conta ou faca login com sua conta Mercado Pago existente</li>
+                <li>Crie uma conta ou faça login com sua conta Mercado Pago existente</li>
                 <li>Acesse o <strong>Dashboard do Desenvolvedor</strong></li>
-                <li>Clique em <strong>"Criar aplicacao"</strong></li>
+                <li>Clique em <strong>"Criar aplicação"</strong></li>
                 <li>Preencha:
                     <ul class="ml-6 mt-2 space-y-1 list-disc">
                         <li><strong>Nome:</strong> TCCFlow</li>
-                        <li><strong>Modelo de integracao:</strong> Checkout API</li>
+                        <li><strong>Modelo de integração:</strong> Checkout API</li>
                         <li><strong>Produto:</strong> Checkout API</li>
                     </ul>
                 </li>
-                <li>Salve a aplicacao</li>
+                <li>Salve a aplicação</li>
             </ol>
 
             <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-700">
-                <i class="fa-solid fa-lightbulb mr-1"></i><strong>Dica:</strong> Use o modo <strong>Sandbox</strong> para testes antes de ir para producao.
+                <i class="fa-solid fa-lightbulb mr-1"></i><strong>Dica:</strong> Use o modo <strong>Sandbox</strong> para testes antes de ir para produção.
             </div>
         </div>
 
@@ -97,12 +97,12 @@
                 Obtendo as Credenciais (API Keys)
             </h2>
 
-            <p class="text-sm text-slate-600 mb-4">No dashboard da sua aplicacao, voce encontrara duas credenciais principais:</p>
+            <p class="text-sm text-slate-600 mb-4">No dashboard da sua aplicação, você encontrará duas credenciais principais:</p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
                     <h4 class="text-sm font-bold text-violet-600 mb-1">Public Key</h4>
-                    <p class="text-xs text-slate-500">Usada no frontend (SDK JavaScript) para tokenizar cartoes. Segura para expor no browser.</p>
+                    <p class="text-xs text-slate-500">Usada no frontend (SDK JavaScript) para tokenizar cartões. Segura para expor no browser.</p>
                     <code class="text-xs bg-white px-2 py-1 rounded border mt-2 block">APP_USR-xxxxxxxx-xxxx-xxxx</code>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
@@ -112,8 +112,8 @@
                 </div>
             </div>
 
-            <h4 class="text-sm font-bold mb-2">Configuracao no Netlify:</h4>
-            <p class="text-sm text-slate-600 mb-3">Adicione as credenciais como variaveis de ambiente no Netlify:</p>
+            <h4 class="text-sm font-bold mb-2">Configuração no Netlify:</h4>
+            <p class="text-sm text-slate-600 mb-3">Adicione as credenciais como variáveis de ambiente no Netlify:</p>
             <pre class="bg-slate-900 text-emerald-400 rounded-xl p-4 text-xs overflow-x-auto"><code># Netlify > Site Settings > Environment Variables
 MP_ACCESS_TOKEN=APP_USR-seu-access-token-aqui
 MP_PUBLIC_KEY=APP_USR-sua-public-key-aqui</code></pre>
@@ -126,14 +126,14 @@ MP_PUBLIC_KEY=APP_USR-sua-public-key-aqui</code></pre>
                 Pagamento via PIX
             </h2>
 
-            <p class="text-sm text-slate-600 mb-4">O PIX e o metodo mais rapido e barato. O fluxo e:</p>
+            <p class="text-sm text-slate-600 mb-4">O PIX é o método mais rápido e barato. O fluxo é:</p>
 
             <div class="flex items-center gap-3 mb-6 flex-wrap">
                 <span class="bg-violet-100 text-violet-700 text-xs font-bold px-3 py-1.5 rounded-full">1. Criar pagamento</span>
                 <i class="fa-solid fa-arrow-right text-slate-300 text-xs"></i>
                 <span class="bg-violet-100 text-violet-700 text-xs font-bold px-3 py-1.5 rounded-full">2. Receber QR Code</span>
                 <i class="fa-solid fa-arrow-right text-slate-300 text-xs"></i>
-                <span class="bg-violet-100 text-violet-700 text-xs font-bold px-3 py-1.5 rounded-full">3. Usuario paga</span>
+                <span class="bg-violet-100 text-violet-700 text-xs font-bold px-3 py-1.5 rounded-full">3. Usuário paga</span>
                 <i class="fa-solid fa-arrow-right text-slate-300 text-xs"></i>
                 <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full">4. Webhook confirma</span>
             </div>
@@ -222,7 +222,7 @@ async function payWithPix(seats) {
 }</code></pre>
 
             <div class="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-4 text-xs text-blue-700">
-                <i class="fa-solid fa-info-circle mr-1"></i><strong>Nota:</strong> O QR Code PIX expira em 30 minutos por padrao. O pagamento e confirmado instantaneamente via webhook.
+                <i class="fa-solid fa-info-circle mr-1"></i><strong>Nota:</strong> O QR Code PIX expira em 30 minutos por padrão. O pagamento é confirmado instantaneamente via webhook.
             </div>
         </div>
 
@@ -230,14 +230,14 @@ async function payWithPix(seats) {
         <div id="section4" class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm mb-8 page-break">
             <h2 class="text-xl font-bold mb-4 flex items-center gap-3">
                 <span class="w-8 h-8 bg-violet-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
-                Pagamento via Cartao de Credito (Parcelado)
+                Pagamento via Cartão de Crédito (Parcelado)
             </h2>
 
             <h4 class="text-sm font-bold mb-2">Passo 1 - Adicionar SDK do Mercado Pago no HTML:</h4>
             <pre class="bg-slate-900 text-emerald-400 rounded-xl p-4 text-xs overflow-x-auto mb-4"><code>&lt;!-- Adicionar no &lt;head&gt; do planos.html --&gt;
 &lt;script src="https://sdk.mercadopago.com/js/v2"&gt;&lt;/script&gt;</code></pre>
 
-            <h4 class="text-sm font-bold mb-2">Passo 2 - Formulario de cartao com tokenizacao:</h4>
+            <h4 class="text-sm font-bold mb-2">Passo 2 - Formulário de cartão com tokenização:</h4>
             <pre class="bg-slate-900 text-emerald-400 rounded-xl p-4 text-xs overflow-x-auto mb-4"><code>// Inicializar o SDK com sua Public Key
 const mp = new MercadoPago('SUA_PUBLIC_KEY');
 
@@ -306,7 +306,7 @@ exports.handler = async (event) => {
 
     const body = JSON.parse(event.body);
 
-    // Validar preco no servidor (seguranca)
+    // Validar preço no servidor (segurança)
     const BASE_PRICE = 97;
     const SEAT_PRICE = 30;
     const seats = body.seats || 1;
@@ -316,7 +316,7 @@ exports.handler = async (event) => {
     if (body.transaction_amount !== expectedAmount) {
         return {
             statusCode: 400,
-            body: JSON.stringify({ error: 'Valor invalido' })
+            body: JSON.stringify({ error: 'Valor inválido' })
         };
     }
 
@@ -357,7 +357,7 @@ exports.handler = async (event) => {
 };</code></pre>
 
             <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs text-emerald-700">
-                <i class="fa-solid fa-check-circle mr-1"></i><strong>Parcelamento:</strong> O campo <code>installments</code> do CardForm automaticamente mostra as opcoes de parcelamento disponiveis (1x a 12x). O Mercado Pago calcula os juros automaticamente.
+                <i class="fa-solid fa-check-circle mr-1"></i><strong>Parcelamento:</strong> O campo <code>installments</code> do CardForm automaticamente mostra as opções de parcelamento disponíveis (1x a 12x). O Mercado Pago calcula os juros automaticamente.
             </div>
         </div>
 
@@ -365,16 +365,16 @@ exports.handler = async (event) => {
         <div id="section5" class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm mb-8 page-break">
             <h2 class="text-xl font-bold mb-4 flex items-center gap-3">
                 <span class="w-8 h-8 bg-violet-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
-                Integracao com o TCCFlow (Netlify Functions)
+                Integração com o TCCFlow (Netlify Functions)
             </h2>
 
-            <p class="text-sm text-slate-600 mb-4">Para integrar o Mercado Pago no TCCFlow, voce precisa:</p>
+            <p class="text-sm text-slate-600 mb-4">Para integrar o Mercado Pago no TCCFlow, você precisa:</p>
 
             <div class="space-y-4 mb-6">
                 <div class="flex items-start gap-3">
                     <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>
                     <div>
-                        <h4 class="text-sm font-bold">Instalar dependencia do Mercado Pago</h4>
+                        <h4 class="text-sm font-bold">Instalar dependência do Mercado Pago</h4>
                         <pre class="bg-slate-900 text-emerald-400 rounded-lg p-3 text-xs mt-2"><code>npm install mercadopago</code></pre>
                     </div>
                 </div>
@@ -382,11 +382,11 @@ exports.handler = async (event) => {
                     <span class="w-6 h-6 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
                     <div>
                         <h4 class="text-sm font-bold">Criar as Netlify Functions</h4>
-                        <p class="text-xs text-slate-500">Crie os arquivos conforme mostrado nas secoes 3 e 4:</p>
+                        <p class="text-xs text-slate-500">Crie os arquivos conforme mostrado nas seções 3 e 4:</p>
                         <ul class="text-xs text-slate-500 list-disc list-inside mt-1">
                             <li><code>netlify/functions/create-pix.js</code> - Pagamento PIX</li>
-                            <li><code>netlify/functions/process-payment.js</code> - Cartao de credito</li>
-                            <li><code>netlify/functions/webhook-mp.js</code> - Webhook (secao 6)</li>
+                            <li><code>netlify/functions/process-payment.js</code> - Cartão de crédito</li>
+                            <li><code>netlify/functions/webhook-mp.js</code> - Webhook (seção 6)</li>
                             <li><code>netlify/functions/create-preference.js</code> - Checkout Pro (recomendado)</li>
                         </ul>
                     </div>
@@ -394,15 +394,15 @@ exports.handler = async (event) => {
                 <div class="flex items-start gap-3">
                     <span class="w-6 h-6 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
                     <div>
-                        <h4 class="text-sm font-bold">Configurar variaveis de ambiente no Netlify</h4>
+                        <h4 class="text-sm font-bold">Configurar variáveis de ambiente no Netlify</h4>
                         <pre class="bg-slate-900 text-emerald-400 rounded-lg p-3 text-xs mt-2"><code>MP_ACCESS_TOKEN=APP_USR-xxx
 MP_PUBLIC_KEY=APP_USR-xxx</code></pre>
                     </div>
                 </div>
             </div>
 
-            <h4 class="text-sm font-bold mb-2">Checkout Pro (metodo usado no TCCFlow)</h4>
-            <p class="text-xs text-slate-500 mb-3">O Checkout Pro redireciona o usuario para a pagina do Mercado Pago. Aceita PIX + cartao automaticamente:</p>
+            <h4 class="text-sm font-bold mb-2">Checkout Pro (método usado no TCCFlow)</h4>
+            <p class="text-xs text-slate-500 mb-3">O Checkout Pro redireciona o usuário para a página do Mercado Pago. Aceita PIX + cartão automaticamente:</p>
             <pre class="bg-slate-900 text-emerald-400 rounded-xl p-4 text-xs overflow-x-auto"><code>// netlify/functions/create-preference.js
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 
@@ -447,10 +447,10 @@ exports.handler = async (event) => {
         <div id="section6" class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm mb-8 page-break">
             <h2 class="text-xl font-bold mb-4 flex items-center gap-3">
                 <span class="w-8 h-8 bg-violet-600 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
-                Webhook - Confirmacao de Pagamento
+                Webhook - Confirmação de Pagamento
             </h2>
 
-            <p class="text-sm text-slate-600 mb-4">O webhook recebe notificacoes do Mercado Pago quando um pagamento e aprovado e atualiza o Firestore:</p>
+            <p class="text-sm text-slate-600 mb-4">O webhook recebe notificações do Mercado Pago quando um pagamento é aprovado e atualiza o Firestore:</p>
 
             <pre class="bg-slate-900 text-emerald-400 rounded-xl p-4 text-xs overflow-x-auto mb-4"><code>// netlify/functions/webhook-mp.js
 const fetch = require('node-fetch');
@@ -473,7 +473,7 @@ exports.handler = async (event) => {
 
     const body = JSON.parse(event.body);
 
-    // Mercado Pago envia o tipo de notificacao
+    // Mercado Pago envia o tipo de notificação
     if (body.type === 'payment') {
         const paymentId = body.data.id;
 
@@ -515,14 +515,14 @@ exports.handler = async (event) => {
             <h4 class="text-sm font-bold mb-2">Configurar URL do Webhook no Mercado Pago:</h4>
             <ol class="text-sm text-slate-600 list-decimal list-inside space-y-2">
                 <li>Acesse o Dashboard do Desenvolvedor</li>
-                <li>Va em <strong>Webhooks</strong></li>
+                <li>Vá em <strong>Webhooks</strong></li>
                 <li>Adicione a URL: <code class="bg-slate-100 px-2 py-0.5 rounded">https://tccflow.com.br/.netlify/functions/webhook-mp</code></li>
                 <li>Selecione o evento: <strong>Payments</strong></li>
                 <li>Salve</li>
             </ol>
 
             <div class="mt-4 bg-red-50 border border-red-200 rounded-xl p-4 text-xs text-red-700">
-                <i class="fa-solid fa-shield mr-1"></i><strong>Seguranca:</strong> Em producao, sempre verifique a assinatura do webhook usando o <code>x-signature</code> header e o <code>secret</code> fornecido pelo Mercado Pago para evitar fraudes.
+                <i class="fa-solid fa-shield mr-1"></i><strong>Segurança:</strong> Em produção, sempre verifique a assinatura do webhook usando o <code>x-signature</code> header e o <code>secret</code> fornecido pelo Mercado Pago para evitar fraudes.
             </div>
         </div>
 
@@ -533,15 +533,15 @@ exports.handler = async (event) => {
                 Testes no Sandbox
             </h2>
 
-            <p class="text-sm text-slate-600 mb-4">Use as credenciais de <strong>teste</strong> (nao as de producao!) durante o desenvolvimento:</p>
+            <p class="text-sm text-slate-600 mb-4">Use as credenciais de <strong>teste</strong> (não as de produção!) durante o desenvolvimento:</p>
 
-            <h4 class="text-sm font-bold mb-2">Cartoes de Teste:</h4>
+            <h4 class="text-sm font-bold mb-2">Cartões de Teste:</h4>
             <div class="overflow-x-auto mb-6">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="border-b border-slate-200">
                             <th class="text-left py-2 px-3 font-semibold text-slate-600">Bandeira</th>
-                            <th class="text-left py-2 px-3 font-semibold text-slate-600">Numero</th>
+                            <th class="text-left py-2 px-3 font-semibold text-slate-600">Número</th>
                             <th class="text-left py-2 px-3 font-semibold text-slate-600">CVV</th>
                             <th class="text-left py-2 px-3 font-semibold text-slate-600">Resultado</th>
                         </tr>
@@ -580,7 +580,7 @@ exports.handler = async (event) => {
                 <ul class="list-disc list-inside space-y-1">
                     <li><strong>Validade:</strong> Qualquer data futura (ex: 11/30)</li>
                     <li><strong>Nome:</strong> APRO (aprovado) ou OTHE (recusado)</li>
-                    <li><strong>CPF:</strong> Use geradores de CPF valido para teste</li>
+                    <li><strong>CPF:</strong> Use geradores de CPF válido para teste</li>
                     <li><strong>E-mail:</strong> test_user_xxxxx@testuser.com</li>
                 </ul>
             </div>
@@ -598,18 +598,18 @@ curl -X PUT \
         <!-- Checklist -->
         <div class="bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl p-[2px] shadow-xl mb-8">
             <div class="bg-white rounded-[14px] p-8">
-                <h2 class="text-xl font-bold mb-4"><i class="fa-solid fa-clipboard-check mr-2 text-violet-600"></i>Checklist de Implementacao</h2>
+                <h2 class="text-xl font-bold mb-4"><i class="fa-solid fa-clipboard-check mr-2 text-violet-600"></i>Checklist de Implementação</h2>
                 <div class="space-y-3 text-sm">
                     <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Criar conta dev no Mercado Pago</label>
-                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Criar aplicacao e obter credenciais</label>
-                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Configurar variaveis de ambiente no Netlify</label>
+                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Criar aplicação e obter credenciais</label>
+                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Configurar variáveis de ambiente no Netlify</label>
                     <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Criar Netlify Function para PIX</label>
-                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Criar Netlify Function para cartao de credito</label>
+                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Criar Netlify Function para cartão de crédito</label>
                     <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Criar Netlify Function para webhook</label>
-                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Atualizar planos.html com botoes PIX e Cartao</label>
+                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Atualizar planos.html com botões PIX e Cartão</label>
                     <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Configurar URL do webhook no dashboard MP</label>
                     <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Testar fluxo completo no sandbox</label>
-                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Trocar credenciais para producao</label>
+                    <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Trocar credenciais para produção</label>
                     <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded text-violet-600 no-print"> Testar pagamento real</label>
                 </div>
             </div>
@@ -617,8 +617,8 @@ curl -X PUT \
 
         <!-- Footer -->
         <div class="text-center text-xs text-slate-400 py-8">
-            <p>TCCFlow &copy; 2026 - Guia de Implementacao Mercado Pago</p>
-            <p class="mt-1">Gerado automaticamente. Use Ctrl+P ou o botao acima para salvar como PDF.</p>
+            <p>TCCFlow &copy; 2026 - Guia de Implementação Mercado Pago</p>
+            <p class="mt-1">Gerado automaticamente. Use Ctrl+P ou o botão acima para salvar como PDF.</p>
         </div>
 
     </div>

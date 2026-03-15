@@ -33,7 +33,7 @@
 
     <div class="relative z-10 w-full max-w-md mx-4">
         <a href="../index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-violet-600 transition mb-8">
-            <i class="fa-solid fa-arrow-left"></i> Voltar ao inicio
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao início
         </a>
 
         <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50">
@@ -84,9 +84,9 @@
 
             <div class="flex flex-col items-center gap-2 mt-6">
                 <a href="recuperar-senha.html" class="text-sm text-slate-400 hover:text-violet-600 transition">Esqueceu a senha?</a>
-                <a href="login-codigo.html" class="text-sm text-violet-600 hover:underline font-medium"><i class="fa-solid fa-envelope mr-1"></i>Entrar com codigo por email</a>
+                <a href="login-codigo.html" class="text-sm text-violet-600 hover:underline font-medium"><i class="fa-solid fa-envelope mr-1"></i>Entrar com código por email</a>
                 <p class="text-sm text-slate-500">
-                    Nao tem conta? <a href="cadastro.html" class="text-violet-600 hover:underline font-medium">Criar conta</a>
+                    Não tem conta? <a href="cadastro.html" class="text-violet-600 hover:underline font-medium">Criar conta</a>
                 </p>
             </div>
         </div>
@@ -111,7 +111,7 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Entrando...';
 
             try {
-                if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado. Edite js/supabase-init.js' };
+                if (!isFirebaseConfigured()) throw { message: 'Supabase não configurado. Edite js/supabase-init.js' };
                 await auth.signInWithEmailAndPassword(email, password);
                 window.location.href = 'dashboard.html';
             } catch (err) {
@@ -132,7 +132,7 @@
             errorMsg.classList.add('hidden');
 
             try {
-                if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado. Edite js/supabase-init.js' };
+                if (!isFirebaseConfigured()) throw { message: 'Supabase não configurado. Edite js/supabase-init.js' };
 
                 const provider = new firebase.auth.GoogleAuthProvider();
                 const result = await auth.signInWithPopup(provider);
@@ -153,7 +153,7 @@
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;
                 let msg = 'Erro ao entrar com Google.';
-                if (err.code === 'auth/unauthorized-domain') msg = 'Dominio nao autorizado. Adicione este dominio nas configuracoes do Supabase Auth.';
+                if (err.code === 'auth/unauthorized-domain') msg = 'Domínio não autorizado. Adicione este domínio nas configurações do Supabase Auth.';
                 else if (err.message) msg = err.message;
                 errorMsg.textContent = msg;
                 errorMsg.classList.remove('hidden');

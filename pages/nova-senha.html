@@ -33,7 +33,7 @@
 
     <div class="relative z-10 w-full max-w-md mx-4">
         <a href="../index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-violet-600 transition mb-8">
-            <i class="fa-solid fa-arrow-left"></i> Voltar ao inicio
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao início
         </a>
 
         <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50">
@@ -48,7 +48,7 @@
             <!-- Loading Section -->
             <div id="loadingSection" class="text-center py-8">
                 <i class="fa-solid fa-spinner fa-spin text-3xl text-violet-600 mb-4"></i>
-                <p class="text-sm text-slate-500">Verificando link de recuperacao...</p>
+                <p class="text-sm text-slate-500">Verificando link de recuperação...</p>
             </div>
 
             <!-- Form Section -->
@@ -58,7 +58,7 @@
                         <label class="block text-sm font-medium text-slate-600 mb-2">
                             <i class="fa-solid fa-lock mr-1 text-violet-600"></i> Nova senha
                         </label>
-                        <input type="password" id="newPassword" required minlength="6" placeholder="Minimo 6 caracteres"
+                        <input type="password" id="newPassword" required minlength="6" placeholder="Mínimo 6 caracteres"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
                     </div>
                     <div>
@@ -96,8 +96,8 @@
                 <div class="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <i class="fa-solid fa-xmark text-red-600 text-xl"></i>
                 </div>
-                <h2 class="text-lg font-bold text-slate-800 mb-2">Link invalido ou expirado</h2>
-                <p class="text-sm text-slate-500 mb-6">O link de recuperacao nao e mais valido.</p>
+                <h2 class="text-lg font-bold text-slate-800 mb-2">Link inválido ou expirado</h2>
+                <p class="text-sm text-slate-500 mb-6">O link de recuperação não é mais válido.</p>
                 <a href="recuperar-senha.html"
                     class="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold py-3 px-6 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25">
                     <i class="fa-solid fa-rotate-right mr-1"></i> Solicitar novo link
@@ -138,7 +138,7 @@
                 return;
             }
             if (password !== confirm) {
-                errorMsg.textContent = 'As senhas nao coincidem.';
+                errorMsg.textContent = 'As senhas não coincidem.';
                 errorMsg.classList.remove('hidden');
                 return;
             }
