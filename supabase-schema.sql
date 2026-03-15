@@ -125,89 +125,87 @@ alter table calendar_sessions enable row level security;
 alter table subscriptions enable row level security;
 alter table ai_usage enable row level security;
 
--- Users: can read/update own profile, read team members
+-- Users: can read/update own profile, read team members (via project_id)
 create policy "Users can read own profile" on users for select using (auth.uid() = id);
 create policy "Users can update own profile" on users for update using (auth.uid() = id);
 create policy "Users can insert own profile" on users for insert with check (auth.uid() = id);
 create policy "Users can read team members" on users for select using (
-    id in (
-        select unnest(members) from projects where id in (
-            select project_id from users where id = auth.uid()
-        )
-    )
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 
--- Projects: members can read, owner can update
-create policy "Project members can read" on projects for select using (auth.uid() = any(members));
+-- Projects: members can read (via users.project_id), owner can update/create
+create policy "Project members can read" on projects for select using (
+    id in (select project_id from users where id = auth.uid())
+);
 create policy "Project owner can update" on projects for update using (auth.uid() = owner_id);
 create policy "Authenticated users can create projects" on projects for insert with check (auth.uid() = owner_id);
 create policy "Anyone can read project by code" on projects for select using (true);
 
--- Tasks: project members can CRUD
+-- Tasks: project members can CRUD (membership via users.project_id)
 create policy "Tasks readable by project members" on tasks for select using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Tasks insertable by project members" on tasks for insert with check (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Tasks updatable by project members" on tasks for update using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Tasks deletable by project members" on tasks for delete using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 
 -- Google Links: project members can CRUD
 create policy "Google links readable by project members" on google_links for select using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Google links insertable by project members" on google_links for insert with check (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Google links deletable by project members" on google_links for delete using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 
 -- Saved Papers: project members can CRUD
 create policy "Saved papers readable by project members" on saved_papers for select using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Saved papers insertable by project members" on saved_papers for insert with check (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Saved papers deletable by project members" on saved_papers for delete using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 
 -- Calendar Goals: project members can CRUD
 create policy "Calendar goals readable by project members" on calendar_goals for select using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Calendar goals insertable by project members" on calendar_goals for insert with check (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Calendar goals updatable by project members" on calendar_goals for update using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Calendar goals deletable by project members" on calendar_goals for delete using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 
 -- Calendar Sessions: project members can CRUD
 create policy "Calendar sessions readable by project members" on calendar_sessions for select using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Calendar sessions insertable by project members" on calendar_sessions for insert with check (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Calendar sessions updatable by project members" on calendar_sessions for update using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 create policy "Calendar sessions deletable by project members" on calendar_sessions for delete using (
-    project_id in (select id from projects where auth.uid() = any(members))
+    project_id in (select project_id from users where id = auth.uid() and project_id is not null)
 );
 
--- Subscriptions: users can read own subscription, project members can check owner
+-- Subscriptions: users can read own subscription, anyone authenticated can check
 create policy "Users can read own subscription" on subscriptions for select using (auth.uid() = id);
 create policy "Users can read subscription by project" on subscriptions for select using (true);
 
