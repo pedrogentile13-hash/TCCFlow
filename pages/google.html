@@ -401,6 +401,13 @@
                     return;
                 }
 
+                // Beta testers get access to Drive API and Calendar API features
+                const isBeta = await DB.isBetaTester(user.uid);
+                if (!isBeta) {
+                    document.getElementById('driveSection').style.display = 'none';
+                    document.getElementById('createEventBtn').style.display = 'none';
+                }
+
                 projectId = await DB.getProjectId();
             }
             await renderLinks();

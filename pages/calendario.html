@@ -484,7 +484,8 @@
             if (!projectId) return;
             try {
                 userIsPro = await DB.isProByProject(projectId);
-                if (userIsPro) {
+                const isBeta = auth.currentUser ? await DB.isBetaTester(auth.currentUser.uid) : false;
+                if (userIsPro && isBeta) {
                     document.getElementById('googleCalendarSection').classList.remove('hidden');
 
                     if (GOOGLE_CLIENT_ID !== 'YOUR_CLIENT_ID.apps.googleusercontent.com') {

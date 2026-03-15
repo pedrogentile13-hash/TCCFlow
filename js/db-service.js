@@ -348,6 +348,16 @@ const DB = {
         return await DB.subscriptions.isPro(project.owner_id);
     },
 
+    async isBetaTester(userId) {
+        const { data, error } = await _supa
+            .from('users')
+            .select('beta_tester')
+            .eq('id', userId)
+            .maybeSingle();
+        if (error || !data) return false;
+        return data.beta_tester === true;
+    },
+
     async getProjectId() {
         const user = auth.currentUser;
         if (!user) return null;
