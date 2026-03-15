@@ -38,7 +38,7 @@ const DB = {
                     created_by: auth.currentUser.uid
                 })
                 .select()
-                .single();
+                .maybeSingle();
             if (error) throw error;
             return { id: data.id };
         },
@@ -81,7 +81,7 @@ const DB = {
                     saved_by: auth.currentUser.uid
                 })
                 .select()
-                .single();
+                .maybeSingle();
             if (error) throw error;
             return { id: data.id };
         },
@@ -130,7 +130,7 @@ const DB = {
                     created_by: auth.currentUser.uid
                 })
                 .select()
-                .single();
+                .maybeSingle();
             if (error) throw error;
             return { id: data.id };
         },
@@ -192,7 +192,7 @@ const DB = {
                     created_by: auth.currentUser.uid
                 })
                 .select()
-                .single();
+                .maybeSingle();
             if (error) throw error;
             return { id: data.id };
         },
@@ -221,9 +221,8 @@ const DB = {
                 .from('subscriptions')
                 .select('*')
                 .eq('id', userId)
-                .single();
-            if (error && error.code === 'PGRST116') return null;
-            if (error) throw error;
+                .maybeSingle();
+            if (error) return null;
             return data ? {
                 id: data.id, status: data.status, plan: data.plan,
                 seats: data.seats, paymentId: data.payment_id,
@@ -237,7 +236,7 @@ const DB = {
                 .from('projects')
                 .select('owner_id')
                 .eq('id', projectId)
-                .single();
+                .maybeSingle();
             if (error || !project) return null;
             return await DB.subscriptions.get(project.owner_id);
         },
@@ -265,7 +264,7 @@ const DB = {
                 .from('ai_usage')
                 .select('*')
                 .eq('id', docId)
-                .single();
+                .maybeSingle();
             if (error && error.code === 'PGRST116') return { projectId, month, count: 0 };
             if (error) throw error;
             return data ? { projectId: data.project_id, month: data.month, count: data.count } : { projectId, month, count: 0 };
@@ -280,7 +279,7 @@ const DB = {
                 .from('ai_usage')
                 .select('count')
                 .eq('id', docId)
-                .single();
+                .maybeSingle();
 
             if (existing) {
                 await _supa
@@ -299,7 +298,7 @@ const DB = {
                 .from('projects')
                 .select('owner_id')
                 .eq('id', projectId)
-                .single();
+                .maybeSingle();
             if (error || !project) return { allowed: false, remaining: 0, limit: 0 };
 
             const isPro = await DB.subscriptions.isPro(project.owner_id);
@@ -330,7 +329,7 @@ const DB = {
                 .from('projects')
                 .select('google_drive_folder_id, google_drive_folder_url')
                 .eq('id', projectId)
-                .single();
+                .maybeSingle();
             if (error) return null;
             return data?.google_drive_folder_id
                 ? { id: data.google_drive_folder_id, url: data.google_drive_folder_url }
@@ -344,7 +343,7 @@ const DB = {
             .from('projects')
             .select('owner_id')
             .eq('id', projectId)
-            .single();
+            .maybeSingle();
         if (error || !project) return false;
         return await DB.subscriptions.isPro(project.owner_id);
     },
@@ -356,7 +355,7 @@ const DB = {
             .from('users')
             .select('project_id')
             .eq('id', user.uid)
-            .single();
+            .maybeSingle();
         if (error || !data) return null;
         return data.project_id;
     }

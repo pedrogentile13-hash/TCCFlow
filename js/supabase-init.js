@@ -241,7 +241,7 @@ class SupaCollection {
 
     async add(docData) {
         const cleanData = processFieldValues(keysToSnake(docData));
-        const { data, error } = await _supa.from(this.table).insert(cleanData).select().single();
+        const { data, error } = await _supa.from(this.table).insert(cleanData).select().maybeSingle();
         if (error) throw error;
         return { id: data.id };
     }
@@ -254,11 +254,13 @@ class SupaDoc {
     }
 
     async get() {
-        const { data, error } = await _supa.from(this.table).select('*').eq('id', this.id).single();
-        if (error && error.code === 'PGRST116') {
+        const { data, error } = await _supa.from(this.table).select('*').eq('id', this.id).maybeSingle();
+        if (error) {
             return { exists: false, data: () => null, id: this.id };
         }
-        if (error) throw error;
+        if (!data) {
+            return { exists: false, data: () => null, id: this.id };
+        }
         return { exists: true, data: () => keysToCamel(data), id: data.id };
     }
 
@@ -274,16 +276,16 @@ class SupaDoc {
         for (const [key, value] of Object.entries(snakeData)) {
             if (value && typeof value === 'object' && value.__op) {
                 if (value.__op === 'arrayUnion') {
-                    const { data: current } = await _supa.from(this.table).select(key).eq('id', this.id).single();
+                    const { data: current } = await _supa.from(this.table).select(key).eq('id', this.id).maybeSingle();
                     const arr = current?.[key] || [];
                     if (!arr.includes(value.value)) arr.push(value.value);
                     cleanData[key] = arr;
                 } else if (value.__op === 'arrayRemove') {
-                    const { data: current } = await _supa.from(this.table).select(key).eq('id', this.id).single();
+                    const { data: current } = await _supa.from(this.table).select(key).eq('id', this.id).maybeSingle();
                     const arr = (current?.[key] || []).filter(v => v !== value.value);
                     cleanData[key] = arr;
                 } else if (value.__op === 'increment') {
-                    const { data: current } = await _supa.from(this.table).select(key).eq('id', this.id).single();
+                    const { data: current } = await _supa.from(this.table).select(key).eq('id', this.id).maybeSingle();
                     cleanData[key] = (current?.[key] || 0) + value.value;
                 }
             } else {
