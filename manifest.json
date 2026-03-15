@@ -3,16 +3,76 @@
   "short_name": "TCCFlow",
   "description": "Organize seu TCC de forma simples e eficiente",
   "start_url": "/pages/login.html",
+  "id": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#ffffff",
   "theme_color": "#7c3aed",
   "orientation": "any",
+  "dir": "ltr",
+  "lang": "pt-BR",
+  "categories": ["education", "productivity"],
   "icons": [
     {
       "src": "favicon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/pages/dashboard.html",
+      "icons": [{ "src": "favicon.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Meu Projeto",
+      "short_name": "Projeto",
+      "url": "/pages/projeto.html",
+      "icons": [{ "src": "favicon.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Tarefas",
+      "short_name": "Tarefas",
+      "url": "/pages/organizacao.html",
+      "icons": [{ "src": "favicon.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Calendário",
+      "short_name": "Calendário",
+      "url": "/pages/calendario.html",
+      "icons": [{ "src": "favicon.png", "sizes": "512x512" }]
+    }
+  ],
+  "share_target": {
+    "action": "/pages/dashboard.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+tccflow",
+      "url": "/pages/dashboard.html?action=%s"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "scope": "/"
 }
