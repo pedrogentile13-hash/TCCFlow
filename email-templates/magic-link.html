@@ -1,84 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:40px 0;">
-    <tr>
-      <td align="center">
-        <table width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-
-          <!-- Header gradient -->
-          <tr>
-            <td style="background:linear-gradient(135deg,#7c3aed,#06b6d4);padding:32px 40px;text-align:center;">
-              <div style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
-                <span style="font-size:24px;">🔑</span>
-              </div>
-              <h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:0;">Seu codigo de acesso</h1>
-              <p style="color:rgba(255,255,255,0.85);font-size:14px;margin:8px 0 0;">TCCFlow</p>
-            </td>
-          </tr>
-
-          <!-- Body -->
-          <tr>
-            <td style="padding:36px 40px;">
-              <p style="color:#334155;font-size:15px;line-height:1.6;margin:0 0 24px;">
-                Ola! Voce solicitou um codigo para entrar na sua conta do <strong>TCCFlow</strong>. Use o codigo abaixo:
-              </p>
-
-              <!-- OTP Code -->
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td align="center" style="padding:20px 0;">
-                    <div style="background:linear-gradient(135deg,#f5f3ff,#ecfeff);border:2px dashed #c4b5fd;border-radius:16px;padding:20px 32px;display:inline-block;">
-                      <span style="font-size:36px;font-weight:800;letter-spacing:12px;color:#7c3aed;font-family:'Courier New',monospace;">{{ .Token }}</span>
-                    </div>
-                  </td>
-                </tr>
-              </table>
-
-              <p style="color:#64748b;font-size:13px;line-height:1.6;margin:24px 0 0;text-align:center;">
-                Este codigo expira em <strong>10 minutos</strong>.
-              </p>
-
-              <!-- Divider -->
-              <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0;">
-
-              <!-- Alternative: magic link button -->
-              <p style="color:#334155;font-size:14px;text-align:center;margin:0 0 16px;">
-                Ou clique no botao abaixo para entrar diretamente:
-              </p>
-
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td align="center">
-                    <a href="{{ .ConfirmationURL }}" target="_blank"
-                      style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 40px;border-radius:12px;">
-                      Entrar no TCCFlow
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="background-color:#f8fafc;padding:24px 40px;border-top:1px solid #f1f5f9;">
-              <p style="color:#94a3b8;font-size:12px;line-height:1.6;margin:0;text-align:center;">
-                Se voce nao solicitou este codigo, pode ignorar este email com seguranca.
-              </p>
-              <p style="color:#cbd5e1;font-size:11px;margin:12px 0 0;text-align:center;">
-                TCCFlow — Organize seu TCC com facilidade
-              </p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
+<table width="100%" style="background:#f1f5f9;padding:32px 0;font-family:Arial,sans-serif;">
+<tr><td align="center">
+<table width="440" style="background:#fff;border-radius:16px;overflow:hidden;">
+<tr><td style="background:linear-gradient(135deg,#7c3aed,#06b6d4);padding:24px;text-align:center;">
+<h1 style="color:#fff;font-size:20px;margin:0;">🔑 Seu codigo de acesso</h1>
+<p style="color:rgba(255,255,255,0.8);font-size:13px;margin:6px 0 0;">TCCFlow</p>
+</td></tr>
+<tr><td style="padding:28px 32px;text-align:center;">
+<p style="color:#334155;font-size:14px;margin:0 0 20px;">Use o codigo abaixo para entrar:</p>
+<div style="background:#f5f3ff;border:2px dashed #c4b5fd;border-radius:12px;padding:16px;display:inline-block;">
+<span style="font-size:32px;font-weight:800;letter-spacing:10px;color:#7c3aed;font-family:monospace;">{{ .Token }}</span>
+</div>
+<p style="color:#94a3b8;font-size:12px;margin:16px 0 0;">Expira em 10 minutos</p>
+</td></tr>
+<tr><td style="padding:0 32px 24px;text-align:center;">
+<a href="{{ .ConfirmationURL }}" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 32px;border-radius:10px;">Entrar no TCCFlow</a>
+</td></tr>
+<tr><td style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
+<p style="color:#94a3b8;font-size:11px;margin:0;">Se nao solicitou, ignore este email.</p>
+</td></tr>
+</table>
+</td></tr>
+</table>

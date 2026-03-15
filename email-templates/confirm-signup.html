@@ -1,97 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:40px 0;">
-    <tr>
-      <td align="center">
-        <table width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-
-          <!-- Header gradient -->
-          <tr>
-            <td style="background:linear-gradient(135deg,#10b981,#06b6d4);padding:32px 40px;text-align:center;">
-              <div style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
-                <span style="font-size:24px;">✉️</span>
-              </div>
-              <h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:0;">Confirme seu email</h1>
-              <p style="color:rgba(255,255,255,0.85);font-size:14px;margin:8px 0 0;">Bem-vindo ao TCCFlow!</p>
-            </td>
-          </tr>
-
-          <!-- Body -->
-          <tr>
-            <td style="padding:36px 40px;">
-              <p style="color:#334155;font-size:15px;line-height:1.6;margin:0 0 24px;">
-                Ola! Estamos muito felizes em ter voce no <strong>TCCFlow</strong>! Para ativar sua conta, use o codigo abaixo:
-              </p>
-
-              <!-- OTP Code -->
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td align="center" style="padding:20px 0;">
-                    <div style="background:linear-gradient(135deg,#ecfdf5,#ecfeff);border:2px dashed #6ee7b7;border-radius:16px;padding:20px 32px;display:inline-block;">
-                      <span style="font-size:36px;font-weight:800;letter-spacing:12px;color:#059669;font-family:'Courier New',monospace;">{{ .Token }}</span>
-                    </div>
-                  </td>
-                </tr>
-              </table>
-
-              <p style="color:#64748b;font-size:13px;line-height:1.6;margin:24px 0 0;text-align:center;">
-                Este codigo expira em <strong>10 minutos</strong>.
-              </p>
-
-              <!-- Divider -->
-              <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0;">
-
-              <!-- Alternative: confirmation link -->
-              <p style="color:#334155;font-size:14px;text-align:center;margin:0 0 16px;">
-                Ou clique no botao abaixo para confirmar diretamente:
-              </p>
-
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td align="center">
-                    <a href="{{ .ConfirmationURL }}" target="_blank"
-                      style="display:inline-block;background:linear-gradient(135deg,#10b981,#06b6d4);color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 40px;border-radius:12px;box-shadow:0 4px 16px rgba(16,185,129,0.3);">
-                      Confirmar meu email
-                    </a>
-                  </td>
-                </tr>
-              </table>
-
-              <!-- Welcome tips -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:28px;">
-                <tr>
-                  <td style="background:#f8fafc;border-radius:12px;padding:20px;">
-                    <p style="color:#475569;font-size:13px;font-weight:600;margin:0 0 12px;">O que voce pode fazer no TCCFlow:</p>
-                    <p style="color:#64748b;font-size:13px;margin:0 0 6px;">📋 Organizar tarefas do seu TCC</p>
-                    <p style="color:#64748b;font-size:13px;margin:0 0 6px;">👥 Colaborar com sua equipe</p>
-                    <p style="color:#64748b;font-size:13px;margin:0 0 6px;">📅 Gerenciar prazos e cronogramas</p>
-                    <p style="color:#64748b;font-size:13px;margin:0;">🤖 Usar IA para auxiliar na pesquisa</p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="background-color:#f8fafc;padding:24px 40px;border-top:1px solid #f1f5f9;">
-              <p style="color:#94a3b8;font-size:12px;line-height:1.6;margin:0;text-align:center;">
-                Se voce nao criou uma conta no TCCFlow, pode ignorar este email.
-              </p>
-              <p style="color:#cbd5e1;font-size:11px;margin:12px 0 0;text-align:center;">
-                TCCFlow — Organize seu TCC com facilidade
-              </p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
+<table width="100%" style="background:#f1f5f9;padding:32px 0;font-family:Arial,sans-serif;">
+<tr><td align="center">
+<table width="440" style="background:#fff;border-radius:16px;overflow:hidden;">
+<tr><td style="background:linear-gradient(135deg,#10b981,#06b6d4);padding:24px;text-align:center;">
+<h1 style="color:#fff;font-size:20px;margin:0;">✉️ Confirme seu email</h1>
+<p style="color:rgba(255,255,255,0.8);font-size:13px;margin:6px 0 0;">Bem-vindo ao TCCFlow!</p>
+</td></tr>
+<tr><td style="padding:28px 32px;text-align:center;">
+<p style="color:#334155;font-size:14px;margin:0 0 20px;">Use o codigo abaixo para ativar sua conta:</p>
+<div style="background:#ecfdf5;border:2px dashed #6ee7b7;border-radius:12px;padding:16px;display:inline-block;">
+<span style="font-size:32px;font-weight:800;letter-spacing:10px;color:#059669;font-family:monospace;">{{ .Token }}</span>
+</div>
+<p style="color:#94a3b8;font-size:12px;margin:16px 0 0;">Expira em 10 minutos</p>
+</td></tr>
+<tr><td style="padding:0 32px 24px;text-align:center;">
+<a href="{{ .ConfirmationURL }}" style="display:inline-block;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 32px;border-radius:10px;">Confirmar meu email</a>
+</td></tr>
+<tr><td style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
+<p style="color:#94a3b8;font-size:11px;margin:0;">Se nao criou conta no TCCFlow, ignore este email.</p>
+</td></tr>
+</table>
+</td></tr>
+</table>
