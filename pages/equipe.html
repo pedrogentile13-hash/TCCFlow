@@ -295,6 +295,11 @@
                     // Load user data directly from Supabase
                     const { data: userData } = await _supa.from('users').select('*').eq('id', user.uid).maybeSingle();
 
+                    // Sync photo from Auth to users table if needed
+                    if (userData && user.photoURL && !userData.photo_url) {
+                        try { await _supa.from('users').update({ photo_url: user.photoURL }).eq('id', user.uid); } catch(e) {}
+                    }
+
                     if (userData && userData.project_id) {
                         projectId = userData.project_id;
 

@@ -237,15 +237,18 @@
                 }
             }
 
-            // Ensure user doc exists in Supabase
+            // Ensure user doc exists and sync photo
             try {
-                const { data: existingUser } = await _supa.from('users').select('id').eq('id', user.uid).maybeSingle();
+                const { data: existingUser } = await _supa.from('users').select('id, photo_url').eq('id', user.uid).maybeSingle();
                 if (!existingUser) {
                     await _supa.from('users').insert({
                         id: user.uid,
                         name: user.displayName || 'Usuário',
-                        email: user.email
+                        email: user.email,
+                        photo_url: user.photoURL || null
                     });
+                } else if (user.photoURL && !existingUser.photo_url) {
+                    await _supa.from('users').update({ photo_url: user.photoURL }).eq('id', user.uid);
                 }
             } catch (err) { console.log('Auto-create user error:', err); }
 
