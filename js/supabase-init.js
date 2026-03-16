@@ -43,11 +43,14 @@ const auth = {
             uid: supaUser.id,
             email: supaUser.email,
             displayName: supaUser.user_metadata?.display_name || supaUser.user_metadata?.full_name || supaUser.user_metadata?.name || null,
+            photoURL: supaUser.user_metadata?.photo_url || supaUser.user_metadata?.avatar_url || null,
             updateProfile: async (data) => {
                 const updates = {};
                 if (data.displayName !== undefined) updates.display_name = data.displayName;
+                if (data.photoURL !== undefined) updates.photo_url = data.photoURL;
                 await _supa.auth.updateUser({ data: updates });
                 if (auth.currentUser) {
+                    if (data.photoURL !== undefined) auth.currentUser.photoURL = data.photoURL;
                     auth.currentUser.displayName = data.displayName || auth.currentUser.displayName;
                 }
             },

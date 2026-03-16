@@ -56,8 +56,9 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-violet-600 bg-violet-50">
-                        <i class="fa-solid fa-gear text-sm"></i>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-violet-600 bg-violet-50 overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
                     </a>
                     <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
                         <i class="fa-solid fa-right-from-bracket text-sm"></i>
@@ -117,12 +118,22 @@
             <!-- Profile Card -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <div class="flex items-center gap-5 mb-8">
-                    <div class="w-20 h-20 bg-violet-100 rounded-2xl flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-user text-violet-600 text-2xl"></i>
+                    <div class="relative group">
+                        <div id="avatarContainer" class="w-20 h-20 bg-violet-100 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden cursor-pointer border-2 border-transparent hover:border-violet-400 transition">
+                            <i id="avatarIcon" class="fa-solid fa-user text-violet-600 text-2xl"></i>
+                            <img id="avatarImg" src="" alt="Foto de perfil" class="hidden w-full h-full object-cover">
+                        </div>
+                        <label for="avatarInput" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                            <i class="fa-solid fa-camera text-white text-lg"></i>
+                        </label>
+                        <input type="file" id="avatarInput" accept="image/*" class="hidden">
                     </div>
                     <div>
                         <h2 class="text-xl font-bold" id="profileName">Usuário</h2>
                         <p class="text-sm text-slate-500" id="profileEmail">email@example.com</p>
+                        <button id="removeAvatarBtn" class="hidden text-[11px] text-red-400 hover:text-red-600 mt-1 transition">
+                            <i class="fa-solid fa-trash-can mr-1"></i>Remover foto
+                        </button>
                     </div>
                 </div>
 
@@ -260,6 +271,111 @@
             document.getElementById('profileEmail').textContent = currentUser.email;
             document.getElementById('editName').value = currentUser.displayName || '';
             document.getElementById('editEmail').value = currentUser.email;
+            loadAvatar();
+        }
+
+        function loadAvatar() {
+            const photoURL = currentUser.photoURL;
+            const avatarIcon = document.getElementById('avatarIcon');
+            const avatarImg = document.getElementById('avatarImg');
+            const removeBtn = document.getElementById('removeAvatarBtn');
+
+            if (photoURL) {
+                avatarIcon.classList.add('hidden');
+                avatarImg.classList.remove('hidden');
+                avatarImg.src = photoURL;
+                removeBtn.classList.remove('hidden');
+            } else {
+                avatarIcon.classList.remove('hidden');
+                avatarImg.classList.add('hidden');
+                avatarImg.src = '';
+                removeBtn.classList.add('hidden');
+            }
+
+            // Also update navbar avatar
+            const navAvatar = document.getElementById('navAvatar');
+            const navAvatarIcon = document.getElementById('navAvatarIcon');
+            if (navAvatar && navAvatarIcon) {
+                if (photoURL) {
+                    navAvatar.src = photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                } else {
+                    navAvatar.classList.add('hidden');
+                    navAvatarIcon.classList.remove('hidden');
+                }
+            }
+        }
+
+        // ========== Avatar Upload ==========
+        document.getElementById('avatarInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                showMsg('profileMsg', 'Por favor, selecione uma imagem válida.', 'error');
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                showMsg('profileMsg', 'A imagem deve ter no máximo 2MB.', 'error');
+                return;
+            }
+
+            try {
+                // Resize and convert to base64
+                const base64 = await resizeImage(file, 256);
+
+                await currentUser.updateProfile({ photoURL: base64 });
+
+                loadAvatar();
+                showMsg('profileMsg', 'Foto de perfil atualizada!', 'success');
+            } catch (err) {
+                showMsg('profileMsg', 'Erro ao atualizar foto: ' + err.message, 'error');
+            }
+
+            // Clear input so same file can be re-selected
+            e.target.value = '';
+        });
+
+        document.getElementById('removeAvatarBtn').addEventListener('click', async () => {
+            if (!confirm('Remover sua foto de perfil?')) return;
+            try {
+                await currentUser.updateProfile({ photoURL: '' });
+                loadAvatar();
+                showMsg('profileMsg', 'Foto de perfil removida.', 'success');
+            } catch (err) {
+                showMsg('profileMsg', 'Erro ao remover foto: ' + err.message, 'error');
+            }
+        });
+
+        function resizeImage(file, maxSize) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+
+                        // Crop to square from center
+                        const side = Math.min(w, h);
+                        const sx = (w - side) / 2;
+                        const sy = (h - side) / 2;
+
+                        canvas.width = maxSize;
+                        canvas.height = maxSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, sx, sy, side, side, 0, 0, maxSize, maxSize);
+
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
 
         function showMsg(id, text, type) {
