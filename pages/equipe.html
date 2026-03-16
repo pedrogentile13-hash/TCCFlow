@@ -80,20 +80,6 @@
     </nav>
 
     <!-- PRO Gate Overlay -->
-    <div id="proGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
-        <div class="text-center max-w-md px-6">
-            <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-lock text-violet-600 text-3xl"></i>
-            </div>
-            <h2 class="text-2xl font-bold mb-3">Recurso Exclusivo PRO</h2>
-            <p class="text-sm text-slate-500 mb-8">O gerenciamento de equipe é exclusivo do plano PRO. Assine para convidar membros, compartilhar projetos e trabalhar em grupo.</p>
-            <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
-                <i class="fa-solid fa-crown mr-2"></i>Assinar Plano PRO
-            </a>
-            <p class="text-xs text-slate-400 mt-4">A partir de R$ 97,00/ano</p>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -178,7 +164,7 @@
                         <i class="fa-solid fa-exclamation-triangle mr-1"></i>Limite de assentos atingido. <a href="planos.html" class="text-violet-600 font-medium hover:underline">Upgrade para mais assentos →</a>
                     </div>
                     <div id="freeUpgrade" class="hidden text-xs text-slate-500 mt-2">
-                        Plano gratuito: máx. 2 membros. <a href="planos.html" class="text-violet-600 font-medium hover:underline">Fazer upgrade →</a>
+                        Plano gratuito: apenas 1 integrante. <a href="planos.html" class="text-violet-600 font-medium hover:underline">Upgrade para adicionar membros →</a>
                     </div>
                 </div>
 
@@ -285,12 +271,8 @@
 
             if (isFirebaseConfigured()) {
                 try {
-                    // Check if user is PRO - block if not
+                    // Check if user is PRO
                     const isPro = await DB.subscriptions.isPro(user.uid);
-                    if (!isPro) {
-                        document.getElementById('proGateOverlay').classList.remove('hidden');
-                        return;
-                    }
 
                     // Load user data directly from Supabase
                     const { data: userData } = await _supa.from('users').select('*').eq('id', user.uid).maybeSingle();
@@ -401,8 +383,32 @@
 
                 const proj = projects[0];
 
+                // Check seat limit before joining
+                let ownerIsPro = false;
+                let ownerMaxSeats = 1;
+                try {
+                    const sub = await DB.subscriptions.get(proj.owner_id);
+                    if (sub && sub.status === 'active' && sub.plan === 'pro') {
+                        ownerIsPro = true;
+                        ownerMaxSeats = sub.seats || 5;
+                    }
+                } catch(e) {}
+
+                // Count current members
+                const { data: currentMembersData } = await _supa.from('users').select('id').eq('project_id', proj.id);
+                const currentMemberCount = (currentMembersData || []).length;
+                const alreadyMember = (currentMembersData || []).some(m => m.id === currentUser.uid);
+
+                if (!alreadyMember && currentMemberCount >= ownerMaxSeats) {
+                    showSetupMsg(ownerIsPro
+                        ? 'Este projeto atingiu o limite de assentos do plano PRO.'
+                        : 'Este projeto é do plano gratuito e aceita apenas 1 integrante. O dono precisa fazer upgrade para PRO.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto';
+                    return;
+                }
+
                 // KEY FIX: Only update the user's OWN record (RLS always allows this)
-                // This is the source of truth for membership - not the projects.members array
                 const { error: userErr } = await _supa.from('users').upsert({
                     id: currentUser.uid,
                     name: currentUser.displayName || 'Usuário',
@@ -413,9 +419,9 @@
 
                 // Try to also update projects.members (best effort - may fail due to RLS)
                 try {
-                    const currentMembers = proj.members || [];
-                    if (!currentMembers.includes(currentUser.uid)) {
-                        const newMembers = [...new Set([...currentMembers, currentUser.uid])];
+                    const existingMembers = proj.members || [];
+                    if (!existingMembers.includes(currentUser.uid)) {
+                        const newMembers = [...new Set([...existingMembers, currentUser.uid])];
                         await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
                     }
                 } catch (e) {
@@ -467,6 +473,32 @@
                 }
 
                 const proj = projects[0];
+
+                // Check seat limit before switching
+                let switchOwnerIsPro = false;
+                let switchMaxSeats = 1;
+                try {
+                    const sub = await DB.subscriptions.get(proj.owner_id);
+                    if (sub && sub.status === 'active' && sub.plan === 'pro') {
+                        switchOwnerIsPro = true;
+                        switchMaxSeats = sub.seats || 5;
+                    }
+                } catch(e) {}
+
+                const { data: switchMembers } = await _supa.from('users').select('id').eq('project_id', proj.id);
+                const switchCount = (switchMembers || []).length;
+                const switchAlready = (switchMembers || []).some(m => m.id === currentUser.uid);
+
+                if (!switchAlready && switchCount >= switchMaxSeats) {
+                    msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                    msgEl.textContent = switchOwnerIsPro
+                        ? 'Este projeto atingiu o limite de assentos PRO.'
+                        : 'Projeto gratuito aceita apenas 1 integrante. O dono precisa fazer upgrade.';
+                    msgEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar';
+                    return;
+                }
 
                 // Only update user's OWN record (RLS allows this)
                 await _supa.from('users').update({ project_id: proj.id }).eq('id', currentUser.uid);
@@ -671,14 +703,14 @@
                 }
             }
 
-            let maxSeats = 2; // Free plan default
+            let maxSeats = 1; // Free plan: only the owner
             let isPro = false;
 
             try {
                 const sub = await DB.subscriptions.get(ownerId);
                 if (sub && sub.status === 'active' && sub.plan === 'pro') {
                     isPro = true;
-                    maxSeats = sub.seats || 1;
+                    maxSeats = sub.seats || 5;
                 }
             } catch (err) {
                 console.warn('Could not check subscription:', err);
@@ -709,9 +741,11 @@
                 document.getElementById('seatsWarning').classList.add('hidden');
             }
 
-            // Show invite by email only for owner
-            if (currentUser.uid === ownerId) {
+            // Show invite by email only for PRO owner
+            if (currentUser.uid === ownerId && isPro) {
                 document.getElementById('inviteByEmail').classList.remove('hidden');
+            } else {
+                document.getElementById('inviteByEmail').classList.add('hidden');
             }
         }
 
