@@ -328,6 +328,11 @@
 
                 await currentUser.updateProfile({ photoURL: base64 });
 
+                // Also save to users table so team members can see it
+                try {
+                    await _supa.from('users').update({ photo_url: base64 }).eq('id', currentUser.uid);
+                } catch (e) { console.log('Could not update users table photo:', e); }
+
                 loadAvatar();
                 showMsg('profileMsg', 'Foto de perfil atualizada!', 'success');
             } catch (err) {
@@ -342,6 +347,9 @@
             if (!confirm('Remover sua foto de perfil?')) return;
             try {
                 await currentUser.updateProfile({ photoURL: '' });
+                try {
+                    await _supa.from('users').update({ photo_url: null }).eq('id', currentUser.uid);
+                } catch (e) { console.log('Could not update users table photo:', e); }
                 loadAvatar();
                 showMsg('profileMsg', 'Foto de perfil removida.', 'success');
             } catch (err) {

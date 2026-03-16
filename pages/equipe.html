@@ -511,7 +511,7 @@
             // Query all users that have this project_id - THIS is the source of truth
             const { data: members, error } = await _supa
                 .from('users')
-                .select('id, name, email')
+                .select('id, name, email, photo_url')
                 .eq('project_id', projId);
 
             if (error) {
@@ -542,6 +542,7 @@
                 const name = member.name || 'Sem nome';
                 const email = member.email || '';
                 const initial = name.charAt(0).toUpperCase();
+                const photoUrl = member.photo_url || '';
                 const isMe = member.id === currentUser.uid;
                 const isProjectOwner = member.id === ownerId;
 
@@ -572,8 +573,8 @@
                 membersList.innerHTML += `
                     <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border border-slate-200">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                ${initial}
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm overflow-hidden ${photoUrl ? '' : 'bg-gradient-to-br from-violet-600 to-cyan-500'}">
+                                ${photoUrl ? `<img src="${photoUrl}" alt="${name}" class="w-full h-full object-cover">` : initial}
                             </div>
                             <div>
                                 <p class="font-medium">${name}</p>
