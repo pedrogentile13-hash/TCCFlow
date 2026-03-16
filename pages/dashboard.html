@@ -301,10 +301,15 @@
                 `<strong>${project.name}</strong> &bull; Código: <code class="bg-slate-100 px-2 py-1 rounded text-violet-600 font-mono">${project.code}</code>`;
 
             // Load members from USERS table (source of truth)
-            const { data: projectMembers } = await _supa
-                .from('users')
-                .select('id, name, email')
-                .eq('project_id', projectId);
+            let projectMembers;
+            try {
+                const res = await _supa.from('users').select('id, name, email, photo_url').eq('project_id', projectId);
+                projectMembers = res.error ? null : res.data;
+            } catch(e) {}
+            if (!projectMembers) {
+                const res2 = await _supa.from('users').select('id, name, email').eq('project_id', projectId);
+                projectMembers = res2.data;
+            }
 
             // Deduplicate by email
             const seenEmails = new Set();
@@ -396,11 +401,13 @@
                 teamList.innerHTML = '';
                 for (const member of uniqueMembers) {
                     const name = member.name || 'Desconhecido';
+                    const photo = member.photo_url || '';
                     teamList.innerHTML += `
                         <div class="flex items-center gap-3 p-2 rounded-lg">
-                            <div class="w-8 h-8 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                ${name.charAt(0).toUpperCase()}
-                            </div>
+                            ${photo
+                                ? `<img src="${photo}" alt="${name.charAt(0)}" class="w-8 h-8 rounded-full object-cover">`
+                                : `<div class="w-8 h-8 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">${name.charAt(0).toUpperCase()}</div>`
+                            }
                             <div>
                                 <p class="text-sm font-medium">${name}</p>
                                 <p class="text-xs text-slate-400">${member.id === currentUser.uid ? 'Você' : 'Membro'}</p>

@@ -509,10 +509,16 @@
             const membersList = document.getElementById('membersList');
 
             // Query all users that have this project_id - THIS is the source of truth
-            const { data: members, error } = await _supa
-                .from('users')
-                .select('id, name, email')
-                .eq('project_id', projId);
+            let members, error;
+            try {
+                const res = await _supa.from('users').select('id, name, email, photo_url').eq('project_id', projId);
+                members = res.data; error = res.error;
+            } catch(e) {}
+            if (error || !members) {
+                // Fallback sem photo_url (coluna pode não existir)
+                const res2 = await _supa.from('users').select('id, name, email').eq('project_id', projId);
+                members = res2.data; error = res2.error;
+            }
 
             if (error) {
                 console.error('Error loading members:', error);
@@ -542,6 +548,7 @@
                 const name = member.name || 'Sem nome';
                 const email = member.email || '';
                 const initial = name.charAt(0).toUpperCase();
+                const photo = member.photo_url || '';
                 const isMe = member.id === currentUser.uid;
                 const isProjectOwner = member.id === ownerId;
 
@@ -572,9 +579,10 @@
                 membersList.innerHTML += `
                     <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border border-slate-200">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                ${initial}
-                            </div>
+                            ${photo
+                                ? `<img src="${photo}" alt="${initial}" class="w-10 h-10 rounded-full object-cover">`
+                                : `<div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">${initial}</div>`
+                            }
                             <div>
                                 <p class="font-medium">${name}</p>
                                 <p class="text-xs text-slate-400">${email}</p>
