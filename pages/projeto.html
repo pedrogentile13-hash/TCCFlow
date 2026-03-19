@@ -43,18 +43,23 @@
                     <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
                     <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
-                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Projeto</a>
-                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-                    <a href="ferramentas.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
-                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
-                </div>
-                <div class="flex items-center gap-2">
+                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
+                    <div class="relative" id="moreDropdown">
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
+                        </div>
+                    </div>
+                </div><div class="flex items-center gap-2">
                     <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
                     <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
                         <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
@@ -76,6 +81,16 @@
             <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
             <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
         </div>
+    
+    <script>
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('moreDropdown');
+        const menu = document.getElementById('moreMenu');
+        if (dropdown && menu && !dropdown.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+    </script>
     </nav>
 
     <!-- Main Content -->
@@ -139,6 +154,58 @@
                         <textarea id="tccAbstract" rows="3" placeholder="Descreva brevemente o objetivo e a proposta do seu TCC..."
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
                     </div>
+                </div>
+            </div>
+
+            <!-- Objetivos do TCC -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h2 class="text-lg font-bold mb-6"><i class="fa-solid fa-crosshairs mr-2 text-indigo-600"></i>Objetivos do TCC</h2>
+
+                <!-- Objetivo Geral -->
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">
+                        <i class="fa-solid fa-bullseye mr-1 text-violet-500"></i>Objetivo Geral
+                        <span class="text-xs font-normal text-slate-400 ml-1">(1 objetivo principal)</span>
+                    </label>
+                    <textarea id="objetivoGeral" rows="3" placeholder="Ex: Analisar o impacto das redes sociais no desempenho acadêmico de alunos do ensino médio..."
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
+                    <p class="text-xs text-slate-400 mt-1">O objetivo geral descreve o propósito principal do seu trabalho.</p>
+                </div>
+
+                <!-- Objetivos Específicos -->
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-3">
+                        <i class="fa-solid fa-list-ol mr-1 text-cyan-500"></i>Objetivos Específicos
+                        <span class="text-xs font-normal text-slate-400 ml-1">(até 5 objetivos)</span>
+                    </label>
+                    <div class="space-y-3" id="objetivosEspecificos">
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">1</span>
+                            <input type="text" id="objEsp1" placeholder="Ex: Identificar os principais hábitos de uso de redes sociais entre estudantes..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">2</span>
+                            <input type="text" id="objEsp2" placeholder="Ex: Mapear a correlação entre tempo de uso e notas escolares..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">3</span>
+                            <input type="text" id="objEsp3" placeholder="Ex: Comparar o rendimento de alunos que usam e não usam redes durante estudos..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">4</span>
+                            <input type="text" id="objEsp4" placeholder="Ex: Avaliar a percepção dos professores sobre o uso de redes em sala..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">5</span>
+                            <input type="text" id="objEsp5" placeholder="Ex: Propor estratégias de uso consciente das redes sociais no ambiente escolar..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">Os objetivos específicos detalham os passos para alcançar o objetivo geral.</p>
                 </div>
             </div>
 
@@ -342,6 +409,14 @@
                 document.getElementById('dateDefense').value = info.dateDefense || '';
                 document.getElementById('projectNotes').value = info.projectNotes || '';
 
+                // Load objectives
+                document.getElementById('objetivoGeral').value = info.objetivoGeral || '';
+                document.getElementById('objEsp1').value = info.objEsp1 || '';
+                document.getElementById('objEsp2').value = info.objEsp2 || '';
+                document.getElementById('objEsp3').value = info.objEsp3 || '';
+                document.getElementById('objEsp4').value = info.objEsp4 || '';
+                document.getElementById('objEsp5').value = info.objEsp5 || '';
+
                 if (info.phases && info.phases.length > 0) {
                     info.phases.forEach(saved => {
                         const phase = defaultPhases.find(p => p.id === saved.id);
@@ -441,6 +516,12 @@
                 dateDeadline: document.getElementById('dateDeadline').value,
                 dateDefense: document.getElementById('dateDefense').value,
                 projectNotes: document.getElementById('projectNotes').value,
+                objetivoGeral: document.getElementById('objetivoGeral').value,
+                objEsp1: document.getElementById('objEsp1').value,
+                objEsp2: document.getElementById('objEsp2').value,
+                objEsp3: document.getElementById('objEsp3').value,
+                objEsp4: document.getElementById('objEsp4').value,
+                objEsp5: document.getElementById('objEsp5').value,
                 phases: defaultPhases.map(p => ({ id: p.id, progress: p.progress })),
                 updatedAt: new Date().toISOString()
             };
