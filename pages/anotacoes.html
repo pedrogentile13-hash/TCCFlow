@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anotações - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        .note-item { transition: all 0.15s ease; }
+        .note-item:hover { transform: translateX(2px); }
+        .note-item.active { border-left: 3px solid #8b5cf6; background: rgba(139,92,246,0.05); }
+        .tag-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <!-- Liquid Grass Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="anotacoes.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="ferramentas.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="anotacoes.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+        </div>
+    </nav>
+
+    <!-- Beta Gate Overlay -->
+    <div id="betaGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
+        <div class="text-center max-w-md px-6">
+            <div class="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-flask text-amber-600 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-3">Recurso Beta</h2>
+            <p class="text-sm text-slate-500 mb-8">Esta ferramenta está em fase de testes e disponível apenas para beta testers. Em breve estará disponível para todos!</p>
+            <a href="dashboard.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
+                <i class="fa-solid fa-arrow-left mr-2"></i>Voltar ao Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold">Anotações & Fichamentos</h1>
+                <p class="text-slate-500 mt-1">Organize suas leituras e fichamentos por artigo</p>
+            </div>
+
+            <!-- Two-column layout -->
+            <div class="flex flex-col lg:flex-row gap-6">
+
+                <!-- Left Sidebar - Notes List -->
+                <div class="w-full lg:w-80 lg:flex-shrink-0">
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                        <!-- Search + New -->
+                        <div class="p-4 border-b border-slate-100">
+                            <button id="newNoteBtn" class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition mb-3">
+                                <i class="fa-solid fa-plus mr-2"></i>Nova Anotação
+                            </button>
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input id="searchNotes" type="text" placeholder="Buscar anotações..." class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition">
+                            </div>
+                        </div>
+                        <!-- Notes list -->
+                        <div id="notesList" class="max-h-[calc(100vh-320px)] overflow-y-auto divide-y divide-slate-100">
+                            <div class="text-center py-12 text-slate-400 text-sm">
+                                <i class="fa-solid fa-book-open text-2xl mb-3 block"></i>
+                                Nenhuma anotação ainda
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-slate-100 bg-slate-50">
+                            <p class="text-[11px] text-slate-400 text-center"><span id="notesCount">0</span> anotações</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Editor Area -->
+                <div class="flex-1 min-w-0">
+                    <div id="editorPanel" class="bg-white border border-slate-200 rounded-2xl shadow-sm">
+                        <!-- Empty state -->
+                        <div id="editorEmpty" class="flex flex-col items-center justify-center py-20 text-slate-400">
+                            <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+                                <i class="fa-solid fa-pen-to-square text-2xl"></i>
+                            </div>
+                            <p class="text-sm font-medium mb-1">Selecione ou crie uma anotação</p>
+                            <p class="text-xs">Use o botão "Nova Anotação" para começar</p>
+                        </div>
+
+                        <!-- Editor form (hidden initially) -->
+                        <div id="editorForm" class="hidden">
+                            <!-- Header -->
+                            <div class="p-5 border-b border-slate-100">
+                                <input id="noteTitle" type="text" placeholder="Título da anotação..." class="w-full text-xl font-bold text-slate-900 placeholder-slate-300 focus:outline-none bg-transparent">
+                            </div>
+
+                            <!-- Tags -->
+                            <div class="px-5 py-3 border-b border-slate-100">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <i class="fa-solid fa-tags text-slate-400 text-xs"></i>
+                                    <div id="tagsContainer" class="flex flex-wrap gap-1.5"></div>
+                                    <input id="tagInput" type="text" placeholder="Adicionar tag (Enter para confirmar)" class="flex-1 min-w-[160px] text-sm text-slate-700 placeholder-slate-300 focus:outline-none bg-transparent py-1">
+                                </div>
+                            </div>
+
+                            <!-- Linked Reference -->
+                            <div class="px-5 py-3 border-b border-slate-100">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-link text-slate-400 text-xs"></i>
+                                    <select id="linkedPaper" class="flex-1 text-sm text-slate-600 bg-transparent focus:outline-none cursor-pointer">
+                                        <option value="">Vincular a uma referência (opcional)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Textarea Editor -->
+                            <div class="p-5">
+                                <textarea id="noteContent" rows="16" placeholder="Escreva suas anotações, fichamentos, citações e reflexões aqui..." class="w-full text-sm text-slate-700 leading-relaxed placeholder-slate-300 focus:outline-none bg-transparent resize-none"></textarea>
+                            </div>
+
+                            <!-- Footer Actions -->
+                            <div class="px-5 py-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex items-center justify-between">
+                                <div class="text-[11px] text-slate-400">
+                                    <span id="editorMeta"></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button id="deleteNoteBtn" class="hidden px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl transition">
+                                        <i class="fa-solid fa-trash mr-1.5"></i>Excluir
+                                    </button>
+                                    <button id="saveNoteBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-5 py-2 rounded-xl transition">
+                                        <i class="fa-solid fa-check mr-1.5"></i>Salvar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        const auth = supabaseAuth;
+        const _supa = supabase;
+        let currentUser = null;
+
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+            try {
+                const isBeta = await DB.isBetaTester(user.uid);
+                if (!isBeta) {
+                    document.getElementById('betaGateOverlay').classList.remove('hidden');
+                    return;
+                }
+            } catch(e) {}
+            initPage();
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+    </script>
+
+    <script>
+        // ========== State ==========
+        let notes = [];
+        let activeNoteId = null;
+        let currentTags = [];
+        const tagColors = [
+            'bg-violet-100 text-violet-700',
+            'bg-cyan-100 text-cyan-700',
+            'bg-emerald-100 text-emerald-700',
+            'bg-amber-100 text-amber-700',
+            'bg-rose-100 text-rose-700',
+            'bg-blue-100 text-blue-700',
+            'bg-pink-100 text-pink-700',
+            'bg-teal-100 text-teal-700',
+            'bg-orange-100 text-orange-700',
+            'bg-indigo-100 text-indigo-700'
+        ];
+
+        function getStorageKey() {
+            return `notes_${currentUser.uid}`;
+        }
+
+        function loadNotes() {
+            try {
+                const raw = localStorage.getItem(getStorageKey());
+                notes = raw ? JSON.parse(raw) : [];
+            } catch(e) {
+                notes = [];
+            }
+        }
+
+        function saveNotes() {
+            localStorage.setItem(getStorageKey(), JSON.stringify(notes));
+        }
+
+        function loadSavedPapers() {
+            const select = document.getElementById('linkedPaper');
+            select.innerHTML = '<option value="">Vincular a uma referência (opcional)</option>';
+            try {
+                const papersKey = `saved_papers_${currentUser.uid}`;
+                const raw = localStorage.getItem(papersKey);
+                const papers = raw ? JSON.parse(raw) : [];
+                papers.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id || p.title;
+                    opt.textContent = p.title ? (p.title.length > 60 ? p.title.substring(0, 60) + '...' : p.title) : 'Sem título';
+                    select.appendChild(opt);
+                });
+            } catch(e) {}
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function getTagColor(tag) {
+            let hash = 0;
+            for (let i = 0; i < tag.length; i++) hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+            return tagColors[Math.abs(hash) % tagColors.length];
+        }
+
+        // ========== Sidebar Rendering ==========
+        function renderNotesList(filter = '') {
+            const container = document.getElementById('notesList');
+            const filtered = filter
+                ? notes.filter(n =>
+                    n.title.toLowerCase().includes(filter) ||
+                    n.content.toLowerCase().includes(filter) ||
+                    n.tags.some(t => t.toLowerCase().includes(filter))
+                )
+                : [...notes];
+
+            filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+            document.getElementById('notesCount').textContent = notes.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-400 text-sm">
+                    <i class="fa-solid fa-book-open text-2xl mb-3 block"></i>
+                    ${filter ? 'Nenhum resultado encontrado' : 'Nenhuma anotação ainda'}
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(note => {
+                const preview = note.content ? note.content.split('\n')[0].substring(0, 60) : 'Sem conteúdo';
+                const isActive = note.id === activeNoteId;
+                const date = new Date(note.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                const tagsHtml = note.tags.slice(0, 2).map(t =>
+                    `<span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold ${getTagColor(t)}">${escapeHtml(t)}</span>`
+                ).join('');
+                const extraTags = note.tags.length > 2 ? `<span class="text-[9px] text-slate-400">+${note.tags.length - 2}</span>` : '';
+
+                return `<div class="note-item p-4 cursor-pointer hover:bg-slate-50 ${isActive ? 'active' : ''}" data-id="${note.id}">
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                        <h4 class="text-sm font-semibold text-slate-800 truncate">${escapeHtml(note.title || 'Sem título')}</h4>
+                        <span class="text-[10px] text-slate-400 flex-shrink-0">${date}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 truncate mb-2">${escapeHtml(preview)}</p>
+                    <div class="flex items-center gap-1">${tagsHtml}${extraTags}</div>
+                </div>`;
+            }).join('');
+
+            container.querySelectorAll('.note-item').forEach(el => {
+                el.addEventListener('click', () => openNote(el.dataset.id));
+            });
+        }
+
+        // ========== Editor ==========
+        function openNote(id) {
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+
+            activeNoteId = id;
+            currentTags = [...note.tags];
+
+            document.getElementById('editorEmpty').classList.add('hidden');
+            document.getElementById('editorForm').classList.remove('hidden');
+            document.getElementById('deleteNoteBtn').classList.remove('hidden');
+
+            document.getElementById('noteTitle').value = note.title;
+            document.getElementById('noteContent').value = note.content;
+            document.getElementById('linkedPaper').value = note.linkedPaper || '';
+
+            renderTags();
+            updateEditorMeta(note);
+            renderNotesList(document.getElementById('searchNotes').value.toLowerCase().trim());
+        }
+
+        function createNewNote() {
+            const note = {
+                id: Date.now().toString(),
+                title: '',
+                content: '',
+                tags: [],
+                linkedPaper: null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            notes.unshift(note);
+            saveNotes();
+            openNote(note.id);
+            renderNotesList();
+            document.getElementById('noteTitle').focus();
+        }
+
+        function saveCurrentNote() {
+            if (!activeNoteId) return;
+            const note = notes.find(n => n.id === activeNoteId);
+            if (!note) return;
+
+            const title = document.getElementById('noteTitle').value.trim();
+            if (!title) {
+                alert('Dê um título para a anotação.');
+                document.getElementById('noteTitle').focus();
+                return;
+            }
+
+            note.title = title;
+            note.content = document.getElementById('noteContent').value;
+            note.tags = [...currentTags];
+            note.linkedPaper = document.getElementById('linkedPaper').value || null;
+            note.updatedAt = new Date().toISOString();
+
+            saveNotes();
+            updateEditorMeta(note);
+            renderNotesList(document.getElementById('searchNotes').value.toLowerCase().trim());
+
+            // Flash save confirmation
+            const btn = document.getElementById('saveNoteBtn');
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check mr-1.5"></i>Salvo!';
+            setTimeout(() => { btn.innerHTML = origHtml; }, 1200);
+        }
+
+        function deleteCurrentNote() {
+            if (!activeNoteId) return;
+            if (!confirm('Tem certeza que deseja excluir esta anotação?')) return;
+
+            notes = notes.filter(n => n.id !== activeNoteId);
+            saveNotes();
+            activeNoteId = null;
+
+            document.getElementById('editorForm').classList.add('hidden');
+            document.getElementById('editorEmpty').classList.remove('hidden');
+            renderNotesList(document.getElementById('searchNotes').value.toLowerCase().trim());
+        }
+
+        function updateEditorMeta(note) {
+            const created = new Date(note.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const updated = new Date(note.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            document.getElementById('editorMeta').innerHTML = `Criado: ${created} &middot; Atualizado: ${updated}`;
+        }
+
+        // ========== Tags ==========
+        function renderTags() {
+            const container = document.getElementById('tagsContainer');
+            container.innerHTML = currentTags.map((tag, i) => {
+                const color = getTagColor(tag);
+                return `<span class="tag-pill ${color}">
+                    ${escapeHtml(tag)}
+                    <button class="ml-0.5 hover:opacity-70 transition" data-idx="${i}">&times;</button>
+                </span>`;
+            }).join('');
+
+            container.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    currentTags.splice(parseInt(btn.dataset.idx), 1);
+                    renderTags();
+                });
+            });
+        }
+
+        function addTag(value) {
+            const tags = value.split(',').map(t => t.trim().toLowerCase()).filter(t => t && !currentTags.includes(t));
+            if (tags.length) {
+                currentTags.push(...tags);
+                renderTags();
+            }
+        }
+
+        // ========== Init ==========
+        function initPage() {
+            loadNotes();
+            loadSavedPapers();
+            renderNotesList();
+
+            // New note
+            document.getElementById('newNoteBtn').addEventListener('click', createNewNote);
+
+            // Save
+            document.getElementById('saveNoteBtn').addEventListener('click', saveCurrentNote);
+
+            // Delete
+            document.getElementById('deleteNoteBtn').addEventListener('click', deleteCurrentNote);
+
+            // Search
+            document.getElementById('searchNotes').addEventListener('input', (e) => {
+                renderNotesList(e.target.value.toLowerCase().trim());
+            });
+
+            // Tag input
+            const tagInput = document.getElementById('tagInput');
+            tagInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const val = tagInput.value.trim();
+                    if (val) {
+                        addTag(val);
+                        tagInput.value = '';
+                    }
+                }
+                if (e.key === 'Backspace' && !tagInput.value && currentTags.length) {
+                    currentTags.pop();
+                    renderTags();
+                }
+            });
+
+            // Keyboard shortcut: Ctrl+S to save
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    if (activeNoteId) saveCurrentNote();
+                }
+            });
+        }
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="chat.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="ferramentas.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="chat.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+        </div>
+    </nav>
+
+    <!-- Beta Gate Overlay -->
+    <div id="betaGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
+        <div class="text-center max-w-md px-6">
+            <div class="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-flask text-amber-600 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-3">Recurso em Beta</h2>
+            <p class="text-sm text-slate-500 mb-8">O Chat da Equipe ainda está em fase de testes. Apenas beta testers com plano PRO têm acesso antecipado a esta funcionalidade.</p>
+            <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
+                <i class="fa-solid fa-crown mr-2"></i>Ver Planos
+            </a>
+            <p class="text-xs text-slate-400 mt-4">Entre em contato para solicitar acesso beta</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-4">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col" style="height: calc(100vh - 4rem);">
+
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold">Chat da Equipe</h1>
+                <p class="text-slate-500 mt-1">Converse em tempo real com os membros do seu projeto</p>
+            </div>
+
+            <!-- No Project Message -->
+            <div id="noProjectMsg" class="hidden flex-1 flex items-center justify-center">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-folder-open text-slate-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-2">Sem projeto</h3>
+                    <p class="text-sm text-slate-400 mb-4">Você precisa estar em um projeto para usar o chat da equipe.</p>
+                    <a href="projeto.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold py-2 px-6 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
+                        <i class="fa-solid fa-arrow-right mr-2"></i>Ir para Projeto
+                    </a>
+                </div>
+            </div>
+
+            <!-- Chat Container -->
+            <div id="chatContainer" class="hidden flex-1 flex flex-col min-h-0">
+                <!-- Messages Area -->
+                <div id="messagesArea" class="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-y-auto p-4 space-y-3 mb-4">
+                    <!-- Empty State -->
+                    <div id="emptyState" class="flex items-center justify-center h-full">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-violet-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-comments text-violet-400 text-2xl"></i>
+                            </div>
+                            <p class="text-sm text-slate-400">Nenhuma mensagem ainda. Comece a conversa!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-3 flex items-center gap-3">
+                    <input type="text" id="messageInput" placeholder="Digite sua mensagem..."
+                        class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
+                        autocomplete="off">
+                    <button id="sendBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                        <span class="hidden sm:inline">Enviar</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        let currentUser = null;
+        let projectId = null;
+        let chatChannel = null;
+        const CACHE_KEY_PREFIX = 'tccflow_chat_';
+        const MAX_CACHED_MESSAGES = 100;
+
+        // ========== Mobile Nav ==========
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        // ========== Auth ==========
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
+            if (isFirebaseConfigured()) {
+                try {
+                    // Beta gate: must be PRO + beta tester
+                    const pid = await DB.getProjectId();
+                    if (pid) {
+                        const isPro = await DB.isProByProject(pid);
+                        const isBeta = await DB.isBetaTester(user.uid);
+                        if (!isPro || !isBeta) {
+                            document.getElementById('betaGateOverlay').classList.remove('hidden');
+                            return;
+                        }
+
+                        // Update navbar for PRO users
+                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
+                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
+                        });
+
+                        projectId = pid;
+                        initChat();
+                    } else {
+                        document.getElementById('noProjectMsg').classList.remove('hidden');
+                    }
+                } catch (err) {
+                    console.error('Error:', err);
+                    document.getElementById('noProjectMsg').classList.remove('hidden');
+                }
+            }
+        });
+
+        // ========== Chat Logic ==========
+        function getCacheKey() {
+            return CACHE_KEY_PREFIX + projectId;
+        }
+
+        function getCachedMessages() {
+            try {
+                return JSON.parse(localStorage.getItem(getCacheKey()) || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveCachedMessages(messages) {
+            const trimmed = messages.slice(-MAX_CACHED_MESSAGES);
+            localStorage.setItem(getCacheKey(), JSON.stringify(trimmed));
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatTimestamp(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const isToday = date.toDateString() === now.toDateString();
+            const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            if (isToday) return time;
+            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + time;
+        }
+
+        function getInitial(name) {
+            return (name || 'U').charAt(0).toUpperCase();
+        }
+
+        function addMessageToUI(msg) {
+            const messagesArea = document.getElementById('messagesArea');
+            const emptyState = document.getElementById('emptyState');
+            if (emptyState) emptyState.remove();
+
+            const isMe = msg.userId === currentUser.uid;
+            const initial = getInitial(msg.userName);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
+
+            const avatarHtml = msg.userPhoto
+                ? `<img src="${escapeHtml(msg.userPhoto)}" alt="" class="w-8 h-8 rounded-full object-cover flex-shrink-0">`
+                : `<div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs font-bold bg-gradient-to-br from-violet-600 to-cyan-500">${initial}</div>`;
+
+            if (isMe) {
+                wrapper.innerHTML = `
+                    <div class="flex items-end gap-2 max-w-[75%]">
+                        <div class="flex flex-col items-end">
+                            <span class="text-[10px] text-slate-400 mb-1">${escapeHtml(msg.userName)} &middot; ${formatTimestamp(msg.timestamp)}</span>
+                            <div class="bg-violet-600 text-white px-4 py-2.5 rounded-2xl rounded-br-md text-sm leading-relaxed">${escapeHtml(msg.text)}</div>
+                        </div>
+                        ${avatarHtml}
+                    </div>`;
+            } else {
+                wrapper.innerHTML = `
+                    <div class="flex items-end gap-2 max-w-[75%]">
+                        ${avatarHtml}
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-slate-400 mb-1">${escapeHtml(msg.userName)} &middot; ${formatTimestamp(msg.timestamp)}</span>
+                            <div class="bg-slate-100 text-slate-900 px-4 py-2.5 rounded-2xl rounded-bl-md text-sm leading-relaxed">${escapeHtml(msg.text)}</div>
+                        </div>
+                    </div>`;
+            }
+
+            messagesArea.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function initChat() {
+            document.getElementById('chatContainer').classList.remove('hidden');
+
+            // Load cached messages
+            const cached = getCachedMessages();
+            if (cached.length > 0) {
+                document.getElementById('emptyState')?.remove();
+                cached.forEach(msg => addMessageToUI(msg));
+            }
+
+            // Subscribe to project chat channel via Supabase Realtime Broadcast
+            chatChannel = _supa.channel('chat_' + projectId);
+
+            chatChannel.on('broadcast', { event: 'message' }, (payload) => {
+                const msg = payload.payload;
+                addMessageToUI(msg);
+
+                // Cache the incoming message
+                const cached = getCachedMessages();
+                cached.push(msg);
+                saveCachedMessages(cached);
+            });
+
+            chatChannel.subscribe();
+
+            // Enable send button
+            document.getElementById('sendBtn').disabled = false;
+        }
+
+        function sendMessage(text) {
+            if (!text.trim() || !chatChannel) return;
+
+            const msg = {
+                userId: currentUser.uid,
+                userName: currentUser.displayName || 'Usuário',
+                userPhoto: currentUser.photoURL || '',
+                text: text.trim(),
+                timestamp: new Date().toISOString()
+            };
+
+            chatChannel.send({
+                type: 'broadcast',
+                event: 'message',
+                payload: msg
+            });
+
+            // Add own message to UI immediately
+            addMessageToUI(msg);
+
+            // Cache own message
+            const cached = getCachedMessages();
+            cached.push(msg);
+            saveCachedMessages(cached);
+        }
+
+        // ========== Input Handlers ==========
+        document.getElementById('sendBtn').addEventListener('click', () => {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if (text) {
+                sendMessage(text);
+                input.value = '';
+                input.focus();
+            }
+        });
+
+        document.getElementById('messageInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const text = e.target.value.trim();
+                if (text) {
+                    sendMessage(text);
+                    e.target.value = '';
+                }
+            }
+        });
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

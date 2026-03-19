@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadro de Ideias - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+
+        .postit-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+        .postit-card:hover {
+            transform: scale(1.03) rotate(-0.5deg);
+            box-shadow: 0 8px 25px -5px rgba(0,0,0,0.15);
+        }
+        .postit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            width: 40px;
+            height: 8px;
+            background: rgba(0,0,0,0.08);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .color-swatch {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .color-swatch:hover {
+            transform: scale(1.2);
+        }
+        .color-swatch.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 3px #7c3aed;
+        }
+
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .masonry-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .masonry-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .category-chip {
+            transition: all 0.15s ease;
+        }
+        .category-chip.active {
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            color: white;
+            border-color: transparent;
+        }
+
+        .modal-backdrop {
+            transition: opacity 0.2s ease;
+        }
+        .modal-content {
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <!-- Liquid Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Beta Gate Overlay -->
+    <div id="betaGateOverlay" class="fixed inset-0 z-[999] bg-white/95 backdrop-blur-sm flex items-center justify-center hidden">
+        <div class="text-center max-w-md px-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-flask text-white text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Funcionalidade Beta</h2>
+            <p class="text-slate-500 mb-6">Esta ferramenta est&aacute; dispon&iacute;vel apenas para beta testers. Entre em contato para solicitar acesso.</p>
+            <a href="dashboard.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:shadow-lg transition">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calend&aacute;rio</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="ideias.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="ferramentas.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calend&aacute;rio</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ideias.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold">
+                    <i class="fa-solid fa-lightbulb text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500 mr-2"></i>Quadro de Ideias
+                </h1>
+                <p class="text-slate-500 mt-1">Organize seu brainstorming e explore temas para o TCC</p>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+                <button id="newIdeaBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Nova Ideia
+                </button>
+
+                <!-- Color Filter -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400 font-medium">Cor:</span>
+                    <button data-color-filter="all" class="color-filter-btn w-6 h-6 rounded-full border-2 border-slate-300 bg-gradient-to-br from-violet-400 to-cyan-400 active" title="Todas"></button>
+                    <button data-color-filter="yellow" class="color-filter-btn w-6 h-6 rounded-full border-2 border-transparent hover:border-slate-300" style="background:#fef3c7" title="Amarelo"></button>
+                    <button data-color-filter="pink" class="color-filter-btn w-6 h-6 rounded-full border-2 border-transparent hover:border-slate-300" style="background:#fce7f3" title="Rosa"></button>
+                    <button data-color-filter="blue" class="color-filter-btn w-6 h-6 rounded-full border-2 border-transparent hover:border-slate-300" style="background:#dbeafe" title="Azul"></button>
+                    <button data-color-filter="green" class="color-filter-btn w-6 h-6 rounded-full border-2 border-transparent hover:border-slate-300" style="background:#dcfce7" title="Verde"></button>
+                    <button data-color-filter="purple" class="color-filter-btn w-6 h-6 rounded-full border-2 border-transparent hover:border-slate-300" style="background:#ede9fe" title="Roxo"></button>
+                    <button data-color-filter="white" class="color-filter-btn w-6 h-6 rounded-full border-2 border-transparent hover:border-slate-300 bg-white shadow-sm" title="Branco"></button>
+                </div>
+
+                <!-- Search -->
+                <div class="relative flex-1 sm:max-w-xs ml-auto w-full">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input id="searchInput" type="text" placeholder="Buscar ideias..."
+                        class="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                </div>
+            </div>
+
+            <!-- Category Filter Chips -->
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button data-category-filter="all" class="category-chip active text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 transition">Todas</button>
+                <button data-category-filter="tema" class="category-chip text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 hover:border-violet-300 transition">
+                    <i class="fa-solid fa-bookmark mr-1"></i>Tema
+                </button>
+                <button data-category-filter="problema" class="category-chip text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 hover:border-violet-300 transition">
+                    <i class="fa-solid fa-circle-question mr-1"></i>Problema
+                </button>
+                <button data-category-filter="hipotese" class="category-chip text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 hover:border-violet-300 transition">
+                    <i class="fa-solid fa-flask mr-1"></i>Hip&oacute;tese
+                </button>
+                <button data-category-filter="referencia" class="category-chip text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 hover:border-violet-300 transition">
+                    <i class="fa-solid fa-book mr-1"></i>Refer&ecirc;ncia
+                </button>
+                <button data-category-filter="metodologia" class="category-chip text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 hover:border-violet-300 transition">
+                    <i class="fa-solid fa-diagram-project mr-1"></i>Metodologia
+                </button>
+                <button data-category-filter="livre" class="category-chip text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 hover:border-violet-300 transition">
+                    <i class="fa-solid fa-pen-fancy mr-1"></i>Livre
+                </button>
+            </div>
+
+            <!-- Ideas Board -->
+            <div id="ideasBoard" class="masonry-grid"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-20">
+                <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-lightbulb text-3xl text-violet-400"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-700 mb-1">Nenhuma ideia ainda</h3>
+                <p class="text-slate-400 text-sm">Comece seu brainstorming!</p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- New/Edit Idea Modal -->
+    <div id="ideaModal" class="fixed inset-0 z-[100] hidden">
+        <div class="modal-backdrop absolute inset-0 bg-black/40 backdrop-blur-sm" id="modalBackdrop"></div>
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative">
+                <button id="closeModal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+                <h3 class="text-lg font-bold mb-5" id="modalTitle">
+                    <i class="fa-solid fa-lightbulb text-violet-600 mr-2"></i>Nova Ideia
+                </h3>
+
+                <input type="hidden" id="editIdeaId" value="">
+
+                <div class="mb-4">
+                    <label class="block text-xs font-medium text-slate-500 mb-1">Sua Ideia</label>
+                    <textarea id="ideaText" rows="5" placeholder="Escreva sua ideia, insight, tema ou refer&ecirc;ncia..."
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
+                </div>
+
+                <!-- Color Picker -->
+                <div class="mb-4">
+                    <label class="block text-xs font-medium text-slate-500 mb-2">Cor do Post-it</label>
+                    <div class="flex gap-3">
+                        <button data-color="yellow" class="color-swatch active w-9 h-9 rounded-lg border-2 border-transparent" style="background:#fef3c7" title="Amarelo"></button>
+                        <button data-color="pink" class="color-swatch w-9 h-9 rounded-lg border-2 border-transparent" style="background:#fce7f3" title="Rosa"></button>
+                        <button data-color="blue" class="color-swatch w-9 h-9 rounded-lg border-2 border-transparent" style="background:#dbeafe" title="Azul"></button>
+                        <button data-color="green" class="color-swatch w-9 h-9 rounded-lg border-2 border-transparent" style="background:#dcfce7" title="Verde"></button>
+                        <button data-color="purple" class="color-swatch w-9 h-9 rounded-lg border-2 border-transparent" style="background:#ede9fe" title="Roxo"></button>
+                        <button data-color="white" class="color-swatch w-9 h-9 rounded-lg border-2 border-transparent bg-white shadow-sm" title="Branco"></button>
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div class="mb-6">
+                    <label class="block text-xs font-medium text-slate-500 mb-1">Categoria</label>
+                    <select id="ideaCategory"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        <option value="tema">Tema</option>
+                        <option value="problema">Problema</option>
+                        <option value="hipotese">Hip&oacute;tese</option>
+                        <option value="referencia">Refer&ecirc;ncia</option>
+                        <option value="metodologia">Metodologia</option>
+                        <option value="livre">Livre</option>
+                    </select>
+                </div>
+
+                <button id="saveIdeaBtn" class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold py-2.5 rounded-xl transition">
+                    <i class="fa-solid fa-check mr-1"></i> Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        // ========== Constants ==========
+        const COLOR_MAP = {
+            yellow: '#fef3c7',
+            pink: '#fce7f3',
+            blue: '#dbeafe',
+            green: '#dcfce7',
+            purple: '#ede9fe',
+            white: '#ffffff'
+        };
+
+        const CATEGORY_ICONS = {
+            tema: { icon: 'fa-bookmark', color: 'text-violet-600' },
+            problema: { icon: 'fa-circle-question', color: 'text-rose-500' },
+            hipotese: { icon: 'fa-flask', color: 'text-cyan-600' },
+            referencia: { icon: 'fa-book', color: 'text-amber-600' },
+            metodologia: { icon: 'fa-diagram-project', color: 'text-emerald-600' },
+            livre: { icon: 'fa-pen-fancy', color: 'text-slate-500' }
+        };
+
+        const CATEGORY_LABELS = {
+            tema: 'Tema', problema: 'Problema', hipotese: 'Hipótese',
+            referencia: 'Referência', metodologia: 'Metodologia', livre: 'Livre'
+        };
+
+        // ========== State ==========
+        let currentUserId = null;
+        let activeColorFilter = 'all';
+        let activeCategoryFilter = 'all';
+        let searchQuery = '';
+
+        // ========== Auth Check & Beta Gate ==========
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUserId = user.uid;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
+            // Beta gate check
+            try {
+                const isBeta = await DB.isBetaTester(user.uid);
+                if (!isBeta) {
+                    document.getElementById('betaGateOverlay').classList.remove('hidden');
+                }
+            } catch(e) { console.log('Beta check error:', e); }
+
+            // Update navbar for PRO users
+            try {
+                const pid = await DB.getProjectId();
+                if (pid) {
+                    const isPro = await DB.isProByProject(pid);
+                    if (isPro) {
+                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
+                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
+                        });
+                    }
+                }
+            } catch(e) { console.log(e); }
+
+            renderBoard();
+        });
+
+        // ========== Mobile Nav ==========
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        // ========== LocalStorage CRUD ==========
+        function getIdeasKey() {
+            return `ideas_${currentUserId}`;
+        }
+
+        function getIdeas() {
+            return JSON.parse(localStorage.getItem(getIdeasKey()) || '[]');
+        }
+
+        function saveIdeas(ideas) {
+            localStorage.setItem(getIdeasKey(), JSON.stringify(ideas));
+        }
+
+        function createIdea(text, color, category) {
+            const ideas = getIdeas();
+            const idea = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                text,
+                color,
+                category,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            ideas.push(idea);
+            saveIdeas(ideas);
+            return idea;
+        }
+
+        function updateIdea(id, text, color, category) {
+            const ideas = getIdeas();
+            const idx = ideas.findIndex(i => i.id === id);
+            if (idx === -1) return;
+            ideas[idx].text = text;
+            ideas[idx].color = color;
+            ideas[idx].category = category;
+            ideas[idx].updatedAt = new Date().toISOString();
+            saveIdeas(ideas);
+        }
+
+        function deleteIdea(id) {
+            const ideas = getIdeas().filter(i => i.id !== id);
+            saveIdeas(ideas);
+        }
+
+        // ========== Filtering ==========
+        function getFilteredIdeas() {
+            let ideas = getIdeas();
+
+            if (activeColorFilter !== 'all') {
+                ideas = ideas.filter(i => i.color === activeColorFilter);
+            }
+
+            if (activeCategoryFilter !== 'all') {
+                ideas = ideas.filter(i => i.category === activeCategoryFilter);
+            }
+
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                ideas = ideas.filter(i => i.text.toLowerCase().includes(q));
+            }
+
+            ideas.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            return ideas;
+        }
+
+        // ========== Render ==========
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderBoard() {
+            const ideas = getFilteredIdeas();
+            const board = document.getElementById('ideasBoard');
+            const emptyState = document.getElementById('emptyState');
+
+            if (ideas.length === 0) {
+                board.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            board.innerHTML = ideas.map(idea => {
+                const bg = COLOR_MAP[idea.color] || COLOR_MAP.yellow;
+                const cat = CATEGORY_ICONS[idea.category] || CATEGORY_ICONS.livre;
+                const label = CATEGORY_LABELS[idea.category] || idea.category;
+                const date = new Date(idea.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                return `
+                <div class="postit-card rounded-2xl p-5 shadow-sm border border-slate-200/60 group" style="background:${bg}" data-id="${idea.id}">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                            <i class="fa-solid ${cat.icon} ${cat.color}"></i>
+                            ${label}
+                        </span>
+                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                            <button onclick="openEditModal('${idea.id}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-violet-600 hover:bg-white/60 transition text-xs">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="confirmDelete('${idea.id}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-white/60 transition text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap mb-4">${escapeHtml(idea.text)}</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] text-slate-400">${date}</span>
+                        <span class="w-3 h-3 rounded-full border border-slate-200" style="background:${bg}"></span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ========== Modal Logic ==========
+        function openModal() {
+            document.getElementById('ideaModal').classList.remove('hidden');
+            document.getElementById('editIdeaId').value = '';
+            document.getElementById('ideaText').value = '';
+            document.getElementById('ideaCategory').value = 'tema';
+            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-lightbulb text-violet-600 mr-2"></i>Nova Ideia';
+            setActiveColorSwatch('yellow');
+            document.getElementById('ideaText').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('ideaModal').classList.add('hidden');
+        }
+
+        window.openEditModal = function(id) {
+            const ideas = getIdeas();
+            const idea = ideas.find(i => i.id === id);
+            if (!idea) return;
+
+            document.getElementById('ideaModal').classList.remove('hidden');
+            document.getElementById('editIdeaId').value = idea.id;
+            document.getElementById('ideaText').value = idea.text;
+            document.getElementById('ideaCategory').value = idea.category;
+            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-pen text-violet-600 mr-2"></i>Editar Ideia';
+            setActiveColorSwatch(idea.color);
+            document.getElementById('ideaText').focus();
+        };
+
+        window.confirmDelete = function(id) {
+            if (!confirm('Excluir esta ideia?')) return;
+            deleteIdea(id);
+            renderBoard();
+        };
+
+        function setActiveColorSwatch(color) {
+            document.querySelectorAll('.color-swatch').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.color === color);
+            });
+        }
+
+        function getSelectedColor() {
+            const active = document.querySelector('.color-swatch.active');
+            return active ? active.dataset.color : 'yellow';
+        }
+
+        // ========== Event Listeners ==========
+
+        // New Idea button
+        document.getElementById('newIdeaBtn').addEventListener('click', openModal);
+
+        // Close modal
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+
+        // Color swatches in modal
+        document.querySelectorAll('.color-swatch').forEach(btn => {
+            btn.addEventListener('click', () => setActiveColorSwatch(btn.dataset.color));
+        });
+
+        // Save idea
+        document.getElementById('saveIdeaBtn').addEventListener('click', () => {
+            const text = document.getElementById('ideaText').value.trim();
+            const color = getSelectedColor();
+            const category = document.getElementById('ideaCategory').value;
+            const editId = document.getElementById('editIdeaId').value;
+
+            if (!text) { alert('Escreva sua ideia antes de salvar.'); return; }
+
+            if (editId) {
+                updateIdea(editId, text, color, category);
+            } else {
+                createIdea(text, color, category);
+            }
+
+            closeModal();
+            renderBoard();
+        });
+
+        // Color filter buttons
+        document.querySelectorAll('.color-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.color-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                btn.style.borderColor = '#7c3aed';
+                document.querySelectorAll('.color-filter-btn:not(.active)').forEach(b => b.style.borderColor = '');
+                activeColorFilter = btn.dataset.colorFilter;
+                renderBoard();
+            });
+        });
+
+        // Category filter chips
+        document.querySelectorAll('.category-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                activeCategoryFilter = chip.dataset.categoryFilter;
+                renderBoard();
+            });
+        });
+
+        // Search input
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderBoard();
+        });
+
+        // Keyboard shortcut: Escape closes modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

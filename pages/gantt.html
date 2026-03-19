@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        .gantt-bar { transition: all 0.3s ease; }
+        .gantt-bar:hover { filter: brightness(1.1); transform: scaleY(1.1); }
+        .today-line { position: absolute; top: 0; bottom: 0; width: 2px; border-left: 2px dashed #7c3aed; z-index: 10; pointer-events: none; }
+        .today-label { position: absolute; top: -20px; transform: translateX(-50%); font-size: 10px; color: #7c3aed; font-weight: 600; white-space: nowrap; }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <!-- Liquid Grass Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Beta Gate Overlay -->
+    <div id="betaGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
+        <div class="text-center max-w-md px-6">
+            <div class="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-flask text-amber-600 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-3">Recurso Beta</h2>
+            <p class="text-sm text-slate-500 mb-8">Esta ferramenta está em fase de testes e disponível apenas para beta testers. Em breve estará disponível para todos!</p>
+            <a href="dashboard.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
+                <i class="fa-solid fa-arrow-left mr-2"></i>Voltar ao Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="gantt.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="ferramentas.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="gantt.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold"><i class="fa-solid fa-chart-gantt mr-3 text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500"></i>Cronograma do TCC</h1>
+                <p class="text-slate-500 mt-1">Visualize o progresso das fases do seu trabalho</p>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="text-sm text-slate-500 mb-1">Fases Concluídas</div>
+                    <div class="text-2xl font-bold text-emerald-600" id="statCompleted">0 de 0</div>
+                    <div class="w-full bg-slate-100 rounded-full h-2 mt-3">
+                        <div id="progressBarFill" class="bg-gradient-to-r from-violet-600 to-cyan-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="text-sm text-slate-500 mb-1">Progresso Geral</div>
+                    <div class="text-2xl font-bold text-violet-600" id="statProgress">0%</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="text-sm text-slate-500 mb-1">Prazo de Entrega</div>
+                    <div class="text-2xl font-bold" id="statDeadline">--</div>
+                    <div class="text-xs text-slate-400 mt-1" id="statDaysLeft"></div>
+                </div>
+            </div>
+
+            <!-- Add Phase Button -->
+            <div class="mb-6 flex gap-3">
+                <button id="addPhaseBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+                    <i class="fa-solid fa-plus mr-2"></i>Adicionar Fase
+                </button>
+                <button id="setDeadlineBtn" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm">
+                    <i class="fa-solid fa-calendar-check mr-2"></i>Definir Prazo
+                </button>
+            </div>
+
+            <!-- Deadline Modal -->
+            <div id="deadlineModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+                    <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-calendar-check mr-2 text-violet-600"></i>Prazo de Entrega do TCC</h3>
+                    <div class="mb-4">
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Data de Entrega Final</label>
+                        <input type="date" id="deadlineInput"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="saveDeadline" class="flex-1 bg-violet-600 hover:bg-violet-500 text-white font-medium py-2 rounded-xl transition">Salvar</button>
+                        <button id="cancelDeadline" class="flex-1 bg-slate-200 hover:bg-slate-300 font-medium py-2 rounded-xl transition">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Edit Phase Form -->
+            <div id="phaseForm" class="hidden bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-layer-group mr-2 text-violet-600"></i><span id="formTitle">Nova Fase</span></h3>
+                <input type="hidden" id="editPhaseId" value="">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Nome da Fase</label>
+                        <input type="text" id="phaseName" placeholder="Ex: Revisão Bibliográfica"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Data Início</label>
+                        <input type="date" id="phaseStart"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Data Fim</label>
+                        <input type="date" id="phaseEnd"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Cor</label>
+                        <select id="phaseColor"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            <option value="violet">Violeta</option>
+                            <option value="cyan">Ciano</option>
+                            <option value="emerald">Verde</option>
+                            <option value="amber">Âmbar</option>
+                            <option value="rose">Rosa</option>
+                            <option value="blue">Azul</option>
+                            <option value="orange">Laranja</option>
+                            <option value="teal">Teal</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Status</label>
+                        <select id="phaseStatus"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            <option value="not_started">Não iniciada</option>
+                            <option value="in_progress">Em andamento</option>
+                            <option value="completed">Concluída</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button id="savePhase" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-5 py-2 rounded-xl transition">
+                        <i class="fa-solid fa-check mr-1"></i> Salvar
+                    </button>
+                    <button id="cancelPhase" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold px-5 py-2 rounded-xl transition">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Gantt Chart -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <h2 class="font-bold text-sm"><i class="fa-solid fa-chart-gantt mr-2 text-violet-600"></i>Linha do Tempo</h2>
+                    <div id="timelineRange" class="text-xs text-slate-400"></div>
+                </div>
+                <div id="ganttContainer" class="p-6">
+                    <div id="ganttEmpty" class="text-center py-12 text-slate-400">
+                        <i class="fa-solid fa-chart-gantt text-4xl mb-4 block"></i>
+                        <p class="text-sm">Nenhuma fase cadastrada. Clique em "Adicionar Fase" para começar.</p>
+                    </div>
+                    <div id="ganttChart" class="hidden">
+                        <!-- Month headers -->
+                        <div id="ganttMonths" class="flex mb-2 ml-[200px] relative" style="height: 24px;"></div>
+                        <!-- Rows -->
+                        <div id="ganttRows" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase List (Mobile Friendly) -->
+            <div class="mt-6 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100">
+                    <h2 class="font-bold text-sm"><i class="fa-solid fa-list mr-2 text-violet-600"></i>Fases do Projeto</h2>
+                </div>
+                <div id="phaseList" class="divide-y divide-slate-100">
+                    <div class="text-center py-8 text-slate-400 text-sm">Nenhuma fase cadastrada</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        // ========== Auth Check & Beta Gate ==========
+        let currentUserId = null;
+        let projectDeadline = null;
+
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUserId = user.uid;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
+            // Beta tester gate
+            try {
+                const isBeta = await DB.isBetaTester(user.uid);
+                if (!isBeta) {
+                    document.getElementById('betaGateOverlay').classList.remove('hidden');
+                    return;
+                }
+            } catch(e) {
+                console.log('Beta check error:', e);
+                document.getElementById('betaGateOverlay').classList.remove('hidden');
+                return;
+            }
+
+            // Update navbar for PRO users
+            try {
+                const pid = await DB.getProjectId();
+                if (pid) {
+                    const isPro = await DB.isProByProject(pid);
+                    if (isPro) {
+                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
+                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
+                        });
+                    }
+                }
+            } catch(e) { console.log(e); }
+
+            // Load project deadline from Supabase if available
+            try {
+                const { data: userData } = await _supa
+                    .from('users')
+                    .select('project_id')
+                    .eq('id', user.uid)
+                    .maybeSingle();
+
+                if (userData && userData.project_id) {
+                    const { data: projectData } = await _supa
+                        .from('projects')
+                        .select('deadline')
+                        .eq('id', userData.project_id)
+                        .maybeSingle();
+
+                    if (projectData && projectData.deadline) {
+                        projectDeadline = projectData.deadline;
+                        saveDeadlineToStorage(projectDeadline);
+                    }
+                }
+            } catch(e) { console.log('Project deadline load:', e); }
+
+            loadDeadline();
+            renderAll();
+        });
+
+        // ========== Mobile Nav ==========
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        // ========== Storage Helpers ==========
+        function getStorageKey() { return `gantt_${currentUserId}`; }
+        function getDeadlineKey() { return `gantt_deadline_${currentUserId}`; }
+
+        function getPhases() {
+            try {
+                return JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+            } catch { return []; }
+        }
+
+        function savePhases(phases) {
+            localStorage.setItem(getStorageKey(), JSON.stringify(phases));
+        }
+
+        function loadDeadline() {
+            const stored = localStorage.getItem(getDeadlineKey());
+            if (stored) projectDeadline = stored;
+        }
+
+        function saveDeadlineToStorage(date) {
+            localStorage.setItem(getDeadlineKey(), date);
+        }
+
+        // ========== Color Map ==========
+        const colorMap = {
+            violet:  { bg: 'bg-violet-500',  light: 'bg-violet-100',  text: 'text-violet-700',  hex: '#8b5cf6' },
+            cyan:    { bg: 'bg-cyan-500',     light: 'bg-cyan-100',    text: 'text-cyan-700',    hex: '#06b6d4' },
+            emerald: { bg: 'bg-emerald-500',  light: 'bg-emerald-100', text: 'text-emerald-700', hex: '#10b981' },
+            amber:   { bg: 'bg-amber-500',    light: 'bg-amber-100',   text: 'text-amber-700',   hex: '#f59e0b' },
+            rose:    { bg: 'bg-rose-500',     light: 'bg-rose-100',    text: 'text-rose-700',    hex: '#f43f5e' },
+            blue:    { bg: 'bg-blue-500',     light: 'bg-blue-100',    text: 'text-blue-700',    hex: '#3b82f6' },
+            orange:  { bg: 'bg-orange-500',   light: 'bg-orange-100',  text: 'text-orange-700',  hex: '#f97316' },
+            teal:    { bg: 'bg-teal-500',     light: 'bg-teal-100',    text: 'text-teal-700',    hex: '#14b8a6' }
+        };
+
+        const statusColors = {
+            not_started: { bg: '#94a3b8', label: 'Não iniciada', dot: 'bg-slate-400' },
+            in_progress: { bg: '#8b5cf6', label: 'Em andamento', dot: 'bg-violet-500' },
+            completed:   { bg: '#10b981', label: 'Concluída',    dot: 'bg-emerald-500' }
+        };
+
+        // ========== Render All ==========
+        function renderAll() {
+            const phases = getPhases();
+            renderSummary(phases);
+            renderGantt(phases);
+            renderPhaseList(phases);
+        }
+
+        // ========== Summary ==========
+        function renderSummary(phases) {
+            const total = phases.length;
+            const completed = phases.filter(p => p.status === 'completed').length;
+            const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('statCompleted').textContent = `${completed} de ${total}`;
+            document.getElementById('statProgress').textContent = `${pct}%`;
+            document.getElementById('progressBarFill').style.width = `${pct}%`;
+
+            if (projectDeadline) {
+                const dl = new Date(projectDeadline + 'T23:59:59');
+                document.getElementById('statDeadline').textContent = dl.toLocaleDateString('pt-BR');
+                const today = new Date();
+                const diffDays = Math.ceil((dl - today) / (1000 * 60 * 60 * 24));
+                if (diffDays > 0) {
+                    document.getElementById('statDaysLeft').textContent = `Faltam ${diffDays} dias para a entrega`;
+                    document.getElementById('statDaysLeft').className = 'text-xs text-slate-400 mt-1';
+                } else if (diffDays === 0) {
+                    document.getElementById('statDaysLeft').textContent = 'Entrega é hoje!';
+                    document.getElementById('statDaysLeft').className = 'text-xs text-amber-600 font-semibold mt-1';
+                } else {
+                    document.getElementById('statDaysLeft').textContent = `Atrasado ${Math.abs(diffDays)} dias`;
+                    document.getElementById('statDaysLeft').className = 'text-xs text-red-600 font-semibold mt-1';
+                }
+            } else {
+                document.getElementById('statDeadline').textContent = '--';
+                document.getElementById('statDaysLeft').textContent = 'Defina um prazo de entrega';
+            }
+        }
+
+        // ========== Gantt Chart ==========
+        function renderGantt(phases) {
+            if (phases.length === 0) {
+                document.getElementById('ganttEmpty').classList.remove('hidden');
+                document.getElementById('ganttChart').classList.add('hidden');
+                document.getElementById('timelineRange').textContent = '';
+                return;
+            }
+
+            document.getElementById('ganttEmpty').classList.add('hidden');
+            document.getElementById('ganttChart').classList.remove('hidden');
+
+            // Calculate timeline range
+            let allDates = [];
+            phases.forEach(p => {
+                allDates.push(new Date(p.startDate + 'T00:00:00'));
+                allDates.push(new Date(p.endDate + 'T23:59:59'));
+            });
+            if (projectDeadline) {
+                allDates.push(new Date(projectDeadline + 'T23:59:59'));
+            }
+
+            const minDate = new Date(Math.min(...allDates));
+            const maxDate = new Date(Math.max(...allDates));
+
+            // Add padding
+            minDate.setDate(minDate.getDate() - 7);
+            maxDate.setDate(maxDate.getDate() + 7);
+
+            const totalDays = Math.ceil((maxDate - minDate) / (1000 * 60 * 60 * 24));
+
+            document.getElementById('timelineRange').textContent =
+                `${minDate.toLocaleDateString('pt-BR')} - ${maxDate.toLocaleDateString('pt-BR')}`;
+
+            // Render month headers
+            const monthsEl = document.getElementById('ganttMonths');
+            monthsEl.innerHTML = '';
+            let currentMonth = new Date(minDate);
+            currentMonth.setDate(1);
+            const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+            while (currentMonth <= maxDate) {
+                const monthStart = new Date(Math.max(currentMonth, minDate));
+                const nextMonth = new Date(currentMonth);
+                nextMonth.setMonth(nextMonth.getMonth() + 1);
+                const monthEnd = new Date(Math.min(nextMonth, maxDate));
+
+                const startPct = ((monthStart - minDate) / (1000 * 60 * 60 * 24)) / totalDays * 100;
+                const widthPct = ((monthEnd - monthStart) / (1000 * 60 * 60 * 24)) / totalDays * 100;
+
+                const monthLabel = document.createElement('div');
+                monthLabel.className = 'absolute text-[10px] text-slate-400 font-medium border-l border-slate-200 px-1';
+                monthLabel.style.left = `${startPct}%`;
+                monthLabel.style.width = `${widthPct}%`;
+                monthLabel.textContent = `${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+                monthsEl.appendChild(monthLabel);
+
+                currentMonth = nextMonth;
+            }
+
+            // Render rows
+            const rowsEl = document.getElementById('ganttRows');
+            rowsEl.innerHTML = '';
+
+            // Sort phases by start date
+            const sorted = [...phases].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+            sorted.forEach(phase => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-0 group';
+
+                // Phase name column
+                const nameCol = document.createElement('div');
+                nameCol.className = 'w-[200px] min-w-[200px] pr-3 flex items-center gap-2';
+                const statusDot = statusColors[phase.status] || statusColors.not_started;
+                nameCol.innerHTML = `
+                    <span class="w-2.5 h-2.5 rounded-full ${statusDot.dot} flex-shrink-0"></span>
+                    <span class="text-xs font-medium text-slate-700 truncate">${escapeHtml(phase.name)}</span>
+                `;
+
+                // Bar area
+                const barArea = document.createElement('div');
+                barArea.className = 'flex-1 relative h-8 bg-slate-50 rounded-lg overflow-visible';
+
+                const phaseStart = new Date(phase.startDate + 'T00:00:00');
+                const phaseEnd = new Date(phase.endDate + 'T23:59:59');
+
+                const leftPct = Math.max(0, ((phaseStart - minDate) / (1000 * 60 * 60 * 24)) / totalDays * 100);
+                const widthPct = Math.max(1, ((phaseEnd - phaseStart) / (1000 * 60 * 60 * 24)) / totalDays * 100);
+
+                // Determine bar color based on status
+                let barColor;
+                if (phase.status === 'completed') {
+                    barColor = '#10b981';
+                } else if (phase.status === 'in_progress') {
+                    barColor = colorMap[phase.color] ? colorMap[phase.color].hex : '#8b5cf6';
+                } else {
+                    barColor = '#94a3b8';
+                }
+
+                const bar = document.createElement('div');
+                bar.className = 'gantt-bar absolute top-1 h-6 rounded-md cursor-pointer';
+                bar.style.left = `${leftPct}%`;
+                bar.style.width = `${widthPct}%`;
+                bar.style.backgroundColor = barColor;
+                bar.style.opacity = phase.status === 'not_started' ? '0.5' : '0.85';
+                bar.title = `${phase.name}\n${new Date(phase.startDate).toLocaleDateString('pt-BR')} - ${new Date(phase.endDate).toLocaleDateString('pt-BR')}\n${statusDot.label}`;
+
+                // Bar label
+                if (widthPct > 8) {
+                    const label = document.createElement('span');
+                    label.className = 'absolute inset-0 flex items-center px-2 text-[10px] font-semibold text-white truncate';
+                    label.textContent = phase.name;
+                    bar.appendChild(label);
+                }
+
+                barArea.appendChild(bar);
+
+                // Today marker
+                const today = new Date();
+                if (today >= minDate && today <= maxDate) {
+                    const todayPct = ((today - minDate) / (1000 * 60 * 60 * 24)) / totalDays * 100;
+                    const todayLine = document.createElement('div');
+                    todayLine.className = 'today-line';
+                    todayLine.style.left = `${todayPct}%`;
+                    const todayLabel = document.createElement('span');
+                    todayLabel.className = 'today-label';
+                    todayLabel.textContent = 'Hoje';
+                    todayLine.appendChild(todayLabel);
+                    barArea.appendChild(todayLine);
+                }
+
+                // Deadline marker
+                if (projectDeadline) {
+                    const dl = new Date(projectDeadline + 'T23:59:59');
+                    if (dl >= minDate && dl <= maxDate) {
+                        const dlPct = ((dl - minDate) / (1000 * 60 * 60 * 24)) / totalDays * 100;
+                        const dlLine = document.createElement('div');
+                        dlLine.className = 'absolute top-0 bottom-0 w-0.5 bg-red-400 z-10 pointer-events-none';
+                        dlLine.style.left = `${dlPct}%`;
+                        dlLine.style.borderLeft = '2px solid #f87171';
+                        const dlLabel = document.createElement('span');
+                        dlLabel.className = 'absolute top-[-20px] text-[10px] text-red-500 font-semibold whitespace-nowrap';
+                        dlLabel.style.transform = 'translateX(-50%)';
+                        dlLabel.textContent = 'Entrega';
+                        dlLine.appendChild(dlLabel);
+                        barArea.appendChild(dlLine);
+                    }
+                }
+
+                row.appendChild(nameCol);
+                row.appendChild(barArea);
+                rowsEl.appendChild(row);
+            });
+        }
+
+        // ========== Phase List ==========
+        function renderPhaseList(phases) {
+            const listEl = document.getElementById('phaseList');
+
+            if (phases.length === 0) {
+                listEl.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">Nenhuma fase cadastrada</div>';
+                return;
+            }
+
+            const sorted = [...phases].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+            listEl.innerHTML = sorted.map(phase => {
+                const status = statusColors[phase.status] || statusColors.not_started;
+                const color = colorMap[phase.color] || colorMap.violet;
+                const start = new Date(phase.startDate + 'T00:00:00').toLocaleDateString('pt-BR');
+                const end = new Date(phase.endDate + 'T23:59:59').toLocaleDateString('pt-BR');
+                const days = Math.ceil((new Date(phase.endDate) - new Date(phase.startDate)) / (1000 * 60 * 60 * 24)) + 1;
+
+                return `
+                <div class="px-6 py-4 flex items-center gap-4 hover:bg-slate-50 transition group">
+                    <div class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${color.hex}"></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-0.5">
+                            <span class="text-sm font-semibold text-slate-900 truncate">${escapeHtml(phase.name)}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${status.dot === 'bg-emerald-500' ? 'bg-emerald-100 text-emerald-700' : status.dot === 'bg-violet-500' ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-500'}">${status.label}</span>
+                        </div>
+                        <div class="text-xs text-slate-400">${start} - ${end} &middot; ${days} dias</div>
+                    </div>
+                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                        <button onclick="editPhase('${phase.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition" title="Editar">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button onclick="deletePhase('${phase.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition" title="Excluir">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ========== CRUD ==========
+        // Add Phase
+        document.getElementById('addPhaseBtn').addEventListener('click', () => {
+            document.getElementById('editPhaseId').value = '';
+            document.getElementById('formTitle').textContent = 'Nova Fase';
+            document.getElementById('phaseName').value = '';
+            document.getElementById('phaseStart').value = '';
+            document.getElementById('phaseEnd').value = '';
+            document.getElementById('phaseColor').value = 'violet';
+            document.getElementById('phaseStatus').value = 'not_started';
+            document.getElementById('phaseForm').classList.remove('hidden');
+        });
+
+        document.getElementById('cancelPhase').addEventListener('click', () => {
+            document.getElementById('phaseForm').classList.add('hidden');
+        });
+
+        document.getElementById('savePhase').addEventListener('click', () => {
+            const name = document.getElementById('phaseName').value.trim();
+            const startDate = document.getElementById('phaseStart').value;
+            const endDate = document.getElementById('phaseEnd').value;
+            const color = document.getElementById('phaseColor').value;
+            const status = document.getElementById('phaseStatus').value;
+            const editId = document.getElementById('editPhaseId').value;
+
+            if (!name) { alert('Informe o nome da fase.'); return; }
+            if (!startDate || !endDate) { alert('Informe as datas de início e fim.'); return; }
+            if (new Date(endDate) < new Date(startDate)) { alert('A data fim deve ser posterior à data início.'); return; }
+
+            const phases = getPhases();
+
+            if (editId) {
+                const idx = phases.findIndex(p => p.id === editId);
+                if (idx !== -1) {
+                    phases[idx] = { ...phases[idx], name, startDate, endDate, color, status };
+                }
+            } else {
+                phases.push({
+                    id: Date.now().toString(),
+                    name, startDate, endDate, color, status
+                });
+            }
+
+            savePhases(phases);
+            document.getElementById('phaseForm').classList.add('hidden');
+            renderAll();
+        });
+
+        // Edit Phase
+        window.editPhase = function(id) {
+            const phases = getPhases();
+            const phase = phases.find(p => p.id === id);
+            if (!phase) return;
+
+            document.getElementById('editPhaseId').value = phase.id;
+            document.getElementById('formTitle').textContent = 'Editar Fase';
+            document.getElementById('phaseName').value = phase.name;
+            document.getElementById('phaseStart').value = phase.startDate;
+            document.getElementById('phaseEnd').value = phase.endDate;
+            document.getElementById('phaseColor').value = phase.color;
+            document.getElementById('phaseStatus').value = phase.status;
+            document.getElementById('phaseForm').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Delete Phase
+        window.deletePhase = function(id) {
+            if (!confirm('Excluir esta fase?')) return;
+            const phases = getPhases().filter(p => p.id !== id);
+            savePhases(phases);
+            renderAll();
+        };
+
+        // ========== Deadline ==========
+        document.getElementById('setDeadlineBtn').addEventListener('click', () => {
+            if (projectDeadline) {
+                document.getElementById('deadlineInput').value = projectDeadline;
+            }
+            document.getElementById('deadlineModal').classList.remove('hidden');
+        });
+
+        document.getElementById('cancelDeadline').addEventListener('click', () => {
+            document.getElementById('deadlineModal').classList.add('hidden');
+        });
+
+        document.getElementById('saveDeadline').addEventListener('click', () => {
+            const val = document.getElementById('deadlineInput').value;
+            if (!val) { alert('Selecione uma data.'); return; }
+            projectDeadline = val;
+            saveDeadlineToStorage(val);
+            document.getElementById('deadlineModal').classList.add('hidden');
+            renderAll();
+        });
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

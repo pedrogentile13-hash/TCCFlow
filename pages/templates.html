@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Templates - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="templates.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="ferramentas.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="templates.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+        </div>
+    </nav>
+
+    <!-- Beta Gate Overlay -->
+    <div id="betaGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
+        <div class="text-center max-w-md px-6">
+            <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-flask text-violet-600 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-3">Recurso em Beta</h2>
+            <p class="text-sm text-slate-500 mb-8">O Banco de Templates ainda está em fase beta. Faça login para acessar os modelos prontos e acelerar a escrita do seu TCC.</p>
+            <a href="dashboard.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
+                <i class="fa-solid fa-arrow-left mr-2"></i>Voltar ao Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold">Banco de Templates</h1>
+                <p class="text-slate-500 mt-1">Modelos prontos para acelerar seu TCC</p>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap gap-2 mb-8">
+                <button onclick="filterTemplates('todos')" id="filter-todos" class="px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-sm transition">Todos</button>
+                <button onclick="filterTemplates('estrutura')" id="filter-estrutura" class="px-5 py-2 rounded-full text-sm font-semibold bg-white border border-slate-200 text-slate-600 hover:border-violet-300 hover:text-violet-600 transition">Estrutura</button>
+                <button onclick="filterTemplates('formatacao')" id="filter-formatacao" class="px-5 py-2 rounded-full text-sm font-semibold bg-white border border-slate-200 text-slate-600 hover:border-violet-300 hover:text-violet-600 transition">Formatação</button>
+                <button onclick="filterTemplates('apresentacao')" id="filter-apresentacao" class="px-5 py-2 rounded-full text-sm font-semibold bg-white border border-slate-200 text-slate-600 hover:border-violet-300 hover:text-violet-600 transition">Apresentação</button>
+            </div>
+
+            <!-- Templates Grid -->
+            <div id="templatesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Rendered by JS -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Template Modal -->
+    <div id="templateModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between p-6 border-b border-slate-100">
+                <h2 id="modalTitle" class="text-lg font-bold"></h2>
+                <button onclick="closeModal()" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto">
+                <textarea id="modalContent" readonly rows="18" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-slate-700 leading-relaxed resize-none focus:outline-none font-mono"></textarea>
+            </div>
+            <div class="flex gap-3 p-6 border-t border-slate-100">
+                <button onclick="copyTemplate()" id="copyBtn" class="flex-1 bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold py-2.5 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
+                    <i class="fa-solid fa-copy mr-2"></i>Copiar
+                </button>
+                <button onclick="closeModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2.5 rounded-xl transition">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        // ========== Templates Data ==========
+        const templates = [
+            {
+                id: 'introducao',
+                title: 'Introdução',
+                description: 'Modelo de introdução com espaços para contextualização, problema, justificativa e objetivos.',
+                icon: 'fa-solid fa-file-lines',
+                category: 'estrutura',
+                content: `INTRODUÇÃO
+
+[Contextualização do tema — 1 a 2 parágrafos]
+Apresente o cenário geral do tema escolhido. Situe o leitor sobre o assunto, trazendo dados recentes, referências a autores consagrados ou fatos relevantes que justifiquem a relevância do tema na atualidade.
+
+Exemplo: "A transformação digital tem impactado profundamente os processos educacionais no Brasil. Segundo [AUTOR] ([ANO]), ..."
+
+[Problema de pesquisa — 1 parágrafo]
+Delimite claramente o problema que sua pesquisa pretende responder. Formule como uma pergunta:
+"Diante desse contexto, o presente trabalho busca responder: [SUA PERGUNTA DE PESQUISA]?"
+
+[Justificativa — 1 a 2 parágrafos]
+Explique por que essa pesquisa é importante. Quem se beneficia? Que lacuna no conhecimento ela preenche? Há relevância social, acadêmica ou profissional?
+
+[Objetivo Geral]
+Descrever, de forma ampla, o que o trabalho pretende alcançar.
+Exemplo: "Analisar [OBJETO] a fim de [FINALIDADE]."
+
+[Objetivos Específicos]
+a) Identificar ...
+b) Descrever ...
+c) Comparar / Avaliar / Propor ...
+
+[Estrutura do trabalho — 1 parágrafo]
+"O presente trabalho está estruturado em [X] capítulos. O primeiro capítulo apresenta o referencial teórico sobre... O segundo capítulo descreve a metodologia... O terceiro capítulo traz os resultados e discussões... Por fim, as considerações finais sintetizam..."`
+            },
+            {
+                id: 'metodologia',
+                title: 'Metodologia',
+                description: 'Template para a seção de metodologia de pesquisa com classificações e procedimentos.',
+                icon: 'fa-solid fa-flask',
+                category: 'estrutura',
+                content: `METODOLOGIA
+
+[Classificação da pesquisa]
+Quanto à natureza: ( ) Básica  ( ) Aplicada
+Quanto à abordagem: ( ) Qualitativa  ( ) Quantitativa  ( ) Mista (quali-quanti)
+Quanto aos objetivos: ( ) Exploratória  ( ) Descritiva  ( ) Explicativa
+Quanto aos procedimentos: ( ) Bibliográfica  ( ) Documental  ( ) Estudo de caso  ( ) Pesquisa de campo  ( ) Levantamento (survey)  ( ) Experimental  ( ) Pesquisa-ação
+
+[Descrição do método]
+A presente pesquisa caracteriza-se como [NATUREZA], de abordagem [ABORDAGEM], com objetivos [TIPO] e procedimentos de [PROCEDIMENTO]. A escolha dessa metodologia justifica-se por [RAZÃO].
+
+[Universo e amostra / Participantes]
+A pesquisa foi realizada com [DESCRIÇÃO DOS PARTICIPANTES/AMOSTRA]. A amostra é composta por [NÚMERO] participantes, selecionados por [CRITÉRIO DE SELEÇÃO: conveniência, acessibilidade, intencional, aleatória etc.].
+
+[Instrumentos de coleta de dados]
+Os dados foram coletados por meio de:
+- ( ) Questionário (aberto / fechado / misto)
+- ( ) Entrevista (estruturada / semiestruturada / aberta)
+- ( ) Observação (participante / não participante)
+- ( ) Análise documental
+- ( ) Grupo focal
+- ( ) Outro: _______________
+
+[Procedimentos de coleta]
+Descreva passo a passo como a coleta foi realizada: período, local, como os participantes foram contatados, duração das entrevistas/aplicação, ferramentas utilizadas (Google Forms, gravador etc.).
+
+[Análise dos dados]
+Os dados coletados foram analisados por meio de [MÉTODO DE ANÁLISE]:
+- Análise de conteúdo (BARDIN, 2016)
+- Análise estatística descritiva / inferencial
+- Triangulação de dados
+- Categorização temática
+
+[Aspectos éticos]
+A pesquisa seguiu os princípios éticos de [REFERÊNCIA]. Os participantes assinaram o Termo de Consentimento Livre e Esclarecido (TCLE), garantindo anonimato e sigilo das informações.`
+            },
+            {
+                id: 'referencial',
+                title: 'Referencial Teórico',
+                description: 'Estrutura para o capítulo de fundamentação teórica com seções e subseções.',
+                icon: 'fa-solid fa-book-open',
+                category: 'estrutura',
+                content: `REFERENCIAL TEÓRICO
+
+[Nota: Organize o referencial em seções e subseções que cubram os principais conceitos do seu tema. Abaixo está um modelo genérico que você deve adaptar.]
+
+2.1 [CONCEITO PRINCIPAL / TEMA CENTRAL]
+
+Apresente o conceito principal do seu trabalho. Comece com definições de autores clássicos e avance para autores mais recentes.
+
+"Segundo [AUTOR] ([ANO], p. [PÁGINA]), [CONCEITO] pode ser definido como [DEFINIÇÃO]."
+
+"Corroborando essa ideia, [AUTOR 2] ([ANO]) afirma que [COMPLEMENTO]."
+
+[Desenvolva 3 a 5 parágrafos discutindo o conceito, sua evolução histórica e relevância.]
+
+2.2 [SUBTEMA 1 — Relacionado ao problema de pesquisa]
+
+Aborde um subtema diretamente ligado ao seu problema. Traga autores que discutam esse assunto e estabeleça conexões com o tema central.
+
+"No que diz respeito a [SUBTEMA], [AUTOR] ([ANO]) destaca que ..."
+
+"Em contrapartida, [AUTOR 2] ([ANO]) argumenta que ..."
+
+[Desenvolva a discussão com citações diretas e indiretas.]
+
+2.3 [SUBTEMA 2 — Contexto ou variável adicional]
+
+Se o seu trabalho envolve mais de um eixo teórico, dedique uma seção a cada um.
+
+Exemplo: Se o TCC é sobre "Impacto das redes sociais na educação", uma seção pode ser sobre "Redes sociais como ferramenta pedagógica" e outra sobre "Desafios do uso de tecnologia em sala de aula".
+
+2.4 [Estudos correlatos / Estado da arte] (opcional, mas recomendado)
+
+Apresente pesquisas recentes (últimos 5 anos) que abordam temas semelhantes ao seu. Isso demonstra que você conhece o cenário atual.
+
+"[AUTOR] ([ANO]) realizou um estudo sobre [TEMA] e concluiu que ..."
+"Já [AUTOR 2] ([ANO]) investigou [TEMA SEMELHANTE] e identificou que ..."
+
+[Compare os resultados dos estudos e destaque lacunas que seu trabalho pretende preencher.]
+
+Dica: Mantenha coerência entre o referencial e os objetivos. Tudo que for analisado nos resultados deve ter embasamento teórico aqui.`
+            },
+            {
+                id: 'consideracoes',
+                title: 'Considerações Finais',
+                description: 'Modelo para a conclusão do TCC com retomada dos objetivos e contribuições.',
+                icon: 'fa-solid fa-flag-checkered',
+                category: 'estrutura',
+                content: `CONSIDERAÇÕES FINAIS
+
+[Retomada do objetivo geral — 1 parágrafo]
+O presente trabalho teve como objetivo [RETOMAR O OBJETIVO GERAL]. Para tanto, buscou-se [DESCREVER BREVEMENTE O CAMINHO PERCORRIDO: revisão bibliográfica, coleta de dados, análise etc.].
+
+[Síntese dos principais resultados — 2 a 3 parágrafos]
+Os resultados obtidos evidenciaram que [PRINCIPAL ACHADO 1]. Esse dado corrobora os estudos de [AUTOR] ([ANO]), que também identificou [RELAÇÃO COM A TEORIA].
+
+Além disso, verificou-se que [PRINCIPAL ACHADO 2]. Tal constatação reforça a importância de [ASPECTO RELEVANTE], conforme destacado por [AUTOR] ([ANO]).
+
+Em relação aos objetivos específicos, foi possível [RETOMAR BREVEMENTE CADA OBJETIVO ESPECÍFICO E INDICAR SE FOI ALCANÇADO]:
+a) Quanto ao primeiro objetivo (identificar...), constatou-se que ...
+b) Em relação ao segundo objetivo (descrever...), os dados mostraram ...
+c) No que tange ao terceiro objetivo (comparar/propor...), os resultados indicaram ...
+
+[Contribuições do trabalho — 1 parágrafo]
+Este estudo contribui para o campo de [ÁREA] ao [PRINCIPAL CONTRIBUIÇÃO]. Do ponto de vista prático, os resultados podem auxiliar [PÚBLICO-ALVO / PROFISSIONAIS / INSTITUIÇÕES] a [APLICAÇÃO PRÁTICA].
+
+[Limitações da pesquisa — 1 parágrafo]
+Cabe ressaltar que a pesquisa apresenta limitações, como [LIMITAÇÃO 1: tamanho da amostra, recorte temporal, escopo geográfico etc.]. Tais limitações devem ser consideradas na interpretação dos resultados.
+
+[Sugestões para trabalhos futuros — 1 parágrafo]
+Para pesquisas futuras, sugere-se [SUGESTÃO 1: ampliar a amostra, utilizar outra metodologia, investigar outras variáveis etc.]. Também seria relevante [SUGESTÃO 2], a fim de aprofundar a compreensão sobre [TEMA].`
+            },
+            {
+                id: 'resumo',
+                title: 'Resumo / Abstract',
+                description: 'Modelo de resumo em português e abstract em inglês seguindo normas ABNT.',
+                icon: 'fa-solid fa-align-left',
+                category: 'estrutura',
+                content: `RESUMO
+
+[O resumo deve ser redigido em parágrafo único, com 150 a 500 palavras (conforme norma da instituição). Deve conter: contexto, objetivo, metodologia, principais resultados e conclusão. Não use citações, fórmulas ou referências no resumo.]
+
+Modelo:
+
+O presente trabalho aborda [TEMA], inserido no contexto de [CONTEXTUALIZAÇÃO BREVE]. O objetivo geral consiste em [OBJETIVO GERAL]. Para alcançá-lo, adotou-se uma pesquisa de natureza [NATUREZA], com abordagem [ABORDAGEM] e procedimentos de [PROCEDIMENTO]. A coleta de dados foi realizada por meio de [INSTRUMENTO], com [NÚMERO] participantes [DESCRIÇÃO DA AMOSTRA]. Os resultados indicaram que [PRINCIPAL RESULTADO 1] e que [PRINCIPAL RESULTADO 2]. Conclui-se que [CONCLUSÃO PRINCIPAL], contribuindo para [CONTRIBUIÇÃO DO TRABALHO].
+
+Palavras-chave: [Palavra 1]. [Palavra 2]. [Palavra 3]. [Palavra 4]. [Palavra 5].
+
+(Separe as palavras-chave com ponto. Use entre 3 e 5 termos que representem o conteúdo do trabalho.)
+
+---
+
+ABSTRACT
+
+[Tradução fiel do resumo para o inglês. Mantenha a mesma estrutura e informações.]
+
+This study addresses [TOPIC], within the context of [BRIEF CONTEXT]. The main objective is to [GENERAL OBJECTIVE]. To achieve this, a [NATURE] research approach was adopted, with a [APPROACH] methodology and [PROCEDURE] procedures. Data collection was conducted through [INSTRUMENT], with [NUMBER] participants [SAMPLE DESCRIPTION]. The results indicated that [MAIN RESULT 1] and that [MAIN RESULT 2]. It is concluded that [MAIN CONCLUSION], contributing to [CONTRIBUTION].
+
+Keywords: [Keyword 1]. [Keyword 2]. [Keyword 3]. [Keyword 4]. [Keyword 5].`
+            },
+            {
+                id: 'checklist-abnt',
+                title: 'Checklist ABNT',
+                description: 'Lista completa de verificação das regras de formatação ABNT para TCC.',
+                icon: 'fa-solid fa-list-check',
+                category: 'formatacao',
+                content: `CHECKLIST DE FORMATAÇÃO ABNT (NBR 14724)
+
+=== MARGENS ===
+[ ] Superior: 3 cm
+[ ] Inferior: 2 cm
+[ ] Esquerda: 3 cm
+[ ] Direita: 2 cm
+
+=== FONTE ===
+[ ] Fonte: Arial ou Times New Roman
+[ ] Tamanho do texto: 12pt
+[ ] Tamanho de citações longas (mais de 3 linhas): 10pt
+[ ] Tamanho de notas de rodapé: 10pt
+[ ] Tamanho de legendas e fontes de figuras/tabelas: 10pt
+[ ] Tamanho de paginação: 10pt
+
+=== ESPAÇAMENTO ===
+[ ] Entrelinhas do texto: 1,5
+[ ] Entrelinhas de citações longas: simples (1,0)
+[ ] Entrelinhas de notas de rodapé: simples (1,0)
+[ ] Entrelinhas de referências: simples (1,0) com espaço duplo entre cada referência
+[ ] Entrelinhas de legendas: simples (1,0)
+
+=== PARÁGRAFOS ===
+[ ] Recuo da primeira linha: 1,25 cm (ou 2 cm, conforme instituição)
+[ ] Citação longa: recuo de 4 cm da margem esquerda, sem aspas, fonte 10pt
+
+=== PAGINAÇÃO ===
+[ ] Contagem inicia na folha de rosto (mas o número só aparece a partir da Introdução)
+[ ] Número no canto superior direito
+[ ] Fonte: 10pt, Arial ou Times New Roman
+
+=== ELEMENTOS PRÉ-TEXTUAIS ===
+[ ] Capa (obrigatório)
+[ ] Folha de rosto (obrigatório)
+[ ] Errata (opcional)
+[ ] Folha de aprovação (obrigatório)
+[ ] Dedicatória (opcional)
+[ ] Agradecimentos (opcional)
+[ ] Epígrafe (opcional)
+[ ] Resumo em português + palavras-chave (obrigatório)
+[ ] Abstract + keywords (obrigatório)
+[ ] Lista de ilustrações (se houver mais de 5)
+[ ] Lista de tabelas (se houver mais de 5)
+[ ] Lista de abreviaturas e siglas (se necessário)
+[ ] Sumário (obrigatório)
+
+=== ELEMENTOS TEXTUAIS ===
+[ ] Introdução
+[ ] Desenvolvimento (Referencial Teórico, Metodologia, Resultados e Discussão)
+[ ] Considerações Finais / Conclusão
+
+=== ELEMENTOS PÓS-TEXTUAIS ===
+[ ] Referências (obrigatório)
+[ ] Glossário (opcional)
+[ ] Apêndice(s) (opcional — material elaborado pelo autor)
+[ ] Anexo(s) (opcional — material de terceiros)
+[ ] Índice (opcional)
+
+=== CITAÇÕES (NBR 10520) ===
+[ ] Citação direta curta (até 3 linhas): entre aspas, no corpo do texto
+[ ] Citação direta longa (mais de 3 linhas): recuo 4cm, sem aspas, fonte 10pt, espaçamento simples
+[ ] Citação indireta: sem aspas, parafrasear o autor
+[ ] Sistema autor-data: (SOBRENOME, ano, p. xx)
+[ ] Sistema numérico: nota de rodapé (se adotado pela instituição)
+
+=== REFERÊNCIAS (NBR 6023) ===
+[ ] Alinhadas à esquerda (não justificado)
+[ ] Espaçamento simples, com espaço duplo entre cada referência
+[ ] Ordem alfabética pelo sobrenome do primeiro autor
+[ ] Todas as citações possuem referência correspondente
+[ ] Todas as referências foram citadas no texto`
+            },
+            {
+                id: 'modelo-capa',
+                title: 'Modelo de Capa',
+                description: 'Template para capa do TCC com instituição, curso, título, autor e ano.',
+                icon: 'fa-solid fa-file-alt',
+                category: 'formatacao',
+                content: `MODELO DE CAPA (ABNT NBR 14724)
+
+[Todas as informações devem ser centralizadas na página]
+[Fonte: Arial ou Times New Roman, tamanho 12, em maiúsculas onde indicado]
+[Margens: Superior 3cm, Inferior 2cm, Esquerda 3cm, Direita 2cm]
+
+---
+
+[TOPO DA PÁGINA — Centralizado, maiúsculas, negrito]
+
+NOME DA INSTITUIÇÃO DE ENSINO
+NOME DA FACULDADE OU CENTRO
+NOME DO CURSO
+
+[MEIO DA PÁGINA — Centralizado]
+
+NOME COMPLETO DO AUTOR
+(Se houver mais de um autor, listar em ordem alfabética, um por linha)
+
+
+
+[Centralizado, maiúsculas, negrito, fonte 14 ou 16]
+
+TÍTULO DO TRABALHO: SUBTÍTULO (SE HOUVER)
+
+(O subtítulo não leva negrito e é separado por dois-pontos)
+
+
+
+[PARTE INFERIOR — Centralizado]
+
+CIDADE
+ANO
+
+---
+
+Exemplo preenchido:
+
+UNIVERSIDADE FEDERAL DE SÃO PAULO
+FACULDADE DE CIÊNCIAS HUMANAS
+CURSO DE PEDAGOGIA
+
+
+MARIA SILVA SANTOS
+
+
+
+A INFLUÊNCIA DAS TECNOLOGIAS DIGITAIS NA EDUCAÇÃO INFANTIL: um estudo de caso em escolas públicas de São Paulo
+
+
+
+SÃO PAULO
+2025
+
+---
+
+Dica: Consulte o manual de TCC da sua instituição, pois algumas universidades possuem modelos próprios com logotipo e formatação específica.`
+            },
+            {
+                id: 'modelo-sumario',
+                title: 'Modelo de Sumário',
+                description: 'Estrutura de sumário padrão ABNT com numeração progressiva.',
+                icon: 'fa-solid fa-list-ol',
+                category: 'formatacao',
+                content: `MODELO DE SUMÁRIO (ABNT NBR 6027)
+
+[O sumário deve refletir exatamente os títulos e subtítulos do trabalho, com a paginação correspondente]
+[Fonte: mesma do texto (Arial ou Times New Roman, 12pt)]
+[Títulos de seções primárias: MAIÚSCULAS e NEGRITO]
+[Títulos de seções secundárias: MAIÚSCULAS sem negrito]
+[Títulos de seções terciárias: Apenas inicial maiúscula, negrito]
+[Usar numeração progressiva (NBR 6024)]
+
+---
+
+SUMÁRIO
+
+1  INTRODUÇÃO .................................................. 10
+2  REFERENCIAL TEÓRICO ....................................... 13
+2.1  [TÍTULO DA SEÇÃO SECUNDÁRIA] ............................. 13
+2.1.1  [Título da seção terciária] ............................. 15
+2.1.2  [Título da seção terciária] ............................. 17
+2.2  [TÍTULO DA SEÇÃO SECUNDÁRIA] ............................. 19
+2.2.1  [Título da seção terciária] ............................. 20
+3  METODOLOGIA ................................................ 23
+3.1  CLASSIFICAÇÃO DA PESQUISA ................................ 23
+3.2  PARTICIPANTES E AMOSTRA .................................. 24
+3.3  INSTRUMENTOS DE COLETA ................................... 25
+3.4  PROCEDIMENTOS DE ANÁLISE ................................. 26
+4  RESULTADOS E DISCUSSÃO .................................... 28
+4.1  [TÍTULO DA SEÇÃO SECUNDÁRIA] ............................. 28
+4.2  [TÍTULO DA SEÇÃO SECUNDÁRIA] ............................. 32
+4.3  DISCUSSÃO DOS RESULTADOS ................................. 36
+5  CONSIDERAÇÕES FINAIS ...................................... 40
+REFERÊNCIAS ................................................... 43
+APÊNDICE A — [TÍTULO DO APÊNDICE] ............................ 47
+ANEXO A — [TÍTULO DO ANEXO] .................................. 49
+
+---
+
+Regras importantes:
+- Elementos pré-textuais (capa, folha de rosto, resumo etc.) NÃO entram no sumário
+- "REFERÊNCIAS", "APÊNDICE" e "ANEXO" não levam número de seção
+- Os pontilhados ligam o título ao número da página
+- Alinhe os números de página à direita
+- Use tabulação com preenchimento pontilhado no Word/Google Docs`
+            },
+            {
+                id: 'slides-defesa',
+                title: 'Slides de Defesa',
+                description: 'Estrutura sugerida de 12 a 15 slides para a apresentação de defesa do TCC.',
+                icon: 'fa-solid fa-presentation-screen',
+                category: 'apresentacao',
+                content: `ESTRUTURA DE SLIDES PARA DEFESA DE TCC
+(12 a 15 slides — Apresentação de 15 a 20 minutos)
+
+=== SLIDE 1 — Capa ===
+- Título do trabalho
+- Nome do(a) autor(a)
+- Nome do(a) orientador(a)
+- Instituição / Curso
+- Data da defesa
+
+=== SLIDE 2 — Roteiro da Apresentação ===
+- Lista dos tópicos que serão abordados
+- Dá uma visão geral ao avaliador sobre a estrutura da fala
+
+=== SLIDE 3 — Introdução / Contextualização ===
+- Contexto do tema (breve, 3-4 bullet points)
+- Dados ou fatos que justificam a relevância
+- Pode incluir uma imagem ou gráfico de impacto
+
+=== SLIDE 4 — Problema de Pesquisa ===
+- Pergunta norteadora em destaque
+- Por que esse problema é relevante?
+
+=== SLIDE 5 — Objetivos ===
+- Objetivo geral
+- Objetivos específicos (lista)
+
+=== SLIDE 6 — Justificativa ===
+- Importância do estudo
+- Lacuna que o trabalho preenche
+- Contribuição esperada
+
+=== SLIDE 7 — Referencial Teórico (Resumo) ===
+- Principais autores e conceitos
+- 3 a 5 tópicos-chave
+- Não copie parágrafos inteiros — use palavras-chave
+
+=== SLIDE 8 — Metodologia ===
+- Tipo de pesquisa
+- Amostra / participantes
+- Instrumentos de coleta
+- Método de análise
+
+=== SLIDES 9–11 — Resultados ===
+- Apresente os principais achados
+- Use gráficos, tabelas ou quadros
+- Destaque dados mais relevantes
+- 1 resultado principal por slide (2-3 slides no total)
+
+=== SLIDE 12 — Discussão ===
+- Relação dos resultados com a teoria
+- Comparação com outros estudos
+- O que os dados revelam?
+
+=== SLIDE 13 — Considerações Finais ===
+- Retomada do objetivo: foi alcançado?
+- Principais conclusões (bullet points)
+- Limitações da pesquisa
+
+=== SLIDE 14 — Sugestões para Trabalhos Futuros ===
+- O que pode ser aprofundado?
+- Novas perguntas que surgiram
+
+=== SLIDE 15 — Encerramento ===
+- "Obrigado(a)!"
+- Dados de contato (e-mail)
+- Espaço para perguntas da banca
+
+---
+
+DICAS DE DESIGN:
+- Máximo de 6 linhas de texto por slide
+- Fonte mínima: 24pt para texto, 32pt para títulos
+- Use imagens e gráficos para ilustrar dados
+- Mantenha um padrão visual (cores, fontes) uniforme
+- Evite animações excessivas
+- Teste a apresentação no projetor antes da defesa`
+            },
+            {
+                id: 'roteiro-apresentacao',
+                title: 'Roteiro de Apresentação',
+                description: 'Script para a defesa oral com cronometragem e dicas do que dizer em cada slide.',
+                icon: 'fa-solid fa-microphone',
+                category: 'apresentacao',
+                content: `ROTEIRO DE APRESENTAÇÃO ORAL — DEFESA DE TCC
+(Tempo total sugerido: 15 a 20 minutos)
+
+=== SLIDE 1 — Capa (30 segundos) ===
+"Bom dia/Boa tarde. Meu nome é [SEU NOME], sou aluno(a) do curso de [CURSO] da [INSTITUIÇÃO]. Hoje apresento meu Trabalho de Conclusão de Curso intitulado '[TÍTULO]', desenvolvido sob orientação do(a) Professor(a) [NOME DO ORIENTADOR]."
+
+=== SLIDE 2 — Roteiro (30 segundos) ===
+"A apresentação está organizada da seguinte forma: iniciarei com a contextualização e o problema de pesquisa, seguido dos objetivos, referencial teórico resumido, metodologia, resultados e, por fim, as considerações finais."
+
+=== SLIDE 3 — Contextualização (1–2 minutos) ===
+"O tema deste trabalho surge a partir de [CONTEXTO]. Dados recentes de [FONTE] mostram que [DADO RELEVANTE]. Isso evidencia a importância de investigar [TEMA]."
+
+Dica: Seja objetivo. Não repita o TCC inteiro — traga os pontos mais impactantes.
+
+=== SLIDE 4 — Problema de Pesquisa (1 minuto) ===
+"Diante desse cenário, a pergunta que norteia esta pesquisa é: [PERGUNTA DE PESQUISA]. Esse questionamento surge porque [BREVE JUSTIFICATIVA DO PROBLEMA]."
+
+=== SLIDE 5 — Objetivos (1 minuto) ===
+"O objetivo geral deste trabalho é [OBJETIVO GERAL]. Para alcançá-lo, foram definidos os seguintes objetivos específicos: [LISTAR]."
+
+Dica: Leia os objetivos de forma clara e pausada. A banca avalia se foram alcançados.
+
+=== SLIDE 6 — Justificativa (1 minuto) ===
+"A relevância desta pesquisa se justifica por [RAZÃO 1] e [RAZÃO 2]. O estudo contribui para [ÁREA/CAMPO] ao [CONTRIBUIÇÃO ESPERADA]."
+
+=== SLIDE 7 — Referencial Teórico (2 minutos) ===
+"A fundamentação teórica deste trabalho baseia-se em autores como [AUTOR 1], que define [CONCEITO], e [AUTOR 2], que destaca [IDEIA]. Esses conceitos são essenciais para compreender [RELAÇÃO COM O TEMA]."
+
+Dica: Cite 2-3 autores principais. Não tente resumir todo o referencial.
+
+=== SLIDE 8 — Metodologia (1–2 minutos) ===
+"A pesquisa é de natureza [NATUREZA], com abordagem [ABORDAGEM] e procedimentos de [PROCEDIMENTO]. A coleta de dados foi realizada por meio de [INSTRUMENTO], com [NÚMERO] participantes. Os dados foram analisados utilizando [MÉTODO DE ANÁLISE]."
+
+=== SLIDES 9–11 — Resultados (3–4 minutos) ===
+"Passando aos resultados: o primeiro achado relevante foi [RESULTADO 1]. Como podemos observar neste gráfico/tabela, [DESCREVER O QUE O DADO MOSTRA]."
+
+"O segundo resultado indica que [RESULTADO 2]. Isso se alinha com o que [AUTOR] apontou em [REFERÊNCIA]."
+
+"Por fim, identificamos que [RESULTADO 3], o que sugere [INTERPRETAÇÃO]."
+
+Dica: Aponte para os gráficos/tabelas. Explique o que o dado significa, não apenas o número.
+
+=== SLIDE 12 — Discussão (1–2 minutos) ===
+"Ao comparar nossos resultados com a literatura, observamos que [COMPARAÇÃO COM TEORIA]. Isso reforça / contradiz os achados de [AUTOR], indicando que [INTERPRETAÇÃO]."
+
+=== SLIDE 13 — Considerações Finais (1–2 minutos) ===
+"Em síntese, este trabalho alcançou [REFERÊNCIA AOS OBJETIVOS]. Os principais achados demonstram que [CONCLUSÃO]. Como limitação, destaca-se [LIMITAÇÃO]. Para estudos futuros, sugere-se [SUGESTÃO]."
+
+=== SLIDE 14–15 — Encerramento (30 segundos) ===
+"Agradeço a atenção de todos e estou à disposição para perguntas e considerações da banca."
+
+---
+
+DICAS GERAIS PARA A DEFESA:
+- Ensaie pelo menos 3 vezes cronometrando
+- Fale devagar e mantenha contato visual com a banca
+- Leve água
+- Se não souber responder uma pergunta, seja honesto: "Essa é uma excelente observação que pode ser explorada em trabalhos futuros"
+- Vista-se adequadamente
+- Chegue com antecedência e teste o equipamento`
+            }
+        ];
+
+        // ========== Render Templates ==========
+        let currentFilter = 'todos';
+
+        function filterTemplates(category) {
+            currentFilter = category;
+
+            // Update tab styles
+            document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+                btn.className = 'px-5 py-2 rounded-full text-sm font-semibold bg-white border border-slate-200 text-slate-600 hover:border-violet-300 hover:text-violet-600 transition';
+            });
+            document.getElementById('filter-' + category).className = 'px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-sm transition';
+
+            renderGrid();
+        }
+
+        function renderGrid() {
+            const filtered = currentFilter === 'todos' ? templates : templates.filter(t => t.category === currentFilter);
+            const grid = document.getElementById('templatesGrid');
+
+            const categoryLabels = {
+                estrutura: 'Estrutura',
+                formatacao: 'Formatação',
+                apresentacao: 'Apresentação'
+            };
+
+            const categoryColors = {
+                estrutura: 'bg-violet-100 text-violet-700',
+                formatacao: 'bg-cyan-100 text-cyan-700',
+                apresentacao: 'bg-amber-100 text-amber-700'
+            };
+
+            grid.innerHTML = filtered.map(t => `
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-violet-200 transition group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-xl flex items-center justify-center">
+                            <i class="${t.icon} text-violet-600 text-lg"></i>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${categoryColors[t.category]}">${categoryLabels[t.category]}</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">${t.title}</h3>
+                    <p class="text-sm text-slate-500 mb-5 leading-relaxed">${t.description}</p>
+                    <button onclick="openTemplate('${t.id}')" class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold py-2.5 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
+                        <i class="fa-solid fa-file-import mr-2"></i>Usar Template
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // ========== Modal ==========
+        function openTemplate(id) {
+            const template = templates.find(t => t.id === id);
+            if (!template) return;
+            document.getElementById('modalTitle').textContent = template.title;
+            document.getElementById('modalContent').value = template.content;
+            document.getElementById('templateModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('templateModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('templateModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('templateModal')) closeModal();
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ========== Copy to Clipboard ==========
+        async function copyTemplate() {
+            const content = document.getElementById('modalContent').value;
+            const btn = document.getElementById('copyBtn');
+            try {
+                await navigator.clipboard.writeText(content);
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Copiado!';
+                btn.classList.remove('from-violet-600', 'to-cyan-500');
+                btn.classList.add('from-emerald-500', 'to-emerald-600');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-copy mr-2"></i>Copiar';
+                    btn.classList.remove('from-emerald-500', 'to-emerald-600');
+                    btn.classList.add('from-violet-600', 'to-cyan-500');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                const textarea = document.getElementById('modalContent');
+                textarea.select();
+                document.execCommand('copy');
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Copiado!';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-copy mr-2"></i>Copiar';
+                }, 2000);
+            }
+        }
+
+        // ========== Auth & Init ==========
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
+            // Check beta access
+            try {
+                const isBeta = await DB.isBetaTester(user.uid);
+                if (!isBeta) {
+                    document.getElementById('betaGateOverlay').classList.remove('hidden');
+                    return;
+                }
+            } catch(e) {}
+
+            if (isFirebaseConfigured()) {
+                try {
+                    const pid = await DB.getProjectId();
+                    if (pid) {
+                        const isPro = await DB.isProByProject(pid);
+                        if (isPro) {
+                            document.querySelectorAll('a[href="planos.html"]').forEach(el => {
+                                el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+
+            // Render templates
+            renderGrid();
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

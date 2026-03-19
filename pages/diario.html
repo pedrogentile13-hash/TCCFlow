@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diário de Progresso - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        .timeline-line { position: absolute; left: 15px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #8b5cf6, #06b6d4); }
+        .mood-btn { transition: all 0.2s; }
+        .mood-btn:hover, .mood-btn.active { transform: scale(1.3); }
+        .mood-btn.active { filter: none; }
+        .mood-btn:not(.active) { filter: grayscale(0.5); opacity: 0.5; }
+        .mood-btn:not(.active):hover { filter: none; opacity: 0.8; }
+        .entry-card:hover .entry-actions { opacity: 1; }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <!-- Liquid Background -->
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+                    <a href="diario.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="ferramentas.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="diario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+        </div>
+    </nav>
+
+    <!-- Beta Gate Overlay -->
+    <div id="betaGate" class="hidden fixed inset-0 z-[60] bg-white/90 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-white border border-slate-200 rounded-2xl p-8 max-w-md mx-4 shadow-xl text-center">
+            <div class="w-16 h-16 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-flask text-violet-600 text-2xl"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-2">Funcionalidade Beta</h2>
+            <p class="text-sm text-slate-500 mb-6">Esta ferramenta está em fase de testes. Seus dados são salvos localmente no navegador.</p>
+            <button onclick="document.getElementById('betaGate').classList.add('hidden')" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white font-semibold px-6 py-2.5 rounded-xl transition text-sm">
+                <i class="fa-solid fa-check mr-2"></i>Entendi, continuar
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold">Diário de Progresso</h1>
+                <p class="text-slate-500 mt-1">Registre e acompanhe a evolução do seu TCC</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-book-open text-violet-600 text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="text-xl font-bold text-violet-600" id="statTotal">0</div>
+                    <div class="text-xs text-slate-400">Total de Registros</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-calendar-check text-cyan-600 text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="text-xl font-bold text-cyan-600" id="statActiveDays">0</div>
+                    <div class="text-xs text-slate-400">Dias Ativos</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-fire text-emerald-600 text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="text-xl font-bold text-emerald-600" id="statStreak">0</div>
+                    <div class="text-xs text-slate-400">Sequência Atual</div>
+                </div>
+            </div>
+
+            <!-- New Entry Button -->
+            <div class="mb-6">
+                <button id="newEntryBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+                    <i class="fa-solid fa-plus mr-2"></i>Novo Registro
+                </button>
+            </div>
+
+            <!-- New Entry Form -->
+            <div id="entryForm" class="hidden bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-pen-to-square mr-2 text-violet-600"></i>Novo Registro</h3>
+                <input type="hidden" id="editingId" value="">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Data</label>
+                        <input type="date" id="entryDate"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Tipo de Atividade</label>
+                        <select id="entryType"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            <option value="Escrita">Escrita</option>
+                            <option value="Pesquisa">Pesquisa</option>
+                            <option value="Revisão">Revisão</option>
+                            <option value="Reunião com Orientador">Reunião com Orientador</option>
+                            <option value="Leitura">Leitura</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Descrição</label>
+                        <textarea id="entryDescription" rows="3" placeholder="O que você fez hoje? Descreva suas atividades..."
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Tempo gasto (horas)</label>
+                        <input type="number" id="entryHours" min="0.25" max="24" step="0.25" placeholder="Ex: 2.5"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Como você está se sentindo?</label>
+                        <div class="flex items-center gap-3 mt-1" id="moodSelector">
+                            <button type="button" class="mood-btn text-2xl" data-mood="great" title="Ótimo">&#128513;</button>
+                            <button type="button" class="mood-btn text-2xl" data-mood="good" title="Bem">&#128522;</button>
+                            <button type="button" class="mood-btn text-2xl" data-mood="neutral" title="Neutro">&#128528;</button>
+                            <button type="button" class="mood-btn text-2xl" data-mood="tired" title="Cansado">&#128553;</button>
+                            <button type="button" class="mood-btn text-2xl" data-mood="frustrated" title="Frustrado">&#128544;</button>
+                        </div>
+                        <input type="hidden" id="entryMood" value="">
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button id="saveEntry" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-5 py-2 rounded-xl transition">
+                        <i class="fa-solid fa-check mr-1"></i> Salvar
+                    </button>
+                    <button id="cancelEntry" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold px-5 py-2 rounded-xl transition">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Weekly Summary -->
+            <div id="weeklySummary" class="hidden bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                <h3 class="text-sm font-bold mb-4"><i class="fa-solid fa-chart-bar mr-2 text-violet-600"></i>Resumo Semanal (horas por tipo)</h3>
+                <div id="weeklyBars" class="space-y-3"></div>
+            </div>
+
+            <!-- Timeline -->
+            <div id="timeline" class="space-y-8"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-16">
+                <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-book-open text-violet-600 text-3xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Nenhum registro ainda</h3>
+                <p class="text-sm text-slate-500 mb-4">Comece registrando suas atividades diárias do TCC.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        // ========== Auth Check ==========
+        let currentUserId = null;
+
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUserId = user.uid;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
+            // Update navbar for PRO users
+            try {
+                const pid = await DB.getProjectId();
+                if (pid) {
+                    const isPro = await DB.isProByProject(pid);
+                    if (isPro) {
+                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
+                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
+                        });
+                    }
+                }
+            } catch(e) { console.log(e); }
+
+            // Show beta gate on first visit
+            const betaKey = `diary_beta_seen_${user.uid}`;
+            if (!localStorage.getItem(betaKey)) {
+                document.getElementById('betaGate').classList.remove('hidden');
+                localStorage.setItem(betaKey, '1');
+            }
+
+            renderAll();
+        });
+
+        // ========== Mobile Nav ==========
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        // ========== Diary Data ==========
+        function getStorageKey() {
+            return `diary_${currentUserId}`;
+        }
+
+        function getEntries() {
+            return JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+        }
+
+        function saveEntries(entries) {
+            localStorage.setItem(getStorageKey(), JSON.stringify(entries));
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ========== Stats ==========
+        function calculateStats(entries) {
+            const total = entries.length;
+
+            // Unique active days
+            const uniqueDates = new Set(entries.map(e => e.date));
+            const activeDays = uniqueDates.size;
+
+            // Current streak
+            let streak = 0;
+            if (entries.length > 0) {
+                const sortedDates = [...uniqueDates].sort().reverse();
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+
+                const todayStr = today.toISOString().split('T')[0];
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+                // Streak must start from today or yesterday
+                if (sortedDates[0] === todayStr || sortedDates[0] === yesterdayStr) {
+                    let checkDate = new Date(sortedDates[0] + 'T00:00:00');
+                    for (const dateStr of sortedDates) {
+                        const d = new Date(dateStr + 'T00:00:00');
+                        const diff = Math.round((checkDate - d) / (1000 * 60 * 60 * 24));
+                        if (diff === 0) {
+                            streak++;
+                            checkDate.setDate(checkDate.getDate() - 1);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return { total, activeDays, streak };
+        }
+
+        // ========== Type Config ==========
+        const typeConfig = {
+            'Escrita':                { color: 'bg-violet-100 text-violet-700', barColor: 'bg-violet-500', icon: 'fa-pen' },
+            'Pesquisa':               { color: 'bg-cyan-100 text-cyan-700', barColor: 'bg-cyan-500', icon: 'fa-magnifying-glass' },
+            'Revisão':                { color: 'bg-amber-100 text-amber-700', barColor: 'bg-amber-500', icon: 'fa-spell-check' },
+            'Reunião com Orientador': { color: 'bg-emerald-100 text-emerald-700', barColor: 'bg-emerald-500', icon: 'fa-users' },
+            'Leitura':                { color: 'bg-rose-100 text-rose-700', barColor: 'bg-rose-500', icon: 'fa-book' },
+            'Outro':                  { color: 'bg-slate-100 text-slate-700', barColor: 'bg-slate-500', icon: 'fa-ellipsis' }
+        };
+
+        const moodEmojis = {
+            great: '&#128513;',
+            good: '&#128522;',
+            neutral: '&#128528;',
+            tired: '&#128553;',
+            frustrated: '&#128544;'
+        };
+
+        // ========== Mood Selector ==========
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('entryMood').value = btn.dataset.mood;
+            });
+        });
+
+        // ========== Form Toggle ==========
+        document.getElementById('newEntryBtn').addEventListener('click', () => {
+            resetForm();
+            document.getElementById('entryForm').classList.toggle('hidden');
+        });
+
+        document.getElementById('cancelEntry').addEventListener('click', () => {
+            document.getElementById('entryForm').classList.add('hidden');
+            resetForm();
+        });
+
+        function resetForm() {
+            document.getElementById('editingId').value = '';
+            document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('entryType').value = 'Escrita';
+            document.getElementById('entryDescription').value = '';
+            document.getElementById('entryHours').value = '';
+            document.getElementById('entryMood').value = '';
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        // ========== Save Entry ==========
+        document.getElementById('saveEntry').addEventListener('click', () => {
+            const date = document.getElementById('entryDate').value;
+            const type = document.getElementById('entryType').value;
+            const description = document.getElementById('entryDescription').value.trim();
+            const hours = parseFloat(document.getElementById('entryHours').value) || 0;
+            const mood = document.getElementById('entryMood').value;
+            const editingId = document.getElementById('editingId').value;
+
+            if (!date) { alert('Selecione uma data.'); return; }
+            if (!description) { alert('Escreva uma descrição.'); return; }
+            if (hours <= 0) { alert('Informe o tempo gasto.'); return; }
+            if (!mood) { alert('Selecione como você está se sentindo.'); return; }
+
+            const entries = getEntries();
+
+            if (editingId) {
+                const idx = entries.findIndex(e => e.id === editingId);
+                if (idx !== -1) {
+                    entries[idx] = { ...entries[idx], date, type, description, hours, mood };
+                }
+            } else {
+                entries.push({
+                    id: Date.now().toString(),
+                    date,
+                    type,
+                    description,
+                    hours,
+                    mood,
+                    createdAt: new Date().toISOString()
+                });
+            }
+
+            saveEntries(entries);
+            document.getElementById('entryForm').classList.add('hidden');
+            resetForm();
+            renderAll();
+        });
+
+        // ========== Edit / Delete ==========
+        window.editEntry = function(id) {
+            const entries = getEntries();
+            const entry = entries.find(e => e.id === id);
+            if (!entry) return;
+
+            document.getElementById('editingId').value = id;
+            document.getElementById('entryDate').value = entry.date;
+            document.getElementById('entryType').value = entry.type;
+            document.getElementById('entryDescription').value = entry.description;
+            document.getElementById('entryHours').value = entry.hours;
+            document.getElementById('entryMood').value = entry.mood;
+
+            // Set mood button active
+            document.querySelectorAll('.mood-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.mood === entry.mood);
+            });
+
+            document.getElementById('entryForm').classList.remove('hidden');
+            document.getElementById('entryForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        window.deleteEntry = function(id) {
+            if (!confirm('Excluir este registro?')) return;
+            const entries = getEntries().filter(e => e.id !== id);
+            saveEntries(entries);
+            renderAll();
+        };
+
+        // ========== Group by Week ==========
+        function getWeekKey(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            const dayOfWeek = d.getDay();
+            const monday = new Date(d);
+            monday.setDate(d.getDate() - ((dayOfWeek + 6) % 7));
+            return monday.toISOString().split('T')[0];
+        }
+
+        function getWeekLabel(mondayStr) {
+            const monday = new Date(mondayStr + 'T00:00:00');
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            const opts = { day: 'numeric', month: 'short' };
+            return `${monday.toLocaleDateString('pt-BR', opts)} - ${sunday.toLocaleDateString('pt-BR', opts)}`;
+        }
+
+        function groupByWeek(entries) {
+            const groups = {};
+            entries.forEach(entry => {
+                const weekKey = getWeekKey(entry.date);
+                if (!groups[weekKey]) groups[weekKey] = [];
+                groups[weekKey].push(entry);
+            });
+            // Sort weeks descending
+            return Object.entries(groups)
+                .sort(([a], [b]) => b.localeCompare(a))
+                .map(([weekKey, entries]) => ({
+                    weekKey,
+                    label: getWeekLabel(weekKey),
+                    entries: entries.sort((a, b) => b.date.localeCompare(a.date) || new Date(b.createdAt) - new Date(a.createdAt))
+                }));
+        }
+
+        // ========== Render ==========
+        function renderAll() {
+            const entries = getEntries();
+            const stats = calculateStats(entries);
+
+            document.getElementById('statTotal').textContent = stats.total;
+            document.getElementById('statActiveDays').textContent = stats.activeDays;
+            document.getElementById('statStreak').textContent = stats.streak;
+
+            if (entries.length === 0) {
+                document.getElementById('emptyState').classList.remove('hidden');
+                document.getElementById('timeline').innerHTML = '';
+                document.getElementById('weeklySummary').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('emptyState').classList.add('hidden');
+            renderWeeklySummary(entries);
+            renderTimeline(entries);
+        }
+
+        function renderWeeklySummary(entries) {
+            const container = document.getElementById('weeklySummary');
+            const barsContainer = document.getElementById('weeklyBars');
+            container.classList.remove('hidden');
+
+            // Calculate hours by type
+            const hoursByType = {};
+            entries.forEach(e => {
+                hoursByType[e.type] = (hoursByType[e.type] || 0) + e.hours;
+            });
+
+            const maxHours = Math.max(...Object.values(hoursByType), 1);
+
+            barsContainer.innerHTML = Object.entries(hoursByType)
+                .sort(([,a], [,b]) => b - a)
+                .map(([type, hours]) => {
+                    const cfg = typeConfig[type] || typeConfig['Outro'];
+                    const pct = Math.round((hours / maxHours) * 100);
+                    return `
+                    <div class="flex items-center gap-3">
+                        <div class="w-32 sm:w-40 text-xs font-medium text-slate-600 text-right flex-shrink-0">
+                            <i class="fa-solid ${cfg.icon} mr-1.5"></i>${escapeHtml(type)}
+                        </div>
+                        <div class="flex-1 bg-slate-100 rounded-full h-5 overflow-hidden">
+                            <div class="${cfg.barColor} h-full rounded-full transition-all duration-500 flex items-center justify-end pr-2" style="width: ${Math.max(pct, 8)}%">
+                                <span class="text-[10px] font-bold text-white">${hours.toFixed(1)}h</span>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+        }
+
+        function renderTimeline(entries) {
+            const weeks = groupByWeek(entries);
+            const timeline = document.getElementById('timeline');
+
+            timeline.innerHTML = weeks.map(week => `
+                <div class="mb-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-calendar-week text-white text-xs"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-800">${week.label}</h3>
+                            <span class="text-[10px] text-slate-400">${week.entries.length} registro${week.entries.length > 1 ? 's' : ''} &middot; ${week.entries.reduce((s,e) => s + e.hours, 0).toFixed(1)}h total</span>
+                        </div>
+                    </div>
+                    <div class="relative pl-10 space-y-3">
+                        <div class="timeline-line"></div>
+                        ${week.entries.map(entry => {
+                            const cfg = typeConfig[entry.type] || typeConfig['Outro'];
+                            const moodHtml = moodEmojis[entry.mood] || '';
+                            const dateObj = new Date(entry.date + 'T00:00:00');
+                            const dateFormatted = dateObj.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' });
+                            return `
+                            <div class="entry-card relative bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition group">
+                                <div class="absolute -left-[25px] top-4 w-3 h-3 rounded-full bg-white border-2 border-violet-400 z-10"></div>
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                                            <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${dateFormatted}</span>
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${cfg.color}">
+                                                <i class="fa-solid ${cfg.icon}"></i> ${escapeHtml(entry.type)}
+                                            </span>
+                                            <span class="text-[10px] text-slate-400"><i class="fa-regular fa-clock mr-0.5"></i>${entry.hours}h</span>
+                                            <span class="text-sm" title="${entry.mood}">${moodHtml}</span>
+                                        </div>
+                                        <p class="text-sm text-slate-700 leading-relaxed">${escapeHtml(entry.description)}</p>
+                                    </div>
+                                    <div class="entry-actions opacity-0 flex gap-1 flex-shrink-0 transition">
+                                        <button onclick="editEntry('${entry.id}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition" title="Editar">
+                                            <i class="fa-solid fa-pen text-xs"></i>
+                                        </button>
+                                        <button onclick="deleteEntry('${entry.id}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition" title="Excluir">
+                                            <i class="fa-solid fa-trash text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Set default date
+        document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>
