@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="apple-touch-icon" href="../favicon.png">
     <link rel="manifest" href="../manifest.json">
@@ -304,6 +305,71 @@
                         <i class="fa-solid fa-book text-lg text-amber-600 mb-1"></i>
                         <p class="text-xs font-medium">BDTD (Teses)</p>
                     </a>
+                </div>
+            </div>
+
+            <!-- Orientador Virtual -->
+            <div class="mt-8">
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold">Orientador Virtual</h2>
+                                <p class="text-xs text-slate-400">Assistente para revisão, objetivos, metodologia e mais</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="px-6 py-3 border-b border-slate-100 flex flex-wrap gap-2">
+                        <button onclick="orientadorAction('objetivo')" class="text-xs bg-violet-50 text-violet-600 px-3 py-1.5 rounded-full hover:bg-violet-100 transition"><i class="fa-solid fa-bullseye mr-1"></i>Objetivos</button>
+                        <button onclick="orientadorAction('metodologia')" class="text-xs bg-cyan-50 text-cyan-600 px-3 py-1.5 rounded-full hover:bg-cyan-100 transition"><i class="fa-solid fa-microscope mr-1"></i>Metodologia</button>
+                        <button onclick="orientadorAction('introducao')" class="text-xs bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full hover:bg-emerald-100 transition"><i class="fa-solid fa-pen-fancy mr-1"></i>Introdução</button>
+                        <button onclick="orientadorAction('revisao')" class="text-xs bg-amber-50 text-amber-600 px-3 py-1.5 rounded-full hover:bg-amber-100 transition"><i class="fa-solid fa-spell-check mr-1"></i>Revisão</button>
+                        <button onclick="orientadorAction('resumo')" class="text-xs bg-rose-50 text-rose-600 px-3 py-1.5 rounded-full hover:bg-rose-100 transition"><i class="fa-solid fa-file-lines mr-1"></i>Resumo</button>
+                        <button onclick="orientadorAction('referencia')" class="text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full hover:bg-blue-100 transition"><i class="fa-solid fa-quote-right mr-1"></i>Referências</button>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="orientadorMessages" class="h-80 overflow-y-auto p-4 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-robot text-white text-xs"></i>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3 max-w-[85%]">
+                                <p class="text-sm text-slate-700 leading-relaxed">Olá! Sou seu orientador virtual. Posso ajudar com revisão de texto, objetivos, metodologia, introdução e mais. Use os botões acima ou me faça uma pergunta!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="orientadorTyping" class="hidden px-4 pb-2">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-robot text-white text-xs"></i>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3">
+                                <div class="flex items-center gap-1.5">
+                                    <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+                                    <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+                                    <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input -->
+                    <div class="border-t border-slate-200 p-3 flex gap-3">
+                        <input type="text" id="orientadorInput" placeholder="Pergunte sobre seu TCC..."
+                            class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
+                            onkeydown="if(event.key==='Enter'){event.preventDefault();sendOrientadorMsg();}">
+                        <button onclick="sendOrientadorMsg()" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-4 py-2.5 rounded-xl font-semibold text-sm hover:shadow-lg transition">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -704,6 +770,81 @@
                 </div>
             `).join('');
         }
+        // ========== Orientador Virtual ==========
+        const orientadorResponses = {
+            objetivo: `Dicas para definir os objetivos do TCC:\n\n**Objetivo Geral:**\n- Deve expressar a finalidade principal do trabalho\n- Use verbos como: analisar, investigar, compreender, avaliar\n- Exemplo: "Analisar o impacto das redes sociais na comunicação entre jovens"\n\n**Objetivos Específicos (3 a 5):**\n- Use verbos mais específicos: identificar, descrever, comparar, mapear\n- Cada um deve ser mensurável e alcançável\n- Juntos devem dar conta de atingir o objetivo geral\n\nCole seu tema e eu ajudo a elaborar!`,
+            metodologia: `Sobre metodologia:\n\n**Tipos de Pesquisa:**\n- **Qualitativa:** Entrevistas, análise de conteúdo, estudos de caso\n- **Quantitativa:** Questionários, análise estatística\n- **Mista:** Combina ambas\n\n**Procedimentos:**\n- Pesquisa bibliográfica, Estudo de caso, Pesquisa de campo\n\n**Instrumentos:** Questionários, Entrevistas, Observação\n\n**Dica:** Justifique cada escolha metodológica!`,
+            introducao: `Estrutura de uma boa introdução:\n\n**1. Contextualização** (1-2 parágrafos)\nApresente o tema, use dados relevantes\n\n**2. Problematização** (1 parágrafo)\nApresente o problema e a pergunta de pesquisa\n\n**3. Justificativa** (1 parágrafo)\nExplique a importância da pesquisa\n\n**4. Objetivos** (1 parágrafo)\nObjetivo geral e específicos\n\n**5. Estrutura** (1 parágrafo)\nDescreva os capítulos\n\n**Dica:** Evite começar com "O presente trabalho..."`,
+            revisao: `Dicas de escrita acadêmica:\n\n**Evite:**\n- Linguagem informal e gírias\n- Parágrafos muito curtos (mínimo 3-4 linhas)\n- Repetição de palavras\n\n**Boas práticas:**\n- Use terceira pessoa ou primeira do plural\n- Cite fontes corretamente (ABNT)\n- Cada parágrafo = uma ideia central\n\n**Conectivos úteis:**\n- Adicionar: além disso, ademais\n- Contrastar: contudo, no entanto\n- Concluir: portanto, em suma`,
+            resumo: `Estrutura do Resumo ABNT (150-500 palavras):\n\n1. **Contextualização** (1-2 frases)\n2. **Objetivo** (1 frase)\n3. **Metodologia** (1-2 frases)\n4. **Resultados** (2-3 frases)\n5. **Conclusão** (1-2 frases)\n\n**Palavras-chave:** 3 a 5 termos separados por ponto\n\n**Dica:** Escreva o resumo por ÚLTIMO, depois que o TCC estiver pronto!`,
+            referencia: `Formatos ABNT:\n\n**Citação Direta Curta (até 3 linhas):**\nSegundo Silva (2020, p. 45), "texto aqui".\n\n**Citação Direta Longa (mais de 3 linhas):**\nRecuo 4cm, fonte 10pt, sem aspas\n\n**Citação Indireta:**\nDe acordo com Silva (2020), texto parafraseado.\n\n**Livro:** SOBRENOME, Nome. **Título.** Ed. Cidade: Editora, Ano.\n**Artigo:** SOBRENOME, Nome. Título. **Revista**, v. X, n. X, p. XX-XX, ano.\n**Site:** AUTOR. **Título.** Ano. Disponível em: URL. Acesso em: data.`,
+            default: `Como orientador virtual, posso ajudar com:\n\n- **Objetivos** - definir objetivo geral e específicos\n- **Metodologia** - sugerir abordagens\n- **Introdução** - estrutura e escrita\n- **Revisão** - melhorar a escrita acadêmica\n- **Resumo** - estruturar o abstract\n- **Referências** - formato ABNT\n\nUse os botões ou me faça uma pergunta!`
+        };
+
+        function getOrientadorResponse(msg) {
+            const l = msg.toLowerCase();
+            if (l.includes('objetivo')) return orientadorResponses.objetivo;
+            if (l.includes('metodologia') || l.includes('método')) return orientadorResponses.metodologia;
+            if (l.includes('introdução') || l.includes('introducao')) return orientadorResponses.introducao;
+            if (l.includes('revisar') || l.includes('revisão') || l.includes('escrita')) return orientadorResponses.revisao;
+            if (l.includes('resumo') || l.includes('abstract')) return orientadorResponses.resumo;
+            if (l.includes('referência') || l.includes('citação') || l.includes('abnt')) return orientadorResponses.referencia;
+            return orientadorResponses.default;
+        }
+
+        function formatOrientadorText(text) {
+            let html = escapeHtml(text);
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\n/g, '<br>');
+            html = html.replace(/^- /gm, '&bull; ');
+            return html;
+        }
+
+        function appendOrientadorMsg(role, content) {
+            const container = document.getElementById('orientadorMessages');
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex items-start gap-3 ${role === 'user' ? 'flex-row-reverse' : ''}`;
+
+            if (role === 'user') {
+                wrapper.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-user text-white text-xs"></i></div>
+                    <div class="bg-violet-600 text-white rounded-2xl rounded-tr-md px-4 py-3 max-w-[85%]"><p class="text-sm leading-relaxed">${escapeHtml(content)}</p></div>`;
+            } else {
+                wrapper.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot text-white text-xs"></i></div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3 max-w-[85%]"><p class="text-sm text-slate-700 leading-relaxed">${formatOrientadorText(content)}</p></div>`;
+            }
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        window.sendOrientadorMsg = function() {
+            const input = document.getElementById('orientadorInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            appendOrientadorMsg('user', msg);
+            input.value = '';
+
+            document.getElementById('orientadorTyping').classList.remove('hidden');
+            const container = document.getElementById('orientadorMessages');
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                document.getElementById('orientadorTyping').classList.add('hidden');
+                appendOrientadorMsg('ai', getOrientadorResponse(msg));
+            }, 800 + Math.random() * 800);
+        };
+
+        window.orientadorAction = function(type) {
+            const prompts = {
+                objetivo: 'Me ajude a definir os objetivos do meu TCC',
+                metodologia: 'Preciso de ajuda com a metodologia',
+                introducao: 'Como escrever uma boa introdução?',
+                revisao: 'Quero dicas para revisar meu texto',
+                resumo: 'Me ajude a escrever o resumo/abstract',
+                referencia: 'Como formatar referências ABNT?'
+            };
+            document.getElementById('orientadorInput').value = prompts[type] || '';
+            sendOrientadorMsg();
+        };
     </script>
     <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>

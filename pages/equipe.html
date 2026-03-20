@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="apple-touch-icon" href="../favicon.png">
     <link rel="manifest" href="../manifest.json">
@@ -223,6 +224,47 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Chat da Equipe (PRO) -->
+                <div id="chatSection" class="hidden mt-8">
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                            <h2 class="text-lg font-bold"><i class="fa-solid fa-comments mr-2 text-blue-600"></i>Chat da Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1">PRO</span></h2>
+                            <span class="text-xs text-slate-400" id="chatStatus">Conectando...</span>
+                        </div>
+                        <div id="messagesArea" class="h-80 overflow-y-auto p-4 space-y-3 bg-slate-50/50">
+                            <div id="emptyChat" class="flex items-center justify-center h-full">
+                                <div class="text-center">
+                                    <div class="w-14 h-14 bg-violet-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                                        <i class="fa-solid fa-comments text-violet-400 text-xl"></i>
+                                    </div>
+                                    <p class="text-sm text-slate-400">Nenhuma mensagem ainda. Comece a conversa!</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-slate-100 flex items-center gap-3">
+                            <input type="text" id="chatInput" placeholder="Digite sua mensagem..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition" autocomplete="off">
+                            <button id="sendChatBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-4 py-2.5 rounded-xl font-semibold text-sm hover:shadow-lg transition disabled:opacity-50" disabled>
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat PRO Banner (shown for free users) -->
+                <div id="chatProBanner" class="hidden mt-8">
+                    <div class="bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200/50 rounded-2xl p-6 text-center">
+                        <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4">
+                            <i class="fa-solid fa-comments text-violet-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Chat da Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-2 py-0.5 rounded-full align-middle">PRO</span></h3>
+                        <p class="text-sm text-slate-500 mb-4">Converse em tempo real com os membros do seu projeto.</p>
+                        <a href="planos.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold text-sm py-2.5 px-6 rounded-xl hover:shadow-lg transition">
+                            <i class="fa-solid fa-crown"></i> Fazer Upgrade
+                        </a>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -311,6 +353,7 @@
                             showProjectPanel();
                             await loadMembersFromProject(projectId, projectData.owner_id);
                             await updateSeatsBanner(projectId, projectData.owner_id);
+                            await initChat();
                         } else {
                             showNoProjectPanel();
                         }
@@ -793,6 +836,125 @@
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar';
         };
+
+        // ========== Chat Integration (PRO) ==========
+        let chatChannel = null;
+        const CHAT_CACHE_KEY = 'tccflow_chat_';
+
+        function getChatCacheKey() { return CHAT_CACHE_KEY + projectId; }
+
+        function getCachedMessages() {
+            try { return JSON.parse(localStorage.getItem(getChatCacheKey()) || '[]'); }
+            catch(e) { return []; }
+        }
+
+        function saveCachedMessages(msgs) {
+            localStorage.setItem(getChatCacheKey(), JSON.stringify(msgs.slice(-100)));
+        }
+
+        function chatEscapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        function formatChatTime(iso) {
+            const d = new Date(iso);
+            const now = new Date();
+            const t = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            return d.toDateString() === now.toDateString() ? t : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + t;
+        }
+
+        function addChatMessage(msg) {
+            const area = document.getElementById('messagesArea');
+            const empty = document.getElementById('emptyChat');
+            if (empty) empty.remove();
+
+            const isMe = msg.userId === currentUser.uid;
+            const initial = (msg.userName || 'U').charAt(0).toUpperCase();
+            const avatar = msg.userPhoto
+                ? `<img src="${chatEscapeHtml(msg.userPhoto)}" class="w-7 h-7 rounded-full object-cover flex-shrink-0">`
+                : `<div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold bg-gradient-to-br from-violet-600 to-cyan-500">${initial}</div>`;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
+
+            if (isMe) {
+                wrapper.innerHTML = `<div class="flex items-end gap-2 max-w-[75%]">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[10px] text-slate-400 mb-0.5">${chatEscapeHtml(msg.userName)} · ${formatChatTime(msg.timestamp)}</span>
+                        <div class="bg-violet-600 text-white px-3 py-2 rounded-2xl rounded-br-sm text-sm">${chatEscapeHtml(msg.text)}</div>
+                    </div>${avatar}</div>`;
+            } else {
+                wrapper.innerHTML = `<div class="flex items-end gap-2 max-w-[75%]">
+                    ${avatar}<div class="flex flex-col">
+                        <span class="text-[10px] text-slate-400 mb-0.5">${chatEscapeHtml(msg.userName)} · ${formatChatTime(msg.timestamp)}</span>
+                        <div class="bg-white border border-slate-200 text-slate-900 px-3 py-2 rounded-2xl rounded-bl-sm text-sm">${chatEscapeHtml(msg.text)}</div>
+                    </div></div>`;
+            }
+            area.appendChild(wrapper);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        async function initChat() {
+            if (!projectId) return;
+
+            // Check if PRO
+            let isPro = false;
+            try { isPro = await DB.isProByProject(projectId); } catch(e) {}
+
+            if (!isPro) {
+                document.getElementById('chatProBanner').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('chatSection').classList.remove('hidden');
+            document.getElementById('chatStatus').textContent = 'Conectado';
+
+            // Load cached messages
+            const cached = getCachedMessages();
+            if (cached.length > 0) {
+                document.getElementById('emptyChat')?.remove();
+                cached.forEach(m => addChatMessage(m));
+            }
+
+            // Subscribe to Supabase Realtime Broadcast
+            chatChannel = _supa.channel('chat_' + projectId);
+            chatChannel.on('broadcast', { event: 'message' }, (payload) => {
+                const msg = payload.payload;
+                addChatMessage(msg);
+                const c = getCachedMessages(); c.push(msg); saveCachedMessages(c);
+            });
+            chatChannel.subscribe();
+
+            document.getElementById('sendChatBtn').disabled = false;
+        }
+
+        function sendChatMessage(text) {
+            if (!text.trim() || !chatChannel) return;
+            const msg = {
+                userId: currentUser.uid,
+                userName: currentUser.displayName || 'Usuário',
+                userPhoto: currentUser.photoURL || '',
+                text: text.trim(),
+                timestamp: new Date().toISOString()
+            };
+            chatChannel.send({ type: 'broadcast', event: 'message', payload: msg });
+            addChatMessage(msg);
+            const c = getCachedMessages(); c.push(msg); saveCachedMessages(c);
+        }
+
+        document.getElementById('sendChatBtn').addEventListener('click', () => {
+            const input = document.getElementById('chatInput');
+            if (input.value.trim()) { sendChatMessage(input.value); input.value = ''; input.focus(); }
+        });
+
+        document.getElementById('chatInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (e.target.value.trim()) { sendChatMessage(e.target.value); e.target.value = ''; }
+            }
+        });
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await auth.signOut();

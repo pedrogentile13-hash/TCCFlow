@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="apple-touch-icon" href="../favicon.png">
     <link rel="manifest" href="../manifest.json">
@@ -96,20 +97,6 @@
     </script>
     </nav>
 
-    <!-- Beta Gate Overlay -->
-    <div id="betaGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
-        <div class="text-center max-w-md px-6">
-            <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-flask text-violet-600 text-3xl"></i>
-            </div>
-            <h2 class="text-2xl font-bold mb-3">Recurso em Beta</h2>
-            <p class="text-sm text-slate-500 mb-8">O Banco de Templates ainda está em fase beta. Faça login para acessar os modelos prontos e acelerar a escrita do seu TCC.</p>
-            <a href="dashboard.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
-                <i class="fa-solid fa-arrow-left mr-2"></i>Voltar ao Dashboard
-            </a>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -171,6 +158,7 @@
                 description: 'Modelo de introdução com espaços para contextualização, problema, justificativa e objetivos.',
                 icon: 'fa-solid fa-file-lines',
                 category: 'estrutura',
+                pro: false,
                 content: `INTRODUÇÃO
 
 [Contextualização do tema — 1 a 2 parágrafos]
@@ -203,6 +191,7 @@ c) Comparar / Avaliar / Propor ...
                 description: 'Template para a seção de metodologia de pesquisa com classificações e procedimentos.',
                 icon: 'fa-solid fa-flask',
                 category: 'estrutura',
+                pro: true,
                 content: `METODOLOGIA
 
 [Classificação da pesquisa]
@@ -245,6 +234,7 @@ A pesquisa seguiu os princípios éticos de [REFERÊNCIA]. Os participantes assi
                 description: 'Estrutura para o capítulo de fundamentação teórica com seções e subseções.',
                 icon: 'fa-solid fa-book-open',
                 category: 'estrutura',
+                pro: true,
                 content: `REFERENCIAL TEÓRICO
 
 [Nota: Organize o referencial em seções e subseções que cubram os principais conceitos do seu tema. Abaixo está um modelo genérico que você deve adaptar.]
@@ -292,6 +282,7 @@ Dica: Mantenha coerência entre o referencial e os objetivos. Tudo que for anali
                 description: 'Modelo para a conclusão do TCC com retomada dos objetivos e contribuições.',
                 icon: 'fa-solid fa-flag-checkered',
                 category: 'estrutura',
+                pro: true,
                 content: `CONSIDERAÇÕES FINAIS
 
 [Retomada do objetivo geral — 1 parágrafo]
@@ -322,6 +313,7 @@ Para pesquisas futuras, sugere-se [SUGESTÃO 1: ampliar a amostra, utilizar outr
                 description: 'Modelo de resumo em português e abstract em inglês seguindo normas ABNT.',
                 icon: 'fa-solid fa-align-left',
                 category: 'estrutura',
+                pro: true,
                 content: `RESUMO
 
 [O resumo deve ser redigido em parágrafo único, com 150 a 500 palavras (conforme norma da instituição). Deve conter: contexto, objetivo, metodologia, principais resultados e conclusão. Não use citações, fórmulas ou referências no resumo.]
@@ -350,6 +342,7 @@ Keywords: [Keyword 1]. [Keyword 2]. [Keyword 3]. [Keyword 4]. [Keyword 5].`
                 description: 'Lista completa de verificação das regras de formatação ABNT para TCC.',
                 icon: 'fa-solid fa-list-check',
                 category: 'formatacao',
+                pro: false,
                 content: `CHECKLIST DE FORMATAÇÃO ABNT (NBR 14724)
 
 === MARGENS ===
@@ -429,6 +422,7 @@ Keywords: [Keyword 1]. [Keyword 2]. [Keyword 3]. [Keyword 4]. [Keyword 5].`
                 description: 'Template para capa do TCC com instituição, curso, título, autor e ano.',
                 icon: 'fa-solid fa-file-alt',
                 category: 'formatacao',
+                pro: true,
                 content: `MODELO DE CAPA (ABNT NBR 14724)
 
 [Todas as informações devem ser centralizadas na página]
@@ -493,6 +487,7 @@ Dica: Consulte o manual de TCC da sua instituição, pois algumas universidades 
                 description: 'Estrutura de sumário padrão ABNT com numeração progressiva.',
                 icon: 'fa-solid fa-list-ol',
                 category: 'formatacao',
+                pro: true,
                 content: `MODELO DE SUMÁRIO (ABNT NBR 6027)
 
 [O sumário deve refletir exatamente os títulos e subtítulos do trabalho, com a paginação correspondente]
@@ -542,6 +537,7 @@ Regras importantes:
                 description: 'Estrutura sugerida de 12 a 15 slides para a apresentação de defesa do TCC.',
                 icon: 'fa-solid fa-presentation-screen',
                 category: 'apresentacao',
+                pro: true,
                 content: `ESTRUTURA DE SLIDES PARA DEFESA DE TCC
 (12 a 15 slides — Apresentação de 15 a 20 minutos)
 
@@ -626,6 +622,7 @@ DICAS DE DESIGN:
                 description: 'Script para a defesa oral com cronometragem e dicas do que dizer em cada slide.',
                 icon: 'fa-solid fa-microphone',
                 category: 'apresentacao',
+                pro: true,
                 content: `ROTEIRO DE APRESENTAÇÃO ORAL — DEFESA DE TCC
 (Tempo total sugerido: 15 a 20 minutos)
 
@@ -689,6 +686,9 @@ DICAS GERAIS PARA A DEFESA:
             }
         ];
 
+        // ========== PRO Gating ==========
+        let userIsPro = false;
+
         // ========== Render Templates ==========
         let currentFilter = 'todos';
 
@@ -708,39 +708,37 @@ DICAS GERAIS PARA A DEFESA:
             const filtered = currentFilter === 'todos' ? templates : templates.filter(t => t.category === currentFilter);
             const grid = document.getElementById('templatesGrid');
 
-            const categoryLabels = {
-                estrutura: 'Estrutura',
-                formatacao: 'Formatação',
-                apresentacao: 'Apresentação'
-            };
+            const categoryLabels = { estrutura: 'Estrutura', formatacao: 'Formatação', apresentacao: 'Apresentação' };
+            const categoryColors = { estrutura: 'bg-violet-100 text-violet-700', formatacao: 'bg-cyan-100 text-cyan-700', apresentacao: 'bg-amber-100 text-amber-700' };
 
-            const categoryColors = {
-                estrutura: 'bg-violet-100 text-violet-700',
-                formatacao: 'bg-cyan-100 text-cyan-700',
-                apresentacao: 'bg-amber-100 text-amber-700'
-            };
-
-            grid.innerHTML = filtered.map(t => `
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-violet-200 transition group">
+            grid.innerHTML = filtered.map(t => {
+                const locked = t.pro && !userIsPro;
+                return `
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-violet-200 transition group ${locked ? 'opacity-80' : ''}">
                     <div class="flex items-start justify-between mb-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-xl flex items-center justify-center">
                             <i class="${t.icon} text-violet-600 text-lg"></i>
                         </div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${categoryColors[t.category]}">${categoryLabels[t.category]}</span>
+                        <div class="flex items-center gap-2">
+                            ${t.pro ? '<span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span>' : '<span class="text-[8px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">GRÁTIS</span>'}
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${categoryColors[t.category]}">${categoryLabels[t.category]}</span>
+                        </div>
                     </div>
                     <h3 class="text-lg font-bold mb-2">${t.title}</h3>
                     <p class="text-sm text-slate-500 mb-5 leading-relaxed">${t.description}</p>
-                    <button onclick="openTemplate('${t.id}')" class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold py-2.5 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
-                        <i class="fa-solid fa-file-import mr-2"></i>Usar Template
-                    </button>
-                </div>
-            `).join('');
+                    ${locked
+                        ? `<a href="planos.html" class="block w-full text-center bg-slate-100 text-slate-500 text-sm font-semibold py-2.5 rounded-xl hover:bg-slate-200 transition"><i class="fa-solid fa-lock mr-2 text-xs"></i>Requer PRO</a>`
+                        : `<button onclick="openTemplate('${t.id}')" class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold py-2.5 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition"><i class="fa-solid fa-file-import mr-2"></i>Usar Template</button>`
+                    }
+                </div>`;
+            }).join('');
         }
 
         // ========== Modal ==========
         function openTemplate(id) {
             const template = templates.find(t => t.id === id);
             if (!template) return;
+            if (template.pro && !userIsPro) { window.location.href = 'planos.html'; return; }
             document.getElementById('modalTitle').textContent = template.title;
             document.getElementById('modalContent').value = template.content;
             document.getElementById('templateModal').classList.remove('hidden');
@@ -808,20 +806,12 @@ DICAS GERAIS PARA A DEFESA:
                 }
             }
 
-            // Check beta access
-            try {
-                const isBeta = await DB.isBetaTester(user.uid);
-                if (!isBeta) {
-                    document.getElementById('betaGateOverlay').classList.remove('hidden');
-                    return;
-                }
-            } catch(e) {}
-
             if (isFirebaseConfigured()) {
                 try {
                     const pid = await DB.getProjectId();
                     if (pid) {
                         const isPro = await DB.isProByProject(pid);
+                        userIsPro = isPro;
                         if (isPro) {
                             document.querySelectorAll('a[href="planos.html"]').forEach(el => {
                                 el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
