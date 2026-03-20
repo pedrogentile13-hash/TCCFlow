@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1WX7MD9CL9');
+    </script>
+
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="apple-touch-icon" href="../favicon.png">
@@ -39,17 +48,23 @@
         <div class="blob blob-3"></div>
     </div>
 
-    <!-- Beta Gate Overlay -->
+    <!-- PRO Gate Overlay -->
     <div id="betaGate" class="hidden fixed inset-0 z-[100] bg-white/90 backdrop-blur-xl flex items-center justify-center">
         <div class="text-center max-w-md mx-auto px-6">
-            <div class="w-20 h-20 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-violet-500/25">
-                <i class="fa-solid fa-flask text-white text-3xl"></i>
+            <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-violet-500/25">
+                <i class="fa-solid fa-crown text-violet-600 text-3xl"></i>
             </div>
-            <h2 class="text-2xl font-bold mb-2">Recurso Beta</h2>
-            <p class="text-slate-500 text-sm mb-6">Este recurso esta disponivel apenas para beta testers. Solicite acesso ou volte ao dashboard.</p>
-            <a href="dashboard.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
-                <i class="fa-solid fa-arrow-left mr-2"></i>Voltar ao Dashboard
+            <h2 class="text-2xl font-bold mb-2">Verificador de Plágio <span class="text-xs bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-2 py-0.5 rounded-full font-bold align-middle">PRO</span></h2>
+            <p class="text-slate-500 text-sm mb-4">O Verificador de Plágio é exclusivo do plano PRO. Analise trechos do seu TCC e verifique a originalidade.</p>
+            <ul class="text-xs text-slate-500 mb-6 space-y-1">
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Verificação de similaridade</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Relatório detalhado</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Todas as ferramentas PRO inclusas</li>
+            </ul>
+            <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
+                <i class="fa-solid fa-crown mr-2"></i>Assinar Plano PRO
             </a>
+            <p class="text-xs text-slate-400 mt-4">A partir de R$ 97,00/ano</p>
         </div>
     </div>
 
@@ -295,14 +310,17 @@
                 }
             } catch(e) { console.log(e); }
 
-            // Beta gate check
+            // PRO gate check
             try {
-                const isBeta = await DB.isBetaTester(currentUserId);
-                if (!isBeta) {
-                    document.getElementById('betaGate').classList.remove('hidden');
+                const pid = await DB.getProjectId();
+                if (pid) {
+                    const isPro = await DB.isProByProject(pid);
+                    if (!isPro) {
+                        document.getElementById('betaGate').classList.remove('hidden');
+                    }
                 }
             } catch(e) {
-                console.log('Beta check error:', e);
+                console.log('PRO check error:', e);
                 document.getElementById('betaGate').classList.remove('hidden');
             }
         });

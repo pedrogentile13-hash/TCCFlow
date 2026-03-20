@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1WX7MD9CL9');
+    </script>
+
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="apple-touch-icon" href="../favicon.png">
@@ -94,17 +103,23 @@
         <div class="blob blob-3"></div>
     </div>
 
-    <!-- Beta Gate Overlay -->
+    <!-- PRO Gate Overlay -->
     <div id="betaGateOverlay" class="fixed inset-0 z-[999] bg-white/95 backdrop-blur-sm flex items-center justify-center hidden">
         <div class="text-center max-w-md px-6">
-            <div class="w-16 h-16 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-flask text-white text-2xl"></i>
+            <div class="w-16 h-16 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-crown text-violet-600 text-2xl"></i>
             </div>
-            <h2 class="text-2xl font-bold mb-2">Funcionalidade Beta</h2>
-            <p class="text-slate-500 mb-6">Esta ferramenta est&aacute; dispon&iacute;vel apenas para beta testers. Entre em contato para solicitar acesso.</p>
-            <a href="dashboard.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:shadow-lg transition">
-                <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+            <h2 class="text-2xl font-bold mb-2">Quadro de Ideias <span class="text-xs bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-2 py-0.5 rounded-full font-bold align-middle">PRO</span></h2>
+            <p class="text-slate-500 text-sm mb-4">O Quadro de Ideias é exclusivo do plano PRO. Organize e conecte suas ideias em um mural interativo.</p>
+            <ul class="text-xs text-slate-500 mb-6 space-y-1">
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Mural com post-its coloridos</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Categorias e agrupamentos</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Colaborativo para equipe</li>
+            </ul>
+            <a href="planos.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-6 py-2.5 rounded-xl hover:shadow-lg transition">
+                <i class="fa-solid fa-crown"></i> Assinar Plano PRO
             </a>
+            <p class="text-xs text-slate-400 mt-4">A partir de R$ 97,00/ano</p>
         </div>
     </div>
 
@@ -351,13 +366,17 @@
                 }
             }
 
-            // Beta gate check
+            // PRO gate check
             try {
-                const isBeta = await DB.isBetaTester(user.uid);
-                if (!isBeta) {
-                    document.getElementById('betaGateOverlay').classList.remove('hidden');
+                const pid = await DB.getProjectId();
+                if (pid) {
+                    const isPro = await DB.isProByProject(pid);
+                    if (!isPro) {
+                        document.getElementById('betaGateOverlay').classList.remove('hidden');
+                        return;
+                    }
                 }
-            } catch(e) { console.log('Beta check error:', e); }
+            } catch(e) { console.log('PRO check error:', e); }
 
             // Update navbar for PRO users
             try {
