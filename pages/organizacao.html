@@ -52,8 +52,8 @@
                     <div class="relative" id="moreDropdown">
                         <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
                         <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
                             <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
                             <div class="border-t border-slate-100 my-1"></div>
                             <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
@@ -77,12 +77,12 @@
         <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
             <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
             <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Tarefas <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Tarefas</a>
             <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
             <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
             <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas <span class="text-[8px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full align-middle">BETA</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas</a>
             <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
         </div>
     
@@ -97,14 +97,14 @@
     </script>
     </nav>
 
-    <!-- PRO Gate Overlay -->
+    <!-- PRO Gate Overlay (shown only when free user hits task limit) -->
     <div id="proGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
         <div class="text-center max-w-md px-6">
             <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-lock text-violet-600 text-3xl"></i>
+                <i class="fa-solid fa-list-check text-violet-600 text-3xl"></i>
             </div>
-            <h2 class="text-2xl font-bold mb-3">Recurso Exclusivo PRO</h2>
-            <p class="text-sm text-slate-500 mb-8">A organização avançada de tarefas é exclusiva do plano PRO. Assine para gerenciar tarefas, atribuir responsáveis e acompanhar o progresso.</p>
+            <h2 class="text-2xl font-bold mb-3">Limite de Tarefas Atingido</h2>
+            <p class="text-sm text-slate-500 mb-8">Você atingiu o limite de 5 tarefas ativas no plano gratuito. Conclua ou apague tarefas existentes, ou faça upgrade para o plano PRO para tarefas ilimitadas e atribuição de membros.</p>
             <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
                 <i class="fa-solid fa-crown mr-2"></i>Assinar Plano PRO
             </a>
@@ -226,6 +226,8 @@
         let projectId = null;
         let projectMembers = [];
         let memberNames = {};
+        let userIsPro = false;
+        const FREE_TASK_LIMIT = 5;
 
         document.getElementById('mobileNavBtn').addEventListener('click', () => {
             document.getElementById('mobileNav').classList.toggle('hidden');
@@ -249,12 +251,9 @@
 
             if (isFirebaseConfigured()) {
                 try {
-                    // Check if user is PRO - block if not
+                    // Check if user is PRO
                     const isPro = await DB.subscriptions.isPro(user.uid);
-                    if (!isPro) {
-                        document.getElementById('proGateOverlay').classList.remove('hidden');
-                        return;
-                    }
+                    userIsPro = isPro;
 
                     // Load user data from Supabase (source of truth)
                     const { data: userData } = await _supa
@@ -332,6 +331,24 @@
                 renderTaskList('todoTasks', todo);
                 renderTaskList('progressTasks', progress);
                 renderTaskList('doneTasks', done);
+
+                // Free tier limit
+                const activeTasks = tasks.filter(t => t.status !== 'done').length;
+                const addBtn = document.getElementById('addTaskBtn');
+                if (!userIsPro && activeTasks >= FREE_TASK_LIMIT) {
+                    addBtn.disabled = true;
+                    addBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    addBtn.title = 'Limite de 5 tarefas atingido no plano gratuito';
+                } else {
+                    addBtn.disabled = false;
+                    addBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    addBtn.title = '';
+                }
+
+                // Hide assignee for free users
+                if (!userIsPro) {
+                    document.getElementById('taskAssignee').closest('div').classList.add('hidden');
+                }
             } catch (err) {
                 console.error('Error loading data:', err);
             }
@@ -396,6 +413,15 @@
             document.getElementById('taskSubmitBtn').textContent = 'Criar';
             document.getElementById('statusField').classList.add('hidden');
             document.getElementById('taskForm').reset();
+            // Hide assignee for free users
+            const assigneeDiv = document.getElementById('taskAssignee').closest('div');
+            if (!userIsPro) {
+                assigneeDiv.classList.add('hidden');
+                document.getElementById('taskAssignee').removeAttribute('required');
+            } else {
+                assigneeDiv.classList.remove('hidden');
+                document.getElementById('taskAssignee').setAttribute('required', '');
+            }
             document.getElementById('taskModal').classList.remove('hidden');
         });
 
@@ -408,10 +434,19 @@
             document.getElementById('modalTitle').textContent = 'Editar Tarefa';
             document.getElementById('taskSubmitBtn').textContent = 'Salvar';
             document.getElementById('taskTitle').value = title;
-            document.getElementById('taskAssignee').value = assignee;
             document.getElementById('taskDueDate').value = dueDate;
             document.getElementById('taskStatus').value = status;
             document.getElementById('statusField').classList.remove('hidden');
+            // Hide assignee for free users
+            const assigneeDiv = document.getElementById('taskAssignee').closest('div');
+            if (!userIsPro) {
+                assigneeDiv.classList.add('hidden');
+                document.getElementById('taskAssignee').removeAttribute('required');
+            } else {
+                assigneeDiv.classList.remove('hidden');
+                document.getElementById('taskAssignee').setAttribute('required', '');
+                document.getElementById('taskAssignee').value = assignee;
+            }
             document.getElementById('taskModal').classList.remove('hidden');
         };
 
@@ -421,9 +456,19 @@
 
             const editId = document.getElementById('editTaskId').value;
             const title = document.getElementById('taskTitle').value;
-            const assigned_to = document.getElementById('taskAssignee').value || null;
+            const assigned_to = userIsPro ? (document.getElementById('taskAssignee').value || null) : currentUser.uid;
             const due_date = document.getElementById('taskDueDate').value || null;
             const status = editId ? document.getElementById('taskStatus').value : 'todo';
+
+            // Free tier: check task limit before creating new task
+            if (!userIsPro && !editId) {
+                const { data: currentTasks } = await _supa.from('tasks').select('id, status').eq('project_id', projectId);
+                const activeCount = (currentTasks || []).filter(t => t.status !== 'done').length;
+                if (activeCount >= FREE_TASK_LIMIT) {
+                    alert('Limite de 5 tarefas ativas atingido. Conclua ou apague tarefas existentes, ou faça upgrade para PRO.');
+                    return;
+                }
+            }
 
             try {
                 if (editId) {
