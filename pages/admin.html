@@ -19,6 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações - TCCFlow</title>
     <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -113,14 +114,14 @@
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
             <div class="mb-8">
-                <h1 class="text-3xl font-bold">Configurações</h1>
-                <p class="text-slate-500 mt-1">Gerencie o seu perfil e preferências</p>
+                <h1 class="text-3xl font-bold" data-i18n="settings.title">Configurações</h1>
+                <p class="text-slate-500 mt-1" data-i18n="settings.subtitle">Gerencie o seu perfil e preferências</p>
             </div>
 
             <!-- Appearance / Dark Mode -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <h3 class="text-lg font-bold mb-6">
-                    <i class="fa-solid fa-palette mr-2 text-violet-600"></i>Aparência
+                    <i class="fa-solid fa-palette mr-2 text-violet-600"></i><span data-i18n="settings.appearance">Aparência</span>
                 </h3>
 
                 <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
@@ -129,8 +130,8 @@
                             <i class="fa-solid fa-moon text-amber-400 text-lg"></i>
                         </div>
                         <div>
-                            <p class="font-medium">Modo Escuro</p>
-                            <p class="text-xs text-slate-500">Ative o tema escuro para reduzir o cansaço visual</p>
+                            <p class="font-medium" data-i18n="settings.darkMode">Modo Escuro</p>
+                            <p class="text-xs text-slate-500" data-i18n="settings.darkModeDesc">Ative o tema escuro para reduzir o cansaço visual</p>
                         </div>
                     </div>
                     <div class="relative inline-block w-12 align-middle select-none">
@@ -140,6 +141,32 @@
                         <label for="darkModeToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
                     </div>
                 </div>
+            </div>
+
+            <!-- Language / Idioma -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h3 class="text-lg font-bold mb-6">
+                    <i class="fa-solid fa-globe mr-2 text-cyan-600"></i><span data-i18n="settings.language">Idioma</span>
+                </h3>
+
+                <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-100 to-cyan-200 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-language text-cyan-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium" data-i18n="settings.langLabel">Idioma do site</p>
+                            <p class="text-xs text-slate-500" data-i18n="settings.langDesc">Escolha o idioma de exibição da plataforma</p>
+                        </div>
+                    </div>
+                    <select id="langSelect" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500 transition cursor-pointer">
+                        <option value="pt-BR">🇧🇷 Português (Brasil)</option>
+                        <option value="pt-PT">🇵🇹 Português (Portugal)</option>
+                        <option value="en">🇺🇸 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                    </select>
+                </div>
+                <p class="text-xs text-slate-400 mt-3 ml-1"><i class="fa-solid fa-circle-info mr-1"></i>A alteração será aplicada em todas as páginas.</p>
             </div>
 
             <!-- Profile Card -->
@@ -192,22 +219,22 @@
             <!-- Change Password -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <h3 class="text-lg font-bold mb-6">
-                    <i class="fa-solid fa-key mr-2 text-amber-600"></i>Alterar Senha
+                    <i class="fa-solid fa-key mr-2 text-amber-600"></i><span data-i18n="settings.changePassword">Alterar Senha</span>
                 </h3>
 
                 <form id="passwordForm" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Senha Atual</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2" data-i18n="settings.currentPassword">Senha Atual</label>
                         <input type="password" id="currentPassword" required
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Nova Senha</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2" data-i18n="settings.newPassword">Nova Senha</label>
                         <input type="password" id="newPassword" required minlength="6"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Confirmar Nova Senha</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2" data-i18n="settings.confirmPassword">Confirmar Nova Senha</label>
                         <input type="password" id="confirmNewPassword" required
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
@@ -215,7 +242,7 @@
                     <div id="passwordMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
 
                     <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
-                        <i class="fa-solid fa-key mr-2"></i>Alterar Senha
+                        <i class="fa-solid fa-key mr-2"></i><span data-i18n="settings.changePasswordBtn">Alterar Senha</span>
                     </button>
                 </form>
             </div>
@@ -223,16 +250,16 @@
             <!-- Danger Zone -->
             <div class="bg-white border border-red-200 rounded-2xl p-6 sm:p-8 shadow-sm">
                 <h3 class="text-lg font-bold text-red-600 mb-4">
-                    <i class="fa-solid fa-triangle-exclamation mr-2"></i>Zona de Perigo
+                    <i class="fa-solid fa-triangle-exclamation mr-2"></i><span data-i18n="settings.dangerZone">Zona de Perigo</span>
                 </h3>
-                <p class="text-sm text-slate-500 mb-6">Ações irreversíveis para a sua conta.</p>
+                <p class="text-sm text-slate-500 mb-6" data-i18n="settings.dangerDesc">Ações irreversíveis para a sua conta.</p>
 
                 <div class="flex flex-col sm:flex-row gap-3">
                     <button id="clearDataBtn" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-5 py-2.5 rounded-xl transition text-sm border border-red-200">
-                        <i class="fa-solid fa-broom mr-2"></i>Limpar Meus Dados
+                        <i class="fa-solid fa-broom mr-2"></i><span data-i18n="settings.clearData">Limpar Meus Dados</span>
                     </button>
                     <button id="deleteAccountBtn" class="bg-red-600 hover:bg-red-500 text-white font-semibold px-5 py-2.5 rounded-xl transition text-sm">
-                        <i class="fa-solid fa-trash mr-2"></i>Eliminar Conta
+                        <i class="fa-solid fa-trash mr-2"></i><span data-i18n="settings.deleteAccount">Eliminar Conta</span>
                     </button>
                 </div>
             </div>
@@ -244,6 +271,15 @@
     <script src="../js/supabase-init.js"></script>
     <script src="../js/db-service.js"></script>
     <script>
+        // ========== Language Select ==========
+        const langSelect = document.getElementById('langSelect');
+        langSelect.value = localStorage.getItem('tccflow_lang') || 'pt-BR';
+
+        langSelect.addEventListener('change', function() {
+            localStorage.setItem('tccflow_lang', this.value);
+            if (window.i18n) window.i18n.apply(this.value);
+        });
+
         // ========== Dark Mode Toggle ==========
         const darkToggle = document.getElementById('darkModeToggle');
         darkToggle.checked = localStorage.getItem('tccflow_darkmode') === 'true';
