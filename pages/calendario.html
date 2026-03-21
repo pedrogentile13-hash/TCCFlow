@@ -678,9 +678,11 @@
             } catch (e) { console.log(e); }
         }
 
+        let _calAuthRetries = 0;
         function setupGoogleAuth() {
             if (typeof google === 'undefined' || !google.accounts) {
-                setTimeout(setupGoogleAuth, 500);
+                if (_calAuthRetries++ < 20) { setTimeout(setupGoogleAuth, 500); }
+                else { console.warn('Google GSI failed to load after 10s'); }
                 return;
             }
 
