@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "TCCFlow - Gerenciamento de TCC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
     "mercadopago": "^2.0.0"
   }
 }
