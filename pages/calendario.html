@@ -65,19 +65,19 @@
                     <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
                 <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm">Calendário</a>
-                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.dashboard">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.project">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.ia">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm" data-i18n="nav.calendar">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i><span data-i18n="nav.tools">Ferramentas</span></a>
                     <div class="relative" id="moreDropdown">
-                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1"><span data-i18n="nav.more">Mais</span> <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
                         <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.tasks">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.team">Equipe</a>
                             <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
                             <div class="border-t border-slate-100 my-1"></div>
-                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i><span data-i18n="nav.plans">Planos</span></a>
                         </div>
                     </div>
                 </div><div class="flex items-center gap-2">
@@ -96,15 +96,15 @@
             </div>
         </div>
         <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.dashboard">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.project">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tasks">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.ia">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50" data-i18n="nav.calendar">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.team">Equipe</a>
             <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tools">Ferramentas</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.plans">Planos</a>
         </div>
     
     <script>
@@ -123,8 +123,8 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
             <div class="mb-8">
-                <h1 class="text-3xl font-bold">Calendário</h1>
-                <p class="text-slate-500 mt-1">Visualize e organize as suas metas de estudo</p>
+                <h1 class="text-3xl font-bold" data-i18n="cal.title">Calendário</h1>
+                <p class="text-slate-500 mt-1" data-i18n="cal.subtitle">Visualize e organize as suas metas de estudo</p>
             </div>
 
             <!-- Calendar Navigation -->
@@ -140,13 +140,13 @@
                 </div>
 
                 <div class="grid grid-cols-7 gap-1 mb-2">
-                    <div class="text-center text-xs font-semibold text-slate-400 py-2">Dom</div>
-                    <div class="text-center text-xs font-semibold text-slate-400 py-2">Seg</div>
-                    <div class="text-center text-xs font-semibold text-slate-400 py-2">Ter</div>
-                    <div class="text-center text-xs font-semibold text-slate-400 py-2">Qua</div>
-                    <div class="text-center text-xs font-semibold text-slate-400 py-2">Qui</div>
-                    <div class="text-center text-xs font-semibold text-slate-400 py-2">Sex</div>
-                    <div class="text-center text-xs font-semibold text-slate-400 py-2">Sáb</div>
+                    <div class="text-center text-xs font-semibold text-slate-400 py-2" data-i18n="cal.sun">Dom</div>
+                    <div class="text-center text-xs font-semibold text-slate-400 py-2" data-i18n="cal.mon">Seg</div>
+                    <div class="text-center text-xs font-semibold text-slate-400 py-2" data-i18n="cal.tue">Ter</div>
+                    <div class="text-center text-xs font-semibold text-slate-400 py-2" data-i18n="cal.wed">Qua</div>
+                    <div class="text-center text-xs font-semibold text-slate-400 py-2" data-i18n="cal.thu">Qui</div>
+                    <div class="text-center text-xs font-semibold text-slate-400 py-2" data-i18n="cal.fri">Sex</div>
+                    <div class="text-center text-xs font-semibold text-slate-400 py-2" data-i18n="cal.sat">Sáb</div>
                 </div>
 
                 <div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
@@ -156,23 +156,23 @@
             <div id="googleCalendarSection" class="hidden bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold">
-                        <i class="fa-brands fa-google mr-2 text-violet-600"></i>Google Calendar
+                        <i class="fa-brands fa-google mr-2 text-violet-600"></i><span data-i18n="cal.googleCalendar">Google Calendar</span>
                         <span class="text-[10px] font-bold uppercase bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-2 py-0.5 rounded-full ml-2">PRO</span>
                     </h2>
                     <div id="googleCalStatus">
                         <button id="connectGoogleCalBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-4 py-2 rounded-xl transition">
-                            <i class="fa-brands fa-google mr-1"></i> Conectar
+                            <i class="fa-brands fa-google mr-1"></i> <span data-i18n="cal.connect">Conectar</span>
                         </button>
                     </div>
                 </div>
-                <p class="text-xs text-slate-500 mb-4">Sincronize suas metas e sessões de estudo diretamente com o Google Calendar.</p>
+                <p class="text-xs text-slate-500 mb-4" data-i18n="cal.syncDescription">Sincronize suas metas e sessões de estudo diretamente com o Google Calendar.</p>
 
                 <!-- Connected state -->
                 <div id="googleCalConnected" class="hidden">
                     <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-4">
                         <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                        <span class="text-sm font-medium text-emerald-700">Google Calendar conectado</span>
-                        <button id="disconnectGoogleCalBtn" class="ml-auto text-xs text-slate-400 hover:text-red-500 transition">Desconectar</button>
+                        <span class="text-sm font-medium text-emerald-700" data-i18n="cal.connected">Google Calendar conectado</span>
+                        <button id="disconnectGoogleCalBtn" class="ml-auto text-xs text-slate-400 hover:text-red-500 transition" data-i18n="cal.disconnect">Desconectar</button>
                     </div>
 
                     <!-- Sync actions -->
@@ -183,8 +183,8 @@
                                     <i class="fa-solid fa-bullseye text-emerald-600"></i>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-bold group-hover:text-violet-600">Sincronizar Metas</h4>
-                                    <p class="text-xs text-slate-400">Enviar metas para o Google Calendar</p>
+                                    <h4 class="text-sm font-bold group-hover:text-violet-600" data-i18n="cal.syncGoals">Sincronizar Metas</h4>
+                                    <p class="text-xs text-slate-400" data-i18n="cal.syncGoalsDesc">Enviar metas para o Google Calendar</p>
                                 </div>
                             </div>
                         </button>
@@ -194,8 +194,8 @@
                                     <i class="fa-solid fa-book-open text-violet-600"></i>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-bold group-hover:text-violet-600">Sincronizar Sessões</h4>
-                                    <p class="text-xs text-slate-400">Enviar sessões de estudo</p>
+                                    <h4 class="text-sm font-bold group-hover:text-violet-600" data-i18n="cal.syncSessions">Sincronizar Sessões</h4>
+                                    <p class="text-xs text-slate-400" data-i18n="cal.syncSessionsDesc">Enviar sessões de estudo</p>
                                 </div>
                             </div>
                         </button>
@@ -205,14 +205,14 @@
 
                 <!-- Not connected - setup instructions -->
                 <div id="googleCalSetup" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-500">
-                    <p class="font-semibold text-slate-700 mb-2"><i class="fa-solid fa-info-circle mr-1"></i>Como configurar</p>
+                    <p class="font-semibold text-slate-700 mb-2"><i class="fa-solid fa-info-circle mr-1"></i><span data-i18n="cal.howToSetup">Como configurar</span></p>
                     <ol class="list-decimal list-inside space-y-1">
-                        <li>Acesse o <a href="https://console.cloud.google.com" target="_blank" class="text-violet-600 hover:underline">Google Cloud Console</a></li>
-                        <li>Crie um projeto e ative a <strong>Google Calendar API</strong></li>
-                        <li>Configure a tela de consentimento OAuth</li>
-                        <li>Crie credenciais OAuth 2.0 (tipo: Aplicativo Web)</li>
-                        <li>Adicione o domínio do TCCFlow nas origens autorizadas</li>
-                        <li>Insira o Client ID no código (variável <code>GOOGLE_CLIENT_ID</code>)</li>
+                        <li data-i18n="cal.setupStep1">Acesse o <a href="https://console.cloud.google.com" target="_blank" class="text-violet-600 hover:underline">Google Cloud Console</a></li>
+                        <li data-i18n="cal.setupStep2">Crie um projeto e ative a <strong>Google Calendar API</strong></li>
+                        <li data-i18n="cal.setupStep3">Configure a tela de consentimento OAuth</li>
+                        <li data-i18n="cal.setupStep4">Crie credenciais OAuth 2.0 (tipo: Aplicativo Web)</li>
+                        <li data-i18n="cal.setupStep5">Adicione o domínio do TCCFlow nas origens autorizadas</li>
+                        <li data-i18n="cal.setupStep6">Insira o Client ID no código (variável <code>GOOGLE_CLIENT_ID</code>)</li>
                     </ol>
                 </div>
             </div>
@@ -220,32 +220,32 @@
             <!-- Cronograma Gantt (PRO) -->
             <div id="ganttSection" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-6">
                 <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                    <h2 class="font-bold text-sm"><i class="fa-solid fa-chart-gantt mr-2 text-emerald-600"></i>Cronograma Gantt <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1">PRO</span></h2>
-                    <button id="addGanttPhaseBtn" class="text-xs bg-violet-600 text-white px-3 py-1.5 rounded-lg hover:bg-violet-500 transition"><i class="fa-solid fa-plus mr-1"></i>Fase</button>
+                    <h2 class="font-bold text-sm"><i class="fa-solid fa-chart-gantt mr-2 text-emerald-600"></i><span data-i18n="cal.ganttChart">Cronograma Gantt</span> <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1">PRO</span></h2>
+                    <button id="addGanttPhaseBtn" class="text-xs bg-violet-600 text-white px-3 py-1.5 rounded-lg hover:bg-violet-500 transition"><i class="fa-solid fa-plus mr-1"></i><span data-i18n="cal.phase">Fase</span></button>
                 </div>
 
                 <!-- Add Phase Form -->
                 <div id="ganttPhaseForm" class="hidden p-4 bg-slate-50 border-b border-slate-100">
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-3">
-                        <input type="text" id="ganttPhaseName" placeholder="Nome da fase" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                        <input type="text" id="ganttPhaseName" placeholder="Nome da fase" data-i18n-placeholder="cal.phaseNamePlaceholder" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                         <input type="date" id="ganttPhaseStart" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                         <input type="date" id="ganttPhaseEnd" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                         <select id="ganttPhaseStatus" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                            <option value="not_started">Não iniciada</option>
-                            <option value="in_progress">Em andamento</option>
-                            <option value="completed">Concluída</option>
+                            <option value="not_started" data-i18n="cal.notStarted">Não iniciada</option>
+                            <option value="in_progress" data-i18n="cal.inProgress">Em andamento</option>
+                            <option value="completed" data-i18n="cal.completed">Concluída</option>
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button id="saveGanttPhase" class="bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-emerald-500 transition"><i class="fa-solid fa-check mr-1"></i>Salvar</button>
-                        <button id="cancelGanttPhase" class="bg-slate-200 text-slate-700 text-xs font-semibold px-4 py-2 rounded-lg hover:bg-slate-300 transition">Cancelar</button>
+                        <button id="saveGanttPhase" class="bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-emerald-500 transition"><i class="fa-solid fa-check mr-1"></i><span data-i18n="cal.save">Salvar</span></button>
+                        <button id="cancelGanttPhase" class="bg-slate-200 text-slate-700 text-xs font-semibold px-4 py-2 rounded-lg hover:bg-slate-300 transition" data-i18n="cal.cancel">Cancelar</button>
                     </div>
                 </div>
 
                 <div class="p-6">
                     <div id="ganttEmpty" class="text-center py-8 text-slate-400">
                         <i class="fa-solid fa-chart-gantt text-3xl mb-3 block"></i>
-                        <p class="text-sm">Nenhuma fase cadastrada. Clique em "Fase" para começar.</p>
+                        <p class="text-sm" data-i18n="cal.noPhases">Nenhuma fase cadastrada. Clique em "Fase" para começar.</p>
                     </div>
                     <div id="ganttChart" class="hidden space-y-2"></div>
                 </div>
@@ -256,40 +256,40 @@
 
             <!-- Gantt PRO Banner (shown for free users) -->
             <div id="ganttProBanner" class="hidden bg-gradient-to-r from-emerald-50 to-cyan-50 border border-emerald-200/50 rounded-2xl p-5 mb-6 text-center">
-                <h3 class="text-sm font-bold mb-1"><i class="fa-solid fa-chart-gantt mr-1 text-emerald-600"></i>Cronograma Gantt <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></h3>
-                <p class="text-xs text-slate-500 mb-3">Visualize o progresso das fases do TCC em um cronograma interativo.</p>
-                <a href="planos.html" class="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 hover:underline"><i class="fa-solid fa-crown text-amber-500"></i>Fazer Upgrade</a>
+                <h3 class="text-sm font-bold mb-1"><i class="fa-solid fa-chart-gantt mr-1 text-emerald-600"></i><span data-i18n="cal.ganttChart">Cronograma Gantt</span> <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></h3>
+                <p class="text-xs text-slate-500 mb-3" data-i18n="cal.ganttProDesc">Visualize o progresso das fases do TCC em um cronograma interativo.</p>
+                <a href="planos.html" class="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 hover:underline"><i class="fa-solid fa-crown text-amber-500"></i><span data-i18n="cal.upgrade">Fazer Upgrade</span></a>
             </div>
 
             <!-- Goals Section -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-lg font-bold">
-                        <i class="fa-solid fa-bullseye mr-2 text-emerald-600"></i>Metas
+                        <i class="fa-solid fa-bullseye mr-2 text-emerald-600"></i><span data-i18n="cal.goals">Metas</span>
                     </h2>
                     <button id="addGoalBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-4 py-2 rounded-xl transition">
-                        <i class="fa-solid fa-plus mr-1"></i> Nova Meta
+                        <i class="fa-solid fa-plus mr-1"></i> <span data-i18n="cal.newGoal">Nova Meta</span>
                     </button>
                 </div>
 
                 <div id="goalForm" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-1">Meta</label>
-                            <input type="text" id="goalTitle" placeholder="Ex: Terminar capítulo 5"
+                            <label class="block text-xs font-medium text-slate-500 mb-1" data-i18n="cal.goal">Meta</label>
+                            <input type="text" id="goalTitle" placeholder="Ex: Terminar capítulo 5" data-i18n-placeholder="cal.goalPlaceholder"
                                 class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-1">Prazo</label>
+                            <label class="block text-xs font-medium text-slate-500 mb-1" data-i18n="cal.deadline">Prazo</label>
                             <input type="date" id="goalDeadline"
                                 class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                     </div>
                     <div class="flex gap-3">
                         <button id="saveGoal" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition">
-                            <i class="fa-solid fa-check mr-1"></i> Salvar
+                            <i class="fa-solid fa-check mr-1"></i> <span data-i18n="cal.save">Salvar</span>
                         </button>
-                        <button id="cancelGoal" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold px-4 py-2 rounded-xl transition">
+                        <button id="cancelGoal" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold px-4 py-2 rounded-xl transition" data-i18n="cal.cancel">
                             Cancelar
                         </button>
                     </div>
@@ -298,14 +298,14 @@
                 <div id="goalsList" class="space-y-3">
                     <div class="text-center py-6 text-slate-400">
                         <i class="fa-solid fa-flag text-2xl mb-2 block"></i>
-                        <p class="text-sm">Nenhuma meta definida.</p>
+                        <p class="text-sm" data-i18n="cal.noGoals">Nenhuma meta definida.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Day sessions panel -->
             <div id="dayPanel" class="hidden bg-white border border-slate-200 rounded-2xl p-6 mt-6 shadow-sm">
-                <h3 class="text-lg font-bold mb-4" id="dayPanelTitle">Sessões do dia</h3>
+                <h3 class="text-lg font-bold mb-4" id="dayPanelTitle" data-i18n="cal.daySessions">Sessões do dia</h3>
                 <div id="daySessionsList" class="space-y-3"></div>
             </div>
         </div>

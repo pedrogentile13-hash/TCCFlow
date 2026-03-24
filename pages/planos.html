@@ -73,19 +73,19 @@
                     <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
                 <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.dashboard">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.project">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.ia">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.calendar">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.tools"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
                     <div class="relative" id="moreDropdown">
-                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm flex items-center gap-1"><span data-i18n="nav.more">Mais</span> <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
                         <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
-                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.tasks">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.team">Equipe</a>
+                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.google">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
                             <div class="border-t border-slate-100 my-1"></div>
-                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.plans"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
                         </div>
                     </div>
                 </div><div class="flex items-center gap-2">
@@ -100,15 +100,15 @@
             </div>
         </div>
         <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Planos</a>
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.dashboard">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.project">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tasks">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.ia">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.calendar">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.team">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.google">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tools">Ferramentas</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50" data-i18n="nav.plans">Planos</a>
         </div>
     
     <script>
@@ -129,31 +129,31 @@
                 <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <i class="fa-solid fa-crown text-violet-600 text-3xl"></i>
                 </div>
-                <h1 class="text-3xl font-extrabold mb-2">Meu Plano</h1>
-                <p class="text-slate-500">Gerencie sua assinatura PRO do TCCFlow</p>
+                <h1 class="text-3xl font-extrabold mb-2" data-i18n="plans.title">Meu Plano</h1>
+                <p class="text-slate-500" data-i18n="plans.subtitle">Gerencie sua assinatura PRO do TCCFlow</p>
             </div>
 
             <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm mb-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-lg font-bold">Detalhes da Assinatura</h2>
-                    <span class="text-xs font-bold uppercase bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-4 py-1.5 rounded-full">PRO Ativo</span>
+                    <h2 class="text-lg font-bold" data-i18n="plans.subscriptionDetails">Detalhes da Assinatura</h2>
+                    <span class="text-xs font-bold uppercase bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-4 py-1.5 rounded-full" data-i18n="plans.proActive">PRO Ativo</span>
                 </div>
 
                 <div class="space-y-4">
                     <div class="flex items-center justify-between py-3 border-b border-slate-100">
-                        <span class="text-sm text-slate-500">Plano</span>
-                        <span class="text-sm font-bold">TCCFlow Pro</span>
+                        <span class="text-sm text-slate-500" data-i18n="plans.plan">Plano</span>
+                        <span class="text-sm font-bold" data-i18n="plans.tccflowPro">TCCFlow Pro</span>
                     </div>
                     <div class="flex items-center justify-between py-3 border-b border-slate-100">
-                        <span class="text-sm text-slate-500">Assentos</span>
+                        <span class="text-sm text-slate-500" data-i18n="plans.seats">Assentos</span>
                         <span class="text-sm font-bold" id="myPlanSeats">-</span>
                     </div>
                     <div class="flex items-center justify-between py-3 border-b border-slate-100">
-                        <span class="text-sm text-slate-500">Status</span>
-                        <span class="text-sm font-bold text-emerald-600"><i class="fa-solid fa-circle-check mr-1"></i>Ativo</span>
+                        <span class="text-sm text-slate-500" data-i18n="plans.status">Status</span>
+                        <span class="text-sm font-bold text-emerald-600"><i class="fa-solid fa-circle-check mr-1"></i><span data-i18n="plans.active">Ativo</span></span>
                     </div>
                     <div class="flex items-center justify-between py-3">
-                        <span class="text-sm text-slate-500">E-mail</span>
+                        <span class="text-sm text-slate-500" data-i18n="plans.email">E-mail</span>
                         <span class="text-sm font-bold" id="myPlanEmail">-</span>
                     </div>
                 </div>
@@ -161,17 +161,17 @@
 
             <!-- Features Included -->
             <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm mb-6">
-                <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-check-double text-emerald-500 mr-2"></i>Recursos Inclusos</h2>
+                <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-check-double text-emerald-500 mr-2"></i><span data-i18n="plans.includedFeatures">Recursos Inclusos</span></h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Dashboard compartilhado</div>
-                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Tarefas e organização</div>
-                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> 1.000 buscas I.A./mês</div>
-                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Até 50 artigos por seção</div>
-                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Google Drive integrado</div>
-                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Google Calendar sync</div>
-                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Gerenciamento de equipe</div>
-                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Projeto e fases do TCC</div>
-                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Suporte prioritário</div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span data-i18n="plans.featureSharedDashboard">Dashboard compartilhado</span></div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span data-i18n="plans.featureTasksOrg">Tarefas e organização</span></div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span data-i18n="plans.featureAiSearches">1.000 buscas I.A./mês</span></div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span data-i18n="plans.featureArticlesPerSection">Até 50 artigos por seção</span></div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span data-i18n="plans.featureGoogleDrive">Google Drive integrado</span></div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span data-i18n="plans.featureGoogleCalendar">Google Calendar sync</span></div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span data-i18n="plans.featureTeamManagement">Gerenciamento de equipe</span></div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span data-i18n="plans.featureProjectPhases">Projeto e fases do TCC</span></div>
+                    <div class="flex items-center gap-2 text-sm text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span data-i18n="plans.featurePrioritySupport">Suporte prioritário</span></div>
                 </div>
             </div>
 

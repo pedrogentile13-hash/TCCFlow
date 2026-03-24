@@ -57,19 +57,19 @@
                     <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
                 <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.dashboard">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.project">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.ia">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.calendar">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i><span data-i18n="nav.tools">Ferramentas</span></a>
                     <div class="relative" id="moreDropdown">
-                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1"><span data-i18n="nav.more">Mais</span> <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
                         <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.tasks">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.team">Equipe</a>
                             <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
                             <div class="border-t border-slate-100 my-1"></div>
-                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i><span data-i18n="nav.plans">Planos</span></a>
                         </div>
                     </div>
                 </div><div class="flex items-center gap-2">
@@ -84,15 +84,15 @@
             </div>
         </div>
         <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.dashboard">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.project">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tasks">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.ia">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.calendar">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.team">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle" data-i18n="common.pro">PRO</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50" data-i18n="nav.tools">Ferramentas</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.plans">Planos</a>
         </div>
     
     <script>
@@ -113,7 +113,7 @@
             <!-- Header -->
             <div class="mb-10 text-center">
                 <div class="inline-flex items-center gap-2 bg-violet-50 border border-violet-200 text-violet-700 text-xs font-bold px-4 py-1.5 rounded-full mb-4">
-                    <i class="fa-solid fa-wrench"></i> Ferramentas do TCC
+                    <i class="fa-solid fa-wrench"></i> <span data-i18n="tools.badge">Ferramentas do TCC</span>
                 </div>
                 <h1 class="text-4xl font-extrabold mb-3" data-i18n="tools.title">Ferramentas</h1>
                 <p class="text-slate-500 max-w-lg mx-auto" data-i18n="tools.subtitle">Ferramentas avançadas para turbinar seu TCC. Algumas são gratuitas, outras fazem parte do plano PRO.</p>
@@ -127,9 +127,9 @@
                     <div class="w-12 h-12 bg-gradient-to-br from-violet-100 to-violet-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-quote-right text-violet-600 text-lg"></i>
                     </div>
-                    <h3 class="font-bold text-lg mb-1">Gerador de Referências <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1">PRO</span></h3>
-                    <p class="text-sm text-slate-500 mb-3">Formate suas referências automaticamente em ABNT, APA ou Vancouver. Importe direto da I.A.</p>
-                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i>Acessar</span>
+                    <h3 class="font-bold text-lg mb-1"><span data-i18n="tools.references">Gerador de Referências</span> <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1" data-i18n="common.pro">PRO</span></h3>
+                    <p class="text-sm text-slate-500 mb-3" data-i18n="tools.referencesDesc">Formate suas referências automaticamente em ABNT, APA ou Vancouver. Importe direto da I.A.</p>
+                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
                 <!-- 2. Anotações & Fichamentos — GRÁTIS -->
@@ -137,9 +137,9 @@
                     <div class="w-12 h-12 bg-gradient-to-br from-cyan-100 to-cyan-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-pen-clip text-cyan-600 text-lg"></i>
                     </div>
-                    <h3 class="font-bold text-lg mb-1">Anotações & Fichamentos <span class="text-[8px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full align-middle ml-1">GRÁTIS</span></h3>
-                    <p class="text-sm text-slate-500 mb-3">Organize suas leituras com fichamentos vinculados aos artigos salvos. Tags e busca.</p>
-                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i>Acessar</span>
+                    <h3 class="font-bold text-lg mb-1"><span data-i18n="tools.notes">Anotações & Fichamentos</span> <span class="text-[8px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full align-middle ml-1" data-i18n="common.free">GRÁTIS</span></h3>
+                    <p class="text-sm text-slate-500 mb-3" data-i18n="tools.notesDesc">Organize suas leituras com fichamentos vinculados aos artigos salvos. Tags e busca.</p>
+                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
                 <!-- 3. Verificador de Plágio — PRO -->
@@ -147,9 +147,9 @@
                     <div class="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-magnifying-glass-chart text-red-600 text-lg"></i>
                     </div>
-                    <h3 class="font-bold text-lg mb-1">Verificador de Plágio <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1">PRO</span></h3>
-                    <p class="text-sm text-slate-500 mb-3">Verifique a originalidade do seu texto com análise de similaridade básica.</p>
-                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i>Acessar</span>
+                    <h3 class="font-bold text-lg mb-1"><span data-i18n="tools.plagiarism">Verificador de Plágio</span> <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1" data-i18n="common.pro">PRO</span></h3>
+                    <p class="text-sm text-slate-500 mb-3" data-i18n="tools.plagiarismDesc">Verifique a originalidade do seu texto com análise de similaridade básica.</p>
+                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
                 <!-- 4. Banco de Templates — 2 GRÁTIS (rest PRO) -->
@@ -157,9 +157,9 @@
                     <div class="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-file-lines text-pink-600 text-lg"></i>
                     </div>
-                    <h3 class="font-bold text-lg mb-1">Banco de Templates <span class="text-[8px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full align-middle ml-1">2 GRÁTIS</span></h3>
-                    <p class="text-sm text-slate-500 mb-3">Modelos prontos de Introdução, Metodologia, Capa, Sumário e Slides de Defesa.</p>
-                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i>Acessar</span>
+                    <h3 class="font-bold text-lg mb-1"><span data-i18n="tools.templates">Banco de Templates</span> <span class="text-[8px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full align-middle ml-1" data-i18n="common.free">GRÁTIS</span></h3>
+                    <p class="text-sm text-slate-500 mb-3" data-i18n="tools.templatesDesc">Modelos prontos de Introdução, Metodologia, Capa, Sumário e Slides de Defesa.</p>
+                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
                 <!-- 5. Diário de Progresso — PRO -->
@@ -167,9 +167,9 @@
                     <div class="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-book-open text-orange-600 text-lg"></i>
                     </div>
-                    <h3 class="font-bold text-lg mb-1">Diário de Progresso <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1">PRO</span></h3>
-                    <p class="text-sm text-slate-500 mb-3">Registre atividades, tempo gasto e humor. Gere relatórios para o orientador.</p>
-                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i>Acessar</span>
+                    <h3 class="font-bold text-lg mb-1"><span data-i18n="tools.diary">Diário de Progresso</span> <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1" data-i18n="common.pro">PRO</span></h3>
+                    <p class="text-sm text-slate-500 mb-3" data-i18n="tools.diaryDesc">Registre atividades, tempo gasto e humor. Gere relatórios para o orientador.</p>
+                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
                 <!-- 6. Quadro de Ideias — PRO -->
@@ -177,9 +177,9 @@
                     <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-lightbulb text-yellow-600 text-lg"></i>
                     </div>
-                    <h3 class="font-bold text-lg mb-1">Quadro de Ideias <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1">PRO</span></h3>
-                    <p class="text-sm text-slate-500 mb-3">Mural de post-its para brainstorming. Organize temas, hipóteses e referências.</p>
-                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i>Acessar</span>
+                    <h3 class="font-bold text-lg mb-1"><span data-i18n="tools.ideas">Quadro de Ideias</span> <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1" data-i18n="common.pro">PRO</span></h3>
+                    <p class="text-sm text-slate-500 mb-3" data-i18n="tools.ideasDesc">Mural de post-its para brainstorming. Organize temas, hipóteses e referências.</p>
+                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
                 <!-- 7. Validação SMART — PRO -->
@@ -187,9 +187,9 @@
                     <div class="w-12 h-12 bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-bullseye text-teal-600 text-lg"></i>
                     </div>
-                    <h3 class="font-bold text-lg mb-1">Validação SMART <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1">PRO</span></h3>
-                    <p class="text-sm text-slate-500 mb-3">Avalie se o tema do seu TCC atende aos critérios da metodologia SMART.</p>
-                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i>Acessar</span>
+                    <h3 class="font-bold text-lg mb-1"><span data-i18n="tools.smart">Validação SMART</span> <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1" data-i18n="common.pro">PRO</span></h3>
+                    <p class="text-sm text-slate-500 mb-3" data-i18n="tools.smartDesc">Avalie se o tema do seu TCC atende aos critérios da metodologia SMART.</p>
+                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
                 <!-- 8. Detector de I.A. — PRO -->
@@ -197,9 +197,9 @@
                     <div class="w-12 h-12 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-microchip text-indigo-600 text-lg"></i>
                     </div>
-                    <h3 class="font-bold text-lg mb-1">Detector de I.A. <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1">PRO</span></h3>
-                    <p class="text-sm text-slate-500 mb-3">Analise se o seu texto pode ser identificado como gerado por inteligência artificial.</p>
-                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i>Acessar</span>
+                    <h3 class="font-bold text-lg mb-1"><span data-i18n="tools.aiDetector">Detector de I.A.</span> <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle ml-1" data-i18n="common.pro">PRO</span></h3>
+                    <p class="text-sm text-slate-500 mb-3" data-i18n="tools.aiDetectorDesc">Analise se o seu texto pode ser identificado como gerado por inteligência artificial.</p>
+                    <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
             </div>
@@ -208,7 +208,7 @@
             <div class="mt-12 text-center">
                 <div class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-6 py-3">
                     <i class="fa-solid fa-info-circle text-slate-400"></i>
-                    <span class="text-sm text-slate-500">Ferramentas PRO fazem parte do plano pago. <a href="planos.html" class="text-violet-600 font-medium hover:underline">Ver planos</a> · <a href="mailto:suporte@tccflow.com" class="text-violet-600 font-medium hover:underline">Envie feedback</a></span>
+                    <span class="text-sm text-slate-500" data-i18n="tools.proInfo">Ferramentas PRO fazem parte do plano pago.</span> <a href="planos.html" class="text-violet-600 font-medium hover:underline text-sm" data-i18n="tools.viewPlans">Ver planos</a> <span class="text-sm text-slate-500">·</span> <a href="mailto:suporte@tccflow.com" class="text-violet-600 font-medium hover:underline text-sm" data-i18n="tools.sendFeedback">Envie feedback</a>
                 </div>
             </div>
 
