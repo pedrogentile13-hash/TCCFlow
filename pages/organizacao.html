@@ -188,22 +188,59 @@
 
             <!-- Add/Edit Task Modal -->
             <div id="taskModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+                <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl max-h-[90vh] overflow-y-auto">
                     <h2 class="text-xl font-bold mb-4" id="modalTitle">Nova Tarefa</h2>
                     <form id="taskForm" class="space-y-4">
                         <input type="hidden" id="editTaskId" value="">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Título</label>
-                            <input type="text" id="taskTitle" required placeholder="Descrição da tarefa"
+                            <label class="block text-sm font-medium mb-1">Titulo</label>
+                            <input type="text" id="taskTitle" required placeholder="Descricao da tarefa"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Atribuído a</label>
-                            <select id="taskAssignee" required
-                                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                                <option value="">Selecione um membro...</option>
-                            </select>
+
+                        <!-- Assignment Type Toggle -->
+                        <div id="assignTypeContainer">
+                            <label class="block text-sm font-medium mb-2">Atribuir a</label>
+                            <div class="flex gap-2 mb-3">
+                                <button type="button" onclick="setAssignType('individual')" id="btnIndividual"
+                                    class="flex-1 text-xs font-semibold py-2 px-3 rounded-lg border-2 border-violet-500 bg-violet-50 text-violet-700 transition">
+                                    <i class="fa-solid fa-user mr-1"></i>Individual
+                                </button>
+                                <button type="button" onclick="setAssignType('multiple')" id="btnMultiple"
+                                    class="flex-1 text-xs font-semibold py-2 px-3 rounded-lg border-2 border-slate-200 text-slate-500 hover:border-violet-300 transition">
+                                    <i class="fa-solid fa-users mr-1"></i>Varios
+                                </button>
+                                <button type="button" onclick="setAssignType('all')" id="btnAll"
+                                    class="flex-1 text-xs font-semibold py-2 px-3 rounded-lg border-2 border-slate-200 text-slate-500 hover:border-violet-300 transition">
+                                    <i class="fa-solid fa-users-rectangle mr-1"></i>Todos
+                                </button>
+                            </div>
+
+                            <!-- Individual Select -->
+                            <div id="individualSelect">
+                                <select id="taskAssignee"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                                    <option value="">Selecione um membro...</option>
+                                </select>
+                            </div>
+
+                            <!-- Multiple Select (checkboxes) -->
+                            <div id="multipleSelect" class="hidden">
+                                <div id="memberCheckboxes" class="space-y-2 max-h-40 overflow-y-auto p-2 bg-slate-50 rounded-lg border border-slate-200">
+                                    <!-- Filled by JS -->
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-1">Selecione os membros desejados</p>
+                            </div>
+
+                            <!-- All Members (info) -->
+                            <div id="allSelect" class="hidden">
+                                <div class="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2.5 text-sm text-emerald-700 flex items-center gap-2">
+                                    <i class="fa-solid fa-users-rectangle"></i>
+                                    <span>Tarefa sera criada para <strong>todos os membros</strong> do projeto</span>
+                                </div>
+                            </div>
                         </div>
+
                         <div>
                             <label class="block text-sm font-medium mb-1">Prazo</label>
                             <input type="date" id="taskDueDate" required
@@ -215,12 +252,12 @@
                                 class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                                 <option value="todo">A Fazer</option>
                                 <option value="progress">Em Andamento</option>
-                                <option value="done">Concluído</option>
+                                <option value="done">Concluido</option>
                             </select>
                         </div>
                         <div class="flex gap-3">
-                            <button type="submit" id="taskSubmitBtn" class="flex-1 bg-violet-600 hover:bg-violet-500 text-white font-medium py-2 rounded-lg transition">Criar</button>
-                            <button type="button" onclick="closeTaskModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 font-medium py-2 rounded-lg transition">Cancelar</button>
+                            <button type="submit" id="taskSubmitBtn" class="flex-1 bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg text-white font-medium py-2.5 rounded-lg transition">Criar</button>
+                            <button type="button" onclick="closeTaskModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 font-medium py-2.5 rounded-lg transition">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -237,8 +274,23 @@
         let projectId = null;
         let projectMembers = [];
         let memberNames = {};
+        let allMembersData = [];
         let userIsPro = false;
+        let currentAssignType = 'individual';
         const FREE_TASK_LIMIT = 5;
+
+        // ========== Assignment Type Toggle ==========
+        window.setAssignType = function(type) {
+            currentAssignType = type;
+            const btns = { individual: document.getElementById('btnIndividual'), multiple: document.getElementById('btnMultiple'), all: document.getElementById('btnAll') };
+            const panels = { individual: document.getElementById('individualSelect'), multiple: document.getElementById('multipleSelect'), all: document.getElementById('allSelect') };
+            Object.keys(btns).forEach(k => {
+                btns[k].className = k === type
+                    ? 'flex-1 text-xs font-semibold py-2 px-3 rounded-lg border-2 border-violet-500 bg-violet-50 text-violet-700 transition'
+                    : 'flex-1 text-xs font-semibold py-2 px-3 rounded-lg border-2 border-slate-200 text-slate-500 hover:border-violet-300 transition';
+                panels[k].classList.toggle('hidden', k !== type);
+            });
+        };
 
         document.getElementById('mobileNavBtn').addEventListener('click', () => {
             document.getElementById('mobileNav').classList.toggle('hidden');
@@ -304,13 +356,26 @@
                 }
                 projectMembers = uniqueMembers.map(m => m.id);
 
+                allMembersData = uniqueMembers;
+
                 const assigneeSelect = document.getElementById('taskAssignee');
                 assigneeSelect.innerHTML = '<option value="">Selecione um membro...</option>';
+                const checkboxContainer = document.getElementById('memberCheckboxes');
+                checkboxContainer.innerHTML = '';
                 for (const member of uniqueMembers) {
                     const option = document.createElement('option');
                     option.value = member.id;
                     option.textContent = member.name || 'Sem nome';
                     assigneeSelect.appendChild(option);
+
+                    // Build checkboxes for multi-select
+                    const initial = (member.name || '?')[0].toUpperCase();
+                    checkboxContainer.innerHTML += `
+                        <label class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-violet-50 cursor-pointer transition">
+                            <input type="checkbox" value="${member.id}" class="member-checkbox w-4 h-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500">
+                            <div class="w-7 h-7 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${initial}</div>
+                            <span class="text-sm font-medium">${member.name || 'Sem nome'}</span>
+                        </label>`;
                 }
 
                 // Load tasks from Supabase
@@ -355,9 +420,9 @@
                     addBtn.title = '';
                 }
 
-                // Hide assignee for free users
+                // Hide assignment container for free users
                 if (!userIsPro) {
-                    document.getElementById('taskAssignee').closest('div').classList.add('hidden');
+                    document.getElementById('assignTypeContainer').classList.add('hidden');
                 }
             } catch (err) {
                 console.error('Error loading data:', err);
@@ -423,14 +488,19 @@
             document.getElementById('taskSubmitBtn').textContent = 'Criar';
             document.getElementById('statusField').classList.add('hidden');
             document.getElementById('taskForm').reset();
-            // Hide assignee for free users
-            const assigneeDiv = document.getElementById('taskAssignee').closest('div');
+            // Reset checkboxes
+            document.querySelectorAll('.member-checkbox').forEach(cb => cb.checked = false);
+            currentAssignType = 'individual';
+            setAssignType('individual');
+
+            const assignContainer = document.getElementById('assignTypeContainer');
             if (!userIsPro) {
-                assigneeDiv.classList.add('hidden');
-                document.getElementById('taskAssignee').removeAttribute('required');
+                assignContainer.classList.add('hidden');
             } else {
-                assigneeDiv.classList.remove('hidden');
-                document.getElementById('taskAssignee').setAttribute('required', '');
+                assignContainer.classList.remove('hidden');
+                // Show all buttons for new task
+                document.getElementById('btnMultiple').classList.remove('hidden');
+                document.getElementById('btnAll').classList.remove('hidden');
             }
             document.getElementById('taskModal').classList.remove('hidden');
         });
@@ -447,14 +517,18 @@
             document.getElementById('taskDueDate').value = dueDate;
             document.getElementById('taskStatus').value = status;
             document.getElementById('statusField').classList.remove('hidden');
-            // Hide assignee for free users
-            const assigneeDiv = document.getElementById('taskAssignee').closest('div');
+
+            // Edit mode: show only individual select
+            const assignContainer = document.getElementById('assignTypeContainer');
             if (!userIsPro) {
-                assigneeDiv.classList.add('hidden');
-                document.getElementById('taskAssignee').removeAttribute('required');
+                assignContainer.classList.add('hidden');
             } else {
-                assigneeDiv.classList.remove('hidden');
-                document.getElementById('taskAssignee').setAttribute('required', '');
+                assignContainer.classList.remove('hidden');
+                currentAssignType = 'individual';
+                setAssignType('individual');
+                // Hide multiple/all buttons in edit mode
+                document.getElementById('btnMultiple').classList.add('hidden');
+                document.getElementById('btnAll').classList.add('hidden');
                 document.getElementById('taskAssignee').value = assignee;
             }
             document.getElementById('taskModal').classList.remove('hidden');
@@ -466,39 +540,75 @@
 
             const editId = document.getElementById('editTaskId').value;
             const title = document.getElementById('taskTitle').value;
-            const assigned_to = userIsPro ? (document.getElementById('taskAssignee').value || null) : currentUser.uid;
             const due_date = document.getElementById('taskDueDate').value || null;
             const status = editId ? document.getElementById('taskStatus').value : 'todo';
 
-            // Free tier: check task limit before creating new task
+            // Determine assignees based on assignment type
+            let assignees = [];
+            if (!userIsPro) {
+                assignees = [currentUser.uid];
+            } else if (editId) {
+                // Editing: always single
+                assignees = [document.getElementById('taskAssignee').value || currentUser.uid];
+            } else {
+                // Creating new
+                if (currentAssignType === 'individual') {
+                    const val = document.getElementById('taskAssignee').value;
+                    if (!val) { alert('Selecione um membro.'); return; }
+                    assignees = [val];
+                } else if (currentAssignType === 'multiple') {
+                    const checked = document.querySelectorAll('.member-checkbox:checked');
+                    assignees = Array.from(checked).map(cb => cb.value);
+                    if (assignees.length === 0) { alert('Selecione pelo menos um membro.'); return; }
+                } else if (currentAssignType === 'all') {
+                    assignees = allMembersData.map(m => m.id);
+                    if (assignees.length === 0) { alert('Nenhum membro no projeto.'); return; }
+                }
+            }
+
+            // Free tier: check task limit before creating new tasks
             if (!userIsPro && !editId) {
                 const { data: currentTasks } = await _supa.from('tasks').select('id, status').eq('project_id', projectId);
                 const activeCount = (currentTasks || []).filter(t => t.status !== 'done').length;
-                if (activeCount >= FREE_TASK_LIMIT) {
-                    alert('Limite de 5 tarefas ativas atingido. Conclua ou apague tarefas existentes, ou faça upgrade para PRO.');
+                if (activeCount + assignees.length > FREE_TASK_LIMIT) {
+                    alert('Limite de ' + FREE_TASK_LIMIT + ' tarefas ativas atingido. Conclua ou apague tarefas, ou faca upgrade para PRO.');
                     return;
                 }
             }
 
+            const btn = document.getElementById('taskSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Salvando...';
+
             try {
                 if (editId) {
+                    // Edit: single update
+                    const assigned_to = assignees[0] || null;
                     const { error } = await _supa
                         .from('tasks')
                         .update({ title, assigned_to, due_date, status })
                         .eq('id', editId);
                     if (error) throw error;
                 } else {
+                    // Create: one task per assignee (collective)
+                    const tasksToInsert = assignees.map(uid => ({
+                        project_id: projectId, title, assigned_to: uid, due_date, status
+                    }));
                     const { error } = await _supa
                         .from('tasks')
-                        .insert({ project_id: projectId, title, assigned_to, due_date, status });
+                        .insert(tasksToInsert);
                     if (error) throw error;
                 }
                 closeTaskModal();
                 document.getElementById('taskForm').reset();
+                currentAssignType = 'individual';
                 await loadData();
             } catch (err) {
                 alert('Erro: ' + err.message);
             }
+
+            btn.disabled = false;
+            btn.innerHTML = editId ? 'Salvar' : 'Criar';
         });
 
         // ========== Status Change ==========

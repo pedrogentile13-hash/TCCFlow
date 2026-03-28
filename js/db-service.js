@@ -227,7 +227,8 @@ const DB = {
                 id: data.id, status: data.status, plan: data.plan,
                 seats: data.seats, paymentId: data.payment_id,
                 paymentMethod: data.payment_method, userId: data.user_id,
-                userEmail: data.user_email, userName: data.user_name
+                userEmail: data.user_email, userName: data.user_name,
+                maxProjects: data.max_projects
             } : null;
         },
 
@@ -363,8 +364,36 @@ const DB = {
         },
 
         async getMaxProjects(userId) {
-            const isPro = await DB.subscriptions.isPro(userId);
+            // Check if there's a custom max_projects set in subscriptions
+            const sub = await DB.subscriptions.get(userId);
+            if (sub && sub.maxProjects !== null && sub.maxProjects !== undefined) {
+                return sub.maxProjects;
+            }
+            // Default limits
+            const isPro = sub && sub.status === 'active' && sub.plan === 'pro';
             return isPro ? 2 : 1;
+        },
+
+        async setMaxProjects(userId, maxProjects) {
+            // Upsert subscription record to set custom max_projects
+            const { data: existing } = await _supa
+                .from('subscriptions')
+                .select('id')
+                .eq('id', userId)
+                .maybeSingle();
+
+            if (existing) {
+                const { error } = await _supa
+                    .from('subscriptions')
+                    .update({ max_projects: maxProjects })
+                    .eq('id', userId);
+                if (error) throw error;
+            } else {
+                const { error } = await _supa
+                    .from('subscriptions')
+                    .insert({ id: userId, status: 'inactive', plan: 'free', max_projects: maxProjects, user_id: userId });
+                if (error) throw error;
+            }
         },
 
         async canCreateProject(userId) {
@@ -507,6 +536,174 @@ const DB = {
                 .from('orientador_comments')
                 .delete()
                 .eq('id', commentId);
+            if (error) throw error;
+        }
+    },
+
+    // ===================== Diary Entries =====================
+    diary: {
+        async getAll(projectId) {
+            const { data, error } = await _supa
+                .from('diary_entries')
+                .select('*')
+                .eq('project_id', projectId)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return (data || []).map(r => ({
+                id: r.id, projectId: r.project_id, content: r.content,
+                mood: r.mood, createdBy: r.created_by, createdAt: r.created_at
+            }));
+        },
+        async add(projectId, entry) {
+            const { data, error } = await _supa
+                .from('diary_entries')
+                .insert({
+                    project_id: projectId,
+                    content: entry.content || '',
+                    mood: entry.mood || 'neutral',
+                    created_by: auth.currentUser.uid
+                })
+                .select().maybeSingle();
+            if (error) throw error;
+            return { id: data.id };
+        },
+        async update(entryId, updateData) {
+            const cleanData = {};
+            if (updateData.content !== undefined) cleanData.content = updateData.content;
+            if (updateData.mood !== undefined) cleanData.mood = updateData.mood;
+            const { error } = await _supa.from('diary_entries').update(cleanData).eq('id', entryId);
+            if (error) throw error;
+        },
+        async remove(entryId) {
+            const { error } = await _supa.from('diary_entries').delete().eq('id', entryId);
+            if (error) throw error;
+        }
+    },
+
+    // ===================== Notes =====================
+    notes: {
+        async getAll(projectId) {
+            const { data, error } = await _supa
+                .from('notes')
+                .select('*')
+                .eq('project_id', projectId)
+                .order('updated_at', { ascending: false });
+            if (error) throw error;
+            return (data || []).map(r => ({
+                id: r.id, projectId: r.project_id, title: r.title,
+                content: r.content, color: r.color,
+                createdBy: r.created_by, createdAt: r.created_at, updatedAt: r.updated_at
+            }));
+        },
+        async add(projectId, note) {
+            const { data, error } = await _supa
+                .from('notes')
+                .insert({
+                    project_id: projectId,
+                    title: note.title || '',
+                    content: note.content || '',
+                    color: note.color || 'yellow',
+                    created_by: auth.currentUser.uid
+                })
+                .select().maybeSingle();
+            if (error) throw error;
+            return { id: data.id };
+        },
+        async update(noteId, updateData) {
+            const cleanData = { updated_at: new Date().toISOString() };
+            if (updateData.title !== undefined) cleanData.title = updateData.title;
+            if (updateData.content !== undefined) cleanData.content = updateData.content;
+            if (updateData.color !== undefined) cleanData.color = updateData.color;
+            const { error } = await _supa.from('notes').update(cleanData).eq('id', noteId);
+            if (error) throw error;
+        },
+        async remove(noteId) {
+            const { error } = await _supa.from('notes').delete().eq('id', noteId);
+            if (error) throw error;
+        }
+    },
+
+    // ===================== Ideas =====================
+    ideas: {
+        async getAll(projectId) {
+            const { data, error } = await _supa
+                .from('ideas')
+                .select('*')
+                .eq('project_id', projectId)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return (data || []).map(r => ({
+                id: r.id, projectId: r.project_id, title: r.title,
+                description: r.description, category: r.category, votes: r.votes,
+                createdBy: r.created_by, createdAt: r.created_at
+            }));
+        },
+        async add(projectId, idea) {
+            const { data, error } = await _supa
+                .from('ideas')
+                .insert({
+                    project_id: projectId,
+                    title: idea.title || '',
+                    description: idea.description || '',
+                    category: idea.category || 'geral',
+                    votes: 0,
+                    created_by: auth.currentUser.uid
+                })
+                .select().maybeSingle();
+            if (error) throw error;
+            return { id: data.id };
+        },
+        async update(ideaId, updateData) {
+            const cleanData = {};
+            if (updateData.title !== undefined) cleanData.title = updateData.title;
+            if (updateData.description !== undefined) cleanData.description = updateData.description;
+            if (updateData.category !== undefined) cleanData.category = updateData.category;
+            if (updateData.votes !== undefined) cleanData.votes = updateData.votes;
+            const { error } = await _supa.from('ideas').update(cleanData).eq('id', ideaId);
+            if (error) throw error;
+        },
+        async remove(ideaId) {
+            const { error } = await _supa.from('ideas').delete().eq('id', ideaId);
+            if (error) throw error;
+        }
+    },
+
+    // ===================== References =====================
+    references: {
+        async getAll(projectId) {
+            const { data, error } = await _supa
+                .from('user_references')
+                .select('*')
+                .eq('project_id', projectId)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return (data || []).map(r => ({
+                id: r.id, projectId: r.project_id, type: r.type,
+                title: r.title, authors: r.authors, year: r.year,
+                source: r.source, url: r.url, formatted: r.formatted,
+                createdBy: r.created_by, createdAt: r.created_at
+            }));
+        },
+        async add(projectId, ref) {
+            const { data, error } = await _supa
+                .from('user_references')
+                .insert({
+                    project_id: projectId,
+                    type: ref.type || 'article',
+                    title: ref.title || '',
+                    authors: ref.authors || '',
+                    year: ref.year || '',
+                    source: ref.source || '',
+                    url: ref.url || '',
+                    formatted: ref.formatted || '',
+                    created_by: auth.currentUser.uid
+                })
+                .select().maybeSingle();
+            if (error) throw error;
+            return { id: data.id };
+        },
+        async remove(refId) {
+            const { error } = await _supa.from('user_references').delete().eq('id', refId);
             if (error) throw error;
         }
     },

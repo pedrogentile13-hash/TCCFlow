@@ -27,6 +27,10 @@ create table if not exists projects (
     created_at timestamptz default now()
 );
 
+-- Add max_projects to subscriptions (allows admin to customize per user)
+-- Default: free=1, pro=2, but can be overridden
+alter table subscriptions add column if not exists max_projects integer default null;
+
 -- 3. Tasks table
 create table if not exists tasks (
     id uuid primary key default gen_random_uuid(),
@@ -130,6 +134,55 @@ create table if not exists ai_usage (
     project_id uuid references projects(id) on delete cascade,
     month text not null,
     count integer default 0
+);
+
+-- 12. Diary entries (diario)
+create table if not exists diary_entries (
+    id uuid primary key default gen_random_uuid(),
+    project_id uuid references projects(id) on delete cascade,
+    content text not null default '',
+    mood text default 'neutral',
+    created_by uuid references auth.users(id),
+    created_at timestamptz default now()
+);
+
+-- 13. Notes (anotacoes)
+create table if not exists notes (
+    id uuid primary key default gen_random_uuid(),
+    project_id uuid references projects(id) on delete cascade,
+    title text not null default '',
+    content text not null default '',
+    color text default 'yellow',
+    created_by uuid references auth.users(id),
+    created_at timestamptz default now(),
+    updated_at timestamptz default now()
+);
+
+-- 14. Ideas (ideias)
+create table if not exists ideas (
+    id uuid primary key default gen_random_uuid(),
+    project_id uuid references projects(id) on delete cascade,
+    title text not null default '',
+    description text default '',
+    category text default 'geral',
+    votes integer default 0,
+    created_by uuid references auth.users(id),
+    created_at timestamptz default now()
+);
+
+-- 15. References (referencias)
+create table if not exists user_references (
+    id uuid primary key default gen_random_uuid(),
+    project_id uuid references projects(id) on delete cascade,
+    type text default 'article',
+    title text not null default '',
+    authors text default '',
+    year text default '',
+    source text default '',
+    url text default '',
+    formatted text default '',
+    created_by uuid references auth.users(id),
+    created_at timestamptz default now()
 );
 
 -- ============================================================
@@ -285,3 +338,32 @@ create index if not exists idx_orientador_projects_orientador on orientador_proj
 create index if not exists idx_orientador_projects_project on orientador_projects(project_id);
 create index if not exists idx_orientador_projects_invite on orientador_projects(invite_code);
 create index if not exists idx_orientador_comments_project on orientador_comments(project_id);
+
+-- RLS for new tables (diary, notes, ideas, references)
+alter table diary_entries enable row level security;
+alter table notes enable row level security;
+alter table ideas enable row level security;
+alter table user_references enable row level security;
+
+create policy "Diary entries by project members" on diary_entries for all using (
+    project_id = get_my_project_id() and get_my_project_id() is not null
+);
+create policy "Notes by project members" on notes for all using (
+    project_id = get_my_project_id() and get_my_project_id() is not null
+);
+create policy "Ideas by project members" on ideas for all using (
+    project_id = get_my_project_id() and get_my_project_id() is not null
+);
+create policy "References by project members" on user_references for all using (
+    project_id = get_my_project_id() and get_my_project_id() is not null
+);
+
+-- Subscriptions: allow upsert for max_projects
+create policy "Users can upsert own subscription" on subscriptions for insert with check (auth.uid() = id);
+create policy "Users can update own subscription" on subscriptions for update using (auth.uid() = id);
+
+-- Indexes for new tables
+create index if not exists idx_diary_entries_project on diary_entries(project_id);
+create index if not exists idx_notes_project on notes(project_id);
+create index if not exists idx_ideas_project on ideas(project_id);
+create index if not exists idx_user_references_project on user_references(project_id);

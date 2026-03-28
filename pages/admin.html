@@ -248,6 +248,37 @@
                 </form>
             </div>
 
+            <!-- Project Limits -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
+                <h3 class="text-lg font-bold mb-4">
+                    <i class="fa-solid fa-folder-tree mr-2 text-violet-600"></i>Limite de Projetos
+                </h3>
+                <p class="text-sm text-slate-500 mb-4">Gerencie quantos projetos voce pode criar.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <p class="text-xs text-slate-500 mb-1">Projetos Criados</p>
+                        <p class="text-2xl font-bold text-violet-600" id="projectsCount">-</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <p class="text-xs text-slate-500 mb-1">Limite Maximo</p>
+                        <p class="text-2xl font-bold text-cyan-600" id="projectsMax">-</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <p class="text-xs text-slate-500 mb-1">Plano</p>
+                        <p class="text-2xl font-bold" id="planLabel">-</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <label class="text-sm font-medium text-slate-600">Alterar limite:</label>
+                    <input type="number" id="maxProjectsInput" min="1" max="50" value="1"
+                        class="w-20 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <button id="saveMaxProjectsBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-4 py-2 rounded-lg text-sm hover:shadow-lg transition">
+                        <i class="fa-solid fa-check mr-1"></i>Salvar
+                    </button>
+                </div>
+                <p id="maxProjectsFeedback" class="hidden text-sm mt-2 rounded-lg px-3 py-2"></p>
+            </div>
+
             <!-- Danger Zone -->
             <div class="bg-white border border-red-200 rounded-2xl p-6 sm:p-8 shadow-sm">
                 <h3 class="text-lg font-bold text-red-600 mb-4">
@@ -317,6 +348,7 @@
             } catch(e) { console.log(e); }
 
             loadProfile();
+            loadProjectLimits();
         });
 
         // ========== Mobile Nav ==========
@@ -327,6 +359,50 @@
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await auth.signOut();
             window.location.href = '../index.html';
+        });
+
+        // ========== Project Limits ==========
+        async function loadProjectLimits() {
+            if (!currentUser) return;
+            try {
+                const { count, max } = await DB.projects.canCreateProject(currentUser.uid);
+                document.getElementById('projectsCount').textContent = count;
+                document.getElementById('projectsMax').textContent = max;
+                document.getElementById('maxProjectsInput').value = max;
+
+                const sub = await DB.subscriptions.get(currentUser.uid);
+                const planEl = document.getElementById('planLabel');
+                if (sub && sub.status === 'active' && sub.plan === 'pro') {
+                    planEl.textContent = 'PRO';
+                    planEl.classList.add('text-violet-600');
+                } else {
+                    planEl.textContent = 'Free';
+                    planEl.classList.add('text-slate-500');
+                }
+            } catch(e) { console.log('Error loading project limits:', e); }
+        }
+
+        document.getElementById('saveMaxProjectsBtn').addEventListener('click', async () => {
+            const newMax = parseInt(document.getElementById('maxProjectsInput').value);
+            const feedback = document.getElementById('maxProjectsFeedback');
+            if (isNaN(newMax) || newMax < 1) {
+                feedback.className = 'text-sm mt-2 rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                feedback.textContent = 'Valor invalido. Minimo: 1';
+                feedback.classList.remove('hidden');
+                return;
+            }
+            try {
+                await DB.projects.setMaxProjects(currentUser.uid, newMax);
+                feedback.className = 'text-sm mt-2 rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
+                feedback.textContent = 'Limite atualizado para ' + newMax + ' projetos!';
+                feedback.classList.remove('hidden');
+                document.getElementById('projectsMax').textContent = newMax;
+                setTimeout(() => feedback.classList.add('hidden'), 3000);
+            } catch(e) {
+                feedback.className = 'text-sm mt-2 rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                feedback.textContent = 'Erro ao salvar: ' + (e.message || 'Tente novamente');
+                feedback.classList.remove('hidden');
+            }
         });
 
         // ========== Profile ==========

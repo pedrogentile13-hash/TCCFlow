@@ -478,26 +478,71 @@
             document.getElementById('eventForm').classList.add('hidden');
         });
 
-        document.getElementById('openCalendarEvent').addEventListener('click', () => {
-            const title = encodeURIComponent(document.getElementById('eventTitle').value || 'TCC');
-            const location = encodeURIComponent(document.getElementById('eventLocation').value || '');
-            const details = encodeURIComponent(document.getElementById('eventDetails').value || '');
+        document.getElementById('openCalendarEvent').addEventListener('click', async () => {
+            const title = document.getElementById('eventTitle').value || 'TCC';
+            const location = document.getElementById('eventLocation').value || '';
+            const details = document.getElementById('eventDetails').value || '';
             const startInput = document.getElementById('eventStart').value;
             const endInput = document.getElementById('eventEnd').value;
 
+            if (!startInput || !endInput) {
+                alert('Preencha a data e hora de inicio e fim.');
+                return;
+            }
+
+            // Save to Supabase calendar_sessions
+            if (projectId) {
+                try {
+                    const dateStr = startInput.split('T')[0];
+                    const timeStr = startInput.split('T')[1] || '';
+                    await DB.calendarSessions.add(projectId, {
+                        subject: title,
+                        topic: details || location || '',
+                        date: dateStr,
+                        time: timeStr,
+                        completed: false
+                    });
+                } catch (e) { console.log('Error saving to calendar:', e); }
+            }
+
+            // If Google token available, create via Calendar API
+            if (googleAccessToken) {
+                try {
+                    const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + googleAccessToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            summary: title,
+                            location: location,
+                            description: details + '\n\nCriado pelo TCCFlow',
+                            start: { dateTime: new Date(startInput).toISOString(), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
+                            end: { dateTime: new Date(endInput).toISOString(), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
+                            reminders: { useDefault: true }
+                        })
+                    });
+                    if (response.ok) {
+                        const event = await response.json();
+                        showDriveFeedback('<i class="fa-solid fa-calendar-check mr-1"></i>Evento criado no Google Calendar!', 'success');
+                        document.getElementById('eventForm').classList.add('hidden');
+                        return;
+                    }
+                } catch (e) { console.log('Calendar API error, falling back to URL:', e); }
+            }
+
+            // Fallback: open Google Calendar URL
             function toGoogleDate(dt) {
                 if (!dt) return '';
                 return dt.replace(/[-:]/g, '').replace('T', 'T') + '00';
             }
-
             const start = toGoogleDate(startInput);
             const end = toGoogleDate(endInput);
-
-            let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}`;
+            let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}`;
             if (start && end) url += `&dates=${start}/${end}`;
-            if (location) url += `&location=${location}`;
-            if (details) url += `&details=${details}`;
-
+            if (location) url += `&location=${encodeURIComponent(location)}`;
+            if (details) url += `&details=${encodeURIComponent(details)}`;
             window.open(url, '_blank');
         });
 
@@ -607,7 +652,7 @@
         // ========== Google Drive Integration (PRO) ==========
         // IMPORTANT: Replace with your Google Cloud OAuth Client ID
         const GOOGLE_CLIENT_ID = '806477208299-iggp8o4409ll8r91089ou446qng4hdq2.apps.googleusercontent.com';
-        const GOOGLE_DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+        const GOOGLE_DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/calendar.events';
         let googleAccessToken = null;
         let driveTokenClient = null;
         let currentFolderId = null;
