@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1WX7MD9CL9');
+    </script>
+
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Orientador - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(16,185,129,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(139,92,246,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(6,182,212,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar Orientador -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-emerald-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="orientador-painel.html" class="flex items-center gap-2.5">
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-cyan-500">Flow</span></span>
+                    <span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">ORIENTADOR</span>
+                    <span class="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">BETA</span>
+                </a>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold mb-1">
+                            <i class="fa-solid fa-graduation-cap text-emerald-600 mr-2"></i>Painel do Orientador
+                        </h1>
+                        <p class="text-sm text-slate-500">Acompanhe e avalie os projetos dos seus orientandos</p>
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1.5 rounded-full">
+                        <i class="fa-solid fa-flask"></i> Funcionalidade BETA
+                    </span>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs sm:text-sm text-slate-500">Projetos</span>
+                        <i class="fa-solid fa-folder-open text-emerald-600"></i>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-bold" id="projectCount">0</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs sm:text-sm text-slate-500">Alunos</span>
+                        <i class="fa-solid fa-users text-violet-600"></i>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-bold" id="studentCount">0</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm col-span-2 sm:col-span-1">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs sm:text-sm text-slate-500">Comentários</span>
+                        <i class="fa-solid fa-comments text-cyan-600"></i>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-bold" id="commentCount">0</div>
+                </div>
+            </div>
+
+            <!-- Join Project -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-link text-emerald-600 mr-2"></i>Entrar em Projeto</h2>
+                <p class="text-xs text-slate-500 mb-4">Insira o código de convite que o aluno compartilhou com você.</p>
+                <div class="flex gap-3">
+                    <input type="text" id="inviteCodeInput" placeholder="Ex: ORI-A3KR5N"
+                        class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <button onclick="acceptInvite()" id="acceptInviteBtn"
+                        class="bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:shadow-lg transition whitespace-nowrap">
+                        <i class="fa-solid fa-check mr-1"></i>Aceitar
+                    </button>
+                </div>
+                <div id="inviteMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
+            </div>
+
+            <!-- My Projects List -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-folder-open text-emerald-600 mr-2"></i>Projetos que Oriento</h2>
+                <div id="projectsList" class="space-y-4">
+                    <div class="text-center py-8 text-slate-400">
+                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i>
+                        <p class="text-sm">Carregando projetos...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Project Detail -->
+            <div id="projectDetail" class="hidden">
+                <div class="bg-white border border-emerald-200 rounded-2xl p-6 mb-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold"><i class="fa-solid fa-eye text-emerald-600 mr-2"></i>Detalhes do Projeto</h2>
+                        <button onclick="closeProjectDetail()" class="text-slate-400 hover:text-slate-600 transition">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+                    <div id="projectDetailContent">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Project Tasks -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
+                    <h3 class="font-bold mb-4"><i class="fa-solid fa-list-check text-violet-600 mr-2"></i>Tarefas do Projeto</h3>
+                    <div id="projectTasks" class="space-y-2">
+                        <p class="text-sm text-slate-400 text-center py-4">Carregando...</p>
+                    </div>
+                </div>
+
+                <!-- Orientador Comments -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
+                    <h3 class="font-bold mb-4"><i class="fa-solid fa-pen text-emerald-600 mr-2"></i>Meus Comentários / Correções</h3>
+                    <form id="commentForm" class="mb-4">
+                        <div class="mb-3">
+                            <select id="commentSection" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="geral">Comentário Geral</option>
+                                <option value="introducao">Introdução</option>
+                                <option value="metodologia">Metodologia</option>
+                                <option value="resultados">Resultados</option>
+                                <option value="conclusao">Conclusão</option>
+                                <option value="referencias">Referências</option>
+                                <option value="formatacao">Formatação</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-3">
+                            <textarea id="commentText" rows="3" placeholder="Escreva seu comentário ou correção aqui..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"></textarea>
+                            <button type="submit" class="bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold px-5 py-3 rounded-xl text-sm hover:shadow-lg transition self-end">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div id="commentsList" class="space-y-3">
+                        <p class="text-sm text-slate-400 text-center py-4">Nenhum comentário ainda</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Tip -->
+            <div class="bg-gradient-to-r from-emerald-50 to-cyan-50 border border-emerald-200 rounded-2xl p-6">
+                <h3 class="font-bold mb-2"><i class="fa-solid fa-lightbulb mr-2 text-amber-600"></i>Como funciona?</h3>
+                <ul class="text-sm text-slate-600 space-y-2">
+                    <li><i class="fa-solid fa-1 text-emerald-600 mr-2 text-xs"></i>Seu aluno gera um <strong>código de convite</strong> na página de Equipe do projeto.</li>
+                    <li><i class="fa-solid fa-2 text-emerald-600 mr-2 text-xs"></i>Você insere o código acima para vincular-se ao projeto.</li>
+                    <li><i class="fa-solid fa-3 text-emerald-600 mr-2 text-xs"></i>Visualize tarefas, progresso e deixe <strong>comentários e correções</strong> diretamente.</li>
+                </ul>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        let currentUser = null;
+        let selectedProjectId = null;
+        let totalComments = 0;
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            document.getElementById('userName').textContent = user.displayName || 'Orientador';
+
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
+            // Ensure user role is orientador
+            try {
+                const role = await DB.orientador.getUserRole(user.uid);
+                if (role !== 'orientador') {
+                    await DB.orientador.setUserRole(user.uid, 'orientador');
+                }
+            } catch(e) { console.warn('Could not set role:', e); }
+
+            await loadProjects();
+        });
+
+        // ========== Accept Invite ==========
+        window.acceptInvite = async function() {
+            const code = document.getElementById('inviteCodeInput').value.trim().toUpperCase();
+            const msgEl = document.getElementById('inviteMsg');
+            const btn = document.getElementById('acceptInviteBtn');
+
+            if (!code) {
+                showMsg(msgEl, 'Digite o código de convite.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Entrando...';
+
+            try {
+                await DB.orientador.acceptInvite(currentUser.uid, code);
+                showMsg(msgEl, 'Convite aceito com sucesso! Projeto adicionado.', 'success');
+                document.getElementById('inviteCodeInput').value = '';
+                await loadProjects();
+            } catch(err) {
+                showMsg(msgEl, err.message || 'Erro ao aceitar convite.', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Aceitar';
+        };
+
+        function showMsg(el, text, type) {
+            el.className = `mt-3 text-sm rounded-lg px-3 py-2 ${type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-red-50 text-red-600 border border-red-200'}`;
+            el.textContent = text;
+            el.classList.remove('hidden');
+        }
+
+        // ========== Load Projects ==========
+        async function loadProjects() {
+            const listEl = document.getElementById('projectsList');
+            try {
+                const projects = await DB.orientador.getMyProjects(currentUser.uid);
+                document.getElementById('projectCount').textContent = projects.length;
+
+                let totalStudents = 0;
+                totalComments = 0;
+
+                if (projects.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                                <i class="fa-solid fa-folder-open text-emerald-400 text-2xl"></i>
+                            </div>
+                            <p class="text-sm text-slate-400">Nenhum projeto vinculado ainda.</p>
+                            <p class="text-xs text-slate-400 mt-1">Peça o código de convite ao seu orientando.</p>
+                        </div>`;
+                } else {
+                    listEl.innerHTML = '';
+                    for (const item of projects) {
+                        const proj = item.projects;
+                        if (!proj) continue;
+
+                        // Count members
+                        const { data: members } = await _supa.from('users').select('id, name').eq('project_id', proj.id);
+                        const memberCount = (members || []).length;
+                        totalStudents += memberCount;
+
+                        // Count comments
+                        const { data: comments } = await _supa.from('orientador_comments').select('id').eq('project_id', proj.id).eq('orientador_id', currentUser.uid);
+                        totalComments += (comments || []).length;
+
+                        // Get tasks stats
+                        const { data: tasks } = await _supa.from('tasks').select('status').eq('project_id', proj.id);
+                        const taskCount = (tasks || []).length;
+                        const doneCount = (tasks || []).filter(t => t.status === 'done').length;
+                        const progress = taskCount > 0 ? Math.round((doneCount / taskCount) * 100) : 0;
+
+                        const memberNames = (members || []).map(m => m.name || 'Sem nome').join(', ');
+
+                        listEl.innerHTML += `
+                            <div class="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 transition cursor-pointer" onclick="openProject('${proj.id}', '${proj.name.replace(/'/g, "\\'")}')">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center text-white">
+                                            <i class="fa-solid fa-folder text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-sm">${proj.name}</p>
+                                            <p class="text-xs text-slate-400">Código: <code class="font-mono text-emerald-600">${proj.code}</code></p>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-slate-300"></i>
+                                </div>
+                                <div class="flex items-center gap-4 text-xs text-slate-500">
+                                    <span><i class="fa-solid fa-users mr-1 text-violet-500"></i>${memberCount} aluno${memberCount !== 1 ? 's' : ''}</span>
+                                    <span><i class="fa-solid fa-list-check mr-1 text-cyan-500"></i>${taskCount} tarefa${taskCount !== 1 ? 's' : ''}</span>
+                                    <span><i class="fa-solid fa-chart-pie mr-1 text-amber-500"></i>${progress}% concluído</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-2 truncate"><i class="fa-solid fa-user-group mr-1"></i>${memberNames}</p>
+                            </div>`;
+                    }
+                }
+
+                document.getElementById('studentCount').textContent = totalStudents;
+                document.getElementById('commentCount').textContent = totalComments;
+            } catch(err) {
+                console.error('Error loading projects:', err);
+                listEl.innerHTML = '<p class="text-center text-sm text-red-400 py-4">Erro ao carregar projetos</p>';
+            }
+        }
+
+        // ========== Open Project Detail ==========
+        window.openProject = async function(projId, projName) {
+            selectedProjectId = projId;
+            document.getElementById('projectDetail').classList.remove('hidden');
+            document.getElementById('projectDetail').scrollIntoView({ behavior: 'smooth' });
+
+            // Load project info
+            const detailContent = document.getElementById('projectDetailContent');
+            try {
+                const { data: proj } = await _supa.from('projects').select('*').eq('id', projId).maybeSingle();
+                const { data: members } = await _supa.from('users').select('id, name, email, photo_url').eq('project_id', projId);
+
+                let info = proj?.project_info || {};
+                detailContent.innerHTML = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <p class="text-xs text-slate-400 mb-1">Nome do Projeto</p>
+                            <p class="font-bold">${proj?.name || 'Sem nome'}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-400 mb-1">Código</p>
+                            <p class="font-mono text-emerald-600 font-bold">${proj?.code || '-'}</p>
+                        </div>
+                        ${info.tema ? `<div class="sm:col-span-2"><p class="text-xs text-slate-400 mb-1">Tema</p><p class="text-sm">${info.tema}</p></div>` : ''}
+                        ${info.orientador ? `<div><p class="text-xs text-slate-400 mb-1">Orientador (registrado)</p><p class="text-sm">${info.orientador}</p></div>` : ''}
+                        ${info.instituicao ? `<div><p class="text-xs text-slate-400 mb-1">Instituição</p><p class="text-sm">${info.instituicao}</p></div>` : ''}
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-400 mb-2">Membros da Equipe</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${(members || []).map(m => `
+                                <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5">
+                                    ${m.photo_url
+                                        ? `<img src="${m.photo_url}" class="w-6 h-6 rounded-full object-cover">`
+                                        : `<div class="w-6 h-6 bg-violet-500 rounded-full flex items-center justify-center text-white text-xs font-bold">${(m.name || '?')[0].toUpperCase()}</div>`
+                                    }
+                                    <span class="text-sm">${m.name || 'Sem nome'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+            } catch(err) {
+                detailContent.innerHTML = '<p class="text-red-400 text-sm">Erro ao carregar detalhes</p>';
+            }
+
+            // Load tasks
+            await loadProjectTasks(projId);
+            // Load comments
+            await loadProjectComments(projId);
+        };
+
+        window.closeProjectDetail = function() {
+            document.getElementById('projectDetail').classList.add('hidden');
+            selectedProjectId = null;
+        };
+
+        // ========== Project Tasks ==========
+        async function loadProjectTasks(projId) {
+            const el = document.getElementById('projectTasks');
+            try {
+                const { data: tasks } = await _supa.from('tasks').select('*').eq('project_id', projId).order('due_date', { ascending: true });
+
+                if (!tasks || tasks.length === 0) {
+                    el.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Nenhuma tarefa criada</p>';
+                    return;
+                }
+
+                // Get member names
+                const { data: members } = await _supa.from('users').select('id, name').eq('project_id', projId);
+                const nameMap = {};
+                (members || []).forEach(m => nameMap[m.id] = m.name || 'Sem nome');
+
+                el.innerHTML = '';
+                for (const task of tasks) {
+                    const statusColors = {
+                        'todo': 'bg-slate-100 text-slate-600',
+                        'progress': 'bg-amber-100 text-amber-700',
+                        'done': 'bg-emerald-100 text-emerald-700'
+                    };
+                    const statusLabels = {
+                        'todo': 'A Fazer',
+                        'progress': 'Em Andamento',
+                        'done': 'Concluída'
+                    };
+                    const dueDate = task.due_date ? new Date(task.due_date + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                    const isOverdue = task.due_date && task.status !== 'done' && new Date(task.due_date) < new Date();
+
+                    el.innerHTML += `
+                        <div class="flex items-center justify-between p-3 rounded-lg border ${task.status === 'done' ? 'border-emerald-200 bg-emerald-50/50' : isOverdue ? 'border-red-200 bg-red-50/50' : 'border-slate-200'}">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium ${task.status === 'done' ? 'line-through text-slate-400' : ''}">${task.title}</p>
+                                <p class="text-xs text-slate-400 mt-0.5">
+                                    ${nameMap[task.assigned_to] || 'Não atribuída'} &bull; ${dueDate}
+                                    ${isOverdue ? '<span class="text-red-500 font-bold ml-1">ATRASADA</span>' : ''}
+                                </p>
+                            </div>
+                            <span class="text-[10px] font-bold px-2 py-1 rounded-full ${statusColors[task.status] || statusColors.todo} whitespace-nowrap ml-2">
+                                ${statusLabels[task.status] || task.status}
+                            </span>
+                        </div>`;
+                }
+            } catch(err) {
+                el.innerHTML = '<p class="text-sm text-red-400 text-center py-4">Erro ao carregar tarefas</p>';
+            }
+        }
+
+        // ========== Comments ==========
+        document.getElementById('commentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const text = document.getElementById('commentText').value.trim();
+            const section = document.getElementById('commentSection').value;
+            if (!text || !selectedProjectId) return;
+
+            try {
+                await DB.orientador.addComment(selectedProjectId, currentUser.uid, text, section);
+                document.getElementById('commentText').value = '';
+                await loadProjectComments(selectedProjectId);
+            } catch(err) {
+                alert('Erro ao salvar comentário: ' + err.message);
+            }
+        });
+
+        async function loadProjectComments(projId) {
+            const el = document.getElementById('commentsList');
+            try {
+                const comments = await DB.orientador.getComments(projId);
+
+                if (comments.length === 0) {
+                    el.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Nenhum comentário ainda. Escreva sua primeira correção!</p>';
+                    return;
+                }
+
+                const sectionLabels = {
+                    'geral': 'Geral', 'introducao': 'Introdução', 'metodologia': 'Metodologia',
+                    'resultados': 'Resultados', 'conclusao': 'Conclusão', 'referencias': 'Referências',
+                    'formatacao': 'Formatação'
+                };
+                const sectionColors = {
+                    'geral': 'bg-slate-100 text-slate-600', 'introducao': 'bg-violet-100 text-violet-700',
+                    'metodologia': 'bg-cyan-100 text-cyan-700', 'resultados': 'bg-emerald-100 text-emerald-700',
+                    'conclusao': 'bg-amber-100 text-amber-700', 'referencias': 'bg-pink-100 text-pink-700',
+                    'formatacao': 'bg-indigo-100 text-indigo-700'
+                };
+
+                el.innerHTML = '';
+                for (const c of comments) {
+                    const date = new Date(c.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+                    const isOwn = c.orientador_id === currentUser.uid;
+                    el.innerHTML += `
+                        <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${sectionColors[c.section] || sectionColors.geral}">
+                                    ${sectionLabels[c.section] || c.section}
+                                </span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] text-slate-400">${date}</span>
+                                    ${isOwn ? `<button onclick="deleteComment('${c.id}')" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-trash text-[10px]"></i></button>` : ''}
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-700">${c.comment.replace(/\n/g, '<br>')}</p>
+                        </div>`;
+                }
+            } catch(err) {
+                el.innerHTML = '<p class="text-sm text-red-400 text-center py-4">Erro ao carregar comentários</p>';
+            }
+        }
+
+        window.deleteComment = async function(commentId) {
+            if (!confirm('Excluir este comentário?')) return;
+            try {
+                await DB.orientador.deleteComment(commentId);
+                await loadProjectComments(selectedProjectId);
+            } catch(err) {
+                alert('Erro: ' + err.message);
+            }
+        };
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

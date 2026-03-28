@@ -10,6 +10,7 @@ create table if not exists users (
     name text not null default '',
     email text not null default '',
     project_id uuid,
+    role text not null default 'student' check (role in ('student', 'orientador')),
     created_at timestamptz default now()
 );
 
@@ -102,7 +103,28 @@ create table if not exists subscriptions (
     activated_at timestamptz
 );
 
--- 9. AI Usage (Rate Limiting)
+-- 9. Orientador-Projects (advisor can supervise multiple projects)
+create table if not exists orientador_projects (
+    id uuid primary key default gen_random_uuid(),
+    orientador_id uuid references auth.users(id) on delete cascade,
+    project_id uuid references projects(id) on delete cascade,
+    invite_code text unique not null,
+    status text not null default 'pending' check (status in ('pending', 'accepted')),
+    created_at timestamptz default now(),
+    unique(orientador_id, project_id)
+);
+
+-- 10. Orientador Comments (feedback on project)
+create table if not exists orientador_comments (
+    id uuid primary key default gen_random_uuid(),
+    project_id uuid references projects(id) on delete cascade,
+    orientador_id uuid references auth.users(id) on delete cascade,
+    comment text not null default '',
+    section text default 'geral',
+    created_at timestamptz default now()
+);
+
+-- 11. AI Usage (Rate Limiting)
 create table if not exists ai_usage (
     id text primary key,  -- format: {projectId}_{YYYY-MM}
     project_id uuid references projects(id) on delete cascade,
@@ -219,6 +241,25 @@ create policy "Calendar sessions deletable by project members" on calendar_sessi
     project_id = get_my_project_id() and get_my_project_id() is not null
 );
 
+-- Orientador Projects: orientador can read/manage their own, project members can read
+alter table orientador_projects enable row level security;
+alter table orientador_comments enable row level security;
+
+create policy "Orientador can read own links" on orientador_projects for select using (auth.uid() = orientador_id);
+create policy "Orientador can update own links" on orientador_projects for update using (auth.uid() = orientador_id);
+create policy "Project members can read orientador" on orientador_projects for select using (
+    project_id = get_my_project_id() and get_my_project_id() is not null
+);
+create policy "Authenticated can insert orientador_projects" on orientador_projects for insert with check (auth.role() = 'authenticated');
+create policy "Orientador can delete own links" on orientador_projects for delete using (auth.uid() = orientador_id);
+
+create policy "Orientador can read own comments" on orientador_comments for select using (auth.uid() = orientador_id);
+create policy "Orientador can insert comments" on orientador_comments for insert with check (auth.uid() = orientador_id);
+create policy "Orientador can delete own comments" on orientador_comments for delete using (auth.uid() = orientador_id);
+create policy "Project members can read comments" on orientador_comments for select using (
+    project_id = get_my_project_id() and get_my_project_id() is not null
+);
+
 -- Subscriptions: users can read own subscription, anyone authenticated can check
 create policy "Users can read own subscription" on subscriptions for select using (auth.uid() = id);
 create policy "Users can read subscription by project" on subscriptions for select using (true);
@@ -240,3 +281,7 @@ create index if not exists idx_calendar_sessions_date on calendar_sessions(proje
 create index if not exists idx_projects_code on projects(code);
 create index if not exists idx_users_project_id on users(project_id);
 create index if not exists idx_ai_usage_project_month on ai_usage(project_id, month);
+create index if not exists idx_orientador_projects_orientador on orientador_projects(orientador_id);
+create index if not exists idx_orientador_projects_project on orientador_projects(project_id);
+create index if not exists idx_orientador_projects_invite on orientador_projects(invite_code);
+create index if not exists idx_orientador_comments_project on orientador_comments(project_id);

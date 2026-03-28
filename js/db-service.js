@@ -395,6 +395,122 @@ const DB = {
         return data.beta_tester === true;
     },
 
+    // ===================== Orientador =====================
+    orientador: {
+        async getUserRole(userId) {
+            const { data, error } = await _supa
+                .from('users')
+                .select('role')
+                .eq('id', userId)
+                .maybeSingle();
+            if (error || !data) return 'student';
+            return data.role || 'student';
+        },
+
+        async setUserRole(userId, role) {
+            const { error } = await _supa
+                .from('users')
+                .update({ role })
+                .eq('id', userId);
+            if (error) throw error;
+        },
+
+        async generateInviteCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'ORI-';
+            for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            return code;
+        },
+
+        async createInvite(projectId, orientadorEmail) {
+            const code = await DB.orientador.generateInviteCode();
+            const { data, error } = await _supa
+                .from('orientador_projects')
+                .insert({
+                    orientador_id: null,
+                    project_id: projectId,
+                    invite_code: code,
+                    status: 'pending'
+                })
+                .select()
+                .maybeSingle();
+            if (error) throw error;
+            return { code, id: data?.id };
+        },
+
+        async acceptInvite(orientadorId, inviteCode) {
+            const { data: invite, error: findErr } = await _supa
+                .from('orientador_projects')
+                .select('*')
+                .eq('invite_code', inviteCode.toUpperCase())
+                .eq('status', 'pending')
+                .maybeSingle();
+            if (findErr || !invite) throw { message: 'Código de convite inválido ou já utilizado.' };
+
+            const { error } = await _supa
+                .from('orientador_projects')
+                .update({ orientador_id: orientadorId, status: 'accepted' })
+                .eq('id', invite.id);
+            if (error) throw error;
+            return invite;
+        },
+
+        async getMyProjects(orientadorId) {
+            const { data, error } = await _supa
+                .from('orientador_projects')
+                .select('*, projects:project_id(id, name, code, owner_id, created_at)')
+                .eq('orientador_id', orientadorId)
+                .eq('status', 'accepted')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        },
+
+        async getProjectOrientador(projectId) {
+            const { data, error } = await _supa
+                .from('orientador_projects')
+                .select('*, users:orientador_id(id, name, email, photo_url)')
+                .eq('project_id', projectId)
+                .eq('status', 'accepted')
+                .maybeSingle();
+            if (error) return null;
+            return data;
+        },
+
+        async addComment(projectId, orientadorId, comment, section) {
+            const { data, error } = await _supa
+                .from('orientador_comments')
+                .insert({
+                    project_id: projectId,
+                    orientador_id: orientadorId,
+                    comment,
+                    section: section || 'geral'
+                })
+                .select()
+                .maybeSingle();
+            if (error) throw error;
+            return data;
+        },
+
+        async getComments(projectId) {
+            const { data, error } = await _supa
+                .from('orientador_comments')
+                .select('*')
+                .eq('project_id', projectId)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        },
+
+        async deleteComment(commentId) {
+            const { error } = await _supa
+                .from('orientador_comments')
+                .delete()
+                .eq('id', commentId);
+            if (error) throw error;
+        }
+    },
+
     async getProjectId() {
         const user = auth.currentUser;
         if (!user) return null;

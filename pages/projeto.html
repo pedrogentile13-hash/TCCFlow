@@ -322,6 +322,17 @@
                 <p class="text-xs text-slate-400 mt-2" data-i18n="proj.notesHelp">As anotações são salvas automaticamente junto com o projeto.</p>
             </div>
 
+            <!-- Orientador Comments (BETA) -->
+            <div id="orientadorCommentsSection" class="hidden bg-white border border-emerald-200 rounded-2xl p-6 sm:p-8 shadow-sm mt-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-lg font-bold"><i class="fa-solid fa-graduation-cap mr-2 text-emerald-600"></i>Comentários do Orientador</h2>
+                    <span class="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">BETA</span>
+                </div>
+                <div id="orientadorCommentsList" class="space-y-3">
+                    <p class="text-sm text-slate-400 text-center py-4">Nenhum comentário do orientador ainda.</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -395,6 +406,42 @@
                 } catch (err) { console.error('Error:', err); }
             }
             renderPhases();
+
+            // Load orientador comments if any
+            if (projectId) {
+                try {
+                    const comments = await DB.orientador.getComments(projectId);
+                    if (comments && comments.length > 0) {
+                        document.getElementById('orientadorCommentsSection').classList.remove('hidden');
+                        const listEl = document.getElementById('orientadorCommentsList');
+                        const sectionLabels = {
+                            'geral': 'Geral', 'introducao': 'Introdução', 'metodologia': 'Metodologia',
+                            'resultados': 'Resultados', 'conclusao': 'Conclusão', 'referencias': 'Referências',
+                            'formatacao': 'Formatação'
+                        };
+                        const sectionColors = {
+                            'geral': 'bg-slate-100 text-slate-600', 'introducao': 'bg-violet-100 text-violet-700',
+                            'metodologia': 'bg-cyan-100 text-cyan-700', 'resultados': 'bg-emerald-100 text-emerald-700',
+                            'conclusao': 'bg-amber-100 text-amber-700', 'referencias': 'bg-pink-100 text-pink-700',
+                            'formatacao': 'bg-indigo-100 text-indigo-700'
+                        };
+                        listEl.innerHTML = '';
+                        for (const c of comments) {
+                            const date = new Date(c.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+                            listEl.innerHTML += `
+                                <div class="p-3 rounded-xl border border-emerald-200 bg-emerald-50/50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${sectionColors[c.section] || sectionColors.geral}">
+                                            ${sectionLabels[c.section] || c.section}
+                                        </span>
+                                        <span class="text-[10px] text-slate-400">${date}</span>
+                                    </div>
+                                    <p class="text-sm text-slate-700">${c.comment.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>
+                                </div>`;
+                        }
+                    }
+                } catch(e) { console.log('Orientador comments:', e); }
+            }
         });
 
         async function loadProjectData() {

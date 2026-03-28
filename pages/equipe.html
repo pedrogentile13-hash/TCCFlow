@@ -264,6 +264,43 @@
                     </div>
                 </div>
 
+                <!-- Invite Orientador Section (BETA) -->
+                <div id="orientadorSection" class="bg-white border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm mt-8">
+                    <div class="flex items-center gap-2 mb-4">
+                        <h2 class="text-lg font-bold"><i class="fa-solid fa-graduation-cap text-emerald-600 mr-2"></i>Orientador</h2>
+                        <span class="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">BETA</span>
+                    </div>
+                    <div id="orientadorInfo">
+                        <p class="text-sm text-slate-500 mb-4">Convide seu orientador para acompanhar e corrigir o projeto diretamente no TCCFlow.</p>
+                        <div id="orientadorLinked" class="hidden mb-4">
+                            <div class="flex items-center gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm" id="orientadorName">-</p>
+                                    <p class="text-xs text-slate-400" id="orientadorEmail">-</p>
+                                </div>
+                                <span class="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 ml-auto">Vinculado</span>
+                            </div>
+                        </div>
+                        <div id="orientadorInvite">
+                            <button onclick="generateOrientadorCode()" id="genOrientadorBtn"
+                                class="bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:shadow-lg transition">
+                                <i class="fa-solid fa-link mr-2"></i>Gerar Código de Convite
+                            </button>
+                            <div id="orientadorCodeBox" class="hidden mt-3 flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                                <code class="text-lg font-bold text-emerald-700 flex-1 font-mono" id="orientadorCode"></code>
+                                <button onclick="copyOrientadorCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                                    <i class="fa-solid fa-copy mr-1"></i>Copiar
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2">O orientador deve criar uma conta e entrar pelo <a href="orientador-painel.html" class="text-emerald-600 hover:underline font-medium">Painel do Orientador</a>.</p>
+                        </div>
+                        <div id="orientadorMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
+                    </div>
+                </div>
+
                 <!-- Chat PRO Banner (shown for free users in main content) -->
                 <div id="chatProBanner" class="hidden mt-8">
                     <div class="bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200/50 rounded-2xl p-5 text-center">
@@ -392,6 +429,7 @@
                             await loadMembersFromProject(projectId, projectData.owner_id);
                             await updateSeatsBanner(projectId, projectData.owner_id);
                             await loadMyProjects();
+                            await loadOrientadorSection();
                             await initChat();
                         } else {
                             showNoProjectPanel();
@@ -1050,6 +1088,54 @@
 
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar';
+        };
+
+        // ========== Orientador Invite (BETA) ==========
+        async function loadOrientadorSection() {
+            if (!projectId) return;
+            try {
+                const orientador = await DB.orientador.getProjectOrientador(projectId);
+                if (orientador && orientador.users) {
+                    const user = orientador.users;
+                    document.getElementById('orientadorLinked').classList.remove('hidden');
+                    document.getElementById('orientadorInvite').classList.add('hidden');
+                    document.getElementById('orientadorName').textContent = user.name || 'Orientador';
+                    document.getElementById('orientadorEmail').textContent = user.email || '';
+                } else {
+                    document.getElementById('orientadorLinked').classList.add('hidden');
+                    document.getElementById('orientadorInvite').classList.remove('hidden');
+                }
+            } catch(e) {
+                console.warn('Error loading orientador:', e);
+            }
+        }
+
+        window.generateOrientadorCode = async function() {
+            const btn = document.getElementById('genOrientadorBtn');
+            const msgEl = document.getElementById('orientadorMsg');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Gerando...';
+
+            try {
+                const { code } = await DB.orientador.createInvite(projectId);
+                document.getElementById('orientadorCode').textContent = code;
+                document.getElementById('orientadorCodeBox').classList.remove('hidden');
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
+                msgEl.textContent = 'Compartilhe este código com seu orientador!';
+                msgEl.classList.remove('hidden');
+            } catch(err) {
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                msgEl.textContent = 'Erro: ' + (err.message || 'Falha ao gerar código');
+                msgEl.classList.remove('hidden');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-link mr-2"></i>Gerar Código de Convite';
+        };
+
+        window.copyOrientadorCode = function() {
+            const code = document.getElementById('orientadorCode').textContent;
+            navigator.clipboard.writeText(code).then(() => alert('Código copiado!'));
         };
 
         // ========== Chat Integration (PRO) ==========

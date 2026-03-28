@@ -281,6 +281,15 @@
                 }
             } catch (err) { console.log('Auto-create user error:', err); }
 
+            // Check if user is an orientador and redirect to orientador panel
+            try {
+                const role = await DB.orientador.getUserRole(user.uid);
+                if (role === 'orientador') {
+                    window.location.href = 'orientador-painel.html';
+                    return;
+                }
+            } catch(e) { console.log('Role check error:', e); }
+
             // Update navbar for PRO users
             try {
                 const pid = await DB.getProjectId();
