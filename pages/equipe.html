@@ -211,6 +211,34 @@
                     <div id="inviteMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
                 </div>
 
+                <!-- My Projects -->
+                <div id="myProjectsPanel" class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold"><i class="fa-solid fa-folder-open text-violet-600 mr-2"></i>Meus Projetos</h2>
+                        <span id="projectLimitBadge" class="text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-600"></span>
+                    </div>
+                    <div id="myProjectsList" class="space-y-3 mb-4">
+                        <div class="text-center py-4 text-slate-400 text-sm">
+                            <i class="fa-solid fa-spinner fa-spin mr-1"></i> Carregando projetos...
+                        </div>
+                    </div>
+                    <!-- Create New Project (inline) -->
+                    <div id="createNewProjectSection" class="hidden">
+                        <div class="border-t border-slate-100 pt-4 mt-2">
+                            <div class="flex gap-3">
+                                <input type="text" id="newProjectNameInline" placeholder="Nome do novo projeto (ex: TCC Turma B)"
+                                    class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                                <button onclick="createNewProjectInline()" id="createProjectBtnInline"
+                                    class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:shadow-lg transition whitespace-nowrap">
+                                    <i class="fa-solid fa-plus mr-1"></i>Criar
+                                </button>
+                            </div>
+                            <div id="createProjectMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
+                        </div>
+                    </div>
+                    <div id="projectLimitMsg" class="hidden mt-3 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2"></div>
+                </div>
+
                 <!-- Switch/Join another project -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
                     <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-right-to-bracket text-cyan-600 mr-2"></i>Entrar em Outro Projeto</h2>
@@ -343,9 +371,6 @@
 
             if (isFirebaseConfigured()) {
                 try {
-                    // Check if user is PRO
-                    const isPro = await DB.subscriptions.isPro(user.uid);
-
                     // Load user data directly from Supabase
                     const { data: userData } = await _supa.from('users').select('*').eq('id', user.uid).maybeSingle();
 
@@ -366,6 +391,7 @@
                             showProjectPanel();
                             await loadMembersFromProject(projectId, projectData.owner_id);
                             await updateSeatsBanner(projectId, projectData.owner_id);
+                            await loadMyProjects();
                             await initChat();
                         } else {
                             showNoProjectPanel();
@@ -398,6 +424,15 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Criando...';
 
             try {
+                // Check project limit
+                const { allowed, max } = await DB.projects.canCreateProject(currentUser.uid);
+                if (!allowed) {
+                    showSetupMsg(`Limite de ${max} projeto${max > 1 ? 's' : ''} atingido. Faça upgrade para PRO para criar mais projetos.`, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-rocket mr-2"></i>Criar Projeto';
+                    return;
+                }
+
                 const code = generateCode();
 
                 // Create project directly via Supabase
@@ -424,12 +459,137 @@
                 showProjectPanel();
                 await loadMembersFromProject(projectId, currentUser.uid);
                 await updateSeatsBanner(projectId, currentUser.uid);
+                await loadMyProjects();
             } catch (err) {
                 console.error('Error creating project:', err);
                 showSetupMsg('Erro ao criar projeto: ' + err.message, 'error');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-rocket mr-2"></i>Criar Projeto';
             }
+        };
+
+        // ========== My Projects (multiple projects) ==========
+        async function loadMyProjects() {
+            if (!currentUser) return;
+            const listEl = document.getElementById('myProjectsList');
+            const limitBadge = document.getElementById('projectLimitBadge');
+            const createSection = document.getElementById('createNewProjectSection');
+            const limitMsg = document.getElementById('projectLimitMsg');
+
+            try {
+                const ownedProjects = await DB.projects.getOwned(currentUser.uid);
+                const { allowed, count, max } = await DB.projects.canCreateProject(currentUser.uid);
+
+                limitBadge.textContent = `${count} / ${max} projeto${max > 1 ? 's' : ''}`;
+
+                if (ownedProjects.length === 0) {
+                    listEl.innerHTML = '<p class="text-center text-sm text-slate-400 py-3">Nenhum projeto criado por você.</p>';
+                } else {
+                    listEl.innerHTML = '';
+                    for (const proj of ownedProjects) {
+                        const isActive = proj.id === projectId;
+                        const activeClass = isActive
+                            ? 'border-violet-300 bg-violet-50/50'
+                            : 'border-slate-200 hover:border-slate-300';
+
+                        // Count members
+                        const { data: members } = await _supa.from('users').select('id').eq('project_id', proj.id);
+                        const memberCount = (members || []).length;
+
+                        listEl.innerHTML += `
+                            <div class="flex items-center justify-between p-4 rounded-xl border ${activeClass} transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 ${isActive ? 'bg-gradient-to-br from-violet-600 to-cyan-500' : 'bg-slate-200'} rounded-xl flex items-center justify-center ${isActive ? 'text-white' : 'text-slate-500'}">
+                                        <i class="fa-solid fa-folder text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">${proj.name}</p>
+                                        <p class="text-xs text-slate-400">Código: <code class="font-mono text-violet-600">${proj.code}</code> &bull; ${memberCount} membro${memberCount !== 1 ? 's' : ''}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    ${isActive
+                                        ? '<span class="text-xs font-bold px-3 py-1 rounded-full bg-violet-100 text-violet-700">Ativo</span>'
+                                        : `<button onclick="switchToProjectById('${proj.id}')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-violet-100 text-slate-600 hover:text-violet-700 transition">Acessar</button>`
+                                    }
+                                </div>
+                            </div>`;
+                    }
+                }
+
+                // Show/hide create button
+                if (allowed) {
+                    createSection.classList.remove('hidden');
+                    limitMsg.classList.add('hidden');
+                } else {
+                    createSection.classList.add('hidden');
+                    if (max <= 1) {
+                        limitMsg.innerHTML = '<i class="fa-solid fa-lock mr-1 text-violet-500"></i>Plano gratuito permite apenas 1 projeto. <a href="planos.html" class="text-violet-600 font-semibold hover:underline">Faça upgrade para PRO</a> e crie até 2 projetos.';
+                    } else {
+                        limitMsg.innerHTML = '<i class="fa-solid fa-info-circle mr-1 text-slate-400"></i>Você atingiu o limite de ' + max + ' projetos do plano PRO.';
+                    }
+                    limitMsg.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error('Error loading projects:', err);
+                listEl.innerHTML = '<p class="text-center text-sm text-red-400 py-3">Erro ao carregar projetos</p>';
+            }
+        }
+
+        window.switchToProjectById = async function(newProjectId) {
+            try {
+                await _supa.from('users').update({ project_id: newProjectId }).eq('id', currentUser.uid);
+                window.location.reload();
+            } catch (err) {
+                alert('Erro ao trocar de projeto: ' + err.message);
+            }
+        };
+
+        window.createNewProjectInline = async function() {
+            const btn = document.getElementById('createProjectBtnInline');
+            const nameInput = document.getElementById('newProjectNameInline');
+            const msgEl = document.getElementById('createProjectMsg');
+            const projectName = nameInput.value.trim() || 'Meu TCC';
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Criando...';
+            msgEl.classList.add('hidden');
+
+            try {
+                const { allowed, count, max } = await DB.projects.canCreateProject(currentUser.uid);
+                if (!allowed) {
+                    msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                    msgEl.textContent = `Limite de ${max} projeto${max > 1 ? 's' : ''} atingido.`;
+                    msgEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-plus mr-1"></i>Criar';
+                    return;
+                }
+
+                const code = generateCode();
+                const { data: newProj, error: createErr } = await _supa.from('projects').insert({
+                    name: projectName,
+                    code: code,
+                    owner_id: currentUser.uid,
+                    members: [currentUser.uid],
+                    created_at: new Date().toISOString()
+                }).select().maybeSingle();
+                if (createErr) throw createErr;
+
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
+                msgEl.textContent = `Projeto "${projectName}" criado! Código: ${code}`;
+                msgEl.classList.remove('hidden');
+                nameInput.value = '';
+
+                await loadMyProjects();
+            } catch (err) {
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                msgEl.textContent = 'Erro: ' + err.message;
+                msgEl.classList.remove('hidden');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-plus mr-1"></i>Criar';
         };
 
         // ========== Join Existing Project ==========

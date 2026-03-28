@@ -262,10 +262,6 @@
 
             if (isFirebaseConfigured()) {
                 try {
-                    // Check if user is PRO
-                    const isPro = await DB.subscriptions.isPro(user.uid);
-                    userIsPro = isPro;
-
                     // Load user data from Supabase (source of truth)
                     const { data: userData } = await _supa
                         .from('users')
@@ -275,6 +271,9 @@
 
                     if (userData && userData.project_id) {
                         projectId = userData.project_id;
+                        // Check if user is PRO (by project owner's subscription)
+                        const isPro = await DB.isProByProject(projectId);
+                        userIsPro = isPro;
                         await loadData();
                     }
                 } catch (err) {

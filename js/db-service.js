@@ -337,6 +337,43 @@ const DB = {
         }
     },
 
+    // ===================== Projects =====================
+    projects: {
+        async getOwned(userId) {
+            const { data, error } = await _supa
+                .from('projects')
+                .select('*')
+                .eq('owner_id', userId)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return (data || []).map(r => ({
+                id: r.id, name: r.name, code: r.code,
+                ownerId: r.owner_id, members: r.members,
+                createdAt: r.created_at
+            }));
+        },
+
+        async countOwned(userId) {
+            const { data, error } = await _supa
+                .from('projects')
+                .select('id')
+                .eq('owner_id', userId);
+            if (error) throw error;
+            return (data || []).length;
+        },
+
+        async getMaxProjects(userId) {
+            const isPro = await DB.subscriptions.isPro(userId);
+            return isPro ? 2 : 1;
+        },
+
+        async canCreateProject(userId) {
+            const count = await DB.projects.countOwned(userId);
+            const max = await DB.projects.getMaxProjects(userId);
+            return { allowed: count < max, count, max };
+        }
+    },
+
     // ===================== Helpers =====================
     async isProByProject(projectId) {
         const { data: project, error } = await _supa

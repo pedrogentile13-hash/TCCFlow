@@ -223,6 +223,7 @@
 
                     <ul class="space-y-3 mb-8 text-sm">
                         <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Dashboard e Projeto</li>
+                        <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> 1 projeto</li>
                         <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Até 5 tarefas simultâneas</li>
                         <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Calendário básico</li>
                         <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> 20 buscas I.A./mês</li>
@@ -302,6 +303,7 @@
 
                         <ul class="space-y-3 mb-8 text-sm">
                             <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> <span id="featureSeats">Até 1 membro</span> com chat em tempo real</li>
+                            <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Até 2 projetos simultâneos</li>
                             <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Tarefas ilimitadas + atribuição de membros</li>
                             <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> 1.000 buscas I.A./mês + Orientador Virtual</li>
                             <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Cronograma Gantt + Google Agenda</li>
@@ -334,6 +336,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <tr class="border-b border-slate-100"><td class="py-3 px-4">Projetos simultâneos</td><td class="py-3 px-4 text-center">1</td><td class="py-3 px-4 text-center font-semibold">2</td></tr>
                             <tr class="border-b border-slate-100"><td class="py-3 px-4">Membros do grupo</td><td class="py-3 px-4 text-center">1</td><td class="py-3 px-4 text-center font-semibold">Até 8</td></tr>
                             <tr class="border-b border-slate-100"><td class="py-3 px-4">Buscas I.A./mês</td><td class="py-3 px-4 text-center">20</td><td class="py-3 px-4 text-center font-semibold">1.000</td></tr>
                             <tr class="border-b border-slate-100"><td class="py-3 px-4">Dashboard e Projeto</td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td><td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td></tr>
@@ -537,20 +540,43 @@
                 }
             }
 
-            // Check current plan
+            // Check current plan (user's own OR project owner's)
             if (isFirebaseConfigured()) {
                 try {
-                    const isPro = await DB.subscriptions.isPro(user.uid);
+                    // First check user's own subscription
+                    let isPro = await DB.subscriptions.isPro(user.uid);
+                    let sub = isPro ? await DB.subscriptions.get(user.uid) : null;
+                    let isOwnerPro = isPro;
+
+                    // If not PRO directly, check via project owner
+                    if (!isPro) {
+                        const pid = await DB.getProjectId();
+                        if (pid) {
+                            isPro = await DB.isProByProject(pid);
+                            if (isPro) {
+                                sub = await DB.subscriptions.getByProject(pid);
+                            }
+                        }
+                    }
+
                     if (isPro) {
                         // Show "My Plan" view instead of pricing
                         document.getElementById('pricingView').classList.add('hidden');
                         document.getElementById('myPlanView').classList.remove('hidden');
 
                         // Fill plan details
-                        const sub = await DB.subscriptions.get(user.uid);
                         if (sub) {
                             document.getElementById('myPlanSeats').textContent = (sub.seats || 1) + (sub.seats > 1 ? ' membros' : ' membro');
                             document.getElementById('myPlanEmail').textContent = sub.userEmail || user.email;
+                        }
+
+                        // If user is not the owner, show info that PRO comes from leader
+                        if (!isOwnerPro) {
+                            const leaderInfo = document.createElement('div');
+                            leaderInfo.className = 'bg-violet-50 border border-violet-200 rounded-xl p-4 text-sm text-violet-700 mb-6';
+                            leaderInfo.innerHTML = '<i class="fa-solid fa-users mr-2"></i>Seu plano PRO foi ativado pelo <strong>líder do seu grupo</strong>. Todos os integrantes do projeto compartilham os benefícios PRO.';
+                            const detailsCard = document.querySelector('#myPlanView .bg-white.border');
+                            if (detailsCard) detailsCard.parentNode.insertBefore(leaderInfo, detailsCard);
                         }
 
                         // Update navbar to show "Meu Plano"

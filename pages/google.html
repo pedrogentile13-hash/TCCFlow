@@ -438,14 +438,13 @@
             }
 
             if (isFirebaseConfigured()) {
-                // Check if user is PRO - block if not
-                const isPro = await DB.subscriptions.isPro(user.uid);
+                projectId = await DB.getProjectId();
+                // Check if user is PRO (by project owner's subscription)
+                const isPro = projectId ? await DB.isProByProject(projectId) : false;
                 if (!isPro) {
                     document.getElementById('proGateOverlay').classList.remove('hidden');
                     return;
                 }
-
-                projectId = await DB.getProjectId();
             }
             await renderLinks();
         });
