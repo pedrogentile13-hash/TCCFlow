@@ -153,6 +153,7 @@ create policy "Project members can read" on projects for select using (
 create policy "Project owner can update" on projects for update using (auth.uid() = owner_id);
 create policy "Authenticated users can create projects" on projects for insert with check (auth.uid() = owner_id);
 create policy "Anyone can read project by code" on projects for select using (true);
+create policy "Project owner can delete" on projects for delete using (auth.uid() = owner_id);
 
 -- Tasks: project members can CRUD (membership via users.project_id)
 create policy "Tasks readable by project members" on tasks for select using (

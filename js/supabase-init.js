@@ -25,15 +25,33 @@ const auth = {
 
     onAuthStateChanged(callback) {
         this._listeners.push(callback);
-        // Check current session immediately
-        _supa.auth.getSession().then(({ data: { session } }) => {
-            this.currentUser = session ? this._mapUser(session.user) : null;
-            callback(this.currentUser);
-        });
-        // Listen for future changes
+
+        // Detect OAuth callback (URL contains access_token or code from provider redirect)
+        const hash = window.location.hash || '';
+        const search = window.location.search || '';
+        const isOAuthCallback = hash.includes('access_token') || search.includes('code=');
+
+        let initialCallbackFired = false;
+
+        // Listen for auth state changes (fires on OAuth callback completion too)
         _supa.auth.onAuthStateChange((event, session) => {
             this.currentUser = session ? this._mapUser(session.user) : null;
+            initialCallbackFired = true;
             callback(this.currentUser);
+        });
+
+        // Check current session — but if this is an OAuth callback,
+        // give Supabase time to process the token before reporting null
+        _supa.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                this.currentUser = this._mapUser(session.user);
+                if (!initialCallbackFired) callback(this.currentUser);
+            } else if (!isOAuthCallback) {
+                // No session and not an OAuth callback — user is not logged in
+                this.currentUser = null;
+                if (!initialCallbackFired) callback(null);
+            }
+            // If isOAuthCallback and no session yet, wait for onAuthStateChange to fire
         });
     },
 

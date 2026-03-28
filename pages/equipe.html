@@ -114,7 +114,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
             <div class="mb-8">
-                <h1 class="text-3xl font-bold mb-2" data-i18n="team.title">Gerenciar Equipe</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold mb-2" data-i18n="team.title">Gerenciar Equipe</h1>
                 <p class="text-slate-500" data-i18n="team.subtitle">Convide membros e organize seu grupo de TCC</p>
             </div>
 
@@ -512,6 +512,9 @@
                                         ? '<span class="text-xs font-bold px-3 py-1 rounded-full bg-violet-100 text-violet-700">Ativo</span>'
                                         : `<button onclick="switchToProjectById('${proj.id}')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-violet-100 text-slate-600 hover:text-violet-700 transition">Acessar</button>`
                                     }
+                                    <button onclick="deleteProject('${proj.id}', '${proj.name.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition" title="Apagar projeto">
+                                        <i class="fa-solid fa-trash text-xs"></i>
+                                    </button>
                                 </div>
                             </div>`;
                     }
@@ -911,6 +914,45 @@
                 showNoProjectPanel();
             } catch (err) {
                 alert('Erro ao sair do projeto: ' + err.message);
+            }
+        };
+
+        // ========== Delete Project ==========
+        window.deleteProject = async function(projId, projName) {
+            if (!confirm(`Tem certeza que deseja APAGAR o projeto "${projName}"?\n\nTodos os dados (tarefas, calendário, artigos salvos, etc.) serão excluídos permanentemente.\n\nEsta ação NÃO pode ser desfeita.`)) return;
+            if (!confirm(`Última confirmação: apagar "${projName}" permanentemente?`)) return;
+
+            try {
+                // Clear project_id for all members of this project
+                const { data: members } = await _supa.from('users').select('id').eq('project_id', projId);
+                if (members && members.length > 0) {
+                    for (const m of members) {
+                        await _supa.from('users').update({ project_id: null }).eq('id', m.id);
+                    }
+                }
+
+                // Delete all related data (cascade should handle most, but be explicit)
+                await _supa.from('tasks').delete().eq('project_id', projId);
+                await _supa.from('google_links').delete().eq('project_id', projId);
+                await _supa.from('saved_papers').delete().eq('project_id', projId);
+                await _supa.from('calendar_goals').delete().eq('project_id', projId);
+                await _supa.from('calendar_sessions').delete().eq('project_id', projId);
+                await _supa.from('ai_usage').delete().eq('project_id', projId);
+
+                // Delete the project itself
+                const { error } = await _supa.from('projects').delete().eq('id', projId);
+                if (error) throw error;
+
+                // If deleted the active project, reload the page
+                if (projId === projectId) {
+                    projectId = null;
+                    window.location.reload();
+                } else {
+                    await loadMyProjects();
+                }
+            } catch (err) {
+                console.error('Error deleting project:', err);
+                alert('Erro ao apagar projeto: ' + err.message);
             }
         };
 

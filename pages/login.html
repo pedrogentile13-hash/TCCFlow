@@ -107,7 +107,26 @@
     <script src="../js/supabase-init.js"></script>
     <script>
         auth.onAuthStateChanged(user => {
-            if (user) window.location.href = 'dashboard.html';
+            if (user) {
+                // Ensure user record exists in DB (important for Google OAuth users)
+                _supa.from('users').select('id').eq('id', user.uid).maybeSingle().then(({ data }) => {
+                    if (!data) {
+                        _supa.from('users').upsert({
+                            id: user.uid,
+                            name: user.displayName || 'Usuário',
+                            email: user.email,
+                            project_id: null,
+                            created_at: new Date().toISOString()
+                        }).then(() => {
+                            window.location.href = 'dashboard.html';
+                        });
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }).catch(() => {
+                    window.location.href = 'dashboard.html';
+                });
+            }
         });
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -145,22 +164,10 @@
             try {
                 if (!isFirebaseConfigured()) throw { message: 'Supabase não configurado. Edite js/supabase-init.js' };
 
-                const provider = new firebase.auth.GoogleAuthProvider();
-                const result = await auth.signInWithPopup(provider);
-                const user = result.user;
-
-                // Create/update user doc in Firestore
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                if (!userDoc.exists) {
-                    await db.collection('users').doc(user.uid).set({
-                        name: user.displayName || 'Usuário',
-                        email: user.email,
-                        projectId: null,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-
-                window.location.href = 'dashboard.html';
+                // Supabase OAuth redirects the browser — code below only runs if there's an error
+                await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+                // Note: for OAuth redirect flow, the browser will navigate away.
+                // The user record is created on the dashboard page after redirect.
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;
                 let msg = 'Erro ao entrar com Google.';

@@ -112,45 +112,45 @@
     <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-            <div class="flex items-center justify-between mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 class="text-3xl font-bold mb-2" data-i18n="dash.welcome">Bem-vindo ao seu TCC!</h1>
-                    <p class="text-slate-500" id="projectInfo">Carregando...</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2" data-i18n="dash.welcome">Bem-vindo ao seu TCC!</h1>
+                    <p class="text-slate-500 text-sm sm:text-base" id="projectInfo">Carregando...</p>
                 </div>
-                <button id="quickAddTaskBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-5 py-2.5 rounded-xl font-medium hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
+                <button id="quickAddTaskBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-5 py-2.5 rounded-xl font-medium hover:shadow-lg hover:shadow-violet-500/25 transition text-sm w-full sm:w-auto">
                     <i class="fa-solid fa-plus mr-2"></i><span data-i18n="dash.newTask">Nova Tarefa</span>
                 </button>
             </div>
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500" data-i18n="dash.members">Membros</span>
-                        <i class="fa-solid fa-users text-violet-600 text-lg"></i>
+                        <span class="text-xs sm:text-sm text-slate-500" data-i18n="dash.members">Membros</span>
+                        <i class="fa-solid fa-users text-violet-600 text-base sm:text-lg"></i>
                     </div>
-                    <div class="text-3xl font-bold" id="memberCount">0</div>
+                    <div class="text-2xl sm:text-3xl font-bold" id="memberCount">0</div>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500" data-i18n="dash.tasks">Tarefas</span>
-                        <i class="fa-solid fa-list-check text-cyan-600 text-lg"></i>
+                        <span class="text-xs sm:text-sm text-slate-500" data-i18n="dash.tasks">Tarefas</span>
+                        <i class="fa-solid fa-list-check text-cyan-600 text-base sm:text-lg"></i>
                     </div>
-                    <div class="text-3xl font-bold" id="taskCount">0</div>
+                    <div class="text-2xl sm:text-3xl font-bold" id="taskCount">0</div>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500" data-i18n="dash.completed">Concluídas</span>
-                        <i class="fa-solid fa-check-circle text-emerald-600 text-lg"></i>
+                        <span class="text-xs sm:text-sm text-slate-500" data-i18n="dash.completed">Concluídas</span>
+                        <i class="fa-solid fa-check-circle text-emerald-600 text-base sm:text-lg"></i>
                     </div>
-                    <div class="text-3xl font-bold" id="completedCount">0</div>
+                    <div class="text-2xl sm:text-3xl font-bold" id="completedCount">0</div>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500" data-i18n="dash.progress">Progresso</span>
-                        <i class="fa-solid fa-chart-pie text-amber-600 text-lg"></i>
+                        <span class="text-xs sm:text-sm text-slate-500" data-i18n="dash.progress">Progresso</span>
+                        <i class="fa-solid fa-chart-pie text-amber-600 text-base sm:text-lg"></i>
                     </div>
-                    <div class="text-3xl font-bold" id="progressPercent">0%</div>
+                    <div class="text-2xl sm:text-3xl font-bold" id="progressPercent">0%</div>
                 </div>
             </div>
 

@@ -116,26 +116,6 @@
     </script>
     </nav>
 
-    <!-- PRO Gate Overlay -->
-    <div id="betaGate" class="hidden fixed inset-0 z-[60] bg-white/90 backdrop-blur-sm flex items-center justify-center">
-        <div class="bg-white border border-slate-200 rounded-2xl p-8 max-w-md mx-4 shadow-xl text-center">
-            <div class="w-16 h-16 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-crown text-violet-600 text-2xl"></i>
-            </div>
-            <h2 class="text-xl font-bold mb-2">Diário de Progresso <span class="text-xs bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-2 py-0.5 rounded-full font-bold align-middle">PRO</span></h2>
-            <p class="text-sm text-slate-500 mb-4">O Diário de Progresso é exclusivo do plano PRO. Registre suas atividades e gere relatórios de produtividade.</p>
-            <ul class="text-xs text-slate-500 mb-6 space-y-1 text-left mx-auto max-w-xs">
-                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Log de atividades diárias</li>
-                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Relatórios semanais/mensais</li>
-                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Exportar para PDF</li>
-            </ul>
-            <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white font-semibold px-6 py-2.5 rounded-xl transition text-sm">
-                <i class="fa-solid fa-crown mr-2"></i>Assinar Plano PRO
-            </a>
-            <p class="text-xs text-slate-400 mt-4">A partir de R$ 97,00/ano</p>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -294,18 +274,6 @@
                     }
                 }
             } catch(e) { console.log(e); }
-
-            // PRO gate
-            try {
-                const pid = await DB.getProjectId();
-                if (pid) {
-                    const isPro = await DB.isProByProject(pid);
-                    if (!isPro) {
-                        document.getElementById('betaGate').classList.remove('hidden');
-                        return;
-                    }
-                }
-            } catch(e) {}
 
             renderAll();
         });
