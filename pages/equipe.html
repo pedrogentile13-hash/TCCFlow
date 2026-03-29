@@ -961,6 +961,10 @@
             if (!confirm(`Última confirmação: apagar "${projName}" permanentemente?`)) return;
 
             try {
+                // First, switch current user to this project so RLS allows deletions
+                const currentUserId = auth.currentUser.uid;
+                await _supa.from('users').update({ project_id: projId }).eq('id', currentUserId);
+
                 // Clear project_id for all members of this project
                 const { data: members } = await _supa.from('users').select('id').eq('project_id', projId);
                 if (members && members.length > 0) {
@@ -969,13 +973,22 @@
                     }
                 }
 
-                // Delete all related data (cascade should handle most, but be explicit)
-                await _supa.from('tasks').delete().eq('project_id', projId);
-                await _supa.from('google_links').delete().eq('project_id', projId);
-                await _supa.from('saved_papers').delete().eq('project_id', projId);
-                await _supa.from('calendar_goals').delete().eq('project_id', projId);
-                await _supa.from('calendar_sessions').delete().eq('project_id', projId);
-                await _supa.from('ai_usage').delete().eq('project_id', projId);
+                // Delete all related data (including newer tables)
+                const deletePromises = [
+                    _supa.from('tasks').delete().eq('project_id', projId),
+                    _supa.from('google_links').delete().eq('project_id', projId),
+                    _supa.from('saved_papers').delete().eq('project_id', projId),
+                    _supa.from('calendar_goals').delete().eq('project_id', projId),
+                    _supa.from('calendar_sessions').delete().eq('project_id', projId),
+                    _supa.from('ai_usage').delete().eq('project_id', projId),
+                    _supa.from('diary_entries').delete().eq('project_id', projId),
+                    _supa.from('notes').delete().eq('project_id', projId),
+                    _supa.from('ideas').delete().eq('project_id', projId),
+                    _supa.from('user_references').delete().eq('project_id', projId),
+                    _supa.from('orientador_projects').delete().eq('project_id', projId),
+                    _supa.from('orientador_comments').delete().eq('project_id', projId)
+                ];
+                await Promise.all(deletePromises);
 
                 // Delete the project itself
                 const { error } = await _supa.from('projects').delete().eq('id', projId);

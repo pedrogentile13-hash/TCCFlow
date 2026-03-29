@@ -42,6 +42,9 @@ create table if not exists tasks (
     created_at timestamptz default now()
 );
 
+-- 3b. Add assigned_to_list for multi-assignee tasks (single task, multiple members)
+alter table tasks add column if not exists assigned_to_list uuid[] default null;
+
 -- 4. Google Links table
 create table if not exists google_links (
     id uuid primary key default gen_random_uuid(),
@@ -361,6 +364,21 @@ create policy "References by project members" on user_references for all using (
 -- Subscriptions: allow upsert for max_projects
 create policy "Users can upsert own subscription" on subscriptions for insert with check (auth.uid() = id);
 create policy "Users can update own subscription" on subscriptions for update using (auth.uid() = id);
+
+-- Allow anyone authenticated to read orientador_projects by invite_code (for accepting invites)
+create policy "Anyone can read pending invite by code" on orientador_projects for select using (
+    status = 'pending' and auth.role() = 'authenticated'
+);
+
+-- Allow project owner to delete orientador_projects (for cleanup on project deletion)
+create policy "Project owner can delete orientador links" on orientador_projects for delete using (
+    exists (select 1 from projects where projects.id = orientador_projects.project_id and projects.owner_id = auth.uid())
+);
+
+-- Allow project owner to delete orientador_comments (for cleanup on project deletion)
+create policy "Project owner can delete orientador comments" on orientador_comments for delete using (
+    exists (select 1 from projects where projects.id = orientador_comments.project_id and projects.owner_id = auth.uid())
+);
 
 -- Indexes for new tables
 create index if not exists idx_diary_entries_project on diary_entries(project_id);

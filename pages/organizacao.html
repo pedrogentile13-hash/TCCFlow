@@ -236,7 +236,7 @@
                             <div id="allSelect" class="hidden">
                                 <div class="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2.5 text-sm text-emerald-700 flex items-center gap-2">
                                     <i class="fa-solid fa-users-rectangle"></i>
-                                    <span>Tarefa sera criada para <strong>todos os membros</strong> do projeto</span>
+                                    <span>Tarefa sera atribuida a <strong>todos os membros</strong> do projeto</span>
                                 </div>
                             </div>
                         </div>
@@ -390,6 +390,7 @@
                     id: t.id,
                     title: t.title,
                     assignedTo: t.assigned_to,
+                    assignedToList: t.assigned_to_list || [],
                     dueDate: t.due_date,
                     status: t.status,
                     projectId: t.project_id
@@ -448,8 +449,13 @@
             }
 
             el.innerHTML = tasks.map(task => {
-                const assigneeName = memberNames[task.assignedTo] || 'Sem atribuição';
-                const initial = assigneeName.charAt(0).toUpperCase();
+                // Build assignee display: show multiple if assigned_to_list exists
+                const assigneeIds = task.assignedToList && task.assignedToList.length > 1
+                    ? task.assignedToList
+                    : (task.assignedTo ? [task.assignedTo] : []);
+                const assigneeNames = assigneeIds.map(uid => memberNames[uid] || 'Sem nome');
+                const displayName = assigneeNames.length > 0 ? assigneeNames.join(', ') : 'Sem atribuição';
+                const initials = assigneeIds.slice(0, 3).map(uid => (memberNames[uid] || '?').charAt(0).toUpperCase());
                 return `
                 <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 group">
                     <div class="flex items-start justify-between mb-2">
@@ -467,8 +473,8 @@
                     </div>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">${initial}</div>
-                            <span class="text-xs text-slate-500">${assigneeName}</span>
+                            <div class="flex -space-x-1">${initials.map(i => `<div class="w-6 h-6 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold border border-white">${i}</div>`).join('')}${assigneeIds.length > 3 ? `<div class="w-6 h-6 bg-slate-300 rounded-full flex items-center justify-center text-white text-xs font-bold border border-white">+${assigneeIds.length - 3}</div>` : ''}</div>
+                            <span class="text-xs text-slate-500">${displayName}</span>
                         </div>
                         <span class="text-xs text-slate-400">${task.dueDate ? new Date(task.dueDate).toLocaleDateString('pt-BR') : ''}</span>
                     </div>
@@ -570,7 +576,7 @@
             if (!userIsPro && !editId) {
                 const { data: currentTasks } = await _supa.from('tasks').select('id, status').eq('project_id', projectId);
                 const activeCount = (currentTasks || []).filter(t => t.status !== 'done').length;
-                if (activeCount + assignees.length > FREE_TASK_LIMIT) {
+                if (activeCount + 1 > FREE_TASK_LIMIT) {
                     alert('Limite de ' + FREE_TASK_LIMIT + ' tarefas ativas atingido. Conclua ou apague tarefas, ou faca upgrade para PRO.');
                     return;
                 }
@@ -584,19 +590,28 @@
                 if (editId) {
                     // Edit: single update
                     const assigned_to = assignees[0] || null;
+                    const updateData = { title, assigned_to, due_date, status };
+                    if (assignees.length > 1) {
+                        updateData.assigned_to_list = assignees;
+                    } else {
+                        updateData.assigned_to_list = null;
+                    }
                     const { error } = await _supa
                         .from('tasks')
-                        .update({ title, assigned_to, due_date, status })
+                        .update(updateData)
                         .eq('id', editId);
                     if (error) throw error;
                 } else {
-                    // Create: one task per assignee (collective)
-                    const tasksToInsert = assignees.map(uid => ({
-                        project_id: projectId, title, assigned_to: uid, due_date, status
-                    }));
+                    // Create: single task (even for multiple assignees)
+                    const taskData = {
+                        project_id: projectId, title, assigned_to: assignees[0] || null, due_date, status
+                    };
+                    if (assignees.length > 1) {
+                        taskData.assigned_to_list = assignees;
+                    }
                     const { error } = await _supa
                         .from('tasks')
-                        .insert(tasksToInsert);
+                        .insert([taskData]);
                     if (error) throw error;
                 }
                 closeTaskModal();
