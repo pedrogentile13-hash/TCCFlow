@@ -25,6 +25,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../css/dark.css">
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -315,6 +316,9 @@
                         <button id="checkoutBtn" class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm">
                             <i class="fa-solid fa-bolt mr-2"></i>Assinar Plano Pro — <span id="btnPrice">R$ 97,00</span>
                         </button>
+
+                        <!-- Mercado Pago Checkout Container -->
+                        <div id="mp-checkout-container" class="hidden mt-4"></div>
 
                         <p class="text-[10px] text-slate-400 text-center mt-3">
                             <i class="fa-solid fa-lock mr-1"></i>Pagamento seguro via Mercado Pago (PIX ou cartão). Cancele quando quiser.
@@ -640,7 +644,10 @@
             }
         }
 
-        // ========== Mercado Pago Checkout ==========
+        // ========== Mercado Pago Checkout (SDK Frontend) ==========
+        const mp = new MercadoPago('APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', { locale: 'pt-BR' });
+        let walletRendered = false;
+
         document.getElementById('checkoutBtn').addEventListener('click', async () => {
             const seats = parseInt(slider.value);
             const total = BASE_PRICE + (seats > 1 ? (seats - 1) * SEAT_PRICE : 0);
@@ -649,11 +656,12 @@
             if (!user) { window.location.href = 'login.html'; return; }
 
             const btn = document.getElementById('checkoutBtn');
+            const container = document.getElementById('mp-checkout-container');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Redirecionando ao Mercado Pago...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Preparando pagamento...';
 
             try {
-                // Call Netlify Function to create Mercado Pago Checkout
+                // Call Netlify Function to create Mercado Pago Preference
                 const response = await fetch('/.netlify/functions/create-preference', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -668,14 +676,34 @@
 
                 const data = await response.json();
 
-                if (data.url) {
-                    window.location.href = data.url;
-                } else {
+                if (!data.id) {
                     throw new Error(data.error || 'Erro ao criar sessão de pagamento');
                 }
+
+                // Clear previous render
+                container.innerHTML = '';
+                container.classList.remove('hidden');
+
+                // Render Wallet Brick with the preference ID
+                const bricksBuilder = mp.bricks();
+                await bricksBuilder.create('wallet', 'mp-checkout-container', {
+                    initialization: {
+                        preferenceId: data.id
+                    },
+                    customization: {
+                        texts: {
+                            valueProp: 'smart_option'
+                        }
+                    }
+                });
+
+                walletRendered = true;
+                btn.innerHTML = '<i class="fa-solid fa-arrow-down mr-2"></i>Finalize o pagamento abaixo';
+
             } catch (err) {
                 console.error('Checkout error:', err);
                 alert('Erro ao iniciar checkout: ' + err.message);
+                container.classList.add('hidden');
                 btn.disabled = false;
                 btn.innerHTML = `<i class="fa-solid fa-bolt mr-2"></i>Assinar Plano Pro — <span id="btnPrice">R$ ${total},00</span>`;
             }
