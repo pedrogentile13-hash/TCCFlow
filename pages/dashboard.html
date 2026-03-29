@@ -315,8 +315,56 @@
                         projectId = userData.project_id;
                         await loadDashboard();
                     } else {
-                        document.getElementById('projectInfo').innerHTML =
-                            '<span class="text-amber-600">' + i18n.t('dash.noProject') + ' <a href="equipe.html" class="underline font-semibold">' + i18n.t('dash.createProject') + '</a> ' + i18n.t('common.or') + ' <a href="equipe.html" class="underline font-semibold">' + i18n.t('dash.joinProject') + '</a></span>';
+                        // Fallback: check if user is in any project's members array
+                        let foundProject = false;
+                        try {
+                            const { data: projects } = await _supa
+                                .from('projects')
+                                .select('id')
+                                .contains('members', [user.uid])
+                                .limit(1);
+
+                            if (projects && projects.length > 0) {
+                                // User is in members array but project_id is missing — fix it
+                                projectId = projects[0].id;
+                                await _supa.from('users').upsert({
+                                    id: user.uid,
+                                    project_id: projectId
+                                });
+                                foundProject = true;
+                                await loadDashboard();
+                            }
+                        } catch (e) {
+                            console.log('Fallback member check failed:', e);
+                        }
+
+                        // Also check if user owns any project
+                        if (!foundProject) {
+                            try {
+                                const { data: ownedProjects } = await _supa
+                                    .from('projects')
+                                    .select('id')
+                                    .eq('owner_id', user.uid)
+                                    .limit(1);
+
+                                if (ownedProjects && ownedProjects.length > 0) {
+                                    projectId = ownedProjects[0].id;
+                                    await _supa.from('users').upsert({
+                                        id: user.uid,
+                                        project_id: projectId
+                                    });
+                                    foundProject = true;
+                                    await loadDashboard();
+                                }
+                            } catch (e) {
+                                console.log('Fallback owner check failed:', e);
+                            }
+                        }
+
+                        if (!foundProject) {
+                            document.getElementById('projectInfo').innerHTML =
+                                '<span class="text-amber-600">' + i18n.t('dash.noProject') + ' <a href="equipe.html" class="underline font-semibold">' + i18n.t('dash.createProject') + '</a> ' + i18n.t('common.or') + ' <a href="equipe.html" class="underline font-semibold">' + i18n.t('dash.joinProject') + '</a></span>';
+                        }
                     }
                 } catch (err) {
                     console.error('Supabase error:', err);

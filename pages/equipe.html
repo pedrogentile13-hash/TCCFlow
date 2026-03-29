@@ -484,12 +484,20 @@
                 if (createErr) throw createErr;
 
                 // Update user's project_id (user updates own record - RLS allows this)
-                await _supa.from('users').upsert({
+                const { error: upsertErr } = await _supa.from('users').upsert({
                     id: currentUser.uid,
                     name: currentUser.displayName || 'Usuário',
                     email: currentUser.email,
                     project_id: newProj.id
                 });
+                if (upsertErr) {
+                    console.error('Failed to set project_id on user:', upsertErr);
+                    // Fallback: try update only
+                    const { error: updateErr } = await _supa.from('users')
+                        .update({ project_id: newProj.id })
+                        .eq('id', currentUser.uid);
+                    if (updateErr) console.error('Fallback update also failed:', updateErr);
+                }
 
                 projectId = newProj.id;
                 projectOwnerId = currentUser.uid;
@@ -689,7 +697,14 @@
                     email: currentUser.email,
                     project_id: proj.id
                 });
-                if (userErr) throw userErr;
+                if (userErr) {
+                    console.error('Upsert failed, trying update fallback:', userErr);
+                    // Fallback: try update only (in case upsert fails due to RLS on insert)
+                    const { error: updateErr } = await _supa.from('users')
+                        .update({ project_id: proj.id })
+                        .eq('id', currentUser.uid);
+                    if (updateErr) throw updateErr;
+                }
 
                 // Try to also update projects.members (best effort - may fail due to RLS)
                 try {
