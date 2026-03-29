@@ -194,6 +194,19 @@ create table if not exists user_references (
     created_at timestamptz default now()
 );
 
+-- 16. Chat Messages (real-time team chat)
+create table if not exists chat_messages (
+    id uuid primary key default gen_random_uuid(),
+    project_id uuid not null references projects(id) on delete cascade,
+    user_id uuid not null references auth.users(id),
+    user_name text not null default 'Usuário',
+    user_photo text default '',
+    text text not null,
+    created_at timestamptz default now()
+);
+
+create index if not exists idx_chat_messages_project on chat_messages(project_id, created_at desc);
+
 -- ============================================================
 -- Helper function to get current user's project_id (avoids RLS recursion)
 -- ============================================================
@@ -364,6 +377,12 @@ create policy "Ideas by project members" on ideas for all using (
     project_id = get_my_project_id() and get_my_project_id() is not null
 );
 create policy "References by project members" on user_references for all using (
+    project_id = get_my_project_id() and get_my_project_id() is not null
+);
+
+-- Chat Messages: project members can read/write
+alter table chat_messages enable row level security;
+create policy "Chat messages by project members" on chat_messages for all using (
     project_id = get_my_project_id() and get_my_project_id() is not null
 );
 

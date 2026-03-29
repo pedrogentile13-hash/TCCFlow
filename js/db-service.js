@@ -312,7 +312,9 @@ const DB = {
             if (error || !project) return { allowed: false, remaining: 0, limit: 0 };
 
             const isPro = await DB.subscriptions.isPro(project.owner_id);
-            const limit = isPro ? 1000 : 20;
+            const proSearches = (typeof PRICING !== 'undefined') ? PRICING.PRO_AI_SEARCHES : 1000;
+            const freeSearches = (typeof PRICING !== 'undefined') ? PRICING.FREE_AI_SEARCHES : 20;
+            const limit = isPro ? proSearches : freeSearches;
 
             const usage = await DB.aiUsage.getUsage(projectId);
             const remaining = Math.max(0, limit - usage.count);
@@ -378,9 +380,11 @@ const DB = {
             if (sub && sub.maxProjects !== null && sub.maxProjects !== undefined) {
                 return sub.maxProjects;
             }
-            // Default limits
+            // Default limits from pricing config
             const isPro = sub && sub.status === 'active' && sub.plan === 'pro';
-            return isPro ? 2 : 1;
+            const proProjects = (typeof PRICING !== 'undefined') ? PRICING.PRO_PROJECTS : 2;
+            const freeProjects = (typeof PRICING !== 'undefined') ? PRICING.FREE_PROJECTS : 1;
+            return isPro ? proProjects : freeProjects;
         },
 
         async setMaxProjects(userId, maxProjects) {
@@ -465,7 +469,7 @@ const DB = {
             return code;
         },
 
-        async createInvite(projectId, orientadorEmail) {
+        async createInvite(projectId) {
             const code = await DB.orientador.generateInviteCode();
             const { data, error } = await _supa
                 .from('orientador_projects')

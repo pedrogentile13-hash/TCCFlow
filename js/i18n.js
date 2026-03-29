@@ -23,6 +23,7 @@ window.i18n = (function () {
             'nav.tasks': 'Tarefas',
             'nav.team': 'Equipe',
             'nav.plans': 'Planos',
+            'nav.myPlan': 'Meu Plano',
             'nav.google': 'Google',
 
             // Settings
@@ -91,6 +92,7 @@ window.i18n = (function () {
             'ai.upgradeToPro': 'Fazer upgrade para Pro',
             'ai.upgradeToProLink': 'Upgrade para Pro →',
             'ai.proActive': 'Pro ativo',
+            'ai.myPlan': 'Meu Plano',
             'ai.proBannerDesc': 'Até 50 artigos por seção, 1.000 buscas/mês com filtros avançados',
             'ai.howItWorks': 'Como funciona?',
             'ai.howItWorksDesc': 'Digite um tema e o assistente buscará artigos acadêmicos em bases de dados como Semantic Scholar, CrossRef e Google Scholar.',
@@ -352,6 +354,7 @@ window.i18n = (function () {
             'nav.tasks': 'Tarefas',
             'nav.team': 'Equipa',
             'nav.plans': 'Planos',
+            'nav.myPlan': 'O Meu Plano',
             'nav.google': 'Google',
 
             'settings.title': 'Configurações',
@@ -417,6 +420,7 @@ window.i18n = (function () {
             'ai.upgradeToPro': 'Fazer upgrade para Pro',
             'ai.upgradeToProLink': 'Upgrade para Pro →',
             'ai.proActive': 'Pro ativo',
+            'ai.myPlan': 'Meu Plano',
             'ai.proBannerDesc': 'Até 50 artigos por secção, 1.000 pesquisas/mês com filtros avançados',
             'ai.howItWorks': 'Como funciona?',
             'ai.howItWorksDesc': 'Escreva um tema e o assistente procurará artigos académicos em bases de dados como Semantic Scholar, CrossRef e Google Scholar.',
@@ -671,6 +675,7 @@ window.i18n = (function () {
             'nav.tasks': 'Tasks',
             'nav.team': 'Team',
             'nav.plans': 'Plans',
+            'nav.myPlan': 'My Plan',
             'nav.google': 'Google',
 
             'settings.title': 'Settings',
@@ -736,6 +741,7 @@ window.i18n = (function () {
             'ai.upgradeToPro': 'Upgrade to Pro',
             'ai.upgradeToProLink': 'Upgrade to Pro →',
             'ai.proActive': 'Pro active',
+            'ai.myPlan': 'My Plan',
             'ai.proBannerDesc': 'Up to 50 articles per section, 1,000 searches/month with advanced filters',
             'ai.howItWorks': 'How does it work?',
             'ai.howItWorksDesc': 'Enter a topic and the assistant will search academic articles in databases like Semantic Scholar, CrossRef and Google Scholar.',
@@ -990,6 +996,7 @@ window.i18n = (function () {
             'nav.tasks': 'Tareas',
             'nav.team': 'Equipo',
             'nav.plans': 'Planes',
+            'nav.myPlan': 'Mi Plan',
             'nav.google': 'Google',
 
             'settings.title': 'Configuración',
@@ -1055,6 +1062,7 @@ window.i18n = (function () {
             'ai.upgradeToPro': 'Mejorar a Pro',
             'ai.upgradeToProLink': 'Mejorar a Pro →',
             'ai.proActive': 'Pro activo',
+            'ai.myPlan': 'Mi Plan',
             'ai.proBannerDesc': 'Hasta 50 artículos por sección, 1.000 búsquedas/mes con filtros avanzados',
             'ai.howItWorks': '¿Cómo funciona?',
             'ai.howItWorksDesc': 'Escribe un tema y el asistente buscará artículos académicos en bases de datos como Semantic Scholar, CrossRef y Google Scholar.',

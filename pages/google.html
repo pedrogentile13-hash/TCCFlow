@@ -122,7 +122,7 @@
             <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
                 <i class="fa-solid fa-crown mr-2"></i>Assinar Plano PRO
             </a>
-            <p class="text-xs text-slate-400 mt-4">A partir de R$ 97,00/ano</p>
+            <p class="text-xs text-slate-400 mt-4" id="proGatePrice">A partir de R$ 97,00/ano</p>
         </div>
     </div>
 
@@ -415,8 +415,15 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-init.js"></script>
+    <script src="../js/pricing-config.js"></script>
     <script src="../js/db-service.js"></script>
     <script>
+        // Update PRO gate price from config
+        if (typeof PRICING !== 'undefined') {
+            const priceEl = document.getElementById('proGatePrice');
+            if (priceEl) priceEl.textContent = `A partir de ${PRICING.formatBRLDecimal(PRICING.BASE_PRICE)}/ano`;
+        }
+
         // ========== Auth Check ==========
         let currentUserId = null;
         let projectId = null;
