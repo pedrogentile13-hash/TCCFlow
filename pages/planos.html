@@ -313,6 +313,18 @@
                             <li class="flex items-center gap-2 text-slate-600"><i class="fa-solid fa-check text-emerald-500 w-4"></i> Todos os templates + Suporte prioritário</li>
                         </ul>
 
+                        <!-- Coupon Field -->
+                        <div class="mb-4">
+                            <div class="flex gap-2">
+                                <input type="text" id="couponInput" placeholder="Cupom de desconto" maxlength="30"
+                                    class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 uppercase placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                                <button id="applyCouponBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl transition text-sm border border-slate-200">
+                                    Aplicar
+                                </button>
+                            </div>
+                            <p id="couponMsg" class="hidden text-xs mt-2 px-1"></p>
+                        </div>
+
                         <button id="checkoutBtn" class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm">
                             <i class="fa-solid fa-bolt mr-2"></i>Assinar Plano Pro — <span id="btnPrice">R$ 97,00</span>
                         </button>
@@ -627,8 +639,13 @@
             // Update feature text
             document.getElementById('featureSeats').textContent = seats === 1 ? 'Até 1 membro' : `Até ${seats} membros`;
 
-            // Update button
-            document.getElementById('btnPrice').textContent = `R$ ${total},00`;
+            // Update button (with discount if coupon applied)
+            if (discountPercent > 0) {
+                const discounted = Math.round(total * (1 - discountPercent / 100));
+                document.getElementById('btnPrice').innerHTML = `<s class="opacity-50">R$ ${total},00</s> R$ ${discounted},00`;
+            } else {
+                document.getElementById('btnPrice').textContent = `R$ ${total},00`;
+            }
 
             // Update seat dots
             for (let i = 0; i < dots.length; i++) {
@@ -644,13 +661,73 @@
             }
         }
 
+        // ========== Coupon System ==========
+        let appliedCoupon = null;
+        let discountPercent = 0;
+
+        document.getElementById('applyCouponBtn').addEventListener('click', async () => {
+            const input = document.getElementById('couponInput');
+            const msg = document.getElementById('couponMsg');
+            const code = input.value.trim().toUpperCase();
+
+            if (!code) { return; }
+
+            const btn = document.getElementById('applyCouponBtn');
+            btn.disabled = true;
+            btn.textContent = '...';
+
+            try {
+                const res = await fetch('/.netlify/functions/validate-coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+
+                if (data.valid) {
+                    appliedCoupon = data.code;
+                    discountPercent = data.discount_percent;
+                    msg.className = 'text-xs mt-2 px-1 text-emerald-600';
+                    msg.innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i>Cupom <strong>${data.code}</strong> aplicado! ${data.discount_percent}% de desconto`;
+                    msg.classList.remove('hidden');
+                    input.disabled = true;
+                    input.classList.add('bg-emerald-50', 'border-emerald-300');
+                    btn.textContent = '✓';
+                    btn.classList.add('bg-emerald-100', 'text-emerald-600', 'border-emerald-300');
+                    updatePricing();
+                } else {
+                    appliedCoupon = null;
+                    discountPercent = 0;
+                    msg.className = 'text-xs mt-2 px-1 text-red-500';
+                    msg.innerHTML = `<i class="fa-solid fa-times-circle mr-1"></i>${data.error || 'Cupom inválido'}`;
+                    msg.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.textContent = 'Aplicar';
+                }
+            } catch (err) {
+                msg.className = 'text-xs mt-2 px-1 text-red-500';
+                msg.textContent = 'Erro ao validar cupom';
+                msg.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Aplicar';
+            }
+        });
+
+        // Allow Enter key on coupon input
+        document.getElementById('couponInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('applyCouponBtn').click();
+            }
+        });
+
         // ========== Mercado Pago Checkout (SDK Frontend) ==========
         const mp = new MercadoPago('APP_USR-1d478476-9d70-4b7f-adb5-64065c9ff5e4', { locale: 'pt-BR' });
         let walletRendered = false;
 
         document.getElementById('checkoutBtn').addEventListener('click', async () => {
             const seats = parseInt(slider.value);
-            const total = BASE_PRICE + (seats > 1 ? (seats - 1) * SEAT_PRICE : 0);
+            let total = BASE_PRICE + (seats > 1 ? (seats - 1) * SEAT_PRICE : 0);
 
             const user = auth.currentUser;
             if (!user) { window.location.href = 'login.html'; return; }
@@ -670,7 +747,8 @@
                         totalCents: total * 100,
                         userId: user.uid,
                         userEmail: user.email,
-                        userName: user.displayName || 'Usuário'
+                        userName: user.displayName || 'Usuário',
+                        couponCode: appliedCoupon || null
                     })
                 });
 
@@ -698,7 +776,10 @@
                 });
 
                 walletRendered = true;
-                btn.innerHTML = '<i class="fa-solid fa-arrow-down mr-2"></i>Finalize o pagamento abaixo';
+                const priceLabel = data.discount_percent > 0
+                    ? `R$ ${data.final_price.toFixed(2).replace('.', ',')} (${data.discount_percent}% OFF)`
+                    : `R$ ${total},00`;
+                btn.innerHTML = `<i class="fa-solid fa-arrow-down mr-2"></i>Finalize o pagamento abaixo — ${priceLabel}`;
 
             } catch (err) {
                 console.error('Checkout error:', err);

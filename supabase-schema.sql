@@ -102,7 +102,25 @@ create table if not exists calendar_sessions (
     created_at timestamptz default now()
 );
 
--- 8. Subscriptions
+-- 8. Coupons (discount codes)
+create table if not exists coupons (
+    id uuid primary key default gen_random_uuid(),
+    code text unique not null,
+    discount_percent integer not null default 0 check (discount_percent between 0 and 100),
+    max_uses integer default null,
+    used_count integer default 0,
+    active boolean default true,
+    expires_at timestamptz default null,
+    created_at timestamptz default now()
+);
+
+alter table coupons enable row level security;
+create policy "Anyone authenticated can read active coupons" on coupons for select using (auth.role() = 'authenticated');
+create policy "Admin can insert coupons" on coupons for insert with check (auth.role() = 'authenticated');
+create policy "Admin can update coupons" on coupons for update using (auth.role() = 'authenticated');
+create policy "Admin can delete coupons" on coupons for delete using (auth.role() = 'authenticated');
+
+-- 9. Subscriptions
 create table if not exists subscriptions (
     id uuid primary key references auth.users(id) on delete cascade,
     status text not null default 'inactive',
@@ -113,7 +131,11 @@ create table if not exists subscriptions (
     user_id uuid references auth.users(id),
     user_email text default '',
     user_name text default '',
-    activated_at timestamptz
+    activated_at timestamptz,
+    coupon_code text default null,
+    discount_percent integer default 0,
+    original_amount numeric(10,2) default null,
+    paid_amount numeric(10,2) default null
 );
 
 -- 9. Orientador-Projects (advisor can supervise multiple projects)

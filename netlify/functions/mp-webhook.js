@@ -54,6 +54,10 @@ exports.handler = async (event) => {
         const userName = metadata.user_name || '';
         const seats = metadata.seats || 1;
         const plan = metadata.plan || 'pro';
+        const couponCode = metadata.coupon_code || null;
+        const discountPercent = metadata.discount_percent || 0;
+        const originalAmount = metadata.original_amount || null;
+        const paidAmount = metadata.paid_amount || payment.transaction_amount || null;
 
         if (!userId) {
             console.error('No user_id found in payment metadata or external_reference');
@@ -78,7 +82,11 @@ exports.handler = async (event) => {
                 payment_method: payment.payment_method_id || 'mercadopago',
                 user_id: userId,
                 user_email: userEmail,
-                user_name: userName
+                user_name: userName,
+                coupon_code: couponCode,
+                discount_percent: discountPercent,
+                original_amount: originalAmount,
+                paid_amount: paidAmount
             }, { onConflict: 'id' });
 
         if (error) {
