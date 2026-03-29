@@ -97,7 +97,13 @@ exports.handler = async (event) => {
         console.log('PRO activated for user:', userId, 'seats:', seats);
 
         // Send confirmation email via Resend
-        if (userEmail && process.env.RESEND_API_KEY) {
+        console.log('Email check — userEmail:', userEmail || '(empty)', 'RESEND_API_KEY configured:', !!process.env.RESEND_API_KEY);
+
+        if (!userEmail) {
+            console.warn('SKIPPING EMAIL: userEmail is empty. metadata:', JSON.stringify(metadata), 'payer:', JSON.stringify(payment.payer));
+        } else if (!process.env.RESEND_API_KEY) {
+            console.error('SKIPPING EMAIL: RESEND_API_KEY is not configured in environment variables');
+        } else {
             try {
                 const amount = (payment.transaction_amount || 0).toFixed(2).replace('.', ',');
                 const seatsPlural = seats > 1 ? 's' : '';
@@ -148,6 +154,8 @@ exports.handler = async (event) => {
 </td></tr>
 </table>`;
 
+                console.log('Sending confirmation email to:', userEmail);
+
                 const emailRes = await fetch('https://api.resend.com/emails', {
                     method: 'POST',
                     headers: {
@@ -162,15 +170,15 @@ exports.handler = async (event) => {
                     })
                 });
 
+                const emailResBody = await emailRes.text();
                 if (emailRes.ok) {
-                    console.log('Confirmation email sent to:', userEmail);
+                    console.log('Confirmation email sent successfully to:', userEmail, 'Response:', emailResBody);
                 } else {
-                    const emailErr = await emailRes.text();
-                    console.error('Failed to send confirmation email:', emailErr);
+                    console.error('Failed to send confirmation email. Status:', emailRes.status, 'Response:', emailResBody);
                 }
             } catch (emailError) {
                 // Email failure should not block the webhook response
-                console.error('Email sending error:', emailError);
+                console.error('Email sending error:', emailError.message || emailError);
             }
         }
 
