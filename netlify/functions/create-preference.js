@@ -39,6 +39,11 @@ exports.handler = async (event) => {
                     name: userName,
                     email: userEmail
                 },
+                payment_methods: {
+                    default_payment_method_id: 'pix',
+                    excluded_payment_types: [],
+                    installments: 1
+                },
                 metadata: {
                     user_id: userId,
                     user_email: userEmail,
