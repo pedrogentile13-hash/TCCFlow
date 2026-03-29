@@ -140,7 +140,7 @@
             </div>
 
             <!-- Footer left -->
-            <p class="absolute bottom-6 text-white/40 text-xs">&copy; 2025 TCCFlow. Todos os direitos reservados.</p>
+            <p class="absolute bottom-6 text-white/40 text-xs">&copy; 2026 TCCFlow. Todos os direitos reservados.</p>
         </div>
 
         <!-- Right Panel - Register Form -->
@@ -296,7 +296,7 @@
                 </div>
 
                 <!-- Footer (mobile only) -->
-                <p class="text-center text-xs text-slate-400 mt-6 lg:hidden">&copy; 2025 TCCFlow. Todos os direitos reservados.</p>
+                <p class="text-center text-xs text-slate-400 mt-6 lg:hidden">&copy; 2026 TCCFlow. Todos os direitos reservados.</p>
             </div>
         </div>
     </div>
@@ -364,32 +364,41 @@
                 const cred = await auth.createUserWithEmailAndPassword(email, password);
                 await cred.user.updateProfile({ displayName: name });
 
-                let projectId = null;
+                let newProjectId = null;
 
                 if (projectCode) {
-                    const snap = await db.collection('projects').where('code', '==', projectCode).get();
-                    if (snap.empty) throw { message: 'Codigo de projeto nao encontrado: ' + projectCode };
-                    projectId = snap.docs[0].id;
-                    await db.collection('projects').doc(projectId).update({
-                        members: firebase.firestore.FieldValue.arrayUnion(cred.user.uid)
-                    });
+                    // Find project by code via Supabase
+                    const { data: projects, error: findErr } = await _supa.from('projects').select('*').eq('code', projectCode);
+                    if (findErr) throw findErr;
+                    if (!projects || projects.length === 0) throw { message: 'Codigo de projeto nao encontrado: ' + projectCode };
+                    const proj = projects[0];
+                    newProjectId = proj.id;
+
+                    // Add user to members array (best effort)
+                    try {
+                        const existingMembers = proj.members || [];
+                        if (!existingMembers.includes(cred.user.uid)) {
+                            await _supa.from('projects').update({ members: [...new Set([...existingMembers, cred.user.uid])] }).eq('id', proj.id);
+                        }
+                    } catch(e) { console.log('Could not update members:', e); }
                 } else {
                     const code = generateCode();
-                    const projectRef = await db.collection('projects').add({
+                    const { data: newProj, error: createErr } = await _supa.from('projects').insert({
                         name: 'Meu TCC',
                         code: code,
-                        ownerId: cred.user.uid,
+                        owner_id: cred.user.uid,
                         members: [cred.user.uid],
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    projectId = projectRef.id;
+                        created_at: new Date().toISOString()
+                    }).select().maybeSingle();
+                    if (createErr) throw createErr;
+                    newProjectId = newProj.id;
                 }
 
                 window._pendingSignup = {
                     uid: cred.user.uid,
                     name: name,
                     email: email,
-                    projectId: projectId
+                    projectId: newProjectId
                 };
                 document.getElementById('sentEmail').textContent = email;
                 document.getElementById('step1').classList.add('hidden');
@@ -421,29 +430,8 @@
                 if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado.' };
 
                 const provider = new firebase.auth.GoogleAuthProvider();
-                const result = await auth.signInWithPopup(provider);
-                const user = result.user;
-
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                if (!userDoc.exists) {
-                    const code = generateCode();
-                    const projectRef = await db.collection('projects').add({
-                        name: 'Meu TCC',
-                        code: code,
-                        ownerId: user.uid,
-                        members: [user.uid],
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-
-                    await db.collection('users').doc(user.uid).set({
-                        name: user.displayName || 'Usuario',
-                        email: user.email,
-                        projectId: projectRef.id,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-
-                window.location.href = 'dashboard.html';
+                await auth.signInWithPopup(provider);
+                // OAuth redirect will handle the rest via login.html onAuthStateChanged
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;
                 let msg = 'Erro ao criar conta com Google.';
@@ -494,11 +482,13 @@
             try {
                 await auth.verifyOtp(window._pendingSignup.email, code);
                 const s = window._pendingSignup;
-                await db.collection('users').doc(s.uid).set({
+                await _supa.from('users').upsert({
+                    id: s.uid,
                     name: s.name,
                     email: s.email,
-                    projectId: s.projectId,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    project_id: s.projectId,
+                    role: 'student',
+                    created_at: new Date().toISOString()
                 });
                 window.location.href = 'dashboard.html';
             } catch (err) {

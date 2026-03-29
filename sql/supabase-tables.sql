@@ -27,11 +27,9 @@ ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view chat messages of their project"
     ON chat_messages FOR SELECT
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-        UNION
-        SELECT project_id FROM team_members WHERE user_id = auth.uid()
-    ));
+    USING (
+        project_id = get_my_project_id() AND get_my_project_id() IS NOT NULL
+    );
 
 CREATE POLICY "Users can insert chat messages in their project"
     ON chat_messages FOR INSERT
@@ -63,11 +61,9 @@ ALTER TABLE anotacoes ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage their own notes"
     ON anotacoes FOR ALL
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-        UNION
-        SELECT project_id FROM team_members WHERE user_id = auth.uid()
-    ));
+    USING (
+        project_id = get_my_project_id() AND get_my_project_id() IS NOT NULL
+    );
 
 
 -- ============================================
@@ -91,11 +87,9 @@ ALTER TABLE diario_entries ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage their diary entries"
     ON diario_entries FOR ALL
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-        UNION
-        SELECT project_id FROM team_members WHERE user_id = auth.uid()
-    ));
+    USING (
+        project_id = get_my_project_id() AND get_my_project_id() IS NOT NULL
+    );
 
 
 -- ============================================
@@ -120,11 +114,9 @@ ALTER TABLE ideias ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage ideas in their project"
     ON ideias FOR ALL
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-        UNION
-        SELECT project_id FROM team_members WHERE user_id = auth.uid()
-    ));
+    USING (
+        project_id = get_my_project_id() AND get_my_project_id() IS NOT NULL
+    );
 
 
 -- ============================================
@@ -157,11 +149,9 @@ ALTER TABLE referencias ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage references in their project"
     ON referencias FOR ALL
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-        UNION
-        SELECT project_id FROM team_members WHERE user_id = auth.uid()
-    ));
+    USING (
+        project_id = get_my_project_id() AND get_my_project_id() IS NOT NULL
+    );
 
 
 -- ============================================
@@ -185,11 +175,9 @@ ALTER TABLE smart_validations ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage smart validations in their project"
     ON smart_validations FOR ALL
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-        UNION
-        SELECT project_id FROM team_members WHERE user_id = auth.uid()
-    ));
+    USING (
+        project_id = get_my_project_id() AND get_my_project_id() IS NOT NULL
+    );
 
 
 -- ============================================
@@ -211,11 +199,9 @@ ALTER TABLE plagio_checks ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage plagiarism checks in their project"
     ON plagio_checks FOR ALL
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-        UNION
-        SELECT project_id FROM team_members WHERE user_id = auth.uid()
-    ));
+    USING (
+        project_id = get_my_project_id() AND get_my_project_id() IS NOT NULL
+    );
 
 
 -- ============================================
@@ -237,11 +223,9 @@ ALTER TABLE detector_ia_results ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage AI detection results in their project"
     ON detector_ia_results FOR ALL
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-        UNION
-        SELECT project_id FROM team_members WHERE user_id = auth.uid()
-    ));
+    USING (
+        project_id = get_my_project_id() AND get_my_project_id() IS NOT NULL
+    );
 
 
 -- ============================================
@@ -263,37 +247,16 @@ ALTER TABLE user_templates ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage their saved templates"
     ON user_templates FOR ALL
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-        UNION
-        SELECT project_id FROM team_members WHERE user_id = auth.uid()
-    ));
+    USING (
+        project_id = get_my_project_id() AND get_my_project_id() IS NOT NULL
+    );
 
 
 -- ============================================
--- 10. TEAM MEMBERS (se ainda não existir)
--- Necessário para as RLS policies acima
+-- 10. TEAM MEMBERS (removed - app uses users.project_id with get_my_project_id() function)
 -- ============================================
-CREATE TABLE IF NOT EXISTS team_members (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-    user_id TEXT NOT NULL,
-    role TEXT DEFAULT 'member',
-    invited_by TEXT,
-    joined_at TIMESTAMPTZ DEFAULT now(),
-    UNIQUE(project_id, user_id)
-);
-
-CREATE INDEX idx_team_members_user ON team_members(user_id);
-CREATE INDEX idx_team_members_project ON team_members(project_id);
-
-ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Project owners can manage team members"
-    ON team_members FOR ALL
-    USING (project_id IN (
-        SELECT id FROM projects WHERE owner_id = auth.uid()
-    ));
+-- NOTE: RLS policies above use get_my_project_id() function from supabase-schema.sql
+-- Make sure to run supabase-schema.sql first to create the helper function.
 
 CREATE POLICY "Team members can view their own membership"
     ON team_members FOR SELECT

@@ -11,8 +11,14 @@ create table if not exists users (
     email text not null default '',
     project_id uuid,
     role text not null default 'student' check (role in ('student', 'orientador')),
+    photo_url text default null,
+    beta_tester boolean default false,
     created_at timestamptz default now()
 );
+
+-- Add columns if they don't exist (for existing installations)
+alter table users add column if not exists photo_url text default null;
+alter table users add column if not exists beta_tester boolean default false;
 
 -- 2. Projects table
 create table if not exists projects (

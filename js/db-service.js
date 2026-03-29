@@ -9,8 +9,14 @@
 //   saved_papers       - id (uuid), project_id, title, authors, year, abstract, url, citations, source, doi, saved_by, saved_at
 //   calendar_goals     - id (uuid), project_id, title, deadline, completed, created_by, created_at
 //   calendar_sessions  - id (uuid), project_id, subject, topic, date, time, completed, created_by, created_at
-//   subscriptions      - id (uuid), status, plan, seats, payment_id, payment_method, user_id, user_email
+//   subscriptions      - id (uuid), status, plan, seats, payment_id, payment_method, user_id, user_email, user_name, max_projects
 //   ai_usage           - id (text), project_id, month, count
+//   orientador_projects - id (uuid), orientador_id, project_id, invite_code, status, created_at
+//   orientador_comments - id (uuid), project_id, orientador_id, comment, section, created_at
+//   diary_entries       - id (uuid), project_id, content, mood, created_by, created_at
+//   notes              - id (uuid), project_id, title, content, color, created_by, created_at, updated_at
+//   ideas              - id (uuid), project_id, title, description, category, votes, created_by, created_at
+//   user_references    - id (uuid), project_id, type, title, authors, year, source, url, formatted, created_by, created_at
 // ============================================================
 
 const DB = {
@@ -276,21 +282,24 @@ const DB = {
             const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             const docId = `${projectId}_${month}`;
 
-            const { data: existing } = await _supa
+            // Try insert first; if duplicate, read+update
+            const { error: insertErr } = await _supa
                 .from('ai_usage')
-                .select('count')
-                .eq('id', docId)
-                .maybeSingle();
+                .insert({ id: docId, project_id: projectId, month, count: 1 });
 
-            if (existing) {
-                await _supa
+            if (insertErr) {
+                // Row already exists - read current count and increment
+                const { data: existing } = await _supa
                     .from('ai_usage')
-                    .update({ count: existing.count + 1 })
-                    .eq('id', docId);
-            } else {
-                await _supa
-                    .from('ai_usage')
-                    .insert({ id: docId, project_id: projectId, month, count: 1 });
+                    .select('count')
+                    .eq('id', docId)
+                    .maybeSingle();
+                if (existing) {
+                    await _supa
+                        .from('ai_usage')
+                        .update({ count: existing.count + 1 })
+                        .eq('id', docId);
+                }
             }
         },
 
@@ -355,12 +364,12 @@ const DB = {
         },
 
         async countOwned(userId) {
-            const { data, error } = await _supa
+            const { count, error } = await _supa
                 .from('projects')
-                .select('id')
+                .select('*', { count: 'exact', head: true })
                 .eq('owner_id', userId);
             if (error) throw error;
-            return (data || []).length;
+            return count || 0;
         },
 
         async getMaxProjects(userId) {
@@ -415,13 +424,18 @@ const DB = {
     },
 
     async isBetaTester(userId) {
-        const { data, error } = await _supa
-            .from('users')
-            .select('beta_tester')
-            .eq('id', userId)
-            .maybeSingle();
-        if (error || !data) return false;
-        return data.beta_tester === true;
+        try {
+            const { data, error } = await _supa
+                .from('users')
+                .select('beta_tester')
+                .eq('id', userId)
+                .maybeSingle();
+            if (error || !data) return false;
+            return data.beta_tester === true;
+        } catch (e) {
+            // beta_tester column may not exist yet
+            return false;
+        }
     },
 
     // ===================== Orientador =====================
@@ -496,13 +510,24 @@ const DB = {
         },
 
         async getProjectOrientador(projectId) {
-            const { data, error } = await _supa
+            // Try with photo_url first, fallback without it if column doesn't exist
+            let data, error;
+            ({ data, error } = await _supa
                 .from('orientador_projects')
                 .select('*, users:orientador_id(id, name, email, photo_url)')
                 .eq('project_id', projectId)
                 .eq('status', 'accepted')
-                .maybeSingle();
-            if (error) return null;
+                .maybeSingle());
+            if (error) {
+                // Fallback without photo_url (column may not exist)
+                ({ data, error } = await _supa
+                    .from('orientador_projects')
+                    .select('*, users:orientador_id(id, name, email)')
+                    .eq('project_id', projectId)
+                    .eq('status', 'accepted')
+                    .maybeSingle());
+                if (error) return null;
+            }
             return data;
         },
 

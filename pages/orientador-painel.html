@@ -357,7 +357,13 @@
             const detailContent = document.getElementById('projectDetailContent');
             try {
                 const { data: proj } = await _supa.from('projects').select('*').eq('id', projId).maybeSingle();
-                const { data: members } = await _supa.from('users').select('id, name, email, photo_url').eq('project_id', projId);
+                // Try with photo_url first, fallback without
+                let members;
+                let membersRes = await _supa.from('users').select('id, name, email, photo_url').eq('project_id', projId);
+                if (membersRes.error) {
+                    membersRes = await _supa.from('users').select('id, name, email').eq('project_id', projId);
+                }
+                members = membersRes.data;
 
                 let info = proj?.project_info || {};
                 detailContent.innerHTML = `
