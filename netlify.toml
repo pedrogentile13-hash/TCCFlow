@@ -1,5 +1,10 @@
 [build]
+  publish = "."
   functions = "netlify/functions"
+
+[dev]
+  port = 8080
+  functions_port = 9999
 
 [functions]
   node_bundler = "esbuild"

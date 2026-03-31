@@ -204,8 +204,28 @@
                                 <p id="strText" class="text-[11px] text-slate-400 mt-1"></p>
                             </div>
 
-                            <!-- Codigo do Projeto -->
+                            <!-- Tipo de Conta -->
                             <div>
+                                <label class="flex items-center gap-1.5 text-sm font-semibold text-slate-700 mb-2">
+                                    <i class="fa-solid fa-user-tag text-violet-500 text-xs"></i> Tipo de Conta
+                                </label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button type="button" id="roleStudent" onclick="selectRole('student')"
+                                        class="role-btn selected flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-violet-500 bg-violet-50 transition-all cursor-pointer">
+                                        <i class="fa-solid fa-user-graduate text-violet-600 text-lg"></i>
+                                        <span class="text-sm font-semibold text-violet-700">Aluno</span>
+                                    </button>
+                                    <button type="button" id="roleOrientador" onclick="selectRole('orientador')"
+                                        class="role-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50 transition-all cursor-pointer">
+                                        <i class="fa-solid fa-graduation-cap text-slate-400 text-lg"></i>
+                                        <span class="text-sm font-semibold text-slate-500">Orientador</span>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="selectedRole" value="student">
+                            </div>
+
+                            <!-- Codigo do Projeto (aluno) -->
+                            <div id="projectCodeSection">
                                 <label class="flex items-center gap-1.5 text-sm font-semibold text-slate-700 mb-2">
                                     <i class="fa-solid fa-key text-violet-500 text-xs"></i> Codigo do Projeto
                                     <span class="text-xs font-normal text-slate-400">(opcional)</span>
@@ -213,6 +233,17 @@
                                 <input type="text" id="projectCode" placeholder="Ex: TCC-ABCD (deixe vazio para criar novo)"
                                     class="input-modern w-full rounded-xl px-4 py-3.5 text-sm placeholder-slate-400 focus:outline-none">
                                 <p class="text-[11px] text-slate-400 mt-1.5">Se seu grupo ja tem um projeto, cole o codigo aqui</p>
+                            </div>
+
+                            <!-- Codigo de Convite (orientador) -->
+                            <div id="orientadorCodeSection" class="hidden">
+                                <label class="flex items-center gap-1.5 text-sm font-semibold text-slate-700 mb-2">
+                                    <i class="fa-solid fa-link text-emerald-500 text-xs"></i> Codigo de Convite
+                                    <span class="text-xs font-normal text-slate-400">(opcional)</span>
+                                </label>
+                                <input type="text" id="orientadorInviteCode" placeholder="Ex: ORI-A3KR5N"
+                                    class="input-modern w-full rounded-xl px-4 py-3.5 text-sm placeholder-slate-400 focus:outline-none uppercase">
+                                <p class="text-[11px] text-slate-400 mt-1.5">Seu aluno compartilhou um codigo? Cole aqui para vincular ao projeto</p>
                             </div>
 
                             <!-- Termos -->
@@ -311,6 +342,34 @@
             else { p.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
         }
 
+        function selectRole(role) {
+            document.getElementById('selectedRole').value = role;
+            const studentBtn = document.getElementById('roleStudent');
+            const orientadorBtn = document.getElementById('roleOrientador');
+            const projectSection = document.getElementById('projectCodeSection');
+            const orientadorSection = document.getElementById('orientadorCodeSection');
+
+            if (role === 'student') {
+                studentBtn.className = 'role-btn selected flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-violet-500 bg-violet-50 transition-all cursor-pointer';
+                studentBtn.querySelector('i').className = 'fa-solid fa-user-graduate text-violet-600 text-lg';
+                studentBtn.querySelector('span').className = 'text-sm font-semibold text-violet-700';
+                orientadorBtn.className = 'role-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50 transition-all cursor-pointer';
+                orientadorBtn.querySelector('i').className = 'fa-solid fa-graduation-cap text-slate-400 text-lg';
+                orientadorBtn.querySelector('span').className = 'text-sm font-semibold text-slate-500';
+                projectSection.classList.remove('hidden');
+                orientadorSection.classList.add('hidden');
+            } else {
+                orientadorBtn.className = 'role-btn selected flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 transition-all cursor-pointer';
+                orientadorBtn.querySelector('i').className = 'fa-solid fa-graduation-cap text-emerald-600 text-lg';
+                orientadorBtn.querySelector('span').className = 'text-sm font-semibold text-emerald-700';
+                studentBtn.className = 'role-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-violet-300 hover:bg-violet-50 transition-all cursor-pointer';
+                studentBtn.querySelector('i').className = 'fa-solid fa-user-graduate text-slate-400 text-lg';
+                studentBtn.querySelector('span').className = 'text-sm font-semibold text-slate-500';
+                projectSection.classList.add('hidden');
+                orientadorSection.classList.remove('hidden');
+            }
+        }
+
         function updateStrength(val) {
             const bars = [document.getElementById('str1'), document.getElementById('str2'), document.getElementById('str3'), document.getElementById('str4')];
             const text = document.getElementById('strText');
@@ -344,7 +403,9 @@
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const projectCode = document.getElementById('projectCode').value.trim().toUpperCase();
+            const role = document.getElementById('selectedRole').value;
+            const projectCode = role === 'student' ? document.getElementById('projectCode').value.trim().toUpperCase() : '';
+            const orientadorCode = role === 'orientador' ? document.getElementById('orientadorInviteCode').value.trim().toUpperCase() : '';
             const errorMsg = document.getElementById('errorMsg');
             const errorText = document.getElementById('errorText');
             const successMsg = document.getElementById('successMsg');
@@ -398,7 +459,9 @@
                     uid: cred.user.uid,
                     name: name,
                     email: email,
-                    projectId: newProjectId
+                    projectId: newProjectId,
+                    role: role,
+                    orientadorCode: orientadorCode
                 };
                 document.getElementById('sentEmail').textContent = email;
                 document.getElementById('step1').classList.add('hidden');
@@ -486,11 +549,30 @@
                     id: s.uid,
                     name: s.name,
                     email: s.email,
-                    project_id: s.projectId,
-                    role: 'student',
+                    project_id: s.role === 'student' ? s.projectId : null,
+                    role: s.role,
                     created_at: new Date().toISOString()
                 });
-                window.location.href = 'dashboard.html';
+
+                // If orientador with invite code, accept it
+                if (s.role === 'orientador' && s.orientadorCode) {
+                    try {
+                        const { data: invite, error: findErr } = await _supa
+                            .from('orientador_projects')
+                            .select('*')
+                            .eq('invite_code', s.orientadorCode)
+                            .eq('status', 'pending')
+                            .maybeSingle();
+                        if (invite && !findErr) {
+                            await _supa
+                                .from('orientador_projects')
+                                .update({ orientador_id: s.uid, status: 'accepted' })
+                                .eq('id', invite.id);
+                        }
+                    } catch(e) { console.warn('Could not accept invite on signup:', e); }
+                }
+
+                window.location.href = s.role === 'orientador' ? 'orientador-painel.html' : 'dashboard.html';
             } catch (err) {
                 errorMsg2.textContent = 'Codigo invalido ou expirado. Tente novamente.';
                 errorMsg2.classList.remove('hidden');
