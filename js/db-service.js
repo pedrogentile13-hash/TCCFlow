@@ -375,6 +375,10 @@ const DB = {
         },
 
         async getMaxProjects(userId) {
+            // Multiple projects only available to beta testers
+            const isBeta = await DB.isBetaTester(userId);
+            if (!isBeta) return 1;
+
             // Check if there's a custom max_projects set in subscriptions
             const sub = await DB.subscriptions.get(userId);
             if (sub && sub.maxProjects !== null && sub.maxProjects !== undefined) {

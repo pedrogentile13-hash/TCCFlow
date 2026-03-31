@@ -264,8 +264,8 @@
                     </div>
                 </div>
 
-                <!-- Invite Orientador Section (BETA) -->
-                <div id="orientadorSection" class="bg-white border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm mt-8">
+                <!-- Invite Orientador Section (BETA) - hidden -->
+                <div id="orientadorSection" class="hidden bg-white border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm mt-8">
                     <div class="flex items-center gap-2 mb-4">
                         <h2 class="text-lg font-bold"><i class="fa-solid fa-graduation-cap text-emerald-600 mr-2"></i>Orientador</h2>
                         <span class="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">BETA</span>
@@ -428,7 +428,12 @@
                             showProjectPanel();
                             await loadMembersFromProject(projectId, projectData.owner_id);
                             await updateSeatsBanner(projectId, projectData.owner_id);
-                            await loadMyProjects();
+                            const isBeta = await DB.isBetaTester(user.uid);
+                            if (isBeta) {
+                                await loadMyProjects();
+                            } else {
+                                document.getElementById('myProjectsPanel').classList.add('hidden');
+                            }
                             await loadOrientadorSection();
                             await initChat();
                         } else {
