@@ -277,27 +277,21 @@
                 }
             } catch(e) { console.log(e); }
 
-            // Load from Supabase and merge with localStorage
+            // Load from Supabase as primary source
             if (projectId) {
                 try {
                     const dbEntries = await DB.diary.getAll(projectId);
                     if (dbEntries && dbEntries.length > 0) {
-                        const localEntries = getEntries();
-                        const localIds = new Set(localEntries.map(e => e.id));
-                        for (const de of dbEntries) {
-                            if (!localIds.has(de.id)) {
-                                localEntries.push({
-                                    id: de.id,
-                                    date: de.createdAt ? de.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
-                                    type: 'Outro',
-                                    description: de.content || '',
-                                    hours: 1,
-                                    mood: de.mood || 'neutral',
-                                    createdAt: de.createdAt
-                                });
-                            }
-                        }
-                        saveEntries(localEntries);
+                        const entries = dbEntries.map(de => ({
+                            id: de.id,
+                            date: de.createdAt ? de.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+                            type: 'Outro',
+                            description: de.content || '',
+                            hours: 1,
+                            mood: de.mood || 'neutral',
+                            createdAt: de.createdAt
+                        }));
+                        saveEntries(entries);
                     }
                 } catch(e) { console.error('Erro ao carregar diário do banco:', e); }
             }
@@ -422,7 +416,7 @@
         }
 
         // ========== Save Entry ==========
-        document.getElementById('saveEntry').addEventListener('click', () => {
+        document.getElementById('saveEntry').addEventListener('click', async () => {
             const date = document.getElementById('entryDate').value;
             const type = document.getElementById('entryType').value;
             const description = document.getElementById('entryDescription').value.trim();
@@ -442,9 +436,8 @@
                 if (idx !== -1) {
                     entries[idx] = { ...entries[idx], date, type, description, hours, mood };
                 }
-                // Update in Supabase
                 if (projectId) {
-                    DB.diary.update(editingId, { content: description, mood }).catch(e => console.error('Erro ao atualizar diário no banco:', e));
+                    try { await DB.diary.update(editingId, { content: description, mood }); } catch(e) { console.error('Erro ao atualizar diário no banco:', e); }
                 }
             } else {
                 const newEntry = {
@@ -456,16 +449,11 @@
                     mood,
                     createdAt: new Date().toISOString()
                 };
-                // Save to Supabase
                 if (projectId) {
-                    DB.diary.add(projectId, { content: description, mood }).then(result => {
-                        if (result && result.id) {
-                            newEntry.id = result.id;
-                            const updated = getEntries();
-                            const idx = updated.findIndex(e => e.description === description && e.date === date);
-                            if (idx !== -1) { updated[idx].id = result.id; saveEntries(updated); }
-                        }
-                    }).catch(e => console.error('Erro ao salvar diário no banco:', e));
+                    try {
+                        const result = await DB.diary.add(projectId, { content: description, mood });
+                        if (result && result.id) newEntry.id = result.id;
+                    } catch(e) { console.error('Erro ao salvar diário no banco:', e); }
                 }
                 entries.push(newEntry);
             }

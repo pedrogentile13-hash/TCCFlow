@@ -208,7 +208,7 @@
                     <div class="max-w-md mx-auto">
                         <i class="fa-solid fa-brain text-4xl text-violet-300 mb-4"></i>
                         <h3 class="text-lg font-bold mb-2" data-i18n="ai.howItWorks">Como funciona?</h3>
-                        <p class="text-sm text-slate-500 mb-6" data-i18n="ai.howItWorksDesc">Digite um tema e o assistente buscará artigos acadêmicos em bases de dados como Semantic Scholar, CrossRef e Google Scholar.</p>
+                        <p class="text-sm text-slate-500 mb-6" data-i18n="ai.howItWorksDesc">Digite um tema e o assistente buscará artigos acadêmicos em bases como Google Acadêmico, SciELO e CrossRef.</p>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
                             <div class="bg-violet-50 rounded-xl p-4">
@@ -241,7 +241,7 @@
                         <div class="typing-dot w-3 h-3 bg-emerald-500 rounded-full"></div>
                     </div>
                     <p class="text-sm text-slate-500" id="loadingText" data-i18n="ai.searching">Buscando artigos acadêmicos...</p>
-                    <p class="text-xs text-slate-400 mt-1" data-i18n="ai.consultingSS">Consultando Semantic Scholar e CrossRef</p>
+                    <p class="text-xs text-slate-400 mt-1" data-i18n="ai.consultingSS">Consultando Google Acadêmico, SciELO e CrossRef</p>
                 </div>
 
                 <!-- Results -->
@@ -308,9 +308,9 @@
                         <i class="fa-solid fa-flask text-lg text-emerald-600 mb-1"></i>
                         <p class="text-xs font-medium">SciELO</p>
                     </a>
-                    <a href="https://www.semanticscholar.org" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
+                    <a href="https://openalex.org" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
                         <i class="fa-solid fa-brain text-lg text-violet-600 mb-1"></i>
-                        <p class="text-xs font-medium">Semantic Scholar</p>
+                        <p class="text-xs font-medium">OpenAlex</p>
                     </a>
                     <a href="https://bdtd.ibict.br" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
                         <i class="fa-solid fa-book text-lg text-amber-600 mb-1"></i>
@@ -458,6 +458,29 @@
             document.getElementById('searchForm').dispatchEvent(new Event('submit'));
         };
 
+        // OpenAlex type mapping for filter
+        const TYPE_MAP = {
+            'article': 'article',
+            'review': 'review',
+            'book': 'book',
+            'thesis': 'dissertation',
+            'conference': 'proceedings-article'
+        };
+
+        // OpenAlex area/topic mapping
+        const AREA_MAP = {
+            'Computer Science': 'Computer Science',
+            'Education': 'Education',
+            'Psychology': 'Psychology',
+            'Medicine': 'Medicine',
+            'Business': 'Business',
+            'Engineering': 'Engineering',
+            'Sociology': 'Sociology',
+            'Environmental Science': 'Environmental Science',
+            'Economics': 'Economics',
+            'Law': 'Law'
+        };
+
         document.getElementById('searchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const query = document.getElementById('searchInput').value.trim();
@@ -481,24 +504,22 @@
             const lang = document.getElementById('filterLang').value;
             const yearRange = document.getElementById('filterYear').value;
             const area = document.getElementById('filterArea').value;
+            const docType = document.getElementById('filterType').value;
             const sortBy = document.getElementById('filterSort').value;
             const openAccess = document.getElementById('openAccessCheck').checked;
             const maxResults = userIsPro ? 50 : 20;
 
-            // Build search query
-            let searchQuery = query;
-
             try {
-                // Fetch from Semantic Scholar API (free, no key needed)
-                const results = await searchSemanticScholar(searchQuery, yearRange, area, openAccess);
+                // Search OpenAlex (primary - indexes Google Scholar + SciELO content)
+                const openAlexResults = await searchOpenAlex(query, yearRange, lang, area, docType, openAccess, sortBy);
 
-                // Also search CrossRef for additional results
-                const crossrefResults = await searchCrossRef(searchQuery, yearRange, openAccess);
+                // Search CrossRef as secondary source
+                const crossrefResults = await searchCrossRef(query, yearRange, lang, docType, openAccess);
 
-                // Merge and deduplicate
-                const allResults = [...results, ...crossrefResults];
+                // Merge and deduplicate by title
+                const allResults = [...openAlexResults, ...crossrefResults];
                 let unique = allResults.filter((v, i, a) =>
-                    a.findIndex(t => t.title.toLowerCase() === v.title.toLowerCase()) === i
+                    a.findIndex(t => t.title.toLowerCase().trim() === v.title.toLowerCase().trim()) === i
                 );
 
                 // Sort results
@@ -508,11 +529,7 @@
                     unique.sort((a, b) => (b.year || 0) - (a.year || 0));
                 }
 
-                if (unique.length === 0) {
-                    showResults([], query);
-                } else {
-                    showResults(unique.slice(0, maxResults), query);
-                }
+                showResults(unique.length > 0 ? unique.slice(0, maxResults) : [], query);
 
                 // Increment usage counter
                 if (projectId && isFirebaseConfigured()) {
@@ -529,53 +546,114 @@
             }
         });
 
-        async function searchSemanticScholar(query, yearRange, area, openAccess) {
+        async function searchOpenAlex(query, yearRange, lang, area, docType, openAccess, sortBy) {
             try {
-                const limit = userIsPro ? 30 : 10;
-                let url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=${limit}&fields=title,authors,year,abstract,url,citationCount,externalIds,isOpenAccess,fieldsOfStudy`;
+                const perPage = userIsPro ? 35 : 15;
+                let filters = [];
 
+                // Year filter
                 if (yearRange) {
                     const [start, end] = yearRange.split('-');
-                    url += `&year=${start}-${end}`;
+                    filters.push(`publication_year:${start}-${end}`);
                 }
-                if (area) {
-                    url += `&fieldsOfStudy=${encodeURIComponent(area)}`;
+
+                // Language filter
+                if (lang && lang !== 'all') {
+                    filters.push(`language:${lang}`);
                 }
+
+                // Document type filter
+                if (docType && docType !== 'all') {
+                    const mappedType = TYPE_MAP[docType];
+                    if (mappedType) filters.push(`type:${mappedType}`);
+                }
+
+                // Open access filter
                 if (openAccess) {
-                    url += `&openAccessPdf`;
+                    filters.push('is_oa:true');
+                }
+
+                // Build URL
+                let url = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per_page=${perPage}&mailto=contato.tccflow@gmail.com`;
+
+                if (filters.length > 0) {
+                    url += `&filter=${filters.join(',')}`;
+                }
+
+                // Sort
+                if (sortBy === 'citations') {
+                    url += '&sort=cited_by_count:desc';
+                } else if (sortBy === 'year') {
+                    url += '&sort=publication_year:desc';
+                } else {
+                    url += '&sort=relevance_score:desc';
                 }
 
                 const response = await fetch(url);
-                if (!response.ok) throw new Error('Semantic Scholar error');
+                if (!response.ok) throw new Error('OpenAlex error: ' + response.status);
                 const data = await response.json();
 
-                let results = (data.data || []).map(paper => ({
-                    title: paper.title || i18n.t('ai.noTitle'),
-                    authors: (paper.authors || []).map(a => a.name).join(', '),
-                    year: paper.year || '',
-                    abstract: paper.abstract || '',
-                    url: paper.url || '',
-                    citations: paper.citationCount || 0,
-                    source: 'Semantic Scholar',
-                    doi: paper.externalIds?.DOI || '',
-                    isOpenAccess: paper.isOpenAccess || false,
-                    fields: (paper.fieldsOfStudy || []).join(', ')
-                }));
+                let results = (data.results || []).map(work => {
+                    const authors = (work.authorships || [])
+                        .map(a => a.author?.display_name || '')
+                        .filter(Boolean)
+                        .join(', ');
 
-                if (openAccess) {
-                    results = results.filter(r => r.isOpenAccess);
+                    const doi = work.doi ? work.doi.replace('https://doi.org/', '') : '';
+                    const bestUrl = work.primary_location?.landing_page_url || work.doi || '';
+                    const oaUrl = work.open_access?.oa_url || '';
+                    const isScielo = bestUrl.includes('scielo') || (work.primary_location?.source?.display_name || '').toLowerCase().includes('scielo');
+
+                    return {
+                        title: work.display_name || work.title || i18n.t('ai.noTitle'),
+                        authors: authors,
+                        year: work.publication_year || '',
+                        abstract: work.abstract_inverted_index ? reconstructAbstract(work.abstract_inverted_index) : '',
+                        url: oaUrl || bestUrl,
+                        citations: work.cited_by_count || 0,
+                        source: isScielo ? 'SciELO' : 'Google Acadêmico',
+                        doi: doi,
+                        isOpenAccess: work.open_access?.is_oa || false,
+                        fields: (work.concepts || []).slice(0, 3).map(c => c.display_name).join(', ')
+                    };
+                });
+
+                // Area filter (post-filter using concepts if not handled by API)
+                if (area && results.length > 0) {
+                    const areaLower = area.toLowerCase();
+                    const filtered = results.filter(r =>
+                        (r.fields || '').toLowerCase().includes(areaLower)
+                    );
+                    if (filtered.length >= 3) results = filtered;
                 }
 
                 return results;
             } catch (err) {
-                console.warn('Semantic Scholar failed:', err);
+                console.warn('OpenAlex failed:', err);
                 return [];
             }
         }
 
-        async function searchCrossRef(query, yearRange, openAccess) {
+        // OpenAlex returns abstracts as inverted index - reconstruct to text
+        function reconstructAbstract(invertedIndex) {
+            if (!invertedIndex) return '';
             try {
-                const rows = userIsPro ? 30 : 10;
+                const wordPositions = [];
+                for (const [word, positions] of Object.entries(invertedIndex)) {
+                    for (const pos of positions) {
+                        wordPositions.push({ word, pos });
+                    }
+                }
+                wordPositions.sort((a, b) => a.pos - b.pos);
+                return wordPositions.map(wp => wp.word).join(' ').substring(0, 400);
+            } catch(e) {
+                return '';
+            }
+        }
+
+        async function searchCrossRef(query, yearRange, lang, docType, openAccess) {
+            try {
+                const rows = userIsPro ? 20 : 8;
                 let url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=${rows}&sort=relevance`;
 
                 let filters = [];
@@ -586,6 +664,17 @@
                 if (openAccess) {
                     filters.push('is-open-access:true');
                 }
+                // CrossRef document type filter
+                if (docType && docType !== 'all') {
+                    const crossRefTypes = {
+                        'article': 'journal-article',
+                        'review': 'journal-article',
+                        'book': 'book',
+                        'thesis': 'dissertation',
+                        'conference': 'proceedings-article'
+                    };
+                    if (crossRefTypes[docType]) filters.push(`type:${crossRefTypes[docType]}`);
+                }
                 if (filters.length > 0) {
                     url += `&filter=${filters.join(',')}`;
                 }
@@ -594,17 +683,29 @@
                 if (!response.ok) throw new Error('CrossRef error');
                 const data = await response.json();
 
-                return (data.message?.items || []).map(item => ({
-                    title: Array.isArray(item.title) ? item.title[0] : (item.title || i18n.t('ai.noTitle')),
-                    authors: (item.author || []).map(a => `${a.given || ''} ${a.family || ''}`).join(', '),
-                    year: item.published?.['date-parts']?.[0]?.[0] || '',
-                    abstract: (item.abstract || '').replace(/<[^>]*>/g, '').substring(0, 300),
-                    url: item.URL || '',
-                    citations: item['is-referenced-by-count'] || 0,
-                    source: 'CrossRef',
-                    doi: item.DOI || '',
-                    isOpenAccess: item['is-open-access'] || false
-                }));
+                let results = (data.message?.items || []).map(item => {
+                    const itemLang = item.language || '';
+                    return {
+                        title: Array.isArray(item.title) ? item.title[0] : (item.title || i18n.t('ai.noTitle')),
+                        authors: (item.author || []).map(a => `${a.given || ''} ${a.family || ''}`).join(', '),
+                        year: item.published?.['date-parts']?.[0]?.[0] || '',
+                        abstract: (item.abstract || '').replace(/<[^>]*>/g, '').substring(0, 300),
+                        url: item.URL || '',
+                        citations: item['is-referenced-by-count'] || 0,
+                        source: 'CrossRef',
+                        doi: item.DOI || '',
+                        isOpenAccess: item['is-open-access'] || false,
+                        lang: itemLang
+                    };
+                });
+
+                // Client-side language filter for CrossRef (API doesn't support it well)
+                if (lang && lang !== 'all') {
+                    const filtered = results.filter(r => !r.lang || r.lang === lang);
+                    if (filtered.length > 0) results = filtered;
+                }
+
+                return results;
             } catch (err) {
                 console.warn('CrossRef failed:', err);
                 return [];
@@ -660,7 +761,7 @@
                     <div class="flex items-start justify-between gap-3">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${paper.source === 'Semantic Scholar' ? 'bg-violet-100 text-violet-600' : 'bg-cyan-100 text-cyan-600'}">${paper.source}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${paper.source === 'SciELO' ? 'bg-emerald-100 text-emerald-700' : paper.source === 'Google Acadêmico' ? 'bg-blue-100 text-blue-600' : 'bg-cyan-100 text-cyan-600'}">${paper.source}</span>
                                 ${paper.year ? `<span class="text-[10px] text-slate-400">${paper.year}</span>` : ''}
                                 ${paper.citations > 0 ? `<span class="text-[10px] text-slate-400"><i class="fa-solid fa-quote-right mr-0.5"></i>${paper.citations} ${i18n.t('ai.citations')}</span>` : ''}
                                 ${paper.isOpenAccess ? `<span class="text-[10px] bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded-full font-medium"><i class="fa-solid fa-lock-open mr-0.5"></i>${i18n.t('ai.openAccess')}</span>` : ''}

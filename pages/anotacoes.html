@@ -273,35 +273,31 @@
         }
 
         async function loadNotes() {
-            // Load from localStorage first (fast)
+            // If has project, load from Supabase as primary source
+            if (projectId) {
+                try {
+                    const dbNotes = await DB.notes.getAll(projectId);
+                    if (dbNotes && dbNotes.length > 0) {
+                        notes = dbNotes.map(dn => ({
+                            id: dn.id,
+                            title: dn.title || '',
+                            content: dn.content || '',
+                            tags: [],
+                            linkedPaper: null,
+                            createdAt: dn.createdAt,
+                            updatedAt: dn.updatedAt
+                        }));
+                        saveNotes();
+                        return;
+                    }
+                } catch(e) { console.error('Erro ao carregar notas do banco:', e); }
+            }
+            // Fallback: load from localStorage
             try {
                 const raw = localStorage.getItem(getStorageKey());
                 notes = raw ? JSON.parse(raw) : [];
             } catch(e) {
                 notes = [];
-            }
-            // Then load from Supabase and merge
-            if (projectId) {
-                try {
-                    const dbNotes = await DB.notes.getAll(projectId);
-                    if (dbNotes && dbNotes.length > 0) {
-                        const localIds = new Set(notes.map(n => n.id));
-                        for (const dn of dbNotes) {
-                            if (!localIds.has(dn.id)) {
-                                notes.push({
-                                    id: dn.id,
-                                    title: dn.title || '',
-                                    content: dn.content || '',
-                                    tags: [],
-                                    linkedPaper: null,
-                                    createdAt: dn.createdAt,
-                                    updatedAt: dn.updatedAt
-                                });
-                            }
-                        }
-                        saveNotes();
-                    }
-                } catch(e) { console.error('Erro ao carregar notas do banco:', e); }
             }
         }
 
@@ -415,12 +411,11 @@
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
-            // Persist to Supabase
             if (projectId) {
                 try {
-                    const result = await DB.notes.add(projectId, { title: note.title, content: note.content, color: 'yellow' });
+                    const result = await DB.notes.add(projectId, { title: '', content: '', color: 'yellow' });
                     if (result && result.id) note.id = result.id;
-                } catch(e) { console.error('Erro ao salvar nota no banco:', e); }
+                } catch(e) { console.error('Erro ao criar nota no banco:', e); }
             }
             notes.unshift(note);
             saveNotes();

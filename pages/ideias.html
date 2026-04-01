@@ -363,26 +363,20 @@
                 }
             } catch(e) { console.log(e); }
 
-            // Load from Supabase and merge with localStorage
+            // Load from Supabase as primary source
             if (projectId) {
                 try {
                     const dbIdeas = await DB.ideas.getAll(projectId);
                     if (dbIdeas && dbIdeas.length > 0) {
-                        const localIdeas = getIdeas();
-                        const localIds = new Set(localIdeas.map(i => i.id));
-                        for (const di of dbIdeas) {
-                            if (!localIds.has(di.id)) {
-                                localIdeas.push({
-                                    id: di.id,
-                                    text: di.title || di.description || '',
-                                    color: 'yellow',
-                                    category: di.category || 'livre',
-                                    createdAt: di.createdAt,
-                                    updatedAt: di.createdAt
-                                });
-                            }
-                        }
-                        saveIdeas(localIdeas);
+                        const ideas = dbIdeas.map(di => ({
+                            id: di.id,
+                            text: di.title || di.description || '',
+                            color: 'yellow',
+                            category: di.category || 'livre',
+                            createdAt: di.createdAt,
+                            updatedAt: di.createdAt
+                        }));
+                        saveIdeas(ideas);
                     }
                 } catch(e) { console.error('Erro ao carregar ideias do banco:', e); }
             }
@@ -413,7 +407,7 @@
             localStorage.setItem(getIdeasKey(), JSON.stringify(ideas));
         }
 
-        function createIdea(text, color, category) {
+        async function createIdea(text, color, category) {
             const ideas = getIdeas();
             const idea = {
                 id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
@@ -423,16 +417,11 @@
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
-            // Persist to Supabase
             if (projectId) {
-                DB.ideas.add(projectId, { title: text, description: text, category: category }).then(result => {
-                    if (result && result.id) {
-                        idea.id = result.id;
-                        const updated = getIdeas();
-                        const idx = updated.findIndex(i => i.text === text && i.category === category);
-                        if (idx !== -1) { updated[idx].id = result.id; saveIdeas(updated); }
-                    }
-                }).catch(e => console.error('Erro ao salvar ideia no banco:', e));
+                try {
+                    const result = await DB.ideas.add(projectId, { title: text, description: text, category: category });
+                    if (result && result.id) idea.id = result.id;
+                } catch(e) { console.error('Erro ao salvar ideia no banco:', e); }
             }
             ideas.push(idea);
             saveIdeas(ideas);
@@ -596,7 +585,7 @@
         });
 
         // Save idea
-        document.getElementById('saveIdeaBtn').addEventListener('click', () => {
+        document.getElementById('saveIdeaBtn').addEventListener('click', async () => {
             const text = document.getElementById('ideaText').value.trim();
             const color = getSelectedColor();
             const category = document.getElementById('ideaCategory').value;
@@ -607,7 +596,7 @@
             if (editId) {
                 updateIdea(editId, text, color, category);
             } else {
-                createIdea(text, color, category);
+                await createIdea(text, color, category);
             }
 
             closeModal();

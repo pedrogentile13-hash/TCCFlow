@@ -335,34 +335,35 @@
             } catch(e) {
                 projectId = null;
             }
-            loadReferences();
-            // Load from Supabase and merge
+            // Load from Supabase as primary source
             if (projectId) {
                 try {
                     const dbRefs = await DB.references.getAll(projectId);
                     if (dbRefs && dbRefs.length > 0) {
-                        const localIds = new Set(references.map(r => r.id));
-                        for (const dr of dbRefs) {
-                            if (!localIds.has(dr.id)) {
-                                references.push({
-                                    id: dr.id,
-                                    tipo: dr.type || 'artigo',
-                                    titulo: dr.title || '',
-                                    autores: dr.authors || '',
-                                    ano: dr.year || '',
-                                    editora: dr.source || '',
-                                    url: dr.url || '',
-                                    doi: '',
-                                    cidade: '',
-                                    volume: '',
-                                    edicao: '',
-                                    paginas: ''
-                                });
-                            }
-                        }
+                        references = dbRefs.map(dr => ({
+                            id: dr.id,
+                            tipo: dr.type || 'artigo',
+                            titulo: dr.title || '',
+                            autores: dr.authors || '',
+                            ano: dr.year || '',
+                            editora: dr.source || '',
+                            url: dr.url || '',
+                            doi: '',
+                            cidade: '',
+                            volume: '',
+                            edicao: '',
+                            paginas: ''
+                        }));
                         saveReferences();
+                    } else {
+                        loadReferences();
                     }
-                } catch(e) { console.error('Erro ao carregar referências do banco:', e); }
+                } catch(e) {
+                    console.error('Erro ao carregar referências do banco:', e);
+                    loadReferences();
+                }
+            } else {
+                loadReferences();
             }
             renderReferences();
         }
@@ -643,7 +644,7 @@
 
         // ========================= FORM SUBMIT =========================
 
-        document.getElementById('refForm').addEventListener('submit', e => {
+        document.getElementById('refForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const ref = getFormData();
             if (!ref.titulo && !ref.autores) {
@@ -651,17 +652,14 @@
                 return;
             }
             ref.id = Date.now().toString();
-            // Persist to Supabase
             if (projectId) {
-                DB.references.add(projectId, {
-                    type: ref.tipo, title: ref.titulo, authors: ref.autores,
-                    year: ref.ano, source: ref.editora, url: ref.url, formatted: ''
-                }).then(result => {
-                    if (result && result.id) {
-                        const idx = references.findIndex(r => r.id === ref.id);
-                        if (idx !== -1) { references[idx].id = result.id; saveReferences(); }
-                    }
-                }).catch(e => console.error('Erro ao salvar referência no banco:', e));
+                try {
+                    const result = await DB.references.add(projectId, {
+                        type: ref.tipo, title: ref.titulo, authors: ref.autores,
+                        year: ref.ano, source: ref.editora, url: ref.url, formatted: ''
+                    });
+                    if (result && result.id) ref.id = result.id;
+                } catch(e) { console.error('Erro ao salvar referência no banco:', e); }
             }
             references.push(ref);
             saveReferences();
@@ -716,6 +714,10 @@
         function editReference(idx) {
             const ref = references[idx];
             fillForm(ref);
+            // Remove old from Supabase (will be re-added on form submit)
+            if (projectId && ref && ref.id) {
+                DB.references.remove(ref.id).catch(e => console.error('Erro ao excluir referência editada do banco:', e));
+            }
             references.splice(idx, 1);
             saveReferences();
             renderReferences();
@@ -798,7 +800,7 @@
             }
         });
 
-        function importPaper(paper) {
+        async function importPaper(paper) {
             const ref = {
                 id: Date.now().toString(),
                 tipo: 'artigo',
@@ -813,17 +815,14 @@
                 doi: paper.doi || '',
                 url: paper.url || ''
             };
-            // Persist to Supabase
             if (projectId) {
-                DB.references.add(projectId, {
-                    type: ref.tipo, title: ref.titulo, authors: ref.autores,
-                    year: ref.ano, url: ref.url, formatted: ''
-                }).then(result => {
-                    if (result && result.id) {
-                        const idx = references.findIndex(r => r.id === ref.id);
-                        if (idx !== -1) { references[idx].id = result.id; saveReferences(); }
-                    }
-                }).catch(e => console.error('Erro ao salvar referência importada no banco:', e));
+                try {
+                    const result = await DB.references.add(projectId, {
+                        type: ref.tipo, title: ref.titulo, authors: ref.autores,
+                        year: ref.ano, url: ref.url, formatted: ''
+                    });
+                    if (result && result.id) ref.id = result.id;
+                } catch(e) { console.error('Erro ao salvar referência importada no banco:', e); }
             }
             references.push(ref);
             saveReferences();
