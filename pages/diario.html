@@ -245,6 +245,7 @@
     <script>
         // ========== Auth Check ==========
         let currentUserId = null;
+        let projectId = null;
 
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
@@ -265,6 +266,7 @@
             // Update navbar for PRO users
             try {
                 const pid = await DB.getProjectId();
+                projectId = pid;
                 if (pid) {
                     const isPro = await DB.isProByProject(pid);
                     if (isPro) {
@@ -274,6 +276,31 @@
                     }
                 }
             } catch(e) { console.log(e); }
+
+            // Load from Supabase and merge with localStorage
+            if (projectId) {
+                try {
+                    const dbEntries = await DB.diary.getAll(projectId);
+                    if (dbEntries && dbEntries.length > 0) {
+                        const localEntries = getEntries();
+                        const localIds = new Set(localEntries.map(e => e.id));
+                        for (const de of dbEntries) {
+                            if (!localIds.has(de.id)) {
+                                localEntries.push({
+                                    id: de.id,
+                                    date: de.createdAt ? de.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+                                    type: 'Outro',
+                                    description: de.content || '',
+                                    hours: 1,
+                                    mood: de.mood || 'neutral',
+                                    createdAt: de.createdAt
+                                });
+                            }
+                        }
+                        saveEntries(localEntries);
+                    }
+                } catch(e) { console.error('Erro ao carregar diário do banco:', e); }
+            }
 
             renderAll();
         });
@@ -415,8 +442,12 @@
                 if (idx !== -1) {
                     entries[idx] = { ...entries[idx], date, type, description, hours, mood };
                 }
+                // Update in Supabase
+                if (projectId) {
+                    DB.diary.update(editingId, { content: description, mood }).catch(e => console.error('Erro ao atualizar diário no banco:', e));
+                }
             } else {
-                entries.push({
+                const newEntry = {
                     id: Date.now().toString(),
                     date,
                     type,
@@ -424,7 +455,19 @@
                     hours,
                     mood,
                     createdAt: new Date().toISOString()
-                });
+                };
+                // Save to Supabase
+                if (projectId) {
+                    DB.diary.add(projectId, { content: description, mood }).then(result => {
+                        if (result && result.id) {
+                            newEntry.id = result.id;
+                            const updated = getEntries();
+                            const idx = updated.findIndex(e => e.description === description && e.date === date);
+                            if (idx !== -1) { updated[idx].id = result.id; saveEntries(updated); }
+                        }
+                    }).catch(e => console.error('Erro ao salvar diário no banco:', e));
+                }
+                entries.push(newEntry);
             }
 
             saveEntries(entries);
@@ -457,6 +500,10 @@
 
         window.deleteEntry = function(id) {
             if (!confirm('Excluir este registro?')) return;
+            // Remove from Supabase
+            if (projectId) {
+                DB.diary.remove(id).catch(e => console.error('Erro ao excluir diário do banco:', e));
+            }
             const entries = getEntries().filter(e => e.id !== id);
             saveEntries(entries);
             renderAll();

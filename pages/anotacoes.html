@@ -221,6 +221,7 @@
     <script src="../js/db-service.js"></script>
     <script>
         let currentUser = null;
+        let projectId = null;
 
         document.getElementById('mobileNavBtn').addEventListener('click', () => {
             document.getElementById('mobileNav').classList.toggle('hidden');
@@ -239,6 +240,7 @@
                     navAvatarIcon.classList.add('hidden');
                 }
             }
+            try { projectId = await DB.getProjectId(); } catch(e) { console.log(e); }
             initPage();
         });
 
@@ -270,12 +272,36 @@
             return `notes_${currentUser.uid}`;
         }
 
-        function loadNotes() {
+        async function loadNotes() {
+            // Load from localStorage first (fast)
             try {
                 const raw = localStorage.getItem(getStorageKey());
                 notes = raw ? JSON.parse(raw) : [];
             } catch(e) {
                 notes = [];
+            }
+            // Then load from Supabase and merge
+            if (projectId) {
+                try {
+                    const dbNotes = await DB.notes.getAll(projectId);
+                    if (dbNotes && dbNotes.length > 0) {
+                        const localIds = new Set(notes.map(n => n.id));
+                        for (const dn of dbNotes) {
+                            if (!localIds.has(dn.id)) {
+                                notes.push({
+                                    id: dn.id,
+                                    title: dn.title || '',
+                                    content: dn.content || '',
+                                    tags: [],
+                                    linkedPaper: null,
+                                    createdAt: dn.createdAt,
+                                    updatedAt: dn.updatedAt
+                                });
+                            }
+                        }
+                        saveNotes();
+                    }
+                } catch(e) { console.error('Erro ao carregar notas do banco:', e); }
             }
         }
 
@@ -379,7 +405,7 @@
             renderNotesList(document.getElementById('searchNotes').value.toLowerCase().trim());
         }
 
-        function createNewNote() {
+        async function createNewNote() {
             const note = {
                 id: Date.now().toString(),
                 title: '',
@@ -389,6 +415,13 @@
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
+            // Persist to Supabase
+            if (projectId) {
+                try {
+                    const result = await DB.notes.add(projectId, { title: note.title, content: note.content, color: 'yellow' });
+                    if (result && result.id) note.id = result.id;
+                } catch(e) { console.error('Erro ao salvar nota no banco:', e); }
+            }
             notes.unshift(note);
             saveNotes();
             openNote(note.id);
@@ -396,7 +429,7 @@
             document.getElementById('noteTitle').focus();
         }
 
-        function saveCurrentNote() {
+        async function saveCurrentNote() {
             if (!activeNoteId) return;
             const note = notes.find(n => n.id === activeNoteId);
             if (!note) return;
@@ -415,6 +448,14 @@
             note.updatedAt = new Date().toISOString();
 
             saveNotes();
+
+            // Persist to Supabase
+            if (projectId) {
+                try {
+                    await DB.notes.update(activeNoteId, { title: note.title, content: note.content });
+                } catch(e) { console.error('Erro ao atualizar nota no banco:', e); }
+            }
+
             updateEditorMeta(note);
             renderNotesList(document.getElementById('searchNotes').value.toLowerCase().trim());
 
@@ -425,9 +466,14 @@
             setTimeout(() => { btn.innerHTML = origHtml; }, 1200);
         }
 
-        function deleteCurrentNote() {
+        async function deleteCurrentNote() {
             if (!activeNoteId) return;
             if (!confirm('Tem certeza que deseja excluir esta anotação?')) return;
+
+            // Remove from Supabase
+            if (projectId) {
+                try { await DB.notes.remove(activeNoteId); } catch(e) { console.error('Erro ao excluir nota do banco:', e); }
+            }
 
             notes = notes.filter(n => n.id !== activeNoteId);
             saveNotes();
@@ -473,8 +519,8 @@
         }
 
         // ========== Init ==========
-        function initPage() {
-            loadNotes();
+        async function initPage() {
+            await loadNotes();
             loadSavedPapers();
             renderNotesList();
 

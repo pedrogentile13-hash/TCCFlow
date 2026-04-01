@@ -305,14 +305,29 @@
             messagesArea.scrollTop = messagesArea.scrollHeight;
         }
 
-        function initChat() {
+        async function initChat() {
             document.getElementById('chatContainer').classList.remove('hidden');
 
-            // Load cached messages
-            const cached = getCachedMessages();
-            if (cached.length > 0) {
+            // Load from Supabase DB first, then fallback to cache
+            let messages = [];
+            if (projectId) {
+                try {
+                    const dbMessages = await DB.chatMessages.getAll(projectId);
+                    if (dbMessages && dbMessages.length > 0) {
+                        messages = dbMessages;
+                        saveCachedMessages(messages);
+                    }
+                } catch(e) { console.error('Erro ao carregar mensagens do banco:', e); }
+            }
+
+            // Fallback to cached messages if DB returned nothing
+            if (messages.length === 0) {
+                messages = getCachedMessages();
+            }
+
+            if (messages.length > 0) {
                 document.getElementById('emptyState')?.remove();
-                cached.forEach(msg => addMessageToUI(msg));
+                messages.forEach(msg => addMessageToUI(msg));
             }
 
             // Subscribe to project chat channel via Supabase Realtime Broadcast
@@ -321,6 +336,11 @@
             chatChannel.on('broadcast', { event: 'message' }, (payload) => {
                 const msg = payload.payload;
                 addMessageToUI(msg);
+
+                // Persist incoming message to Supabase
+                if (projectId) {
+                    DB.chatMessages.add(projectId, msg).catch(e => console.error('Erro ao salvar mensagem recebida no banco:', e));
+                }
 
                 // Cache the incoming message
                 const cached = getCachedMessages();
@@ -350,6 +370,11 @@
                 event: 'message',
                 payload: msg
             });
+
+            // Persist to Supabase
+            if (projectId) {
+                DB.chatMessages.add(projectId, msg).catch(e => console.error('Erro ao salvar mensagem no banco:', e));
+            }
 
             // Add own message to UI immediately
             addMessageToUI(msg);

@@ -741,6 +741,38 @@ const DB = {
         }
     },
 
+    // ===================== Chat Messages =====================
+    chatMessages: {
+        async getAll(projectId) {
+            const { data, error } = await _supa
+                .from('chat_messages')
+                .select('*')
+                .eq('project_id', projectId)
+                .order('created_at', { ascending: true });
+            if (error) throw error;
+            return (data || []).map(r => ({
+                id: r.id, projectId: r.project_id,
+                userId: r.user_id, userName: r.user_name,
+                userPhoto: r.user_photo, text: r.text,
+                timestamp: r.created_at
+            }));
+        },
+        async add(projectId, msg) {
+            const { data, error } = await _supa
+                .from('chat_messages')
+                .insert({
+                    project_id: projectId,
+                    user_id: msg.userId,
+                    user_name: msg.userName || 'Usuário',
+                    user_photo: msg.userPhoto || '',
+                    text: msg.text
+                })
+                .select().maybeSingle();
+            if (error) throw error;
+            return { id: data.id };
+        }
+    },
+
     async getProjectId() {
         const user = auth.currentUser;
         if (!user) return null;

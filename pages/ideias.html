@@ -327,6 +327,7 @@
 
         // ========== State ==========
         let currentUserId = null;
+        let projectId = null;
         let activeColorFilter = 'all';
         let activeCategoryFilter = 'all';
         let searchQuery = '';
@@ -351,6 +352,7 @@
             // Update navbar for PRO users
             try {
                 const pid = await DB.getProjectId();
+                projectId = pid;
                 if (pid) {
                     const isPro = await DB.isProByProject(pid);
                     if (isPro) {
@@ -360,6 +362,30 @@
                     }
                 }
             } catch(e) { console.log(e); }
+
+            // Load from Supabase and merge with localStorage
+            if (projectId) {
+                try {
+                    const dbIdeas = await DB.ideas.getAll(projectId);
+                    if (dbIdeas && dbIdeas.length > 0) {
+                        const localIdeas = getIdeas();
+                        const localIds = new Set(localIdeas.map(i => i.id));
+                        for (const di of dbIdeas) {
+                            if (!localIds.has(di.id)) {
+                                localIdeas.push({
+                                    id: di.id,
+                                    text: di.title || di.description || '',
+                                    color: 'yellow',
+                                    category: di.category || 'livre',
+                                    createdAt: di.createdAt,
+                                    updatedAt: di.createdAt
+                                });
+                            }
+                        }
+                        saveIdeas(localIdeas);
+                    }
+                } catch(e) { console.error('Erro ao carregar ideias do banco:', e); }
+            }
 
             renderBoard();
         });
@@ -397,6 +423,17 @@
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
+            // Persist to Supabase
+            if (projectId) {
+                DB.ideas.add(projectId, { title: text, description: text, category: category }).then(result => {
+                    if (result && result.id) {
+                        idea.id = result.id;
+                        const updated = getIdeas();
+                        const idx = updated.findIndex(i => i.text === text && i.category === category);
+                        if (idx !== -1) { updated[idx].id = result.id; saveIdeas(updated); }
+                    }
+                }).catch(e => console.error('Erro ao salvar ideia no banco:', e));
+            }
             ideas.push(idea);
             saveIdeas(ideas);
             return idea;
@@ -411,11 +448,19 @@
             ideas[idx].category = category;
             ideas[idx].updatedAt = new Date().toISOString();
             saveIdeas(ideas);
+            // Update in Supabase
+            if (projectId) {
+                DB.ideas.update(id, { title: text, description: text, category: category }).catch(e => console.error('Erro ao atualizar ideia no banco:', e));
+            }
         }
 
         function deleteIdea(id) {
             const ideas = getIdeas().filter(i => i.id !== id);
             saveIdeas(ideas);
+            // Remove from Supabase
+            if (projectId) {
+                DB.ideas.remove(id).catch(e => console.error('Erro ao excluir ideia do banco:', e));
+            }
         }
 
         // ========== Filtering ==========
