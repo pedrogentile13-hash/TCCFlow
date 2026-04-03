@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "description": "TCCFlow - Gerenciamento de TCC",
   "dependencies": {
+    "@remotion/cli": "^4.0.443",
+    "@remotion/player": "^4.0.443",
     "@supabase/supabase-js": "^2.45.0",
-    "mercadopago": "^2.0.0"
+    "mercadopago": "^2.0.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.443"
   }
 }
