@@ -690,10 +690,26 @@
             const tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: GOOGLE_CLIENT_ID,
                 scope: GOOGLE_CAL_SCOPES,
+                ux_mode: 'popup',
                 callback: (response) => {
+                    if (response.error) {
+                        console.error('Google Calendar auth error:', response);
+                        alert('Erro ao conectar Google Calendar: ' + (response.error_description || response.error));
+                        return;
+                    }
                     if (response.access_token) {
                         googleAccessToken = response.access_token;
                         showGoogleCalConnected(true);
+                    }
+                },
+                error_callback: (error) => {
+                    console.error('Google Calendar OAuth error:', error);
+                    if (error.type === 'popup_closed') {
+                        console.log('Popup fechado pelo usuário');
+                    } else if (error.type === 'popup_failed_to_open') {
+                        alert('Não foi possível abrir o popup de autenticação. Verifique se popups estão permitidos.');
+                    } else {
+                        alert('Erro na autenticação do Google Calendar. Tente novamente.');
                     }
                 }
             });

@@ -412,7 +412,6 @@
         </div>
     </main>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-init.js"></script>
     <script src="../js/pricing-config.js"></script>
@@ -691,10 +690,26 @@
             driveTokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: GOOGLE_CLIENT_ID,
                 scope: GOOGLE_DRIVE_SCOPES,
+                ux_mode: 'popup',
                 callback: (response) => {
+                    if (response.error) {
+                        console.error('Google Drive auth error:', response);
+                        alert('Erro ao conectar Google Drive: ' + (response.error_description || response.error));
+                        return;
+                    }
                     if (response.access_token) {
                         googleAccessToken = response.access_token;
                         showDriveConnected(true);
+                    }
+                },
+                error_callback: (error) => {
+                    console.error('Google Drive OAuth error:', error);
+                    if (error.type === 'popup_closed') {
+                        console.log('Popup fechado pelo usuário');
+                    } else if (error.type === 'popup_failed_to_open') {
+                        alert('Não foi possível abrir o popup de autenticação. Verifique se popups estão permitidos.');
+                    } else {
+                        alert('Erro na autenticação do Google Drive. Tente novamente.');
                     }
                 }
             });
