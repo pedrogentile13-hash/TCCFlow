@@ -142,8 +142,8 @@
                     <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
-                <!-- 3. Verificador de Plágio — PRO -->
-                <a href="plagio.html" class="tool-card bg-white border border-slate-200 rounded-2xl p-6 shadow-sm block">
+                <!-- 3. Verificador de Plágio — BETA -->
+                <a href="plagio.html" class="tool-card beta-only-tool bg-white border border-slate-200 rounded-2xl p-6 shadow-sm block">
                     <div class="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-magnifying-glass-chart text-red-600 text-lg"></i>
                     </div>
@@ -192,8 +192,8 @@
                     <span class="text-xs font-medium text-violet-600"><i class="fa-solid fa-arrow-right mr-1"></i><span data-i18n="tools.access">Acessar</span></span>
                 </a>
 
-                <!-- 8. Detector de I.A. — PRO -->
-                <a href="detector-ia.html" class="tool-card bg-white border border-slate-200 rounded-2xl p-6 shadow-sm block">
+                <!-- 8. Detector de I.A. — BETA -->
+                <a href="detector-ia.html" class="tool-card beta-only-tool bg-white border border-slate-200 rounded-2xl p-6 shadow-sm block">
                     <div class="w-12 h-12 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center mb-4">
                         <i class="fa-solid fa-microchip text-indigo-600 text-lg"></i>
                     </div>
@@ -239,6 +239,12 @@
                     navAvatar.classList.remove('hidden');
                     navAvatarIcon.classList.add('hidden');
                 }
+            }
+
+            // Hide beta-only tools for non-beta users
+            const isBeta = await DB.isBetaTester(user.uid);
+            if (!isBeta) {
+                document.querySelectorAll('.beta-only-tool').forEach(el => el.remove());
             }
         });
 

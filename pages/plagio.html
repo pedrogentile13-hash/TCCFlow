@@ -268,6 +268,13 @@
             currentUserId = user.uid;
             document.getElementById('userName').textContent = user.displayName || 'Usuario';
 
+            // Beta gate: only beta testers can access this tool
+            const isBeta = await DB.isBetaTester(user.uid);
+            if (!isBeta) {
+                window.location.href = 'ferramentas.html';
+                return;
+            }
+
             // Load navbar avatar
             if (user.photoURL) {
                 const navAvatar = document.getElementById('navAvatar');
