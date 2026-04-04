@@ -12,6 +12,7 @@
 No mesmo Client ID OAuth 2.0 no Google Cloud Console:
 1. Em **Origens JavaScript autorizadas**, adicione:
    ```
+   https://tccflow.com.br
    https://tccflow.com
    ```
    E se usa ambiente local:
@@ -21,6 +22,7 @@ No mesmo Client ID OAuth 2.0 no Google Cloud Console:
    ```
 2. Em **URIs de redirecionamento autorizadas**, adicione TAMBÉM:
    ```
+   https://tccflow.com.br
    https://tccflow.com
    https://fpqvubixlsblanbyppkp.supabase.co/auth/v1/callback
    ```
@@ -42,6 +44,7 @@ No Google Cloud Console, ative as seguintes APIs:
 2. Ative o provider **Google**
 3. Cole seu **Client ID** e **Client Secret** (obtidos no Google Cloud Console)
 4. Salve
+5. Em **URL Configuration** (Authentication > URL Configuration), adicione `https://tccflow.com.br` na lista de **Redirect URLs**
 
 ## Passo 5: Testar
 - Acesse a página de login e clique em "Entrar com Google"

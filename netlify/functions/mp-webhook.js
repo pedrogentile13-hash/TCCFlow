@@ -143,7 +143,7 @@ exports.handler = async (event) => {
 <tr><td>✅ Suporte prioritário</td></tr>
 </table>
 <div style="text-align:center;margin:0 0 8px;">
-<a href="https://tccflow.com/pages/dashboard.html" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:12px;">🚀 Acessar meu Dashboard</a>
+<a href="https://tccflow.com.br/pages/dashboard.html" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:12px;">🚀 Acessar meu Dashboard</a>
 </div>
 </td></tr>
 <tr><td style="background:#f8fafc;padding:20px 32px;text-align:center;border-top:1px solid #e2e8f0;">
@@ -163,7 +163,7 @@ exports.handler = async (event) => {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        from: 'TCCFlow <noreply@tccflow.com>',
+                        from: 'TCCFlow <noreply@tccflow.com.br>',
                         to: [userEmail],
                         subject: '🎉 Seu plano TCCFlow Pro foi ativado!',
                         html: emailHtml

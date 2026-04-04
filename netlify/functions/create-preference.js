@@ -61,7 +61,7 @@ exports.handler = async (event) => {
 
         const preference = new Preference(client);
 
-        const siteUrl = process.env.URL || 'https://tccflow.com';
+        const siteUrl = process.env.URL || 'https://tccflow.com.br';
 
         const titleSuffix = discountPercent > 0 ? ` (${discountPercent}% OFF)` : '';
 
