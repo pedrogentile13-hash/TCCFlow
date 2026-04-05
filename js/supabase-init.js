@@ -5,24 +5,30 @@
 const SUPABASE_URL = 'https://fpqvubixlsblanbyppkp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwcXZ1Yml4bHNibGFuYnlwcGtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzY4MzEsImV4cCI6MjA4OTExMjgzMX0.tWWn0ljmteupXPHi_qEqa6dhuM3WVy_zv26kwpSXbTo';
 
-// IMPORTANT: Capture the URL BEFORE createClient() — Supabase's
-// initialization may consume/clean the URL params before our code runs.
+// IMPORTANT: Capture the URL params early for OAuth callback detection.
 const _capturedHash = window.location.hash || '';
 const _capturedSearch = window.location.search || '';
-const _hasCodeParam = _capturedSearch.includes('code=');
-const _hasAccessToken = _capturedHash.includes('access_token');
-console.log('[AUTH-EARLY] hash length:', _capturedHash.length,
-    'search length:', _capturedSearch.length,
-    'has code=', _hasCodeParam,
-    'has access_token=', _hasAccessToken);
 
-// Detect which OAuth flow the server is using.
-// If the URL has ?code=, the server is using PKCE (even if we requested implicit).
-// We must match the client's flowType to what the server sends.
-const _detectedFlow = _hasCodeParam ? 'pkce' : 'implicit';
-console.log('[AUTH-EARLY] Detected OAuth flow:', _detectedFlow);
+// Parse params to check for real OAuth tokens vs error responses
+const _searchParams = new URLSearchParams(_capturedSearch);
+const _hashParams = new URLSearchParams(_capturedHash.substring(1));
+const _hasRealCode = _searchParams.has('code');        // actual ?code= param (PKCE)
+const _hasAccessToken = _hashParams.has('access_token'); // actual #access_token= (implicit)
+const _oauthError = _searchParams.get('error') || _hashParams.get('error');
+const _oauthErrorDesc = _searchParams.get('error_description') || _hashParams.get('error_description');
 
-// Initialize Supabase client with the detected flow type.
+console.log('[AUTH-EARLY] hash:', _capturedHash.substring(0, 200));
+console.log('[AUTH-EARLY] search:', _capturedSearch.substring(0, 200));
+console.log('[AUTH-EARLY] real code param:', _hasRealCode, '| access_token:', _hasAccessToken);
+if (_oauthError) {
+    console.error('[AUTH-EARLY] ⚠ OAuth ERROR:', _oauthError, '—', _oauthErrorDesc);
+}
+
+// Detect flow: real ?code= param means PKCE, otherwise use PKCE as default
+// (Supabase v2 defaults to PKCE on the server side)
+const _detectedFlow = _hasAccessToken ? 'implicit' : 'pkce';
+console.log('[AUTH-EARLY] Using flow:', _detectedFlow);
+
 const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
         flowType: _detectedFlow,
@@ -51,11 +57,10 @@ const auth = {
     onAuthStateChanged(callback) {
         this._listeners.push(callback);
 
-        // Use the hash captured BEFORE createClient() — Supabase may have
-        // already consumed/cleaned window.location.hash by now.
+        // Use captured URL params (before Supabase could clean them)
         const hash = _capturedHash;
         const search = _capturedSearch;
-        const isOAuthCallback = hash.includes('access_token') || search.includes('code=');
+        const isOAuthCallback = _hasRealCode || _hasAccessToken;
 
         console.log('[AUTH] onAuthStateChanged — isOAuthCallback:', isOAuthCallback,
             'hash length:', hash.length,
@@ -79,10 +84,21 @@ const auth = {
             window.history.replaceState({}, document.title, cleanUrl);
         };
 
+        // Check for OAuth errors first — if the provider/Supabase returned
+        // an error, show it instead of loading forever.
+        if (_oauthError) {
+            console.error('[AUTH] OAuth returned error:', _oauthError, _oauthErrorDesc);
+            cleanHash();
+            // Show error alert so user knows what happened
+            const msg = _oauthErrorDesc
+                ? decodeURIComponent(_oauthErrorDesc.replace(/\+/g, ' '))
+                : _oauthError;
+            setTimeout(() => alert('Erro no login Google: ' + msg), 500);
+            deliverInitial(null, 'oauth-error');
+            return;
+        }
+
         // If this is an OAuth callback, manually handle the tokens.
-        // Strategy depends on what the server sent:
-        //   - ?code=XXX → PKCE flow: exchange code for session
-        //   - #access_token=XXX → Implicit flow: set session directly
         if (isOAuthCallback) {
             const searchParams = new URLSearchParams(search);
             const hashParams = new URLSearchParams(hash.substring(1));
