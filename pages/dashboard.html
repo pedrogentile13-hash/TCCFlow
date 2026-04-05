@@ -254,8 +254,11 @@
             document.getElementById('mobileNav').classList.toggle('hidden');
         });
 
+        let _dashInitialized = false;
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
+            if (_dashInitialized) return;
+            _dashInitialized = true;
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || i18n.t('common.user');
 
