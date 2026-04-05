@@ -56,26 +56,67 @@ const auth = {
             callback(user);
         };
 
-        // Subscribe to Supabase auth state changes.
-        // INITIAL_SESSION fires once after Supabase finishes initialization
-        // (including processing any #access_token in the URL hash).
+        const cleanHash = () => {
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+        };
+
+        // If this is an OAuth callback, manually extract tokens from the URL hash
+        // and set the session. Supabase's auto-detection sometimes fails to process
+        // the hash before INITIAL_SESSION fires.
+        if (isOAuthCallback && hash.includes('access_token')) {
+            const params = new URLSearchParams(hash.substring(1));
+            const accessToken = params.get('access_token');
+            const refreshToken = params.get('refresh_token');
+            console.log('[AUTH] Hash tokens — access_token:', !!accessToken, 'refresh_token:', !!refreshToken);
+
+            if (accessToken && refreshToken) {
+                console.log('[AUTH] Manually setting session from URL hash...');
+                _supa.auth.setSession({
+                    access_token: accessToken,
+                    refresh_token: refreshToken
+                }).then(({ data, error }) => {
+                    if (error) {
+                        console.error('[AUTH] setSession error:', error.message);
+                    } else if (data.session && !initialDelivered) {
+                        cleanHash();
+                        deliverInitial(this._mapUser(data.session.user), 'manual-setSession');
+                    }
+                }).catch(err => {
+                    console.error('[AUTH] setSession exception:', err);
+                });
+            } else if (accessToken && !refreshToken) {
+                // Implicit flow might not always include refresh_token.
+                // Try getUser with the access_token directly.
+                console.log('[AUTH] No refresh_token, trying getUser with access_token...');
+                _supa.auth.getUser(accessToken).then(({ data, error }) => {
+                    if (error) {
+                        console.error('[AUTH] getUser error:', error.message);
+                    } else if (data.user && !initialDelivered) {
+                        cleanHash();
+                        // Store whatever session we can
+                        deliverInitial(this._mapUser(data.user), 'manual-getUser');
+                    }
+                }).catch(err => {
+                    console.error('[AUTH] getUser exception:', err);
+                });
+            }
+        }
+
+        // Subscribe to Supabase auth state changes as backup.
+        // INITIAL_SESSION fires once after Supabase finishes initialization.
         _supa.auth.onAuthStateChange((event, session) => {
             console.log('[AUTH] onAuthStateChange:', event, 'session:', !!session);
 
             if (event === 'INITIAL_SESSION') {
-                // Clean URL hash after Supabase has processed it
-                if (isOAuthCallback) {
-                    const cleanUrl = window.location.origin + window.location.pathname;
-                    window.history.replaceState({}, document.title, cleanUrl);
-                }
                 if (session) {
+                    if (isOAuthCallback) cleanHash();
                     deliverInitial(this._mapUser(session.user), 'INITIAL_SESSION');
                 } else if (!isOAuthCallback) {
-                    // No session and not an OAuth callback — user is not logged in
                     deliverInitial(null, 'INITIAL_SESSION-no-session');
                 }
-                // If OAuth callback but INITIAL_SESSION has no session,
-                // wait for SIGNED_IN event (hash might still be processing)
+                // If OAuth callback but no session yet, manual setSession
+                // or SIGNED_IN event will handle it
                 return;
             }
 
@@ -84,11 +125,7 @@ const auth = {
                     const user = this._mapUser(session.user);
                     this.currentUser = user;
                     if (!initialDelivered) {
-                        // Clean URL hash if this is the first delivery from OAuth
-                        if (isOAuthCallback) {
-                            const cleanUrl = window.location.origin + window.location.pathname;
-                            window.history.replaceState({}, document.title, cleanUrl);
-                        }
+                        if (isOAuthCallback) cleanHash();
                         deliverInitial(user, event);
                     }
                 }
@@ -97,30 +134,26 @@ const auth = {
 
             if (event === 'SIGNED_OUT') {
                 this.currentUser = null;
-                // Only redirect to login if we already delivered the initial state.
-                // This prevents a SIGNED_OUT event during initialization from
-                // prematurely kicking the user out.
                 if (initialDelivered) {
-                    console.log('[AUTH] SIGNED_OUT after initial delivery — notifying');
+                    console.log('[AUTH] SIGNED_OUT — notifying');
                     callback(null);
                 } else {
-                    console.log('[AUTH] SIGNED_OUT before initial delivery — ignoring, will check session');
-                    // Don't deliver null yet — a SIGNED_IN might follow
-                    // (e.g., session swap during OAuth)
+                    console.log('[AUTH] SIGNED_OUT before initial delivery — waiting');
                 }
                 return;
             }
         });
 
-        // Fallback: if onAuthStateChange hasn't delivered after a generous timeout,
-        // actively check for a session. This handles edge cases where events
-        // are missed or delayed.
+        // Final fallback
         setTimeout(() => {
             if (!initialDelivered) {
-                console.log('[AUTH] Fallback: no initial delivery after 10s, checking session...');
+                console.log('[AUTH] Fallback after 10s — checking session...');
                 _supa.auth.getSession().then(({ data: { session } }) => {
                     if (!initialDelivered) {
                         console.log('[AUTH] Fallback getSession:', !!session);
+                        if (session) {
+                            if (isOAuthCallback) cleanHash();
+                        }
                         deliverInitial(
                             session ? this._mapUser(session.user) : null,
                             'fallback-10s'
