@@ -34,32 +34,37 @@ const auth = {
         let initialCallbackFired = false;
         let oauthSessionResolved = false;
 
+        const resolveOAuth = (session) => {
+            if (oauthSessionResolved) return;
+            oauthSessionResolved = true;
+            if (this._oauthTimeout) {
+                clearTimeout(this._oauthTimeout);
+                this._oauthTimeout = null;
+            }
+            this.currentUser = session ? this._mapUser(session.user) : null;
+            initialCallbackFired = true;
+            // Clean OAuth params from URL to prevent re-processing on refresh
+            if (session) {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+            callback(this.currentUser);
+        };
+
         // Listen for auth state changes (fires on OAuth callback completion too)
         _supa.auth.onAuthStateChange((event, session) => {
             // During OAuth callback, Supabase fires INITIAL_SESSION with null session
             // BEFORE exchanging the code for a real session. Skip this null to prevent
             // pages from redirecting to login before the OAuth flow completes.
             if (isOAuthCallback && !session && !oauthSessionResolved) {
-                // Wait for the next event (SIGNED_IN) with a real session.
-                // Set a timeout as safety net in case the exchange fails.
-                if (!this._oauthTimeout) {
-                    this._oauthTimeout = setTimeout(() => {
-                        if (!oauthSessionResolved) {
-                            oauthSessionResolved = true;
-                            initialCallbackFired = true;
-                            callback(null);
-                        }
-                    }, 5000);
-                }
+                // Wait for the SIGNED_IN event with a real session.
+                // Safety timeout is set below (30s) in case exchange fails.
                 return;
             }
 
             if (isOAuthCallback && session) {
-                oauthSessionResolved = true;
-                if (this._oauthTimeout) {
-                    clearTimeout(this._oauthTimeout);
-                    this._oauthTimeout = null;
-                }
+                resolveOAuth(session);
+                return;
             }
 
             this.currentUser = session ? this._mapUser(session.user) : null;
@@ -67,19 +72,39 @@ const auth = {
             callback(this.currentUser);
         });
 
-        // Check current session — but if this is an OAuth callback,
-        // give Supabase time to process the token before reporting null
-        _supa.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                this.currentUser = this._mapUser(session.user);
-                if (!initialCallbackFired) callback(this.currentUser);
-            } else if (!isOAuthCallback) {
-                // No session and not an OAuth callback — user is not logged in
-                this.currentUser = null;
-                if (!initialCallbackFired) callback(null);
+        if (isOAuthCallback) {
+            // Set a generous safety-net timeout (30s) for slow networks.
+            // The code exchange below should resolve much faster.
+            if (!this._oauthTimeout) {
+                this._oauthTimeout = setTimeout(() => {
+                    resolveOAuth(null);
+                }, 30000);
             }
-            // If isOAuthCallback and no session yet, wait for onAuthStateChange to fire
-        });
+
+            // Actively exchange the authorization code for a session (PKCE flow).
+            // This is more reliable than passively waiting for onAuthStateChange.
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            if (code) {
+                _supa.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+                    if (!error && data?.session) {
+                        resolveOAuth(data.session);
+                    }
+                    // If error, onAuthStateChange or the timeout will handle it
+                }).catch(() => {
+                    // Let onAuthStateChange or timeout handle the failure
+                });
+            }
+            // For hash-based flow (implicit grant with access_token), onAuthStateChange handles it
+        } else {
+            // Not an OAuth callback — check current session normally
+            _supa.auth.getSession().then(({ data: { session } }) => {
+                if (!initialCallbackFired) {
+                    this.currentUser = session ? this._mapUser(session.user) : null;
+                    callback(this.currentUser);
+                }
+            });
+        }
     },
 
     _mapUser(supaUser) {
