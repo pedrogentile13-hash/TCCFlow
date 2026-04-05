@@ -451,6 +451,12 @@
                     document.getElementById('proGateOverlay').classList.remove('hidden');
                     return;
                 }
+
+                // Hide Drive connect section for non-beta testers
+                const isBeta = await DB.isBetaTester(user.uid);
+                if (!isBeta) {
+                    document.getElementById('driveSection').style.display = 'none';
+                }
             }
             await renderLinks();
         });

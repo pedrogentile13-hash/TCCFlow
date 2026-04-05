@@ -431,11 +431,18 @@
                             const isBeta = await DB.isBetaTester(user.uid);
                             if (isBeta) {
                                 await loadMyProjects();
+                                await initChat();
                             } else {
                                 document.getElementById('myProjectsPanel').classList.add('hidden');
+                                // Hide chat elements for non-beta users
+                                const chatFab = document.getElementById('chatFab');
+                                const chatPanel = document.getElementById('chatPanel');
+                                const chatProBanner = document.getElementById('chatProBanner');
+                                if (chatFab) chatFab.style.display = 'none';
+                                if (chatPanel) chatPanel.style.display = 'none';
+                                if (chatProBanner) chatProBanner.style.display = 'none';
                             }
                             await loadOrientadorSection();
-                            await initChat();
                         } else {
                             showNoProjectPanel();
                         }

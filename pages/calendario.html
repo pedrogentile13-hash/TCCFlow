@@ -669,9 +669,13 @@
             try {
                 userIsPro = await DB.isProByProject(projectId);
                 if (userIsPro) {
-                    document.getElementById('googleCalendarSection').classList.remove('hidden');
+                    // Only show Google Calendar for beta testers
+                    const isBeta = await DB.isBetaTester(auth.currentUser.uid);
+                    if (isBeta) {
+                        document.getElementById('googleCalendarSection').classList.remove('hidden');
+                    }
 
-                    if (GOOGLE_CLIENT_ID !== 'YOUR_CLIENT_ID.apps.googleusercontent.com') {
+                    if (GOOGLE_CLIENT_ID !== 'YOUR_CLIENT_ID.apps.googleusercontent.com' && isBeta) {
                         document.getElementById('googleCalSetup').classList.add('hidden');
                         setupGoogleAuth();
                     }
