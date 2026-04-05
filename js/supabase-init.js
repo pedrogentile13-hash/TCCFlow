@@ -5,22 +5,28 @@
 const SUPABASE_URL = 'https://fpqvubixlsblanbyppkp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwcXZ1Yml4bHNibGFuYnlwcGtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzY4MzEsImV4cCI6MjA4OTExMjgzMX0.tWWn0ljmteupXPHi_qEqa6dhuM3WVy_zv26kwpSXbTo';
 
-// IMPORTANT: Capture the URL hash BEFORE createClient() — Supabase's
-// initialization may consume/clean the hash before our code can read it.
+// IMPORTANT: Capture the URL BEFORE createClient() — Supabase's
+// initialization may consume/clean the URL params before our code runs.
 const _capturedHash = window.location.hash || '';
 const _capturedSearch = window.location.search || '';
-console.log('[AUTH-EARLY] Captured hash length:', _capturedHash.length, 'search length:', _capturedSearch.length);
-if (_capturedHash.includes('access_token') || _capturedSearch.includes('code=')) {
-    console.log('[AUTH-EARLY] OAuth tokens detected in URL');
-}
+const _hasCodeParam = _capturedSearch.includes('code=');
+const _hasAccessToken = _capturedHash.includes('access_token');
+console.log('[AUTH-EARLY] hash length:', _capturedHash.length,
+    'search length:', _capturedSearch.length,
+    'has code=', _hasCodeParam,
+    'has access_token=', _hasAccessToken);
 
-// Initialize Supabase client (CDN exposes window.supabase as namespace)
-// Use implicit flow to avoid PKCE code exchange issues with OAuth providers.
-// Implicit flow returns access_token directly in URL hash — no server-side
-// code exchange needed, which is more reliable for client-side apps.
+// Detect which OAuth flow the server is using.
+// If the URL has ?code=, the server is using PKCE (even if we requested implicit).
+// We must match the client's flowType to what the server sends.
+const _detectedFlow = _hasCodeParam ? 'pkce' : 'implicit';
+console.log('[AUTH-EARLY] Detected OAuth flow:', _detectedFlow);
+
+// Initialize Supabase client with the detected flow type.
 const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
-        flowType: 'implicit'
+        flowType: _detectedFlow,
+        detectSessionInUrl: true
     }
 });
 
@@ -73,19 +79,37 @@ const auth = {
             window.history.replaceState({}, document.title, cleanUrl);
         };
 
-        // If this is an OAuth callback, manually extract tokens from the
-        // CAPTURED hash and call setSession(). Supabase's auto-detection
-        // often consumes the hash before our code runs, causing
-        // INITIAL_SESSION to fire with session:null.
-        if (isOAuthCallback && hash.includes('access_token')) {
-            const params = new URLSearchParams(hash.substring(1));
-            const accessToken = params.get('access_token');
-            const refreshToken = params.get('refresh_token');
-            console.log('[AUTH] Captured hash tokens — access_token:', accessToken ? accessToken.substring(0, 20) + '...' : 'MISSING',
-                'refresh_token:', !!refreshToken);
+        // If this is an OAuth callback, manually handle the tokens.
+        // Strategy depends on what the server sent:
+        //   - ?code=XXX → PKCE flow: exchange code for session
+        //   - #access_token=XXX → Implicit flow: set session directly
+        if (isOAuthCallback) {
+            const searchParams = new URLSearchParams(search);
+            const hashParams = new URLSearchParams(hash.substring(1));
+            const code = searchParams.get('code');
+            const accessToken = hashParams.get('access_token');
+            const refreshToken = hashParams.get('refresh_token');
 
-            if (accessToken && refreshToken) {
-                console.log('[AUTH] Setting session from captured hash tokens...');
+            console.log('[AUTH] OAuth params — code:', code ? code.substring(0, 10) + '...' : 'none',
+                'access_token:', accessToken ? accessToken.substring(0, 20) + '...' : 'none',
+                'refresh_token:', refreshToken ? 'yes' : 'none');
+
+            if (code) {
+                // PKCE flow: exchange the authorization code for a session
+                console.log('[AUTH] Exchanging PKCE code for session...');
+                _supa.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+                    if (error) {
+                        console.error('[AUTH] exchangeCodeForSession error:', error.message);
+                    } else if (data.session && !initialDelivered) {
+                        cleanHash();
+                        deliverInitial(this._mapUser(data.session.user), 'pkce-code-exchange');
+                    }
+                }).catch(err => {
+                    console.error('[AUTH] exchangeCodeForSession exception:', err);
+                });
+            } else if (accessToken && refreshToken) {
+                // Implicit flow: set session from hash tokens
+                console.log('[AUTH] Setting session from hash tokens...');
                 _supa.auth.setSession({
                     access_token: accessToken,
                     refresh_token: refreshToken
@@ -100,7 +124,6 @@ const auth = {
                     console.error('[AUTH] setSession exception:', err);
                 });
             } else if (accessToken) {
-                // No refresh_token — try getUser with access_token
                 console.log('[AUTH] No refresh_token, trying getUser...');
                 _supa.auth.getUser(accessToken).then(({ data, error }) => {
                     if (error) {
