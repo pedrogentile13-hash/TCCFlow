@@ -6,7 +6,14 @@ const SUPABASE_URL = 'https://fpqvubixlsblanbyppkp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwcXZ1Yml4bHNibGFuYnlwcGtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzY4MzEsImV4cCI6MjA4OTExMjgzMX0.tWWn0ljmteupXPHi_qEqa6dhuM3WVy_zv26kwpSXbTo';
 
 // Initialize Supabase client (CDN exposes window.supabase as namespace)
-const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Use implicit flow to avoid PKCE code exchange issues with OAuth providers.
+// Implicit flow returns access_token directly in URL hash — no server-side
+// code exchange needed, which is more reliable for client-side apps.
+const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+        flowType: 'implicit'
+    }
+});
 
 // Check if Supabase is configured
 function isFirebaseConfigured() {
@@ -73,69 +80,35 @@ const auth = {
             console.log('[AUTH] Ignoring null session for event:', event);
         });
 
-        if (!isOAuthCallback) {
-            // Normal page load: check persisted session
-            _supa.auth.getSession().then(({ data: { session } }) => {
-                console.log('[AUTH] getSession result:', !!session);
-                deliverOnce(session ? this._mapUser(session.user) : null, 'getSession');
-            });
-        } else {
-            // OAuth callback: exchange code manually (PKCE flow)
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            console.log('[AUTH] OAuth code present:', !!code);
-
-            if (code) {
-                _supa.auth.exchangeCodeForSession(code).then(({ data, error }) => {
-                    console.log('[AUTH] exchangeCodeForSession result:', error ? 'ERROR: ' + error.message : 'OK');
-                    if (!error && data?.session) {
-                        deliverOnce(this._mapUser(data.session.user), 'exchangeCode');
-                    } else {
-                        // Exchange failed — fallback to getSession after delay
-                        setTimeout(() => {
-                            if (!initialized) {
-                                _supa.auth.getSession().then(({ data: { session } }) => {
-                                    console.log('[AUTH] Fallback getSession after exchange fail:', !!session);
-                                    deliverOnce(session ? this._mapUser(session.user) : null, 'fallback-getSession');
-                                });
-                            }
-                        }, 3000);
-                    }
-                }).catch((err) => {
-                    console.log('[AUTH] exchangeCodeForSession exception:', err);
-                    // Code may have been consumed by auto-detection — check session
-                    setTimeout(() => {
-                        if (!initialized) {
-                            _supa.auth.getSession().then(({ data: { session } }) => {
-                                console.log('[AUTH] Fallback getSession after exception:', !!session);
-                                deliverOnce(session ? this._mapUser(session.user) : null, 'catch-getSession');
-                            });
-                        }
-                    }, 3000);
-                });
-            } else if (hash.includes('access_token')) {
-                // Implicit flow (hash-based) — onAuthStateChange should handle it
-                // But add a safety fallback
-                console.log('[AUTH] Implicit flow detected (access_token in hash)');
-                setTimeout(() => {
-                    if (!initialized) {
-                        _supa.auth.getSession().then(({ data: { session } }) => {
-                            console.log('[AUTH] Implicit flow fallback getSession:', !!session);
-                            deliverOnce(session ? this._mapUser(session.user) : null, 'implicit-getSession');
-                        });
-                    }
-                }, 3000);
+        // Check persisted session or wait for OAuth callback resolution.
+        // With implicit flow, access_token arrives in the URL hash and
+        // Supabase auto-detects it via onAuthStateChange (fires SIGNED_IN).
+        // getSession() also picks up the hash token.
+        _supa.auth.getSession().then(({ data: { session } }) => {
+            console.log('[AUTH] getSession result:', !!session);
+            if (session) {
+                deliverOnce(this._mapUser(session.user), 'getSession');
+            } else if (!isOAuthCallback) {
+                // Not an OAuth callback and no session — user is not logged in
+                deliverOnce(null, 'getSession-no-session');
+            } else {
+                // OAuth callback but getSession hasn't resolved yet —
+                // onAuthStateChange will handle it, with safety fallback
+                console.log('[AUTH] Waiting for onAuthStateChange to resolve OAuth...');
             }
+        });
 
-            // Final safety net
-            this._oauthTimeout = setTimeout(() => {
+        // Safety fallback for OAuth callbacks
+        if (isOAuthCallback) {
+            setTimeout(() => {
                 if (!initialized) {
-                    console.log('[AUTH] Safety timeout triggered (15s)');
+                    console.log('[AUTH] OAuth fallback: checking session after 5s');
                     _supa.auth.getSession().then(({ data: { session } }) => {
-                        deliverOnce(session ? this._mapUser(session.user) : null, 'timeout-getSession');
+                        console.log('[AUTH] OAuth fallback getSession:', !!session);
+                        deliverOnce(session ? this._mapUser(session.user) : null, 'oauth-fallback');
                     });
                 }
-            }, 15000);
+            }, 5000);
         }
     },
 
