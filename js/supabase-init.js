@@ -5,6 +5,15 @@
 const SUPABASE_URL = 'https://fpqvubixlsblanbyppkp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwcXZ1Yml4bHNibGFuYnlwcGtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzY4MzEsImV4cCI6MjA4OTExMjgzMX0.tWWn0ljmteupXPHi_qEqa6dhuM3WVy_zv26kwpSXbTo';
 
+// IMPORTANT: Capture the URL hash BEFORE createClient() — Supabase's
+// initialization may consume/clean the hash before our code can read it.
+const _capturedHash = window.location.hash || '';
+const _capturedSearch = window.location.search || '';
+console.log('[AUTH-EARLY] Captured hash length:', _capturedHash.length, 'search length:', _capturedSearch.length);
+if (_capturedHash.includes('access_token') || _capturedSearch.includes('code=')) {
+    console.log('[AUTH-EARLY] OAuth tokens detected in URL');
+}
+
 // Initialize Supabase client (CDN exposes window.supabase as namespace)
 // Use implicit flow to avoid PKCE code exchange issues with OAuth providers.
 // Implicit flow returns access_token directly in URL hash — no server-side
@@ -36,12 +45,15 @@ const auth = {
     onAuthStateChanged(callback) {
         this._listeners.push(callback);
 
-        // Detect OAuth callback (URL contains access_token or code from provider redirect)
-        const hash = window.location.hash || '';
-        const search = window.location.search || '';
+        // Use the hash captured BEFORE createClient() — Supabase may have
+        // already consumed/cleaned window.location.hash by now.
+        const hash = _capturedHash;
+        const search = _capturedSearch;
         const isOAuthCallback = hash.includes('access_token') || search.includes('code=');
 
-        console.log('[AUTH] isOAuthCallback:', isOAuthCallback, 'hash length:', hash.length);
+        console.log('[AUTH] onAuthStateChanged — isOAuthCallback:', isOAuthCallback,
+            'hash length:', hash.length,
+            'current hash length:', window.location.hash.length);
 
         let initialDelivered = false;
 
@@ -61,17 +73,19 @@ const auth = {
             window.history.replaceState({}, document.title, cleanUrl);
         };
 
-        // If this is an OAuth callback, manually extract tokens from the URL hash
-        // and set the session. Supabase's auto-detection sometimes fails to process
-        // the hash before INITIAL_SESSION fires.
+        // If this is an OAuth callback, manually extract tokens from the
+        // CAPTURED hash and call setSession(). Supabase's auto-detection
+        // often consumes the hash before our code runs, causing
+        // INITIAL_SESSION to fire with session:null.
         if (isOAuthCallback && hash.includes('access_token')) {
             const params = new URLSearchParams(hash.substring(1));
             const accessToken = params.get('access_token');
             const refreshToken = params.get('refresh_token');
-            console.log('[AUTH] Hash tokens — access_token:', !!accessToken, 'refresh_token:', !!refreshToken);
+            console.log('[AUTH] Captured hash tokens — access_token:', accessToken ? accessToken.substring(0, 20) + '...' : 'MISSING',
+                'refresh_token:', !!refreshToken);
 
             if (accessToken && refreshToken) {
-                console.log('[AUTH] Manually setting session from URL hash...');
+                console.log('[AUTH] Setting session from captured hash tokens...');
                 _supa.auth.setSession({
                     access_token: accessToken,
                     refresh_token: refreshToken
@@ -85,16 +99,14 @@ const auth = {
                 }).catch(err => {
                     console.error('[AUTH] setSession exception:', err);
                 });
-            } else if (accessToken && !refreshToken) {
-                // Implicit flow might not always include refresh_token.
-                // Try getUser with the access_token directly.
-                console.log('[AUTH] No refresh_token, trying getUser with access_token...');
+            } else if (accessToken) {
+                // No refresh_token — try getUser with access_token
+                console.log('[AUTH] No refresh_token, trying getUser...');
                 _supa.auth.getUser(accessToken).then(({ data, error }) => {
                     if (error) {
                         console.error('[AUTH] getUser error:', error.message);
                     } else if (data.user && !initialDelivered) {
                         cleanHash();
-                        // Store whatever session we can
                         deliverInitial(this._mapUser(data.user), 'manual-getUser');
                     }
                 }).catch(err => {
@@ -104,19 +116,16 @@ const auth = {
         }
 
         // Subscribe to Supabase auth state changes as backup.
-        // INITIAL_SESSION fires once after Supabase finishes initialization.
         _supa.auth.onAuthStateChange((event, session) => {
             console.log('[AUTH] onAuthStateChange:', event, 'session:', !!session);
 
             if (event === 'INITIAL_SESSION') {
                 if (session) {
-                    if (isOAuthCallback) cleanHash();
+                    cleanHash();
                     deliverInitial(this._mapUser(session.user), 'INITIAL_SESSION');
                 } else if (!isOAuthCallback) {
                     deliverInitial(null, 'INITIAL_SESSION-no-session');
                 }
-                // If OAuth callback but no session yet, manual setSession
-                // or SIGNED_IN event will handle it
                 return;
             }
 
@@ -125,7 +134,7 @@ const auth = {
                     const user = this._mapUser(session.user);
                     this.currentUser = user;
                     if (!initialDelivered) {
-                        if (isOAuthCallback) cleanHash();
+                        cleanHash();
                         deliverInitial(user, event);
                     }
                 }
@@ -138,7 +147,7 @@ const auth = {
                     console.log('[AUTH] SIGNED_OUT — notifying');
                     callback(null);
                 } else {
-                    console.log('[AUTH] SIGNED_OUT before initial delivery — waiting');
+                    console.log('[AUTH] SIGNED_OUT before delivery — waiting');
                 }
                 return;
             }
@@ -147,13 +156,10 @@ const auth = {
         // Final fallback
         setTimeout(() => {
             if (!initialDelivered) {
-                console.log('[AUTH] Fallback after 10s — checking session...');
+                console.log('[AUTH] Fallback after 10s...');
                 _supa.auth.getSession().then(({ data: { session } }) => {
                     if (!initialDelivered) {
                         console.log('[AUTH] Fallback getSession:', !!session);
-                        if (session) {
-                            if (isOAuthCallback) cleanHash();
-                        }
                         deliverInitial(
                             session ? this._mapUser(session.user) : null,
                             'fallback-10s'
