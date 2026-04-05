@@ -278,14 +278,15 @@
                 _supa.from('users').select('id, role').eq('id', user.uid).maybeSingle().then(({ data }) => {
                     if (!data) {
                         const role = redirectTarget.includes('orientador') ? 'orientador' : 'student';
+                        // Use insert (not upsert) to avoid overwriting project_id
+                        // if the record was already created by dashboard.html
                         _supa.from('users').upsert({
                             id: user.uid,
                             name: user.displayName || 'Usuario',
                             email: user.email,
-                            project_id: null,
                             role: role,
                             created_at: new Date().toISOString()
-                        }).then(() => {
+                        }, { onConflict: 'id', ignoreDuplicates: true }).then(() => {
                             window.location.href = redirectTarget;
                         });
                     } else {
@@ -337,6 +338,7 @@
 
             try {
                 if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado.' };
+                // Redirect to dashboard — user record will be ensured there
                 await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider(), { redirectTo: '/pages/' + redirectTarget });
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;

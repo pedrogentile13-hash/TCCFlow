@@ -271,15 +271,22 @@
             }
 
             // Ensure user doc exists and sync photo
+            // This is critical for Google OAuth: the redirect goes directly to
+            // dashboard.html, so the user record must be created here.
             try {
                 const { data: existingUser } = await _supa.from('users').select('id, photo_url').eq('id', user.uid).maybeSingle();
                 if (!existingUser) {
-                    await _supa.from('users').insert({
+                    // Use upsert with ignoreDuplicates to handle race conditions
+                    // (e.g., login.html callback also trying to create the record)
+                    await _supa.from('users').upsert({
                         id: user.uid,
                         name: user.displayName || i18n.t('common.user'),
                         email: user.email,
-                        photo_url: user.photoURL || null
-                    });
+                        photo_url: user.photoURL || null,
+                        role: 'student',
+                        created_at: new Date().toISOString()
+                    }, { onConflict: 'id', ignoreDuplicates: true });
+                    console.log('[DASHBOARD] Created user record for', user.email);
                 } else if (user.photoURL && !existingUser.photo_url) {
                     await _supa.from('users').update({ photo_url: user.photoURL }).eq('id', user.uid);
                 }
@@ -301,69 +308,74 @@
 
             if (isFirebaseConfigured()) {
                 try {
-                    const { data: userData } = await _supa
+                    const { data: userData, error: userError } = await _supa
                         .from('users')
                         .select('project_id')
                         .eq('id', user.uid)
                         .maybeSingle();
 
+                    if (userError) console.error('[DASHBOARD] Error fetching user project_id:', userError);
+
                     if (userData && userData.project_id) {
                         projectId = userData.project_id;
+                        console.log('[DASHBOARD] Found project_id:', projectId);
                         await loadDashboard();
                     } else {
+                        console.log('[DASHBOARD] No project_id found, running fallback checks...');
                         // Fallback: check if user is in any project's members array
                         let foundProject = false;
                         try {
-                            const { data: projects } = await _supa
+                            const { data: projects, error: memberErr } = await _supa
                                 .from('projects')
                                 .select('id')
                                 .contains('members', [user.uid])
                                 .limit(1);
 
+                            if (memberErr) console.log('[DASHBOARD] Members fallback query error:', memberErr);
+
                             if (projects && projects.length > 0) {
                                 // User is in members array but project_id is missing — fix it
                                 projectId = projects[0].id;
-                                await _supa.from('users').upsert({
-                                    id: user.uid,
-                                    project_id: projectId
-                                });
+                                console.log('[DASHBOARD] Found project via members array:', projectId);
+                                await _supa.from('users').update({ project_id: projectId }).eq('id', user.uid);
                                 foundProject = true;
                                 await loadDashboard();
                             }
                         } catch (e) {
-                            console.log('Fallback member check failed:', e);
+                            console.log('[DASHBOARD] Fallback member check failed:', e);
                         }
 
                         // Also check if user owns any project
                         if (!foundProject) {
                             try {
-                                const { data: ownedProjects } = await _supa
+                                const { data: ownedProjects, error: ownerErr } = await _supa
                                     .from('projects')
                                     .select('id')
                                     .eq('owner_id', user.uid)
                                     .limit(1);
 
+                                if (ownerErr) console.log('[DASHBOARD] Owner fallback query error:', ownerErr);
+
                                 if (ownedProjects && ownedProjects.length > 0) {
                                     projectId = ownedProjects[0].id;
-                                    await _supa.from('users').upsert({
-                                        id: user.uid,
-                                        project_id: projectId
-                                    });
+                                    console.log('[DASHBOARD] Found project via owner_id:', projectId);
+                                    await _supa.from('users').update({ project_id: projectId }).eq('id', user.uid);
                                     foundProject = true;
                                     await loadDashboard();
                                 }
                             } catch (e) {
-                                console.log('Fallback owner check failed:', e);
+                                console.log('[DASHBOARD] Fallback owner check failed:', e);
                             }
                         }
 
                         if (!foundProject) {
+                            console.log('[DASHBOARD] No project found for user');
                             document.getElementById('projectInfo').innerHTML =
                                 '<span class="text-amber-600">' + i18n.t('dash.noProject') + ' <a href="equipe.html" class="underline font-semibold">' + i18n.t('dash.createProject') + '</a> ' + i18n.t('common.or') + ' <a href="equipe.html" class="underline font-semibold">' + i18n.t('dash.joinProject') + '</a></span>';
                         }
                     }
                 } catch (err) {
-                    console.error('Supabase error:', err);
+                    console.error('[DASHBOARD] Supabase error:', err);
                     document.getElementById('projectInfo').innerHTML =
                         '<span class="text-amber-600">' + i18n.t('dash.loadError') + '</span>';
                 }
@@ -375,12 +387,20 @@
 
         async function loadDashboard() {
             // Load project info from Supabase
-            const { data: project } = await _supa
+            const { data: project, error: projectError } = await _supa
                 .from('projects')
                 .select('name, code')
                 .eq('id', projectId)
                 .maybeSingle();
-            if (!project) return;
+            if (projectError) {
+                console.error('[DASHBOARD] Error loading project:', projectError);
+            }
+            if (!project) {
+                console.error('[DASHBOARD] Project not found or RLS blocked access for id:', projectId);
+                document.getElementById('projectInfo').innerHTML =
+                    '<span class="text-amber-600">' + i18n.t('dash.loadError') + '</span>';
+                return;
+            }
 
             document.getElementById('projectInfo').innerHTML =
                 `<strong>${project.name}</strong> &bull; ${i18n.t('dash.code')} <code class="bg-slate-100 px-2 py-1 rounded text-violet-600 font-mono">${project.code}</code>`;
@@ -389,11 +409,15 @@
             let projectMembers;
             try {
                 const res = await _supa.from('users').select('id, name, email, photo_url').eq('project_id', projectId);
+                if (res.error) console.log('[DASHBOARD] Error loading members:', res.error);
                 projectMembers = res.error ? null : res.data;
-            } catch(e) {}
+            } catch(e) { console.log('[DASHBOARD] Members query exception:', e); }
             if (!projectMembers) {
-                const res2 = await _supa.from('users').select('id, name, email').eq('project_id', projectId);
-                projectMembers = res2.data;
+                try {
+                    const res2 = await _supa.from('users').select('id, name, email').eq('project_id', projectId);
+                    if (res2.error) console.log('[DASHBOARD] Retry members error:', res2.error);
+                    projectMembers = res2.data;
+                } catch(e) { console.log('[DASHBOARD] Retry members exception:', e); }
             }
 
             // Deduplicate by email

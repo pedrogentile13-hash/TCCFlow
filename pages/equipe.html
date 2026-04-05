@@ -449,13 +449,14 @@
                         }
                     } else {
                         if (!userData) {
+                            // Create user record without setting project_id
+                            // (ignoreDuplicates to handle race conditions)
                             await _supa.from('users').upsert({
                                 id: user.uid,
                                 name: user.displayName || 'Usuário',
                                 email: user.email,
-                                project_id: null,
                                 created_at: new Date().toISOString()
-                            });
+                            }, { onConflict: 'id', ignoreDuplicates: true });
                         }
                         showNoProjectPanel();
                     }

@@ -23,10 +23,17 @@ create policy "Users can read team members" on users for select using (
 );
 
 -- ==================== PROJECTS ====================
+-- Allow reading projects by membership OR by ownership (even if project_id is null)
 drop policy if exists "Project members can read" on projects;
 create policy "Project members can read" on projects for select using (
     id = get_my_project_id()
+    or auth.uid() = owner_id
+    or auth.uid()::text = any(members)
 );
+
+-- Ensure the open read policy exists (needed for join-by-code flow)
+drop policy if exists "Anyone can read project by code" on projects;
+create policy "Anyone can read project by code" on projects for select using (true);
 
 -- ==================== TASKS ====================
 drop policy if exists "Tasks readable by project members" on tasks;
