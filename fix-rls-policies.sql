@@ -28,7 +28,7 @@ drop policy if exists "Project members can read" on projects;
 create policy "Project members can read" on projects for select using (
     id = get_my_project_id()
     or auth.uid() = owner_id
-    or auth.uid()::text = any(members)
+    or auth.uid() = any(members)
 );
 
 -- Ensure the open read policy exists (needed for join-by-code flow)
