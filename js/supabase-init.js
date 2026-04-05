@@ -34,16 +34,15 @@ const auth = {
         const search = window.location.search || '';
         const isOAuthCallback = hash.includes('access_token') || search.includes('code=');
 
-        // Track whether we've delivered the initial auth state to this callback.
-        // After the first delivery, ONLY SIGNED_OUT should trigger the callback again.
-        // This prevents spurious redirects from transient null sessions during
-        // token refresh, network hiccups, or Supabase internal state changes.
+        console.log('[AUTH] isOAuthCallback:', isOAuthCallback, 'URL:', window.location.href);
+
         let initialized = false;
 
-        const deliverOnce = (user) => {
+        const deliverOnce = (user, source) => {
             if (initialized) return;
             initialized = true;
             this.currentUser = user;
+            console.log('[AUTH] deliverOnce from', source, '→ user:', user ? user.email : null);
             // Auto-show admin panel buttons if user is admin
             if (user && ADMIN_EMAILS.includes(user.email)) {
                 document.querySelectorAll('.admin-panel-btn').forEach(el => el.classList.remove('hidden'));
@@ -53,51 +52,90 @@ const auth = {
 
         // Subscribe to Supabase auth state changes
         _supa.auth.onAuthStateChange((event, session) => {
-            const user = session ? this._mapUser(session.user) : null;
+            console.log('[AUTH] onAuthStateChange event:', event, 'session:', !!session);
 
-            // --- SIGNED_OUT: always propagate (user explicitly logged out) ---
             if (event === 'SIGNED_OUT') {
                 this.currentUser = null;
                 callback(null);
                 return;
             }
 
-            // --- Valid session received ---
             if (session) {
-                // Clean OAuth params from URL after successful login
                 if (isOAuthCallback && !initialized) {
                     const cleanUrl = window.location.origin + window.location.pathname;
                     window.history.replaceState({}, document.title, cleanUrl);
                 }
-                deliverOnce(user);
-                // Also keep currentUser up-to-date on token refresh
-                this.currentUser = user;
+                deliverOnce(this._mapUser(session.user), 'onAuthStateChange:' + event);
+                this.currentUser = this._mapUser(session.user);
                 return;
             }
 
-            // --- Null session on non-SIGNED_OUT event ---
-            // During OAuth: skip (waiting for code exchange to complete)
-            // Normal load: skip (getSession below will handle it)
-            // Already initialized: ignore transient nulls
+            console.log('[AUTH] Ignoring null session for event:', event);
         });
 
-        // For non-OAuth loads, check persisted session immediately.
-        // For OAuth loads, let onAuthStateChange handle the code exchange,
-        // with a safety-net timeout that also checks getSession.
         if (!isOAuthCallback) {
+            // Normal page load: check persisted session
             _supa.auth.getSession().then(({ data: { session } }) => {
-                deliverOnce(session ? this._mapUser(session.user) : null);
+                console.log('[AUTH] getSession result:', !!session);
+                deliverOnce(session ? this._mapUser(session.user) : null, 'getSession');
             });
         } else {
-            // Safety net: if OAuth exchange hasn't resolved in 20s,
-            // check if a session was established anyway
+            // OAuth callback: exchange code manually (PKCE flow)
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            console.log('[AUTH] OAuth code present:', !!code);
+
+            if (code) {
+                _supa.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+                    console.log('[AUTH] exchangeCodeForSession result:', error ? 'ERROR: ' + error.message : 'OK');
+                    if (!error && data?.session) {
+                        deliverOnce(this._mapUser(data.session.user), 'exchangeCode');
+                    } else {
+                        // Exchange failed — fallback to getSession after delay
+                        setTimeout(() => {
+                            if (!initialized) {
+                                _supa.auth.getSession().then(({ data: { session } }) => {
+                                    console.log('[AUTH] Fallback getSession after exchange fail:', !!session);
+                                    deliverOnce(session ? this._mapUser(session.user) : null, 'fallback-getSession');
+                                });
+                            }
+                        }, 3000);
+                    }
+                }).catch((err) => {
+                    console.log('[AUTH] exchangeCodeForSession exception:', err);
+                    // Code may have been consumed by auto-detection — check session
+                    setTimeout(() => {
+                        if (!initialized) {
+                            _supa.auth.getSession().then(({ data: { session } }) => {
+                                console.log('[AUTH] Fallback getSession after exception:', !!session);
+                                deliverOnce(session ? this._mapUser(session.user) : null, 'catch-getSession');
+                            });
+                        }
+                    }, 3000);
+                });
+            } else if (hash.includes('access_token')) {
+                // Implicit flow (hash-based) — onAuthStateChange should handle it
+                // But add a safety fallback
+                console.log('[AUTH] Implicit flow detected (access_token in hash)');
+                setTimeout(() => {
+                    if (!initialized) {
+                        _supa.auth.getSession().then(({ data: { session } }) => {
+                            console.log('[AUTH] Implicit flow fallback getSession:', !!session);
+                            deliverOnce(session ? this._mapUser(session.user) : null, 'implicit-getSession');
+                        });
+                    }
+                }, 3000);
+            }
+
+            // Final safety net
             this._oauthTimeout = setTimeout(() => {
                 if (!initialized) {
+                    console.log('[AUTH] Safety timeout triggered (15s)');
                     _supa.auth.getSession().then(({ data: { session } }) => {
-                        deliverOnce(session ? this._mapUser(session.user) : null);
+                        deliverOnce(session ? this._mapUser(session.user) : null, 'timeout-getSession');
                     });
                 }
-            }, 20000);
+            }, 15000);
         }
     },
 
