@@ -65,7 +65,7 @@
                         <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
                             <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.tasks">Tarefas</a>
                             <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.team">Equipe</a>
-                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <a href="google.html" style="display:none" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
                             <div class="border-t border-slate-100 my-1"></div>
                             <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i><span data-i18n="nav.plans">Planos</span></a>
                         </div>
@@ -92,7 +92,7 @@
             <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.ia">I.A.</a>
             <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.calendar">Calendário</a>
             <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50" data-i18n="nav.team">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="google.html" style="display:none" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
             <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tools">Ferramentas</a>
             <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.plans">Planos</a>
         </div>
@@ -301,8 +301,8 @@
                     </div>
                 </div>
 
-                <!-- Chat PRO Banner (shown for free users in main content) -->
-                <div id="chatProBanner" class="hidden mt-8">
+                <!-- Chat PRO Banner - HIDDEN: chat not connecting -->
+                <div id="chatProBanner" class="hidden mt-8" style="display:none !important">
                     <div class="bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200/50 rounded-2xl p-5 text-center">
                         <h3 class="text-sm font-bold mb-1"><i class="fa-solid fa-comments mr-1 text-violet-500"></i>Chat da Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></h3>
                         <p class="text-xs text-slate-500 mb-3">Converse em tempo real com os membros do seu projeto.</p>
@@ -314,14 +314,14 @@
         </div>
     </main>
 
-    <!-- Chat FAB (PRO only) -->
-    <button id="chatFab" class="hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-violet-600 to-cyan-500 rounded-full shadow-lg shadow-violet-500/30 items-center justify-center text-white hover:shadow-xl hover:scale-105 transition-all cursor-pointer" onclick="toggleChatPanel()">
+    <!-- Chat FAB (PRO only) - HIDDEN: chat not connecting -->
+    <button id="chatFab" style="display:none !important" class="hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-violet-600 to-cyan-500 rounded-full shadow-lg shadow-violet-500/30 items-center justify-center text-white hover:shadow-xl hover:scale-105 transition-all cursor-pointer" onclick="toggleChatPanel()">
         <i class="fa-solid fa-comments text-lg"></i>
         <span id="chatBadge" class="hidden absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold items-center justify-center animate-pulse text-white">!</span>
     </button>
 
-    <!-- Chat Panel (slide-up) -->
-    <div id="chatPanel" class="hidden fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden" style="max-height: 450px;">
+    <!-- Chat Panel (slide-up) - HIDDEN: chat not connecting -->
+    <div id="chatPanel" style="display:none !important" class="hidden fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden">
         <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-violet-600 to-cyan-500">
             <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-comments"></i> Chat da Equipe</h3>
             <div class="flex items-center gap-2">
@@ -435,7 +435,7 @@
                                 document.getElementById('myProjectsPanel').classList.add('hidden');
                             }
                             await loadOrientadorSection();
-                            await initChat();
+                            // await initChat(); // HIDDEN: chat not connecting
                         } else {
                             showNoProjectPanel();
                         }
