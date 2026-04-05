@@ -13,6 +13,9 @@ function isFirebaseConfigured() {
     return SUPABASE_URL !== 'https://SEU_PROJETO.supabase.co';
 }
 
+// Admin emails with access to the admin panel
+const ADMIN_EMAILS = ['contato.tccflow@gmail.com'];
+
 // ============================================================
 // Compatibility layer - exposes `auth` global with same API
 // used across all pages (onAuthStateChanged, signOut, etc.)
@@ -31,96 +34,70 @@ const auth = {
         const search = window.location.search || '';
         const isOAuthCallback = hash.includes('access_token') || search.includes('code=');
 
-        let initialCallbackFired = false;
-        let oauthSessionResolved = false;
+        // Track whether we've delivered the initial auth state to this callback.
+        // After the first delivery, ONLY SIGNED_OUT should trigger the callback again.
+        // This prevents spurious redirects from transient null sessions during
+        // token refresh, network hiccups, or Supabase internal state changes.
+        let initialized = false;
 
-        const resolveOAuth = (session) => {
-            if (oauthSessionResolved) return;
-            oauthSessionResolved = true;
-            if (this._oauthTimeout) {
-                clearTimeout(this._oauthTimeout);
-                this._oauthTimeout = null;
+        const deliverOnce = (user) => {
+            if (initialized) return;
+            initialized = true;
+            this.currentUser = user;
+            // Auto-show admin panel buttons if user is admin
+            if (user && ADMIN_EMAILS.includes(user.email)) {
+                document.querySelectorAll('.admin-panel-btn').forEach(el => el.classList.remove('hidden'));
             }
-            this.currentUser = session ? this._mapUser(session.user) : null;
-            initialCallbackFired = true;
-            // Clean OAuth params from URL to prevent re-processing on refresh
-            if (session) {
-                const cleanUrl = window.location.origin + window.location.pathname;
-                window.history.replaceState({}, document.title, cleanUrl);
-            }
-            callback(this.currentUser);
+            callback(user);
         };
 
-        // Listen for auth state changes (fires on OAuth callback completion too)
+        // Subscribe to Supabase auth state changes
         _supa.auth.onAuthStateChange((event, session) => {
-            // During OAuth callback, Supabase fires INITIAL_SESSION with null session
-            // BEFORE exchanging the code for a real session. Skip this null to prevent
-            // pages from redirecting to login before the OAuth flow completes.
-            if (isOAuthCallback && !session && !oauthSessionResolved) {
+            const user = session ? this._mapUser(session.user) : null;
+
+            // --- SIGNED_OUT: always propagate (user explicitly logged out) ---
+            if (event === 'SIGNED_OUT') {
+                this.currentUser = null;
+                callback(null);
                 return;
             }
 
-            if (isOAuthCallback && session) {
-                resolveOAuth(session);
-                return;
-            }
-
-            // CRITICAL: Only propagate null (logout) to pages on explicit SIGNED_OUT.
-            // Supabase fires onAuthStateChange for many events (TOKEN_REFRESHED,
-            // INITIAL_SESSION, USER_UPDATED, etc.). Some of these can temporarily
-            // have a null session due to timing/network issues. If we already have
-            // a valid user and the event is NOT SIGNED_OUT, keep the current user
-            // to prevent spurious redirects to login.
-            if (!session && event !== 'SIGNED_OUT') {
-                // If we haven't fired the initial callback yet and there's no session,
-                // check getSession as a fallback before declaring user logged out
-                if (!initialCallbackFired) {
-                    _supa.auth.getSession().then(({ data: { session: currentSession } }) => {
-                        if (!initialCallbackFired) {
-                            this.currentUser = currentSession ? this._mapUser(currentSession.user) : null;
-                            initialCallbackFired = true;
-                            callback(this.currentUser);
-                        }
-                    });
+            // --- Valid session received ---
+            if (session) {
+                // Clean OAuth params from URL after successful login
+                if (isOAuthCallback && !initialized) {
+                    const cleanUrl = window.location.origin + window.location.pathname;
+                    window.history.replaceState({}, document.title, cleanUrl);
                 }
-                // If already initialized with a user, ignore transient null sessions
+                deliverOnce(user);
+                // Also keep currentUser up-to-date on token refresh
+                this.currentUser = user;
                 return;
             }
 
-            this.currentUser = session ? this._mapUser(session.user) : null;
-            initialCallbackFired = true;
-            callback(this.currentUser);
+            // --- Null session on non-SIGNED_OUT event ---
+            // During OAuth: skip (waiting for code exchange to complete)
+            // Normal load: skip (getSession below will handle it)
+            // Already initialized: ignore transient nulls
         });
 
-        if (isOAuthCallback) {
-            // Set a generous safety-net timeout (30s) for slow networks.
-            if (!this._oauthTimeout) {
-                this._oauthTimeout = setTimeout(() => {
-                    resolveOAuth(null);
-                }, 30000);
-            }
-
-            // Actively exchange the authorization code for a session (PKCE flow).
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            if (code) {
-                _supa.auth.exchangeCodeForSession(code).then(({ data, error }) => {
-                    if (!error && data?.session) {
-                        resolveOAuth(data.session);
-                    }
-                }).catch(() => {
-                    // Let onAuthStateChange or timeout handle the failure
-                });
-            }
-        } else {
-            // Not an OAuth callback — check current session normally
+        // For non-OAuth loads, check persisted session immediately.
+        // For OAuth loads, let onAuthStateChange handle the code exchange,
+        // with a safety-net timeout that also checks getSession.
+        if (!isOAuthCallback) {
             _supa.auth.getSession().then(({ data: { session } }) => {
-                if (!initialCallbackFired) {
-                    this.currentUser = session ? this._mapUser(session.user) : null;
-                    initialCallbackFired = true;
-                    callback(this.currentUser);
-                }
+                deliverOnce(session ? this._mapUser(session.user) : null);
             });
+        } else {
+            // Safety net: if OAuth exchange hasn't resolved in 20s,
+            // check if a session was established anyway
+            this._oauthTimeout = setTimeout(() => {
+                if (!initialized) {
+                    _supa.auth.getSession().then(({ data: { session } }) => {
+                        deliverOnce(session ? this._mapUser(session.user) : null);
+                    });
+                }
+            }, 20000);
         }
     },
 
