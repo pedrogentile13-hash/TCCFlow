@@ -32,9 +32,36 @@ const auth = {
         const isOAuthCallback = hash.includes('access_token') || search.includes('code=');
 
         let initialCallbackFired = false;
+        let oauthSessionResolved = false;
 
         // Listen for auth state changes (fires on OAuth callback completion too)
         _supa.auth.onAuthStateChange((event, session) => {
+            // During OAuth callback, Supabase fires INITIAL_SESSION with null session
+            // BEFORE exchanging the code for a real session. Skip this null to prevent
+            // pages from redirecting to login before the OAuth flow completes.
+            if (isOAuthCallback && !session && !oauthSessionResolved) {
+                // Wait for the next event (SIGNED_IN) with a real session.
+                // Set a timeout as safety net in case the exchange fails.
+                if (!this._oauthTimeout) {
+                    this._oauthTimeout = setTimeout(() => {
+                        if (!oauthSessionResolved) {
+                            oauthSessionResolved = true;
+                            initialCallbackFired = true;
+                            callback(null);
+                        }
+                    }, 5000);
+                }
+                return;
+            }
+
+            if (isOAuthCallback && session) {
+                oauthSessionResolved = true;
+                if (this._oauthTimeout) {
+                    clearTimeout(this._oauthTimeout);
+                    this._oauthTimeout = null;
+                }
+            }
+
             this.currentUser = session ? this._mapUser(session.user) : null;
             initialCallbackFired = true;
             callback(this.currentUser);
@@ -126,11 +153,12 @@ const auth = {
         };
     },
 
-    async signInWithPopup(provider) {
+    async signInWithPopup(provider, options) {
+        const redirectPage = (options && options.redirectTo) || '/pages/dashboard.html';
         const { data, error } = await _supa.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin + '/pages/dashboard.html'
+                redirectTo: window.location.origin + redirectPage
             }
         });
         if (error) {

@@ -337,7 +337,7 @@
 
             try {
                 if (!isFirebaseConfigured()) throw { message: 'Supabase nao configurado.' };
-                await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+                await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider(), { redirectTo: '/pages/' + redirectTarget });
             } catch (err) {
                 if (err.code === 'auth/popup-closed-by-user') return;
                 let msg = 'Erro ao entrar com Google.';
