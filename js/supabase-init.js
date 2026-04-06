@@ -32,7 +32,7 @@ console.log('[AUTH-EARLY] Using flow:', _detectedFlow);
 const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
         flowType: _detectedFlow,
-        detectSessionInUrl: true
+        detectSessionInUrl: !_hasRealCode
     }
 });
 
@@ -116,12 +116,18 @@ const auth = {
                 _supa.auth.exchangeCodeForSession(code).then(({ data, error }) => {
                     if (error) {
                         console.error('[AUTH] exchangeCodeForSession error:', error.message);
+                        cleanHash();
+                        setTimeout(() => alert('Erro no login Google: ' + error.message), 500);
+                        deliverInitial(null, 'pkce-exchange-error');
                     } else if (data.session && !initialDelivered) {
                         cleanHash();
                         deliverInitial(this._mapUser(data.session.user), 'pkce-code-exchange');
                     }
                 }).catch(err => {
                     console.error('[AUTH] exchangeCodeForSession exception:', err);
+                    cleanHash();
+                    setTimeout(() => alert('Erro no login Google. Tente novamente.'), 500);
+                    deliverInitial(null, 'pkce-exchange-exception');
                 });
             } else if (accessToken && refreshToken) {
                 // Implicit flow: set session from hash tokens
