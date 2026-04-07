@@ -338,19 +338,6 @@
                 }
             }
 
-            // Update navbar for PRO users
-            try {
-                const pid = await DB.getProjectId();
-                if (pid) {
-                    const isPro = await DB.isProByProject(pid);
-                    if (isPro) {
-                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
-                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
-                        });
-                    }
-                }
-            } catch(e) { console.log(e); }
-
             if (isFirebaseConfigured()) {
                 projectId = await DB.getProjectId();
                 if (projectId) {

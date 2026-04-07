@@ -5,34 +5,21 @@
 const SUPABASE_URL = 'https://fpqvubixlsblanbyppkp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwcXZ1Yml4bHNibGFuYnlwcGtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzY4MzEsImV4cCI6MjA4OTExMjgzMX0.tWWn0ljmteupXPHi_qEqa6dhuM3WVy_zv26kwpSXbTo';
 
-// IMPORTANT: Capture the URL params early for OAuth callback detection.
-const _capturedHash = window.location.hash || '';
-const _capturedSearch = window.location.search || '';
-
-// Parse params to check for real OAuth tokens vs error responses
-const _searchParams = new URLSearchParams(_capturedSearch);
-const _hashParams = new URLSearchParams(_capturedHash.substring(1));
-const _hasRealCode = _searchParams.has('code');        // actual ?code= param (PKCE)
-const _hasAccessToken = _hashParams.has('access_token'); // actual #access_token= (implicit)
+// Check URL for OAuth error responses
+const _searchParams = new URLSearchParams(window.location.search);
+const _hashParams = new URLSearchParams((window.location.hash || '').substring(1));
 const _oauthError = _searchParams.get('error') || _hashParams.get('error');
 const _oauthErrorDesc = _searchParams.get('error_description') || _hashParams.get('error_description');
 
-console.log('[AUTH-EARLY] hash:', _capturedHash.substring(0, 200));
-console.log('[AUTH-EARLY] search:', _capturedSearch.substring(0, 200));
-console.log('[AUTH-EARLY] real code param:', _hasRealCode, '| access_token:', _hasAccessToken);
 if (_oauthError) {
-    console.error('[AUTH-EARLY] ⚠ OAuth ERROR:', _oauthError, '—', _oauthErrorDesc);
+    console.error('[AUTH] OAuth ERROR:', _oauthError, '—', _oauthErrorDesc);
 }
 
-// Detect flow: real ?code= param means PKCE, otherwise use PKCE as default
-// (Supabase v2 defaults to PKCE on the server side)
-const _detectedFlow = _hasAccessToken ? 'implicit' : 'pkce';
-console.log('[AUTH-EARLY] Using flow:', _detectedFlow);
-
+// Let Supabase handle the entire OAuth flow automatically (PKCE code exchange included)
 const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
-        flowType: _detectedFlow,
-        detectSessionInUrl: !_hasRealCode
+        flowType: 'pkce',
+        detectSessionInUrl: true
     }
 });
 
@@ -57,118 +44,46 @@ const auth = {
     onAuthStateChanged(callback) {
         this._listeners.push(callback);
 
-        // Use captured URL params (before Supabase could clean them)
-        const hash = _capturedHash;
-        const search = _capturedSearch;
-        const isOAuthCallback = _hasRealCode || _hasAccessToken;
-
-        console.log('[AUTH] onAuthStateChanged — isOAuthCallback:', isOAuthCallback,
-            'hash length:', hash.length,
-            'current hash length:', window.location.hash.length);
-
         let initialDelivered = false;
 
         const deliverInitial = (user, source) => {
             if (initialDelivered) return;
             initialDelivered = true;
             this.currentUser = user;
-            console.log('[AUTH] ✓ Initial delivery from', source, '→', user ? user.email : 'null');
+            console.log('[AUTH] Initial delivery from', source, '→', user ? user.email : 'null');
             if (user && ADMIN_EMAILS.includes(user.email)) {
                 document.querySelectorAll('.admin-panel-btn').forEach(el => el.classList.remove('hidden'));
             }
             callback(user);
         };
 
-        const cleanHash = () => {
-            const cleanUrl = window.location.origin + window.location.pathname;
-            window.history.replaceState({}, document.title, cleanUrl);
+        const cleanUrl = () => {
+            if (window.location.search || window.location.hash) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         };
 
-        // Check for OAuth errors first — if the provider/Supabase returned
-        // an error, show it instead of loading forever.
+        // Show OAuth errors immediately
         if (_oauthError) {
-            console.error('[AUTH] OAuth returned error:', _oauthError, _oauthErrorDesc);
-            cleanHash();
-            // Show error alert so user knows what happened
             const msg = _oauthErrorDesc
                 ? decodeURIComponent(_oauthErrorDesc.replace(/\+/g, ' '))
                 : _oauthError;
+            cleanUrl();
             setTimeout(() => alert('Erro no login Google: ' + msg), 500);
             deliverInitial(null, 'oauth-error');
             return;
         }
 
-        // If this is an OAuth callback, manually handle the tokens.
-        if (isOAuthCallback) {
-            const searchParams = new URLSearchParams(search);
-            const hashParams = new URLSearchParams(hash.substring(1));
-            const code = searchParams.get('code');
-            const accessToken = hashParams.get('access_token');
-            const refreshToken = hashParams.get('refresh_token');
-
-            console.log('[AUTH] OAuth params — code:', code ? code.substring(0, 10) + '...' : 'none',
-                'access_token:', accessToken ? accessToken.substring(0, 20) + '...' : 'none',
-                'refresh_token:', refreshToken ? 'yes' : 'none');
-
-            if (code) {
-                // PKCE flow: exchange the authorization code for a session
-                console.log('[AUTH] Exchanging PKCE code for session...');
-                _supa.auth.exchangeCodeForSession(code).then(({ data, error }) => {
-                    if (error) {
-                        console.error('[AUTH] exchangeCodeForSession error:', error.message);
-                        cleanHash();
-                        setTimeout(() => alert('Erro no login Google: ' + error.message), 500);
-                        deliverInitial(null, 'pkce-exchange-error');
-                    } else if (data.session && !initialDelivered) {
-                        cleanHash();
-                        deliverInitial(this._mapUser(data.session.user), 'pkce-code-exchange');
-                    }
-                }).catch(err => {
-                    console.error('[AUTH] exchangeCodeForSession exception:', err);
-                    cleanHash();
-                    setTimeout(() => alert('Erro no login Google. Tente novamente.'), 500);
-                    deliverInitial(null, 'pkce-exchange-exception');
-                });
-            } else if (accessToken && refreshToken) {
-                // Implicit flow: set session from hash tokens
-                console.log('[AUTH] Setting session from hash tokens...');
-                _supa.auth.setSession({
-                    access_token: accessToken,
-                    refresh_token: refreshToken
-                }).then(({ data, error }) => {
-                    if (error) {
-                        console.error('[AUTH] setSession error:', error.message);
-                    } else if (data.session && !initialDelivered) {
-                        cleanHash();
-                        deliverInitial(this._mapUser(data.session.user), 'manual-setSession');
-                    }
-                }).catch(err => {
-                    console.error('[AUTH] setSession exception:', err);
-                });
-            } else if (accessToken) {
-                console.log('[AUTH] No refresh_token, trying getUser...');
-                _supa.auth.getUser(accessToken).then(({ data, error }) => {
-                    if (error) {
-                        console.error('[AUTH] getUser error:', error.message);
-                    } else if (data.user && !initialDelivered) {
-                        cleanHash();
-                        deliverInitial(this._mapUser(data.user), 'manual-getUser');
-                    }
-                }).catch(err => {
-                    console.error('[AUTH] getUser exception:', err);
-                });
-            }
-        }
-
-        // Subscribe to Supabase auth state changes as backup.
+        // Subscribe to Supabase auth state changes.
+        // Supabase handles PKCE code exchange automatically (detectSessionInUrl: true).
         _supa.auth.onAuthStateChange((event, session) => {
             console.log('[AUTH] onAuthStateChange:', event, 'session:', !!session);
 
             if (event === 'INITIAL_SESSION') {
                 if (session) {
-                    cleanHash();
+                    cleanUrl();
                     deliverInitial(this._mapUser(session.user), 'INITIAL_SESSION');
-                } else if (!isOAuthCallback) {
+                } else {
                     deliverInitial(null, 'INITIAL_SESSION-no-session');
                 }
                 return;
@@ -178,9 +93,14 @@ const auth = {
                 if (session) {
                     const user = this._mapUser(session.user);
                     this.currentUser = user;
+                    cleanUrl();
                     if (!initialDelivered) {
-                        cleanHash();
                         deliverInitial(user, event);
+                    } else {
+                        // User just logged in (e.g. from login form).
+                        // Notify callback so the page can redirect.
+                        console.log('[AUTH] Re-notifying callback for', event);
+                        callback(user);
                     }
                 }
                 return;
@@ -189,30 +109,26 @@ const auth = {
             if (event === 'SIGNED_OUT') {
                 this.currentUser = null;
                 if (initialDelivered) {
-                    console.log('[AUTH] SIGNED_OUT — notifying');
                     callback(null);
-                } else {
-                    console.log('[AUTH] SIGNED_OUT before delivery — waiting');
                 }
                 return;
             }
         });
 
-        // Final fallback
+        // Fallback: if nothing fires within 5s, check session manually
         setTimeout(() => {
             if (!initialDelivered) {
-                console.log('[AUTH] Fallback after 10s...');
+                console.log('[AUTH] Fallback after 5s...');
                 _supa.auth.getSession().then(({ data: { session } }) => {
                     if (!initialDelivered) {
-                        console.log('[AUTH] Fallback getSession:', !!session);
                         deliverInitial(
                             session ? this._mapUser(session.user) : null,
-                            'fallback-10s'
+                            'fallback-5s'
                         );
                     }
                 });
             }
-        }, 10000);
+        }, 5000);
     },
 
     _mapUser(supaUser) {

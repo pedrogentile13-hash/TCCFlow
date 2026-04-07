@@ -421,16 +421,13 @@
                 }
             }
 
-            // Update navbar for PRO users
+            // Check PRO status and beta testers
             try {
                 const pid = await DB.getProjectId();
                 if (pid) {
                     const isPro = await DB.isProByProject(pid);
                     if (isPro) {
                         userIsPro = true;
-                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
-                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>' + i18n.t('ai.myPlan');
-                        });
                         document.getElementById('proSearchBanner').classList.remove('hidden');
                         document.getElementById('proSearchBanner').classList.add('flex');
                         document.getElementById('filterOpenAccess').classList.remove('hidden');

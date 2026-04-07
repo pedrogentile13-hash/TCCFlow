@@ -203,16 +203,6 @@
                 try {
                     const pid = await DB.getProjectId();
                     if (pid) {
-                        // Update navbar for PRO users
-                        try {
-                            const isPro = await DB.isProByProject(pid);
-                            if (isPro) {
-                                document.querySelectorAll('a[href="planos.html"]').forEach(el => {
-                                    el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
-                                });
-                            }
-                        } catch(e) {}
-
                         projectId = pid;
                         initChat();
                     } else {

@@ -309,18 +309,6 @@
                 }
             }
 
-            // Update navbar for PRO users
-            try {
-                if (projectId) {
-                    const isPro = await DB.isProByProject(projectId);
-                    if (isPro) {
-                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
-                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
-                        });
-                    }
-                }
-            } catch(e) { console.log(e); }
-
             updatePermissionStatus();
             renderReminders();
             renderHistory();

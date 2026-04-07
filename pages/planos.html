@@ -597,10 +597,6 @@
                             if (detailsCard) detailsCard.parentNode.insertBefore(leaderInfo, detailsCard);
                         }
 
-                        // Update navbar to show "Meu Plano"
-                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
-                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
-                        });
                     }
                 } catch (err) { console.log(err); }
             }
