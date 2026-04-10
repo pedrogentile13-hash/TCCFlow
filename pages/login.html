@@ -274,6 +274,7 @@
         }
 
         auth.onAuthStateChanged(user => {
+            if (window._processingOAuth) return; // espera o OAuth terminar
             if (user) {
                 _supa.from('users').select('id, role').eq('id', user.uid).maybeSingle().then(({ data }) => {
                     if (!data) {

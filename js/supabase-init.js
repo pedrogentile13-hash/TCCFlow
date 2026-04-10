@@ -17,6 +17,7 @@ if (_oauthError) {
 
 // Detect PKCE authorization code in the URL (?code=...)
 const _oauthCode = _searchParams.get('code');
+window._processingOAuth = !!_oauthCode;
 
 // Let Supabase handle the entire OAuth flow automatically (PKCE code exchange included)
 const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -112,6 +113,7 @@ const auth = {
                 if (session) {
                     const user = this._mapUser(session.user);
                     this.currentUser = user;
+                    window._processingOAuth = false;
                     cleanUrl();
                     if (!initialDelivered) {
                         deliverInitial(user, event);
