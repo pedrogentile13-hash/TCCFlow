@@ -222,7 +222,7 @@ const auth = {
     },
 
     async signInWithPopup(provider, options) {
-        const redirectPage = (options && options.redirectTo) || '/pages/dashboard.html';
+        const redirectPage = '/pages/login.html';
         const { data, error } = await _supa.auth.signInWithOAuth({
             provider: 'google',
             options: {
