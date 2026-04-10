@@ -87,23 +87,9 @@ const auth = {
                 if (session) {
                     cleanUrl();
                     deliverInitial(this._mapUser(session.user), 'INITIAL_SESSION');
-                } else if (_oauthCode) {
-                    // PKCE fallback: detectSessionInUrl failed to exchange the code automatically.
-                    // Try an explicit exchange before giving up.
-                    console.log('[AUTH] PKCE fallback: exchanging code for session…');
-                    _supa.auth.exchangeCodeForSession(_oauthCode).then(({ data, error }) => {
-                        if (error || !data?.session) {
-                            console.error('[AUTH] PKCE exchange failed:', error?.message);
-                            cleanUrl();
-                            deliverInitial(null, 'PKCE-fallback-failed');
-                        }
-                        // On success the SIGNED_IN event will fire and deliverInitial
-                        // will be called from the handler below.
-                    }).catch(() => {
-                        cleanUrl();
-                        deliverInitial(null, 'PKCE-fallback-error');
-                    });
                 } else {
+                    // ✅ CORRIGIDO: removido o PKCE fallback manual que competia com
+                    // detectSessionInUrl: true e causava "Unable to exchange external code"
                     deliverInitial(null, 'INITIAL_SESSION-no-session');
                 }
                 return;
