@@ -54,7 +54,7 @@ function CTAFinal() {
         </Reveal>
         <Reveal delay={2}>
           <div className="ctas">
-            <a href="/pages/signup.html" className="btn btn-primary" style={{padding:"16px 28px", fontSize:"1rem"}}>
+            <a href="/pages/cadastro.html" className="btn btn-primary" style={{padding:"16px 28px", fontSize:"1rem"}}>
               Criar grupo grátis <Arrow size={16}/>
             </a>
             <a href="/pages/demo.html" className="btn btn-glass" style={{padding:"16px 28px", fontSize:"1rem"}}>Agendar demo guiada</a>
