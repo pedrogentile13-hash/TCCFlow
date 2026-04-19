@@ -36,10 +36,7 @@ function HeroEditorial() {
           </Reveal>
           <Reveal delay={3}>
             <div className="hero-meta">
-              <div>Desde <span>2024</span></div>
-              <div>Grupos ativos <span>12.847</span></div>
-              <div>Defesas concluídas <span>3.291</span></div>
-              <div>IA-assistidas <span>94%</span></div>
+              <div>Desde <span>2026</span></div>
             </div>
           </Reveal>
         </div>
