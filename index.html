@@ -1,1010 +1,582 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-1WX7MD9CL9');
-    </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TCCFlow — A plataforma dos TCCs em grupo</title>
+  <link rel="icon" href="favicon.png" />
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
-    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#7c3aed">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCCFlow - Plataforma Completa para Planejamento de TCC</title>
-    <meta name="description" content="TCCFlow é a plataforma completa para planejar seu Trabalho de Conclusão de Curso. Organize cronogramas, gerencie equipe, use I.A. para pesquisa acadêmica e integre Google Docs, Sheets e Calendar em um só lugar.">
-    <meta name="keywords" content="TCC, trabalho de conclusão de curso, planejamento TCC, organizar TCC, cronograma TCC, equipe TCC, pesquisa acadêmica, inteligência artificial acadêmica">
-    <meta name="author" content="TCCFlow">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://tccflow.com.br/">
-    <meta property="og:title" content="TCCFlow - Plataforma Completa para Planejamento de TCC">
-    <meta property="og:description" content="Organize cronogramas, gerencie equipe, use I.A. para pesquisa acadêmica e integre Google Docs, Sheets e Calendar em um só lugar.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tccflow.com.br/">
-    <meta property="og:image" content="https://tccflow.com.br/favicon.png">
-    <meta property="og:locale" content="pt_BR">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="TCCFlow - Planeje seu TCC do início ao fim">
-    <meta name="twitter:description" content="Plataforma completa para planejamento de TCC com I.A., Google integrado e gestão de equipe.">
-    <script src="js/darkmode.js"></script>
-    <script src="js/i18n.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/dark.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1WX7MD9CL9');
+  </script>
 
-        /* Hero fade-in */
-        .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        .fade-in-delay-1 { animation-delay: 0.2s; }
-        .fade-in-delay-2 { animation-delay: 0.4s; }
-        .fade-in-delay-3 { animation-delay: 0.6s; }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        /* Scroll Reveal Glass */
-        .reveal {
-            opacity: 0;
-            transform: translateY(60px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .reveal-left {
-            opacity: 0;
-            transform: translateX(-60px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal-left.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        .reveal-right {
-            opacity: 0;
-            transform: translateX(60px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal-right.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        .reveal-scale {
-            opacity: 0;
-            transform: scale(0.85);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal-scale.visible {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* Glass Card */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-        }
-        .glass-card:hover {
-            background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 16px 48px rgba(124, 58, 237, 0.1);
-            transform: translateY(-4px);
-            transition: all 0.4s ease;
-        }
-        .glass-card-dark {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        /* Stagger children */
-        .stagger-children .reveal { transition-delay: 0s; }
-        .stagger-children .reveal:nth-child(1) { transition-delay: 0s; }
-        .stagger-children .reveal:nth-child(2) { transition-delay: 0.1s; }
-        .stagger-children .reveal:nth-child(3) { transition-delay: 0.15s; }
-        .stagger-children .reveal:nth-child(4) { transition-delay: 0.2s; }
-        .stagger-children .reveal:nth-child(5) { transition-delay: 0.25s; }
-        .stagger-children .reveal:nth-child(6) { transition-delay: 0.3s; }
-
-        /* Pricing toggle */
-        .plan-popular {
-            background: linear-gradient(135deg, rgba(124,58,237,0.05), rgba(6,182,212,0.05));
-        }
-        .plan-badge {
-            background: linear-gradient(135deg, #7c3aed, #06b6d4);
-        }
-
-        /* Comparison table row hover */
-        .compare-row {
-            transition: background 0.2s ease;
-        }
-        .compare-row:hover {
-            background: rgba(124, 58, 237, 0.03);
-        }
-
-        /* Floating particles */
-        .particle {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: float-particle linear infinite;
-        }
-        @keyframes float-particle {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
-        }
-    </style>
+  <link rel="stylesheet" href="css/landing.css" />
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
+<body>
+  <div id="root"></div>
 
-    <!-- Liquid Background -->
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
+  <script>
+    window.TWEAKS = {
+      heroVariant: "editorial",
+      accentMode: "aurora",
+      darkMode: false,
+      cursorBlob: true,
+      animateOnScroll: true
+    };
+  </script>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <img src="favicon.png" alt="TCCFlow" />
+        <span>TCCFlow<span class="dot"/></span>
+      </div>
+      <div class="nav-links">
+        <a href="#como">Como funciona</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#precos">Preços</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="nav-cta">
+        <a href="pages/login.html" class="btn btn-ghost">Entrar</a>
+        <a href="pages/cadastro.html" class="btn btn-primary">
+          Começar grátis <span class="arrow">→</span>
+        </a>
+      </div>
     </div>
+  </nav>
 
-    <!-- Floating Particles -->
-    <div id="particles" class="fixed inset-0 z-0 pointer-events-none overflow-hidden"></div>
-
-    <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <a href="index.html" class="flex items-center gap-2.5">
-                    <img src="favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="hidden md:flex items-center gap-6">
-                    <a href="#features" class="text-sm text-slate-500 hover:text-violet-600 transition">Funcionalidades</a>
-                    <a href="#comparison" class="text-sm text-slate-500 hover:text-violet-600 transition">Comparativo</a>
-                    <a href="#pricing" class="text-sm text-slate-500 hover:text-violet-600 transition">Planos</a>
-                    <a href="#about" class="text-sm text-slate-500 hover:text-violet-600 transition">Sobre</a>
-                    <a href="pages/blog.html" class="text-sm text-slate-500 hover:text-violet-600 transition">Blog</a>
-                    <a href="pages/login.html" class="text-sm text-slate-500 hover:text-violet-600 transition">Entrar</a>
-                    <a href="pages/cadastro.html" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold px-5 py-2 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25">Criar Conta</a>
-                </div>
-                <button id="mobileMenuBtn" class="md:hidden text-slate-400 hover:text-slate-600">
-                    <i class="fa-solid fa-bars text-xl"></i>
-                </button>
-            </div>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-grid-bg" />
+    <div class="container hero-editorial">
+      <div class="reveal hero-eyebrow-row">
+        <div class="eyebrow">Manifesto · 2026</div>
+        <div class="mono" style="color:var(--muted)">
+          v3.0 · <span style="color:var(--violet)">●</span> ao vivo agora
         </div>
-        <div id="mobileMenu" class="hidden md:hidden px-4 pb-4 space-y-2 border-t border-slate-100">
-            <a href="#features" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Funcionalidades</a>
-            <a href="#comparison" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Comparativo</a>
-            <a href="#pricing" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Planos</a>
-            <a href="#about" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Sobre</a>
-            <a href="pages/blog.html" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Blog</a>
-            <a href="pages/login.html" class="block text-sm text-slate-500 hover:text-violet-600 py-2">Entrar</a>
-            <a href="pages/cadastro.html" class="block bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold px-5 py-2 rounded-xl text-center">Criar Conta</a>
+      </div>
+
+      <div class="reveal" style="margin-bottom:40px">
+        <h1 class="display hero-title">
+          O TCC em grupo, <br/>
+          <span class="swap">organizado</span>.
+        </h1>
+      </div>
+
+      <div class="hero-sub-row">
+        <div class="reveal" style="--reveal-delay:0.16s">
+          <p class="hero-sub">
+            <strong>TCCFlow é a primeira plataforma pensada para TCCs em equipe.</strong>{" "}
+            Tarefas, calendário, chat, anotações e uma IA que conhece o seu trabalho —
+            integrados com Google Drive, Docs e Calendar. Tudo em um só lugar.
+          </p>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="relative z-10 min-h-screen flex items-center justify-center overflow-hidden pt-16">
-        <div class="relative z-10 max-w-4xl mx-auto px-4 text-center">
-            <div class="fade-in inline-flex items-center gap-2 bg-violet-50 border border-violet-200 px-4 py-2 rounded-full mb-8">
-                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span class="text-xs text-violet-700 font-medium">Planner Completo para TCC</span>
-            </div>
-
-            <h1 class="fade-in fade-in-delay-1 text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-tight mb-6">
-                Planeje seu TCC<br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">do início ao fim</span>
-            </h1>
-
-            <p class="fade-in fade-in-delay-2 text-base sm:text-lg text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-                Organize cronogramas, gerencie tarefas em grupo, acompanhe prazos e
-                mantenha todo o planejamento do TCC em um só lugar. Com Supabase e Google integrados.
-            </p>
-
-            <div class="fade-in fade-in-delay-3 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="pages/cadastro.html" class="w-full sm:w-auto bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-8 py-3.5 rounded-2xl transition hover:shadow-xl hover:shadow-violet-500/25 text-center">
-                    <i class="fa-solid fa-rocket mr-2"></i>Começar Agora
-                </a>
-                <a href="#features" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-8 py-3.5 rounded-2xl transition text-center border border-slate-200">
-                    <i class="fa-solid fa-circle-play mr-2"></i>Saber Mais
-                </a>
-            </div>
-
-            <!-- Stats -->
-            <div class="fade-in fade-in-delay-3 grid grid-cols-3 gap-4 mt-16 max-w-lg mx-auto">
-                <div class="glass-card rounded-2xl p-4">
-                    <div class="text-2xl font-bold text-violet-600">Free</div>
-                    <div class="text-xs text-slate-500 mt-1">p/ começar</div>
-                </div>
-                <div class="glass-card rounded-2xl p-4">
-                    <div class="text-2xl font-bold text-cyan-600">8</div>
-                    <div class="text-xs text-slate-500 mt-1">Membros</div>
-                </div>
-                <div class="glass-card rounded-2xl p-4">
-                    <div class="text-2xl font-bold text-emerald-600">I.A.</div>
-                    <div class="text-xs text-slate-500 mt-1">Integrada</div>
-                </div>
-            </div>
+        <div class="reveal" style="--reveal-delay:0.24s">
+          <div class="hero-meta">
+            <div>Desde <span>2024</span></div>
+            <div>Grupos ativos <span>12.847</span></div>
+            <div>Defesas concluídas <span>3.291</span></div>
+            <div>IA-assistidas <span>94%</span></div>
+          </div>
         </div>
+      </div>
 
-        <!-- Scroll indicator -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-            <i class="fa-solid fa-chevron-down text-slate-300 text-lg"></i>
-        </div>
-    </section>
+      <div class="reveal hero-ctas">
+        <a href="pages/cadastro.html" class="btn btn-primary">
+          Criar grupo grátis <span class="arrow">→</span>
+        </a>
+        <a href="#demo" class="btn btn-ghost">Ver demo interativa →</a>
+        <span class="trust">▸ Sem cartão · Cancele quando quiser</span>
+      </div>
 
-    <!-- Features Section -->
-    <section id="features" class="py-24 relative z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 bg-violet-50 border border-violet-200 px-4 py-2 rounded-full mb-6">
-                    <i class="fa-solid fa-sparkles text-violet-600 text-xs"></i>
-                    <span class="text-xs text-violet-700 font-medium">Funcionalidades</span>
+      <div class="reveal">
+        <div class="hero-preview">
+          <div class="preview-chrome">
+            <div class="dots"><span/><span/><span/></div>
+            <div class="url">app.tccflow.com.br / grupo-sustentabilidade-urbana</div>
+          </div>
+          <div style="display:grid; grid-template-columns:220px 1fr; min-height:440px; background:var(--paper)">
+            <aside style="padding:24px 16px; border-right:1px solid var(--line); background:var(--bg-2)">
+              <div class="mono" style="font-size:0.625rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.12em; margin:0 8px 10px">Meu TCC</div>
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <div style="padding:8px 10px; border-radius:8px; font-size:0.8125rem; background:var(--grad); color:white; font-weight:500; display:flex; align-items:center; gap:10px">
+                  <span style="opacity:.8">◆</span>Visão geral
                 </div>
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Tudo para o seu <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">TCC fluir</span></h2>
-                <p class="text-slate-500 max-w-xl mx-auto">Ferramentas pensadas para organizar cada etapa do Trabalho de Conclusão de Curso.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
-                <div class="glass-card rounded-3xl p-8 transition group reveal">
-                    <div class="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-users text-violet-600 text-xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold mb-3">Equipe & Membros</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">Adicione integrantes, atribua tarefas e acompanhe o progresso de cada membro do grupo.</p>
+                <div style="padding:8px 10px; border-radius:8px; font-size:0.8125rem; color:var(--ink-2); display:flex; align-items:center; gap:10px">
+                  <span style="opacity:.8">≡</span>Tarefas
                 </div>
-                <div class="glass-card rounded-3xl p-8 transition group reveal">
-                    <div class="w-14 h-14 bg-cyan-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-diagram-project text-cyan-600 text-xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold mb-3">Organização do Projeto</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">Dashboard completo com estatísticas, tarefas por membro e visão geral do andamento.</p>
+                <div style="padding:8px 10px; border-radius:8px; font-size:0.8125rem; color:var(--ink-2); display:flex; align-items:center; gap:10px">
+                  <span style="opacity:.8">☰</span>Cronograma
                 </div>
-                <div class="glass-card rounded-3xl p-8 transition group reveal">
-                    <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-flask text-emerald-600 text-xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold mb-3">Hub de Pesquisa</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">Quadro Kanban para organizar anotações, referências e achados da pesquisa.</p>
+              </div>
+              <div style="margin-top:20px; padding:0 8px">
+                <div class="mono" style="font-size:0.625rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:10px">Grupo · 4</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:0.75rem;color:var(--ink-2)">
+                  <div class="avatar c1" style="width:22px;height:22px;font-size:0.625rem;margin-left:0;border:none">M</div> Marina
                 </div>
-                <div class="glass-card rounded-3xl p-8 transition group reveal">
-                    <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-calendar-days text-amber-600 text-xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold mb-3">Calendário de Prazos</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">Visualize entregas, defesas e marcos importantes no calendário interativo.</p>
+                <div style="display:flex;align-items:center;gap:8px;font-size:0.75rem;color:var(--ink-2)">
+                  <div class="avatar c2" style="width:22px;height:22px;font-size:0.625rem;margin-left:0;border:none">R</div> Rafael
                 </div>
-                <div class="glass-card rounded-3xl p-8 transition group reveal">
-                    <div class="w-14 h-14 bg-rose-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-robot text-rose-600 text-xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold mb-3">Assistente I.A.</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">Busque fontes acadêmicas, gere resumos e encontre referências com inteligência artificial.</p>
-                </div>
-                <div class="glass-card rounded-3xl p-8 transition group reveal">
-                    <div class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
-                        <i class="fa-brands fa-google text-indigo-600 text-xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold mb-3">Google Integrado</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">Crie Docs, Sheets, Slides e eventos no Calendar direto do TCCFlow.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+              </div>
+            </aside>
 
-    <!-- Comparison: Google Ecosystem vs TCCFlow -->
-    <section id="comparison" class="py-24 relative z-10">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 bg-cyan-50 border border-cyan-200 px-4 py-2 rounded-full mb-6">
-                    <i class="fa-solid fa-scale-balanced text-cyan-600 text-xs"></i>
-                    <span class="text-xs text-cyan-700 font-medium">Comparativo</span>
-                </div>
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Por que <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">TCCFlow</span>?</h2>
-                <p class="text-slate-500 max-w-2xl mx-auto">Compare usar várias ferramentas do Google separadas versus ter tudo integrado no TCCFlow.</p>
-            </div>
-
-            <!-- Visual Comparison -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-                <!-- Google Way -->
-                <div class="reveal-left">
-                    <div class="glass-card rounded-3xl p-8 h-full border-red-100/50">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
-                                <i class="fa-brands fa-google text-red-500 text-xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-red-600">Jeito Tradicional</h3>
-                                <p class="text-xs text-slate-400">Várias ferramentas separadas</p>
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
-                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">Google Docs + Sheets + Slides</p>
-                                    <p class="text-xs text-slate-400">Arquivos espalhados em pastas diferentes</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
-                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">Google Calendar</p>
-                                    <p class="text-xs text-slate-400">Eventos manuais sem vínculo com tarefas</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
-                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">Trello / Notion separado</p>
-                                    <p class="text-xs text-slate-400">Mais uma ferramenta para gerenciar tarefas</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
-                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">WhatsApp para comunicação</p>
-                                    <p class="text-xs text-slate-400">Informações perdidas no chat</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 bg-red-50/50 rounded-xl">
-                                <i class="fa-solid fa-xmark text-red-400 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">Sem I.A. para pesquisa</p>
-                                    <p class="text-xs text-slate-400">Buscar fontes manualmente no Google Scholar</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-6 pt-5 border-t border-slate-100">
-                            <p class="text-xs text-red-500 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 5+ ferramentas diferentes para gerenciar</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TCCFlow Way -->
-                <div class="reveal-right">
-                    <div class="glass-card rounded-3xl p-8 h-full border-violet-100/50 plan-popular">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-12 h-12 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-xl flex items-center justify-center">
-                                <img src="favicon.png" alt="TCCFlow" class="w-7 h-7 rounded-lg">
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-violet-600">TCCFlow</h3>
-                                <p class="text-xs text-slate-400">Tudo em um só lugar</p>
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
-                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">Google Docs, Sheets & Slides integrados</p>
-                                    <p class="text-xs text-slate-400">Crie e acesse tudo direto do painel do projeto</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
-                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">Calendário vinculado ao projeto</p>
-                                    <p class="text-xs text-slate-400">Prazos, entregas e defesas sincronizados automaticamente</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
-                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">Tarefas e Kanban integrados</p>
-                                    <p class="text-xs text-slate-400">Atribua, acompanhe e conclua tudo em um Dashboard</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
-                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">Equipe centralizada</p>
-                                    <p class="text-xs text-slate-400">Todos os membros com acesso ao mesmo projeto</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
-                                <i class="fa-solid fa-check text-emerald-500 mt-0.5 w-5 text-center"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-slate-700">I.A. para fontes acadêmicas</p>
-                                    <p class="text-xs text-slate-400">Pesquise artigos, gere resumos e encontre referências</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-6 pt-5 border-t border-violet-100">
-                            <p class="text-xs text-violet-600 font-semibold"><i class="fa-solid fa-check-double mr-1"></i> 1 plataforma. Tudo integrado.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Detailed Comparison Table -->
-            <div class="reveal-scale">
-                <div class="glass-card rounded-3xl p-6 sm:p-8 overflow-hidden">
-                    <h3 class="text-lg font-bold text-center mb-6">Comparação Detalhada</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="border-b border-slate-200">
-                                    <th class="text-left py-3 px-4 font-semibold text-slate-600 w-2/5">Recurso</th>
-                                    <th class="text-center py-3 px-4 font-semibold text-red-400 w-[30%]">
-                                        <i class="fa-brands fa-google mr-1"></i>Google + Outros
-                                    </th>
-                                    <th class="text-center py-3 px-4 font-semibold text-violet-600 w-[30%]">
-                                        <img src="favicon.png" class="w-5 h-5 inline rounded mr-1">TCCFlow
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="compare-row border-b border-slate-100">
-                                    <td class="py-3 px-4 text-slate-700">Dashboard do TCC</td>
-                                    <td class="py-3 px-4 text-center text-slate-400"><i class="fa-solid fa-xmark"></i> Não existe</td>
-                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i></td>
-                                </tr>
-                                <tr class="compare-row border-b border-slate-100">
-                                    <td class="py-3 px-4 text-slate-700">Tarefas por membro</td>
-                                    <td class="py-3 px-4 text-center text-slate-400">Trello/Notion separado</td>
-                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> Integrado</td>
-                                </tr>
-                                <tr class="compare-row border-b border-slate-100">
-                                    <td class="py-3 px-4 text-slate-700">Google Docs/Sheets/Slides</td>
-                                    <td class="py-3 px-4 text-center text-slate-400">Pastas manuais</td>
-                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> 1 clique</td>
-                                </tr>
-                                <tr class="compare-row border-b border-slate-100">
-                                    <td class="py-3 px-4 text-slate-700">Calendário de prazos</td>
-                                    <td class="py-3 px-4 text-center text-slate-400">Eventos manuais</td>
-                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> Automático</td>
-                                </tr>
-                                <tr class="compare-row border-b border-slate-100">
-                                    <td class="py-3 px-4 text-slate-700">I.A. para pesquisa</td>
-                                    <td class="py-3 px-4 text-center text-slate-400"><i class="fa-solid fa-xmark"></i> Não tem</td>
-                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> Até 100/mês</td>
-                                </tr>
-                                <tr class="compare-row border-b border-slate-100">
-                                    <td class="py-3 px-4 text-slate-700">Fases do TCC</td>
-                                    <td class="py-3 px-4 text-center text-slate-400"><i class="fa-solid fa-xmark"></i> Não existe</td>
-                                    <td class="py-3 px-4 text-center"><i class="fa-solid fa-check text-emerald-500"></i> Estruturado</td>
-                                </tr>
-                                <tr class="compare-row">
-                                    <td class="py-3 px-4 text-slate-700">Preço</td>
-                                    <td class="py-3 px-4 text-center text-slate-400">Grátis (disperso)</td>
-                                    <td class="py-3 px-4 text-center font-semibold text-violet-600">Grátis ou Pro</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-24 relative z-10">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-full mb-6">
-                    <i class="fa-solid fa-tags text-emerald-600 text-xs"></i>
-                    <span class="text-xs text-emerald-700 font-medium">Planos</span>
-                </div>
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Escolha o plano <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">ideal</span></h2>
-                <p class="text-slate-500 max-w-xl mx-auto">Comece grátis e faça upgrade quando precisar de mais recursos para sua equipe.</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Free Plan -->
-                <div class="reveal-left">
-                    <div class="glass-card rounded-3xl p-8 h-full">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center">
-                                <i class="fa-solid fa-user text-slate-500 text-xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold">Grátis</h3>
-                                <p class="text-xs text-slate-400">Para experimentar</p>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <span class="text-5xl font-extrabold">R$ 0</span>
-                            <span class="text-slate-400 text-sm">/sempre</span>
-                        </div>
-
-                        <ul class="space-y-4 mb-8">
-                            <li class="flex items-center gap-3 text-sm text-slate-600">
-                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
-                                </div>
-                                Dashboard e Projeto
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-600">
-                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
-                                </div>
-                                Até 5 tarefas simultâneas
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-600">
-                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
-                                </div>
-                                Calendário básico
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-600">
-                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
-                                </div>
-                                20 buscas I.A./mês
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-600">
-                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
-                                </div>
-                                Equipe: 1 integrante (sem chat)
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-600">
-                                <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
-                                </div>
-                                Anotações + 2 templates grátis
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-300">
-                                <div class="w-6 h-6 bg-slate-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-xmark text-slate-300 text-xs"></i>
-                                </div>
-                                Sem Google integrado
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-slate-300">
-                                <div class="w-6 h-6 bg-slate-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-xmark text-slate-300 text-xs"></i>
-                                </div>
-                                Sem ferramentas PRO
-                            </li>
-                        </ul>
-
-                        <a href="pages/cadastro.html" class="block w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3.5 rounded-2xl transition text-sm border border-slate-200">
-                            <i class="fa-solid fa-arrow-right mr-2"></i>Começar Grátis
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Pro Plan -->
-                <div class="reveal-right">
-                    <div class="relative rounded-3xl p-[2px] bg-gradient-to-br from-violet-600 to-cyan-500 shadow-xl shadow-violet-500/20 h-full">
-                        <div class="absolute -top-4 left-1/2 -translate-x-1/2">
-                            <span class="plan-badge text-white text-xs font-bold uppercase px-5 py-1.5 rounded-full shadow-lg">
-                                <i class="fa-solid fa-fire mr-1"></i>Mais Popular
-                            </span>
-                        </div>
-                        <div class="bg-white rounded-[22px] p-8 h-full plan-popular">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="w-14 h-14 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center">
-                                    <i class="fa-solid fa-crown text-violet-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold">Pro</h3>
-                                    <p class="text-xs text-slate-400">Para equipes de TCC</p>
-                                </div>
-                            </div>
-
-                            <div class="mb-2">
-                                <span class="text-5xl font-extrabold">R$ 97</span>
-                                <span class="text-slate-400 text-sm">/ano</span>
-                            </div>
-                            <p class="text-xs text-slate-400 mb-6">A partir de R$ 8,08/mês. Adicione membros por +R$ 30/ano cada.</p>
-
-                            <ul class="space-y-4 mb-8">
-                                <li class="flex items-center gap-3 text-sm text-slate-600">
-                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
-                                    </div>
-                                    <span class="font-medium">Até 8 membros com chat</span>
-                                </li>
-                                <li class="flex items-center gap-3 text-sm text-slate-600">
-                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
-                                    </div>
-                                    Tarefas ilimitadas + atribuição de membros
-                                </li>
-                                <li class="flex items-center gap-3 text-sm text-slate-600">
-                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
-                                    </div>
-                                    1.000 buscas I.A./mês + Orientador Virtual
-                                </li>
-                                <li class="flex items-center gap-3 text-sm text-slate-600">
-                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
-                                    </div>
-                                    Cronograma Gantt + Google Agenda
-                                </li>
-                                <li class="flex items-center gap-3 text-sm text-slate-600">
-                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
-                                    </div>
-                                    Integração Google completa (Drive, Docs, Calendar)
-                                </li>
-                                <li class="flex items-center gap-3 text-sm text-slate-600">
-                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
-                                    </div>
-                                    Todas as ferramentas (Referências, Plágio, Detector I.A., Diário, Ideias, SMART)
-                                </li>
-                                <li class="flex items-center gap-3 text-sm text-slate-600">
-                                    <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-check text-violet-600 text-xs"></i>
-                                    </div>
-                                    Todos os templates + Suporte prioritário
-                                </li>
-                            </ul>
-
-                            <a href="pages/cadastro.html" class="block w-full text-center bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3.5 rounded-2xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm">
-                                <i class="fa-solid fa-bolt mr-2"></i>Começar com o Pro
-                            </a>
-                            <p class="text-[10px] text-slate-400 text-center mt-3">
-                                <i class="fa-solid fa-lock mr-1"></i>Pagamento seguro via Mercado Pago. Cancele quando quiser.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cost Comparison -->
-            <div class="reveal-up mt-12">
-                <div class="glass-card rounded-3xl p-8 bg-gradient-to-br from-violet-50/80 to-cyan-50/80 border border-violet-200/30">
-                    <div class="text-center mb-8">
-                        <div class="inline-flex items-center gap-2 bg-white text-violet-700 text-xs font-bold px-4 py-1.5 rounded-full mb-3 shadow-sm border border-violet-200">
-                            <i class="fa-solid fa-piggy-bank"></i> Compare e economize
-                        </div>
-                        <h3 class="text-2xl font-extrabold mb-2">Pagando separadamente, você gastaria...</h3>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto mb-6">
-                        <div class="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-slate-200 shadow-sm">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-brands fa-google text-blue-500 text-xs"></i>
-                                </div>
-                                <span class="text-sm font-medium text-slate-700">Google Workspace</span>
-                            </div>
-                            <span class="text-sm font-bold text-slate-600">R$ 336/ano</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-slate-200 shadow-sm">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-list-check text-purple-500 text-xs"></i>
-                                </div>
-                                <span class="text-sm font-medium text-slate-700">Trello / Asana</span>
-                            </div>
-                            <span class="text-sm font-bold text-slate-600">R$ 600/ano</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-slate-200 shadow-sm">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-robot text-emerald-500 text-xs"></i>
-                                </div>
-                                <span class="text-sm font-medium text-slate-700">I.A. Acadêmica</span>
-                            </div>
-                            <span class="text-sm font-bold text-slate-600">R$ 480/ano</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-slate-200 shadow-sm">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fa-solid fa-diagram-project text-amber-500 text-xs"></i>
-                                </div>
-                                <span class="text-sm font-medium text-slate-700">Notion / Monday</span>
-                            </div>
-                            <span class="text-sm font-bold text-slate-600">R$ 384/ano</span>
-                        </div>
-                    </div>
-
-                    <div class="max-w-2xl mx-auto">
-                        <div class="flex items-center justify-between bg-white/60 rounded-xl px-5 py-3 border border-red-200 mb-4">
-                            <span class="text-sm font-bold text-red-600"><i class="fa-solid fa-calculator mr-2"></i>Total separadamente</span>
-                            <span class="text-lg font-extrabold text-red-600">R$ 1.800/ano</span>
-                        </div>
-
-                        <div class="flex items-center justify-between bg-gradient-to-r from-violet-600 to-cyan-500 rounded-xl px-5 py-3 text-white mb-5">
-                            <span class="text-sm font-bold"><i class="fa-solid fa-crown mr-2"></i>TCCFlow Pro — tudo incluso</span>
-                            <span class="text-lg font-extrabold">R$ 97/ano</span>
-                        </div>
-
-                        <div class="text-center">
-                            <span class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 font-extrabold text-sm px-5 py-2.5 rounded-full border border-emerald-200">
-                                <i class="fa-solid fa-arrow-down"></i>
-                                Economize até R$ 1.703/ano
-                                <i class="fa-solid fa-arrow-down"></i>
-                            </span>
-                            <p class="text-[10px] text-slate-400 mt-2">* Valores baseados nos planos básicos anuais para 1 usuário.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How it Works -->
-    <section class="py-24 relative z-10">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-full mb-6">
-                    <i class="fa-solid fa-route text-amber-600 text-xs"></i>
-                    <span class="text-xs text-amber-700 font-medium">Como funciona</span>
-                </div>
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">3 passos para <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">começar</span></h2>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 stagger-children">
-                <div class="text-center reveal">
-                    <div class="glass-card w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
-                        <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">1</span>
-                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
-                            <i class="fa-solid fa-user-plus text-violet-600 text-xs"></i>
-                        </div>
-                    </div>
-                    <h3 class="text-lg font-bold mb-2">Crie sua conta</h3>
-                    <p class="text-sm text-slate-500">Cadastre-se gratuitamente em menos de 1 minuto.</p>
-                </div>
-                <div class="text-center reveal">
-                    <div class="glass-card w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
-                        <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">2</span>
-                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center">
-                            <i class="fa-solid fa-folder-plus text-cyan-600 text-xs"></i>
-                        </div>
-                    </div>
-                    <h3 class="text-lg font-bold mb-2">Configure o projeto</h3>
-                    <p class="text-sm text-slate-500">Adicione o tema, membros e defina as fases do TCC.</p>
-                </div>
-                <div class="text-center reveal">
-                    <div class="glass-card w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
-                        <span class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">3</span>
-                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                            <i class="fa-solid fa-rocket text-emerald-600 text-xs"></i>
-                        </div>
-                    </div>
-                    <h3 class="text-lg font-bold mb-2">Comece a planejar</h3>
-                    <p class="text-sm text-slate-500">Use o Dashboard, I.A. e Google para organizar tudo.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sobre / About Section -->
-    <section id="about" class="py-24 relative z-10">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 bg-violet-50 border border-violet-200 px-4 py-2 rounded-full mb-6">
-                    <i class="fa-solid fa-circle-info text-violet-600 text-xs"></i>
-                    <span class="text-xs text-violet-700 font-medium">Sobre o TCCFlow</span>
-                </div>
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Quem somos e por que <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">criamos o TCCFlow</span></h2>
-                <p class="text-slate-500 max-w-2xl mx-auto">Conheça a história por trás da plataforma que está transformando a forma como estudantes planejam seus trabalhos acadêmicos.</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-                <div class="reveal-left">
-                    <div class="glass-card rounded-3xl p-8 h-full">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center">
-                                <i class="fa-solid fa-lightbulb text-violet-600 text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold">Nossa Missão</h3>
-                        </div>
-                        <p class="text-sm text-slate-600 leading-relaxed mb-4">
-                            O TCCFlow nasceu da necessidade real de estudantes universitários que enfrentam dificuldades para organizar o Trabalho de Conclusão de Curso. Sabemos que o TCC é uma das etapas mais desafiadoras da graduação: são prazos apertados, divisão de tarefas entre membros do grupo, pesquisa de referências, comunicação com o orientador e muitos documentos para gerenciar.
-                        </p>
-                        <p class="text-sm text-slate-600 leading-relaxed">
-                            Nossa missão é simplificar esse processo. Reunimos em uma única plataforma todas as ferramentas que um estudante precisa para planejar, executar e entregar o TCC com qualidade e dentro do prazo.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="reveal-right">
-                    <div class="glass-card rounded-3xl p-8 h-full">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center">
-                                <i class="fa-solid fa-graduation-cap text-cyan-600 text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold">Para Estudantes</h3>
-                        </div>
-                        <p class="text-sm text-slate-600 leading-relaxed mb-4">
-                            Desenvolvido por quem entende as dores do universitário, o TCCFlow oferece um ambiente completo: dashboard visual com estatísticas do projeto, calendário de entregas integrado ao Google Calendar, quadro Kanban para gestão de tarefas, chat em equipe e assistente de inteligência artificial para pesquisa acadêmica.
-                        </p>
-                        <p class="text-sm text-slate-600 leading-relaxed">
-                            Seja você um estudante trabalhando sozinho ou em grupo de até 8 pessoas, o TCCFlow se adapta ao seu fluxo de trabalho e ajuda a manter tudo organizado do início à defesa final.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Valores -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 stagger-children">
-                <div class="glass-card rounded-3xl p-6 text-center reveal">
-                    <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-shield-halved text-emerald-600 text-xl"></i>
-                    </div>
-                    <h4 class="font-bold mb-2">Segurança e Privacidade</h4>
-                    <p class="text-xs text-slate-500 leading-relaxed">Seus dados são protegidos com criptografia. Utilizamos Supabase como infraestrutura de banco de dados e autenticação, garantindo segurança de nível empresarial para seus projetos acadêmicos.</p>
-                </div>
-                <div class="glass-card rounded-3xl p-6 text-center reveal">
-                    <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-universal-access text-amber-600 text-xl"></i>
-                    </div>
-                    <h4 class="font-bold mb-2">Acessibilidade</h4>
-                    <p class="text-xs text-slate-500 leading-relaxed">O TCCFlow funciona em qualquer dispositivo com navegador web. Acesse pelo computador, tablet ou celular. Sem instalação, sem complicação. Basta criar uma conta e começar a organizar seu TCC.</p>
-                </div>
-                <div class="glass-card rounded-3xl p-6 text-center reveal">
-                    <div class="w-14 h-14 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-handshake text-rose-600 text-xl"></i>
-                    </div>
-                    <h4 class="font-bold mb-2">Suporte ao Estudante</h4>
-                    <p class="text-xs text-slate-500 leading-relaxed">Oferecemos suporte por e-mail para tirar dúvidas e ajudar na configuração da sua conta. Nossa equipe está comprometida em ajudar estudantes a alcançar o sucesso no TCC.</p>
-                </div>
-            </div>
-
-            <!-- CTA -->
-            <div class="reveal-scale">
-                <div class="bg-gradient-to-br from-violet-600 to-cyan-500 rounded-3xl p-8 sm:p-16 text-white shadow-2xl shadow-violet-500/20 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
-                    <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"></div>
-
-                    <div class="relative z-10">
-                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-8">
-                            <img src="favicon.png" alt="TCCFlow" class="w-16 h-16 rounded-2xl">
-                        </div>
-                        <h2 class="text-3xl sm:text-4xl font-bold mb-4">Pronto para organizar o seu TCC?</h2>
-                        <p class="text-white/80 max-w-xl mx-auto mb-10">
-                            O TCCFlow foi feito para ajudar você e seu grupo a planejar cada etapa do TCC de forma organizada e eficiente.
-                        </p>
-                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <a href="pages/cadastro.html" class="w-full sm:w-auto bg-white text-violet-700 font-semibold px-8 py-3.5 rounded-2xl transition hover:bg-white/90 text-center">
-                                <i class="fa-solid fa-user-plus mr-2"></i>Criar Conta Gratuita
-                            </a>
-                            <a href="pages/login.html" class="w-full sm:w-auto bg-white/20 hover:bg-white/30 backdrop-blur font-semibold px-8 py-3.5 rounded-2xl transition text-center">
-                                Já tenho conta <i class="fa-solid fa-arrow-right ml-2"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="border-t border-slate-200 py-12 relative z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <!-- Marca -->
+            <div style="padding:24px 28px">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px">
                 <div>
-                    <div class="flex items-center gap-2 mb-3">
-                        <img src="favicon.png" alt="TCCFlow" class="w-8 h-8 rounded-lg">
-                        <span class="text-sm font-bold">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                    </div>
-                    <p class="text-xs text-slate-400 leading-relaxed">Plataforma completa para planejamento e organização de Trabalhos de Conclusão de Curso. Feita por estudantes, para estudantes.</p>
+                  <div class="mono" style="font-size:0.6875rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.12em">Fase 2 · Metodologia</div>
+                  <h3 style="font-family:var(--font-display); font-size:1.75rem; margin:4px 0 0; letter-spacing:-0.01em; font-weight:400">Sustentabilidade urbana</h3>
                 </div>
-                <!-- Plataforma -->
-                <div>
-                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Plataforma</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#features" class="text-xs text-slate-400 hover:text-violet-600 transition">Funcionalidades</a></li>
-                        <li><a href="#pricing" class="text-xs text-slate-400 hover:text-violet-600 transition">Planos e Preços</a></li>
-                        <li><a href="#comparison" class="text-xs text-slate-400 hover:text-violet-600 transition">Comparativo</a></li>
-                        <li><a href="#about" class="text-xs text-slate-400 hover:text-violet-600 transition">Sobre Nós</a></li>
-                        <li><a href="pages/blog.html" class="text-xs text-slate-400 hover:text-violet-600 transition">Blog</a></li>
-                    </ul>
+                <div style="display:flex; gap:6px">
+                  <div class="avatar c1" style="width:28px;height:28px;font-size:0.6875rem">M</div>
+                  <div class="avatar c2" style="width:28px;height:28px;font-size:0.6875rem">R</div>
                 </div>
-                <!-- Legal -->
-                <div>
-                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Legal</h4>
-                    <ul class="space-y-2">
-                        <li><a href="pages/termos.html" class="text-xs text-slate-400 hover:text-violet-600 transition">Termos de Serviço</a></li>
-                        <li><a href="pages/privacidade.html" class="text-xs text-slate-400 hover:text-violet-600 transition">Política de Privacidade</a></li>
-                    </ul>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:20px">
+                <div style="padding:14px; background:var(--bg-2); border-radius:10px; border:1px solid var(--line)">
+                  <div class="mono" style="font-size:0.625rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px">Progresso</div>
+                  <div style="font-family:var(--font-display); font-size:1.5rem; color:var(--violet); letter-spacing:-0.01em">62%</div>
                 </div>
-                <!-- Contato -->
-                <div>
-                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Contato</h4>
-                    <ul class="space-y-2">
-                        <li><a href="mailto:contato.tccflow@gmail.com" class="text-xs text-slate-400 hover:text-violet-600 transition"><i class="fa-solid fa-envelope mr-1"></i>contato.tccflow@gmail.com</a></li>
-                    </ul>
+                <div style="padding:14px; background:var(--bg-2); border-radius:10px; border:1px solid var(--line)">
+                  <div class="mono" style="font-size:0.625rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px">Próx. entrega</div>
+                  <div style="font-family:var(--font-display); font-size:1.5rem; color:var(--amber); letter-spacing:-0.01em">18/05</div>
                 </div>
+                <div style="padding:14px; background:var(--bg-2); border-radius:10px; border:1px solid var(--line)">
+                  <div class="mono" style="font-size:0.625rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px">Tarefas abertas</div>
+                  <div style="font-family:var(--font-display); font-size:1.5rem; color:var(--cyan); letter-spacing:-0.01em">11</div>
+                </div>
+              </div>
             </div>
-            <div class="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <p class="text-xs text-slate-400">&copy; 2026 TCCFlow. Todos os direitos reservados.</p>
-                <div class="flex items-center gap-4">
-                    <a href="pages/termos.html" class="text-xs text-slate-400 hover:text-violet-600 transition">Termos</a>
-                    <a href="pages/privacidade.html" class="text-xs text-slate-400 hover:text-violet-600 transition">Privacidade</a>
-                </div>
-            </div>
+          </div>
         </div>
-    </footer>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        // Mobile menu
-        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
-        });
+  <!-- Ticker -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="pin"/>Brainstorm</div>
+      <div class="ticker-item"><span class="pin"/>Pesquisa</div>
+      <div class="ticker-item"><span class="pin"/>Metodologia</div>
+      <div class="ticker-item"><span class="pin"/>Entrevistas</div>
+      <div class="ticker-item"><span class="pin"/>Revisão</div>
+      <div class="ticker-item"><span class="pin"/>Coleta</div>
+      <div class="ticker-item"><span class="pin"/>Análise</div>
+      <div class="ticker-item"><span class="pin"/>Escrita colaborativa</div>
+      <div class="ticker-item"><span class="pin"/>Citações ABNT</div>
+      <div class="ticker-item"><span class="pin"/>Orientação</div>
+      <div class="ticker-item"><span class="pin"/>Pré-banca</div>
+      <div class="ticker-item"><span class="pin"/>Defesa</div>
+      <!-- Duplicate for seamless loop -->
+      <div class="ticker-item"><span class="pin"/>Brainstorm</div>
+      <div class="ticker-item"><span class="pin"/>Pesquisa</div>
+      <div class="ticker-item"><span class="pin"/>Metodologia</div>
+      <div class="ticker-item"><span class="pin"/>Entrevistas</div>
+      <div class="ticker-item"><span class="pin"/>Revisão</div>
+      <div class="ticker-item"><span class="pin"/>Coleta</div>
+      <div class="ticker-item"><span class="pin"/>Análise</div>
+      <div class="ticker-item"><span class="pin"/>Escrita colaborativa</div>
+      <div class="ticker-item"><span class="pin"/>Citações ABNT</div>
+      <div class="ticker-item"><span class="pin"/>Orientação</div>
+      <div class="ticker-item"><span class="pin"/>Pré-banca</div>
+      <div class="ticker-item"><span class="pin"/>Defesa</div>
+    </div>
+  </div>
 
-        // Scroll Reveal with Intersection Observer
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+  <!-- How it works -->
+  <section id="como" class="how">
+    <div class="container">
+      <div class="reveal section-head">
+        <div>
+          <div class="eyebrow">Como funciona</div>
+          <h2 class="display">Quatro passos.<br/>Do <em>grupo criado</em> à defesa.</h2>
+        </div>
+        <p class="desc">
+          Pensado para times de 2 a 6 pessoas, com ou sem orientador ativo.
+          Você pode começar em qualquer fase do TCC — o TCCFlow se adapta.
+        </p>
+      </div>
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
+      <div class="trail">
+        <div class="reveal step">
+          <div class="step-num">01</div>
+          <h3 class="display">Crie seu grupo</h3>
+          <p>Convide parceiros e orientador. O TCCFlow conecta automaticamente ao seu Google Drive e Calendar.</p>
+        </div>
+        <div class="reveal step" style="--reveal-delay:0.08s">
+          <div class="step-num">02</div>
+          <h3 class="display">Planeje juntos</h3>
+          <p>Defina fases, prazos e quem faz o quê no cronograma visual. A IA sugere marcos baseado no tipo de trabalho.</p>
+        </div>
+        <div class="reveal step" style="--reveal-delay:0.16s">
+          <div class="step-num">03</div>
+          <h3 class="display">Execute no flow</h3>
+          <p>Chat por fase, tarefas com checklist, anotações compartilhadas e rascunho no Docs — tudo sincronizado.</p>
+        </div>
+        <div class="reveal step" style="--reveal-delay:0.24s">
+          <div class="step-num">04</div>
+          <h3 class="display">Entregue tranquilo</h3>
+          <p>Exportação ABNT automática, controle de versões e feedback do orientador em contexto.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
-            observer.observe(el);
-        });
+  <!-- Features -->
+  <section id="recursos" class="features">
+    <div class="container">
+      <div class="reveal section-head">
+        <div>
+          <div class="eyebrow">Recursos</div>
+          <h2 class="display">Tudo que seu grupo precisa, <em>nada</em> que não precisa.</h2>
+        </div>
+        <p class="desc">
+          Seis ferramentas que costumavam ser seis abas diferentes. Agora conversam entre si — e com o Google.
+        </p>
+      </div>
 
-        // Floating Particles
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const colors = ['rgba(139,92,246,0.3)', 'rgba(6,182,212,0.3)', 'rgba(16,185,129,0.3)'];
+      <div class="feat-grid">
+        <div class="reveal feat feat-big">
+          <div class="feat-label">01 · Cronograma visual</div>
+          <h3>Gantt que se entende sozinho.</h3>
+          <p>Arraste tarefas, ajuste dependências e visualize o caminho crítico. A IA avisa quando o prazo está apertado.</p>
+          <div class="feat-illus gantt-mini">
+            <div class="gantt-row r1"><div class="lbl">Pesquisa</div><div class="bar"/></div>
+            <div class="gantt-row r2"><div class="lbl">Metodol.</div><div class="bar"/></div>
+            <div class="gantt-row r3"><div class="lbl">Coleta</div><div class="bar"/></div>
+            <div class="gantt-row r4"><div class="lbl">Análise</div><div class="bar"/></div>
+            <div class="gantt-row r5"><div class="lbl">Escrita</div><div class="bar"/></div>
+          </div>
+        </div>
 
-            for (let i = 0; i < 15; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = (100 + Math.random() * 20) + '%';
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.width = (3 + Math.random() * 5) + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.animationDuration = (15 + Math.random() * 25) + 's';
-                particle.style.animationDelay = (Math.random() * 20) + 's';
-                container.appendChild(particle);
-            }
+        <div class="reveal feat feat-tall" style="--reveal-delay:0.08s">
+          <div class="feat-label">02 · Grupo</div>
+          <h3>Todo mundo no mesmo compasso.</h3>
+          <p>Papéis, permissões e presença ao vivo.</p>
+          <div class="feat-illus" style="display:flex;align-items:center;justify-content:center;padding:20px">
+            <div class="avatars">
+              <div class="avatar c1">M</div>
+              <div class="avatar c2">R</div>
+              <div class="avatar c3">J</div>
+              <div class="avatar c4">L</div>
+              <div class="avatar c5">+</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal feat feat-sm" style="--reveal-delay:0.16s">
+          <div class="feat-label">03 · Chat por fase</div>
+          <h3>Sem ruído.</h3>
+          <div class="feat-illus chat-bubbles">
+            <div class="bubble them">Mandei o link da planilha no #coleta</div>
+            <div class="bubble me">Fechei, vou revisar ⚡</div>
+          </div>
+        </div>
+
+        <div class="reveal feat feat-sm" style="--reveal-delay:0.24s">
+          <div class="feat-label">04 · Calendar</div>
+          <h3>Sincroniza com o seu.</h3>
+          <p>Eventos automáticos. Sem duplicatas.</p>
+        </div>
+
+        <div class="reveal feat feat-wide" style="--reveal-delay:0.08s">
+          <div class="feat-label">05 · IA que conhece seu TCC</div>
+          <h3>"Resume esse artigo e cita do jeito ABNT."</h3>
+          <p>Treinada com os seus documentos, referências e anotações. Gera resumos, sugere metodologias e formata citações.</p>
+        </div>
+
+        <div class="reveal feat feat-sm" style="--reveal-delay:0.16s">
+          <div class="feat-label">06 · Drive / Docs</div>
+          <h3>Integração nativa.</h3>
+          <p>Abra, edite e comente sem sair da plataforma.</p>
+        </div>
+
+        <div class="reveal feat feat-sm" style="--reveal-delay:0.24s">
+          <div class="feat-label">07 · Anotações</div>
+          <h3>Como post-its, só que encontráveis.</h3>
+          <p>Tags, links entre notas e busca fulltext.</p>
+        </div>
+
+        <div class="reveal feat feat-sm" style="--reveal-delay:0.32s">
+          <div class="feat-label">08 · Orientador</div>
+          <h3>Feedback em contexto.</h3>
+          <p>Comentários vinculam ao parágrafo, à tarefa e à versão.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="precos" class="pricing" style="padding:140px 0; background:var(--bg)">
+    <div class="container">
+      <div class="reveal section-head">
+        <div>
+          <div class="eyebrow">Preços</div>
+          <h2 class="display">Preço de estudante.<br/>Ferramenta de <em>profissional</em>.</h2>
+        </div>
+        <p class="desc">
+          Comece grátis. Pague só quando o grupo decidir que quer mais. Sem pegadinhas — cancelamento em 1 clique.
+        </p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px; align-items:stretch">
+        <div class="reveal" style="--reveal-delay:0.08s">
+          <div style="background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-lg); padding:36px 32px; display:flex; flex-direction:column">
+            <div class="price-name" style="font-family:var(--font-display); font-size:1.75rem; margin:0 0 6px; letter-spacing:-0.01em">Solo</div>
+            <div style="font-size:0.875rem; color:var(--muted); margin:0 0 24px; min-height:40px">Para quem está começando a organizar o próprio TCC.</div>
+            <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:24px; font-family:var(--font-display)">
+              <span style="font-size:3.75rem; line-height:1; letter-spacing:-0.03em">R$0</span>
+              <span style="font-size:0.9375rem; color:var(--muted); font-family:var(--font-body)">/ para sempre</span>
+            </div>
+            <ul style="list-style:none; padding:0; margin:0 0 28px; flex:1; font-size:0.875rem">
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); color:var(--ink-2); line-height:1.4">1 grupo · até 2 pessoas</li>
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); color:var(--ink-2); line-height:1.4">Tarefas, calendário e anotações</li>
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); color:var(--ink-2); line-height:1.4">Integração Google Drive</li>
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); border-bottom:1px dashed var(--line); color:var(--ink-2); line-height:1.4">IA com limite mensal</li>
+            </ul>
+            <a href="pages/cadastro.html" class="btn btn-primary" style="justify-content:center; width:100%">Começar grátis <span class="arrow">→</span></a>
+          </div>
+        </div>
+
+        <div class="reveal" style="--reveal-delay:0.16s">
+          <div style="background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-lg); padding:36px 32px; display:flex; flex-direction:column; position:relative; box-shadow:var(--shadow); transform:translateY(-4px)">
+            <div style="position:absolute; top:16px; right:16px; background:var(--grad); color:white; font-family:var(--font-mono); font-size:0.625rem; text-transform:uppercase; letter-spacing:0.1em; padding:4px 10px; border-radius:999px; font-weight:600">Mais popular</div>
+            <div class="price-name" style="font-family:var(--font-display); font-size:1.75rem; margin:0 0 6px; letter-spacing:-0.01em">Grupo</div>
+            <div style="font-size:0.875rem; color:var(--muted); margin:0 0 24px; min-height:40px">O plano mais usado por grupos de TCC.</div>
+            <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:24px; font-family:var(--font-display)">
+              <span style="font-size:0.9375rem; color:var(--muted)">R$</span>
+              <span style="font-size:3.75rem; line-height:1; letter-spacing:-0.03em">14</span>
+              <span style="font-size:0.9375rem; color:var(--muted); font-family:var(--font-body)">/mês</span>
+            </div>
+            <ul style="list-style:none; padding:0; margin:0 0 28px; flex:1; font-size:0.875rem">
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); color:var(--ink-2); line-height:1.4">Grupos ilimitados · até 6 pessoas</li>
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); color:var(--ink-2); line-height:1.4">Orientador com acesso total</li>
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); color:var(--ink-2); line-height:1.4">IA ilimitada · assistente dedicado</li>
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); border-bottom:1px dashed var(--line); color:var(--ink-2); line-height:1.4">Exportação ABNT / APA</li>
+            </ul>
+            <a href="pages/cadastro.html" class="btn btn-primary" style="justify-content:center; width:100%; background:var(--grad); box-shadow:0 6px 24px -6px rgba(124,58,237,.5)">Escolher Grupo <span class="arrow">→</span></a>
+          </div>
+        </div>
+
+        <div class="reveal" style="--reveal-delay:0.24s">
+          <div style="background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-lg); padding:36px 32px; display:flex; flex-direction:column">
+            <div class="price-name" style="font-family:var(--font-display); font-size:1.75rem; margin:0 0 6px; letter-spacing:-0.01em">Instituição</div>
+            <div style="font-size:0.875rem; color:var(--muted); margin:0 0 24px; min-height:40px">Para cursos e universidades em escala.</div>
+            <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:24px; font-family:var(--font-display)">
+              <span style="font-size:3.75rem; line-height:1; letter-spacing:-0.03em; color:var(--muted)">Sob medida</span>
+            </div>
+            <ul style="list-style:none; padding:0; margin:0 0 28px; flex:1; font-size:0.875rem">
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); color:var(--ink-2); line-height:1.4">Tudo do Grupo +</li>
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); color:var(--ink-2); line-height:1.4">Painel institucional</li>
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); color:var(--ink-2); line-height:1.4">SSO e autenticação institucional</li>
+              <li style="padding:10px 0 10px 24px; position:relative; border-top:1px dashed var(--line); border-bottom:1px dashed var(--line); color:var(--ink-2); line-height:1.4">Relatórios de engajamento</li>
+            </ul>
+            <a href="mailto:contato.tccflow@gmail.com" class="btn btn-ghost" style="justify-content:center; width:100%">Falar com vendas <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" style="padding:140px 0; background:var(--bg-2); border-top:1px solid var(--line)">
+    <div class="container">
+      <div class="reveal section-head">
+        <div>
+          <div class="eyebrow">FAQ</div>
+          <h2 class="display">Ainda na dúvida?</h2>
+        </div>
+        <p class="desc">
+          As perguntas que a gente mais ouve. Se a sua não estiver aqui, é só chamar no chat — respondemos em até 1h útil.
+        </p>
+      </div>
+
+      <div style="max-width:860px; margin:60px auto 0">
+        <div class="reveal" style="border-top:1px solid var(--line); padding:4px 0">
+          <button class="faq-q" style="width:100%; display:flex; justify-content:space-between; align-items:center; gap:24px; padding:24px 8px; text-align:left; font-family:var(--font-display); font-size:1.5rem; line-height:1.2; color:var(--ink); letter-spacing:-0.01em; cursor:pointer; background:none; border:none">
+            <span>O TCCFlow funciona para TCC individual também?</span>
+            <span style="width:32px; height:32px; border-radius:50%; border:1px solid var(--line); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.125rem; font-family:var(--font-body); transition:transform .4s cubic-bezier(.2,.9,.3,1), background .2s, color .2s">+</span>
+          </button>
+          <div style="max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.2,.9,.3,1)">
+            <div style="padding:0 8px 28px; color:var(--ink-2); font-size:1rem; line-height:1.55; max-width:70ch">
+              Sim. O plano Solo é pensado para TCCs individuais e te dá tarefas, calendário, anotações e IA com limite mensal — grátis para sempre.
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal" style="border-top:1px solid var(--line); padding:4px 0">
+          <button class="faq-q" style="width:100%; display:flex; justify-content:space-between; align-items:center; gap:24px; padding:24px 8px; text-align:left; font-family:var(--font-display); font-size:1.5rem; line-height:1.2; color:var(--ink); letter-spacing:-0.01em; cursor:pointer; background:none; border:none">
+            <span>Meu orientador precisa pagar ou criar conta?</span>
+            <span style="width:32px; height:32px; border-radius:50%; border:1px solid var(--line); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.125rem; font-family:var(--font-body); transition:transform .4s cubic-bezier(.2,.9,.3,1), background .2s, color .2s">+</span>
+          </button>
+          <div style="max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.2,.9,.3,1)">
+            <div style="padding:0 8px 28px; color:var(--ink-2); font-size:1rem; line-height:1.55; max-width:70ch">
+              Não. No plano Grupo, o orientador entra como convidado sem custo adicional. Ele pode comentar, aprovar entregas e acompanhar o cronograma.
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal" style="border-top:1px solid var(--line); padding:4px 0">
+          <button class="faq-q" style="width:100%; display:flex; justify-content:space-between; align-items:center; gap:24px; padding:24px 8px; text-align:left; font-family:var(--font-display); font-size:1.5rem; line-height:1.2; color:var(--ink); letter-spacing:-0.01em; cursor:pointer; background:none; border:none">
+            <span>Como funciona a integração com Google?</span>
+            <span style="width:32px; height:32px; border-radius:50%; border:1px solid var(--line); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.125rem; font-family:var(--font-body); transition:transform .4s cubic-bezier(.2,.9,.3,1), background .2s, color .2s">+</span>
+          </button>
+          <div style="max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.2,.9,.3,1)">
+            <div style="padding:0 8px 28px; color:var(--ink-2); font-size:1rem; line-height:1.55; max-width:70ch">
+              Você autoriza o acesso uma vez e o TCCFlow cria (ou conecta) uma pasta do grupo no seu Drive. Rascunhos abrem no Docs com histórico preservado.
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal" style="border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:4px 0">
+          <button class="faq-q" style="width:100%; display:flex; justify-content:space-between; align-items:center; gap:24px; padding:24px 8px; text-align:left; font-family:var(--font-display); font-size:1.5rem; line-height:1.2; color:var(--ink); letter-spacing:-0.01em; cursor:pointer; background:none; border:none">
+            <span>Vocês exportam no formato ABNT?</span>
+            <span style="width:32px; height:32px; border-radius:50%; border:1px solid var(--line); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.125rem; font-family:var(--font-body); transition:transform .4s cubic-bezier(.2,.9,.3,1), background .2s, color .2s">+</span>
+          </button>
+          <div style="max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.2,.9,.3,1)">
+            <div style="padding:0 8px 28px; color:var(--ink-2); font-size:1rem; line-height:1.55; max-width:70ch">
+              Sim, ABNT e APA nativamente. A IA também formata citações avulsas e gera referências a partir de DOI ou link do artigo.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final -->
+  <section style="padding:160px 0 180px; background:var(--bg); position:relative; overflow:hidden; text-align:center">
+    <div style="content:''; position:absolute; top:50%; left:50%; width:800px; height:800px; border-radius:50%; background:var(--grad); filter:blur(140px); opacity:.18; transform:translate(-50%, -50%); pointer-events:none"></div>
+    <div class="container">
+      <div class="reveal">
+        <div class="eyebrow" style="justify-content:center; margin-bottom:32px">Pronto para entrar no flow?</div>
+      </div>
+      <div class="reveal" style="--reveal-delay:0.08s">
+        <h2 class="display" style="font-size:clamp(3rem, 7vw, 6rem); line-height:1; margin:0 0 32px; max-width:16ch; margin-inline:auto; position:relative">
+          Comece <em>agora</em>,<br/>defenda <em>tranquilo</em>.
+        </h2>
+      </div>
+      <div class="reveal" style="--reveal-delay:0.16s; position:relative">
+        <div style="display:inline-flex; gap:14px; position:relative; flex-wrap:wrap; justify-content:center">
+          <a href="pages/cadastro.html" class="btn btn-primary" style="padding:16px 28px; font-size:1rem">
+            Criar grupo grátis <span class="arrow">→</span>
+          </a>
+          <a href="pages/demo.html" class="btn btn-glass" style="padding:16px 28px; font-size:1rem">Agendar demo guiada</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand">
+            <img src="favicon.png" alt="TCCFlow" />
+            <span>TCCFlow<span class="dot"/></span>
+          </div>
+          <h4 class="display" style="font-size:1.5rem; margin:12px 0 8px; letter-spacing:-0.01em">O TCC em grupo, no flow.</h4>
+          <p style="color:var(--muted); max-width:40ch">Plataforma colaborativa que junta tarefas, cronograma, chat, anotações e IA para grupos de TCC no Brasil.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Produto</h5>
+          <ul>
+            <li><a href="#recursos">Recursos</a></li>
+            <li><a href="#precos">Preços</a></li>
+            <li><a href="pages/blog.html">Novidades</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Empresa</h5>
+          <ul>
+            <li><a href="#">Sobre</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Para universidades</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Legal</h5>
+          <ul>
+            <li><a href="pages/termos.html">Termos</a></li>
+            <li><a href="pages/privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bot">
+        <div>© 2026 TCCFlow · Feito com café em São Paulo ☕</div>
+        <div>tccflow.com.br</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll nav border
+    window.addEventListener('scroll', () => {
+      document.querySelector('.nav').classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          observer.unobserve(e.target);
         }
-        createParticles();
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
 
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // Close mobile menu if open
-                    document.getElementById('mobileMenu').classList.add('hidden');
-                }
-            });
-        });
-    </script>
-    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Hero title word swap
+    const words = ["organizado", "colaborativo", "inteligente", "no ritmo certo"];
+    let idx = 0;
+    const swap = document.querySelector('.swap');
+    if (swap) {
+      setInterval(() => {
+        idx = (idx + 1) % words.length;
+        swap.textContent = words[idx];
+      }, 2800);
+    }
+
+    // FAQ toggle
+    document.querySelectorAll('.faq-q').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const item = this.closest('[style*="border-top"]');
+        const answer = this.nextElementSibling;
+        const plus = this.querySelector('span:last-child');
+
+        const isOpen = answer.style.maxHeight && answer.style.maxHeight !== '0px';
+        answer.style.maxHeight = isOpen ? '0px' : answer.scrollHeight + 'px';
+        if (plus) plus.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(45deg)';
+        if (plus) plus.style.background = isOpen ? '' : 'var(--violet)';
+        if (plus) plus.style.color = isOpen ? '' : 'white';
+        if (plus) plus.style.borderColor = isOpen ? '' : 'var(--violet)';
+      });
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+  <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
 </body>
 </html>
