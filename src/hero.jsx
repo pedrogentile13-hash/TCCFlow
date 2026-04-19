@@ -42,10 +42,10 @@ function HeroEditorial() {
         </div>
 
         <Reveal delay={3} className="hero-ctas">
-          <a href="#signup" className="btn btn-primary">
+          <a href="/pages/signup.html" className="btn btn-primary">
             Criar grupo grátis <Arrow/>
           </a>
-          <a href="#demo" className="btn btn-ghost">Ver demo interativa →</a>
+          <a href="/pages/demo.html" className="btn btn-ghost">Ver demo interativa →</a>
           <span className="trust">▸ Sem cartão · Cancele quando quiser</span>
         </Reveal>
 
@@ -77,8 +77,8 @@ function HeroManifesto() {
           </p>
         </Reveal>
         <Reveal delay={3} className="hero-ctas" style={{justifyContent:"center"}}>
-          <a href="#signup" className="btn btn-primary">Começar grátis <Arrow/></a>
-          <a href="#demo" className="btn btn-glass">Ver por dentro</a>
+          <a href="/pages/signup.html" className="btn btn-primary">Começar grátis <Arrow/></a>
+          <a href="/pages/demo.html" className="btn btn-glass">Ver por dentro</a>
         </Reveal>
         <Reveal delay={4}>
           <HeroPreview />
@@ -107,8 +107,8 @@ function HeroProduct() {
           </p>
         </Reveal>
         <Reveal delay={3} className="hero-ctas" style={{justifyContent:"center"}}>
-          <a href="#signup" className="btn btn-primary">Começar grátis <Arrow/></a>
-          <a href="#demo" className="btn btn-ghost">Explorar recursos →</a>
+          <a href="/pages/signup.html" className="btn btn-primary">Começar grátis <Arrow/></a>
+          <a href="/pages/demo.html" className="btn btn-ghost">Explorar recursos →</a>
         </Reveal>
         <Reveal delay={4}>
           <HeroPreview />

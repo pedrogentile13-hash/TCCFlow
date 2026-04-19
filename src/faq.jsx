@@ -54,10 +54,10 @@ function CTAFinal() {
         </Reveal>
         <Reveal delay={2}>
           <div className="ctas">
-            <a href="#signup" className="btn btn-primary" style={{padding:"16px 28px", fontSize:"1rem"}}>
+            <a href="/pages/signup.html" className="btn btn-primary" style={{padding:"16px 28px", fontSize:"1rem"}}>
               Criar grupo grátis <Arrow size={16}/>
             </a>
-            <a href="#demo" className="btn btn-glass" style={{padding:"16px 28px", fontSize:"1rem"}}>Agendar demo guiada</a>
+            <a href="/pages/demo.html" className="btn btn-glass" style={{padding:"16px 28px", fontSize:"1rem"}}>Agendar demo guiada</a>
           </div>
         </Reveal>
       </div>
@@ -79,16 +79,16 @@ function Footer() {
             <h5>Produto</h5>
             <ul>
               <li><a href="#recursos">Recursos</a></li>
-              <li><a href="#demo">Demo</a></li>
+              <li><a href="/pages/demo.html">Demo</a></li>
               <li><a href="#precos">Preços</a></li>
-              <li><a href="#">Novidades</a></li>
+              <li><a href="/pages/blog.html">Novidades</a></li>
             </ul>
           </div>
           <div className="footer-col">
             <h5>Empresa</h5>
             <ul>
               <li><a href="#">Sobre</a></li>
-              <li><a href="#">Blog</a></li>
+              <li><a href="/pages/blog.html">Blog</a></li>
               <li><a href="#">Para universidades</a></li>
               <li><a href="#">Contato</a></li>
             </ul>
@@ -96,8 +96,8 @@ function Footer() {
           <div className="footer-col">
             <h5>Legal</h5>
             <ul>
-              <li><a href="#">Termos</a></li>
-              <li><a href="#">Privacidade</a></li>
+              <li><a href="/pages/termos.html">Termos</a></li>
+              <li><a href="/pages/privacidade.html">Privacidade</a></li>
               <li><a href="#">LGPD</a></li>
               <li><a href="#">Status</a></li>
             </ul>

@@ -101,8 +101,8 @@ function Nav() {
           <a href="#faq">FAQ</a>
         </div>
         <div className="nav-cta">
-          <a href="#login" className="btn btn-ghost">Entrar</a>
-          <a href="#signup" className="btn btn-primary">
+          <a href="/pages/login.html" className="btn btn-ghost">Entrar</a>
+          <a href="/pages/signup.html" className="btn btn-primary">
             Começar grátis <Arrow/>
           </a>
         </div>
