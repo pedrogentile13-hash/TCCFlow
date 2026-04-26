@@ -141,7 +141,7 @@ function PesquisaMode({ project, user }) {
 
       {showFilters && (
         <div className="card" style={{marginBottom:16,padding:16}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+          <div className="ai-filter-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
             <div>
               <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",textTransform:"uppercase",letterSpacing:".1em",color:"var(--muted)",marginBottom:6}}>Tipo de publicação</div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>

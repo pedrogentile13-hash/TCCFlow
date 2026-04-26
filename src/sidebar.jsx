@@ -53,6 +53,22 @@ function useTCCData() {
   return { user, userData, project, subscription, teamMembers, loading };
 }
 
+// Mobile menu shared state
+let _mobileMenuOpen = false;
+const _mobileListeners = new Set();
+function useMobileMenu() {
+  const [open, setOpen] = useState(_mobileMenuOpen);
+  useEffect(() => {
+    _mobileListeners.add(setOpen);
+    return () => _mobileListeners.delete(setOpen);
+  }, []);
+  return [open, function(val) {
+    const next = typeof val === 'function' ? val(_mobileMenuOpen) : val;
+    _mobileMenuOpen = next;
+    _mobileListeners.forEach(function(fn) { fn(next); });
+  }];
+}
+
 function getInitials(name) {
   if (!name) return '??';
   return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
@@ -148,6 +164,7 @@ function FontSwitcher({ isBeta }) {
 }
 
 function Sidebar({ active, userData, project, subscription }) {
+  const [mobileOpen, setMobileOpen] = useMobileMenu();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userName = userData?.name || (typeof auth !== 'undefined' && auth.currentUser?.displayName) || 'Usuário';
   const userInitials = getInitials(userName);
@@ -156,8 +173,16 @@ function Sidebar({ active, userData, project, subscription }) {
   const planLabel = subscription?.plan === 'pro' ? 'Plano Pro' : 'Plano Gratuito';
   const isBeta = userData?.beta_tester === true;
 
+  useEffect(() => {
+    const handler = () => { if (window.innerWidth > 768) setMobileOpen(false); };
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
   return (
-    <aside className="sidebar">
+    React.createElement(React.Fragment, null,
+    React.createElement('div', { className: 'sidebar-overlay' + (mobileOpen ? ' active' : ''), onClick: () => setMobileOpen(false) }),
+    <aside className={`sidebar${mobileOpen ? ' mobile-open' : ''}`}>
       <div className="sidebar-brand">
         <img src="../assets/logo.png" alt="TCCFlow" />
         <span>TCCFlow<span className="dot"></span></span>
@@ -220,16 +245,21 @@ function Sidebar({ active, userData, project, subscription }) {
         </div>
       </div>
     </aside>
+    )
   );
 }
 
 function Topbar({ page, actions, user }) {
+  const [, setMobileOpen] = useMobileMenu();
   const userName = user?.displayName || 'Usuário';
   const userInitials = getInitials(userName);
 
   return (
     <div className="topbar">
       <div className="topbar-left">
+        <button className="hamburger-btn" onClick={() => setMobileOpen(prev => !prev)} aria-label="Menu">
+          <span></span>
+        </button>
         <a href="dashboard.html" style={{color:"var(--muted)"}}>TCCFlow</a>
         <span className="sep">›</span>
         <span className="current">{page}</span>

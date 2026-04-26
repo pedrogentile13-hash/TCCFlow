@@ -68,7 +68,7 @@ function ProfileSection({ user, userData, subscription, saving, onSave }) {
             <span className={`tag ${subscription?.plan === "pro" ? "tag-violet" : "tag-cyan"}`} style={{ marginTop:6, display:"inline-flex" }}>{planLabel}</span>
           </div>
         </div>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+        <div className="info-fields-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
           <div className="field" style={{ marginBottom:0 }}><label>Nome completo</label><input type="text" value={name} onChange={e=>setName(e.target.value)}/></div>
           <div className="field" style={{ marginBottom:0 }}><label>E-mail</label><input type="email" value={email} disabled style={{opacity:0.6}}/></div>
         </div>
@@ -158,7 +158,7 @@ function SettingsPage() {
       <Sidebar active="settings" userData={userData} subscription={subscription}/>
       <div className="main-area">
         <Topbar page="Configurações" user={user}/>
-        <div style={{ flex:1, display:"grid", gridTemplateColumns:"200px 1fr", overflow:"hidden" }}>
+        <div className="settings-inner-grid" style={{ flex:1, display:"grid", gridTemplateColumns:"200px 1fr", overflow:"hidden" }}>
           <div style={{ borderRight:"1px solid var(--line)", padding:"16px 10px", background:"var(--paper)", overflowY:"auto" }}>
             <div className="mono-label" style={{ marginBottom:8, padding:"0 4px" }}>Configurações</div>
             {SECTIONS.map(s => (

@@ -123,7 +123,7 @@ function TeamPage() {
       <div className="main-area">
         <Topbar page="Equipe" user={user}/>
         <div className="page-content">
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16 }}>
+          <div className="page-grid" style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16 }}>
             <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
               <div style={{ display:"flex", gap:2, background:"var(--bg-2)", borderRadius:10, padding:4, width:"fit-content" }}>
                 {[["membros","Membros"],["projetos","Meus Projetos"],["entrar","Entrar em Projeto"]].map(([v,l]) => (

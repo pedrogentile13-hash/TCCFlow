@@ -96,7 +96,7 @@ function PlansPage() {
             </div>
           </div>
 
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, maxWidth:960, margin:"0 auto" }}>
+          <div className="plan-cards-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, maxWidth:960, margin:"0 auto" }}>
             {PLANS.map(p => {
               const isCurrent = currentPlan === p.id;
               return (
