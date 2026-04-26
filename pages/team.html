@@ -72,15 +72,29 @@ function TeamPage() {
     if (!joinCode.trim()) return;
     setJoining(true); setJoinMsg("");
     try {
-      const { data: projects } = await _supa.from('projects').select('*').eq('code', joinCode.toUpperCase());
+      const { data: projects, error: projErr } = await _supa.from('projects').select('*').eq('code', joinCode.toUpperCase());
+      if (projErr) throw projErr;
       if (!projects || !projects.length) { setJoinMsg("Código não encontrado"); setJoining(false); return; }
       const proj = projects[0];
-      await _supa.from('users').update({ project_id: proj.id }).eq('id', user.uid);
-      if (!proj.members || !proj.members.includes(user.uid)) {
-        await _supa.from('projects').update({ members: [...(proj.members || []), user.uid] }).eq('id', proj.id);
+
+      // Atualiza projeto_id do usuário
+      const { error: userErr } = await _supa.from('users').update({ project_id: proj.id }).eq('id', user.uid);
+      if (userErr) throw userErr;
+
+      // Adiciona usuário ao array de membros do projeto
+      let membersList = proj.members;
+      if (typeof membersList === 'string') {
+        try { membersList = JSON.parse(membersList); } catch { membersList = []; }
+      }
+      if (!Array.isArray(membersList)) membersList = [];
+
+      if (!membersList.includes(user.uid)) {
+        const newMembers = [...membersList, user.uid];
+        const { error: membersErr } = await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
+        if (membersErr) throw membersErr;
       }
       window.location.reload();
-    } catch(e) { setJoinMsg(e.message); }
+    } catch(e) { setJoinMsg("Erro: " + (e.message || e)); }
     setJoining(false);
   }
 
@@ -106,8 +120,9 @@ function TeamPage() {
     for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
     const { data: newProj, error } = await _supa.from('projects').insert({
       name: name.trim(), code, owner_id: user.uid, members: [user.uid]
-    }).select().maybeSingle();
-    if (error) { alert("Erro: " + error.message); return; }
+    }).select('*').maybeSingle();
+    if (error) { alert("Erro ao criar projeto: " + error.message); return; }
+    if (!newProj) { alert("Erro: projeto não foi retornado"); return; }
     await _supa.from('users').update({ project_id: newProj.id }).eq('id', user.uid);
     window.location.reload();
   }

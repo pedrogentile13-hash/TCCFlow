@@ -32,12 +32,20 @@ function useTCCData() {
           setProject(proj);
 
           let members = [];
-          if (proj?.members && Array.isArray(proj.members) && proj.members.length > 0) {
+          let memberIds = proj?.members;
+
+          // Normalize members array (handle string format)
+          if (typeof memberIds === 'string') {
+            try { memberIds = JSON.parse(memberIds); } catch { memberIds = null; }
+          }
+          if (!Array.isArray(memberIds)) memberIds = null;
+
+          if (memberIds && memberIds.length > 0) {
             // Tenta com photo_url
-            const { data: m1, error: mErr } = await _supa.from('users').select('id, name, email, photo_url, role').in('id', proj.members);
+            const { data: m1, error: mErr } = await _supa.from('users').select('id, name, email, photo_url, role').in('id', memberIds);
             if (mErr || !m1) {
               // Se falhar, tenta sem photo_url
-              const { data: m2 } = await _supa.from('users').select('id, name, email, role').in('id', proj.members);
+              const { data: m2 } = await _supa.from('users').select('id, name, email, role').in('id', memberIds);
               members = m2 || [];
             } else {
               members = m1;
@@ -45,7 +53,7 @@ function useTCCData() {
             // Se ainda estiver vazio, tenta fetch de todos e filtrar localmente
             if (!members || members.length === 0) {
               const { data: allUsers } = await _supa.from('users').select('id, name, email, role');
-              members = (allUsers || []).filter(u => proj.members.includes(u.id));
+              members = (allUsers || []).filter(u => memberIds.includes(u.id));
             }
           }
           setTeam(members);
