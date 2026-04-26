@@ -30,8 +30,15 @@ function useTCCData() {
         if (ud?.project_id) {
           const { data: proj } = await _supa.from('projects').select('*').eq('id', ud.project_id).maybeSingle();
           setProject(proj);
-          const { data: members } = await _supa.from('users').select('id, name, email, photo_url, role').eq('project_id', ud.project_id);
-          setTeam(members || []);
+          let members = [];
+          const { data: m1, error: mErr } = await _supa.from('users').select('id, name, email, photo_url, role').eq('project_id', ud.project_id);
+          if (mErr) {
+            const { data: m2 } = await _supa.from('users').select('id, name, email, role').eq('project_id', ud.project_id);
+            members = m2 || [];
+          } else {
+            members = m1 || [];
+          }
+          setTeam(members);
         }
         const sub = await DB.subscriptions.get(u.uid);
         setSub(sub);
@@ -113,17 +120,18 @@ const BOTTOM_ITEMS = [
   )},
 ];
 
-function FontSwitcher() {
+function FontSwitcher({ isBeta }) {
   const [current, setCurrent] = useState(() => localStorage.getItem("tccflow_font") || "geist");
   useEffect(() => {
     const handler = (e) => setCurrent(e.detail);
     window.addEventListener("tccflow-font-changed", handler);
     return () => window.removeEventListener("tccflow-font-changed", handler);
   }, []);
+  if (!isBeta) return null;
   const fonts = ["geist","inter","lato"];
   return (
     <div style={{padding:"8px 10px 4px",borderTop:"1px solid var(--line)",marginBottom:4}}>
-      <div style={{fontFamily:"var(--font-mono)",fontSize:"0.5625rem",textTransform:"uppercase",letterSpacing:"0.1em",color:"var(--muted)",marginBottom:5,paddingLeft:2}}>Fonte</div>
+      <div style={{fontFamily:"var(--font-mono)",fontSize:"0.5625rem",textTransform:"uppercase",letterSpacing:"0.1em",color:"var(--muted)",marginBottom:5,paddingLeft:2}}>Fonte <span style={{color:"var(--amber)",fontWeight:600}}>BETA</span></div>
       <div style={{display:"flex",gap:4}}>
         {fonts.map(f => (
           <button key={f} onClick={() => { if(window.TCCFont) window.TCCFont.apply(f); else { localStorage.setItem("tccflow_font",f); location.reload(); }; setCurrent(f); }}
@@ -137,11 +145,13 @@ function FontSwitcher() {
 }
 
 function Sidebar({ active, userData, project, subscription }) {
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const userName = userData?.name || (typeof auth !== 'undefined' && auth.currentUser?.displayName) || 'Usuário';
   const userInitials = getInitials(userName);
   const projectName = project?.name || 'Nenhum projeto';
   const projectCode = project?.code ? `Código: ${project.code}` : 'Crie ou entre em um projeto';
   const planLabel = subscription?.plan === 'pro' ? 'Plano Pro' : 'Plano Gratuito';
+  const isBeta = userData?.beta_tester === true;
 
   return (
     <aside className="sidebar">
@@ -178,17 +188,32 @@ function Sidebar({ active, userData, project, subscription }) {
       </nav>
 
       <div className="sidebar-bottom">
-        <FontSwitcher/>
-        <div className="sidebar-user">
+        <FontSwitcher isBeta={isBeta}/>
+        <div className="sidebar-user" style={{position:"relative",cursor:"pointer"}} onClick={() => setShowUserMenu(p => !p)}>
           <div className="av av-sm c1">{userInitials}</div>
           <div className="info">
             <div className="name">{userName}</div>
             <div className="plan">{planLabel}</div>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft:"auto",color:"var(--muted)",cursor:"pointer"}}
-            onClick={() => { if(typeof auth !== 'undefined') auth.signOut().then(() => window.location.href = 'login.html'); }}>
-            <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft:"auto",color:"var(--muted)",transition:"transform .2s",transform:showUserMenu?"rotate(180deg)":"none"}}>
+            <polyline points="6 9 12 15 18 9"/>
           </svg>
+          {showUserMenu && (
+            <div style={{position:"absolute",bottom:"100%",left:0,right:0,marginBottom:6,background:"var(--paper)",border:"1px solid var(--line)",borderRadius:10,boxShadow:"var(--shadow)",overflow:"hidden",zIndex:50}}>
+              <a href="settings.html" style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",fontSize:".8125rem",color:"var(--ink)",textDecoration:"none",transition:"background .15s"}}
+                onMouseEnter={e=>e.currentTarget.style.background="var(--bg-2)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09"/></svg>
+                Configurações
+              </a>
+              <div style={{borderTop:"1px solid var(--line)"}}/>
+              <button onClick={(e) => { e.stopPropagation(); if(typeof auth !== 'undefined') auth.signOut().then(() => window.location.href = '../index.html'); }}
+                style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",fontSize:".8125rem",color:"var(--rose)",cursor:"pointer",border:"none",background:"transparent",width:"100%",textAlign:"left",transition:"background .15s"}}
+                onMouseEnter={e=>e.currentTarget.style.background="rgba(244,63,94,.06)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sair
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </aside>

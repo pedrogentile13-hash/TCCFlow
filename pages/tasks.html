@@ -6,7 +6,7 @@
   <link rel="icon" href="../assets/logo.png"/>
   <link rel="stylesheet" href="../css/app.css"/>
   <style>
-    .kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start;}
+    .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start;}
     .col{background:var(--bg-2);border-radius:14px;padding:12px;}
     .col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 4px;}
     .col-title{font-size:.8125rem;font-weight:600;display:flex;align-items:center;gap:7px;}
@@ -20,7 +20,15 @@
     .add-task:hover{border-color:var(--violet);color:var(--violet);}
     .priority-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block;}
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100;}
-    .modal{background:var(--paper);border-radius:16px;padding:28px;width:420px;max-width:90vw;box-shadow:var(--shadow);}
+    .modal{background:var(--paper);border-radius:16px;padding:28px;width:480px;max-width:90vw;box-shadow:var(--shadow);}
+    .assign-opt{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:9px;border:1.5px solid var(--line);cursor:pointer;transition:border-color .15s,background .15s;font-size:.8125rem;}
+    .assign-opt:hover{border-color:var(--violet);}
+    .assign-opt.active{border-color:var(--violet);background:rgba(124,58,237,.06);}
+    .assign-opt .radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s;}
+    .assign-opt.active .radio{border-color:var(--violet);}
+    .assign-opt.active .radio::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--violet);}
+    .member-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:.75rem;border:1.5px solid var(--line);cursor:pointer;transition:all .15s;background:var(--paper);}
+    .member-chip.selected{border-color:var(--violet);background:rgba(124,58,237,.08);color:var(--violet);}
   </style>
 </head>
 <body><div id="root"></div>
@@ -37,6 +45,7 @@ const { useState, useEffect } = React;
 const COLS = [
   { key:"todo", label:"A fazer", dot:"#94a3b8" },
   { key:"progress", label:"Em andamento", dot:"var(--blue)" },
+  { key:"review", label:"Em revisão", dot:"var(--amber)" },
   { key:"done", label:"Concluído", dot:"var(--emerald)" },
 ];
 
@@ -47,6 +56,8 @@ function TasksPage() {
   const [showModal, setShowModal] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDue, setNewDue] = useState("");
+  const [assignMode, setAssignMode] = useState("all");
+  const [selectedMembers, setSelectedMembers] = useState([]);
 
   useEffect(() => {
     if (!project) return;
@@ -58,17 +69,37 @@ function TasksPage() {
     setTasks(data || []);
   }
 
+  function resetModal() {
+    setNewTitle(""); setNewDue(""); setAssignMode("all"); setSelectedMembers([]);
+    setShowModal(false);
+  }
+
   async function addTask() {
     if (!newTitle.trim() || !project) return;
+    let assignedTo = user.uid;
+    let assignedToList = null;
+
+    if (assignMode === "all") {
+      assignedTo = user.uid;
+      assignedToList = teamMembers.map(m => m.id);
+    } else if (assignMode === "group") {
+      assignedTo = selectedMembers[0] || user.uid;
+      assignedToList = selectedMembers;
+    } else {
+      assignedTo = selectedMembers[0] || user.uid;
+      assignedToList = selectedMembers.length > 0 ? selectedMembers : [user.uid];
+    }
+
     await _supa.from('tasks').insert({
       project_id: project.id,
       title: newTitle,
       status: 'todo',
       due_date: newDue || null,
-      assigned_to: user.uid,
+      assigned_to: assignedTo,
+      assigned_to_list: assignedToList,
       created_at: new Date().toISOString()
     });
-    setNewTitle(""); setNewDue(""); setShowModal(false);
+    resetModal();
     loadTasks();
   }
 
@@ -83,13 +114,33 @@ function TasksPage() {
     setTasks(prev => prev.filter(t => t.id !== taskId));
   }
 
+  function toggleMember(memberId) {
+    setSelectedMembers(prev =>
+      prev.includes(memberId) ? prev.filter(id => id !== memberId) : [...prev, memberId]
+    );
+  }
+
   if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
 
   const totalTasks = tasks.length;
   const doneTasks = tasks.filter(t => t.status === 'done').length;
-  const nextStatus = { todo: 'progress', progress: 'done', done: 'todo' };
+  const nextStatus = { todo: 'progress', progress: 'review', review: 'done', done: 'todo' };
 
   const getMember = (id) => teamMembers.find(m => m.id === id);
+
+  const statusLabel = (s) => {
+    if (s === 'todo') return 'A fazer';
+    if (s === 'progress') return 'Em andamento';
+    if (s === 'review') return 'Em revisão';
+    return 'Concluída';
+  };
+
+  const statusDot = (s) => {
+    if (s === 'done') return 'var(--emerald)';
+    if (s === 'progress') return 'var(--blue)';
+    if (s === 'review') return 'var(--amber)';
+    return 'var(--muted)';
+  };
 
   return (
     <div className="app-layout">
@@ -127,6 +178,8 @@ function TasksPage() {
                     </div>
                     {colTasks.map(t => {
                       const assignee = getMember(t.assigned_to);
+                      const assignedList = t.assigned_to_list || [];
+                      const isAllAssigned = assignedList.length === teamMembers.length && teamMembers.length > 1;
                       return (
                         <div key={t.id} className="task-card">
                           <div className="task-title">{t.title}</div>
@@ -136,11 +189,25 @@ function TasksPage() {
                               {t.due_date && <span>{new Date(t.due_date).toLocaleDateString('pt-BR',{day:'numeric',month:'short'})}</span>}
                             </div>
                             <div style={{display:"flex",gap:4}}>
-                              <button style={{fontSize:".6rem",cursor:"pointer",background:"none",border:"none",color:"var(--violet)"}} onClick={()=>moveTask(t.id, nextStatus[col.key])}>→</button>
-                              <button style={{fontSize:".6rem",cursor:"pointer",background:"none",border:"none",color:"var(--rose)"}} onClick={()=>deleteTask(t.id)}>✕</button>
+                              <button style={{fontSize:".7rem",cursor:"pointer",background:"none",border:"none",color:"var(--violet)",padding:"2px 4px"}} title="Avançar" onClick={()=>moveTask(t.id, nextStatus[col.key])}>→</button>
+                              <button style={{fontSize:".7rem",cursor:"pointer",background:"none",border:"none",color:"var(--rose)",padding:"2px 4px"}} title="Excluir" onClick={()=>deleteTask(t.id)}>✕</button>
                             </div>
                           </div>
-                          {assignee && <div style={{marginTop:6,fontSize:".6875rem",color:"var(--muted)"}}>{assignee.name}</div>}
+                          <div style={{marginTop:6,display:"flex",alignItems:"center",gap:4}}>
+                            {isAllAssigned ? (
+                              <span style={{fontSize:".6875rem",color:"var(--violet)",fontWeight:500}}>Todos</span>
+                            ) : assignedList.length > 1 ? (
+                              <div style={{display:"flex",alignItems:"center"}}>
+                                {assignedList.slice(0,3).map((mid,idx) => {
+                                  const m = getMember(mid);
+                                  return m ? <div key={mid} className={`av c${(idx%4)+1}`} style={{width:20,height:20,fontSize:".5rem",marginLeft:idx>0?-6:0,border:"2px solid var(--paper)"}} title={m.name}>{getInitials(m.name)}</div> : null;
+                                })}
+                                {assignedList.length > 3 && <span style={{fontSize:".6rem",color:"var(--muted)",marginLeft:4}}>+{assignedList.length-3}</span>}
+                              </div>
+                            ) : assignee ? (
+                              <span style={{fontSize:".6875rem",color:"var(--muted)"}}>{assignee.name}</span>
+                            ) : null}
+                          </div>
                         </div>
                       );
                     })}
@@ -154,9 +221,9 @@ function TasksPage() {
               {tasks.length === 0 && <div style={{padding:20,color:"var(--muted)",textAlign:"center"}}>Nenhuma tarefa criada</div>}
               {tasks.map((t,i) => (
                 <div key={t.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 8px", borderBottom:i<tasks.length-1?"1px solid var(--line)":"none" }}>
-                  <span className="priority-dot" style={{ background:t.status==="done"?"var(--emerald)":t.status==="progress"?"var(--amber)":"var(--muted)" }}></span>
+                  <span className="priority-dot" style={{ background:statusDot(t.status) }}></span>
                   <div style={{ flex:1,fontSize:"0.875rem",fontWeight:500 }}>{t.title}</div>
-                  <span className="tag tag-cyan">{t.status==="todo"?"A fazer":t.status==="progress"?"Em andamento":"Concluída"}</span>
+                  <span className="tag tag-cyan">{statusLabel(t.status)}</span>
                   {t.due_date && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{new Date(t.due_date).toLocaleDateString('pt-BR')}</span>}
                   <button className="btn btn-ghost btn-sm" onClick={()=>moveTask(t.id, nextStatus[t.status])}>→</button>
                 </div>
@@ -165,13 +232,53 @@ function TasksPage() {
           )}
 
           {showModal && (
-            <div className="modal-overlay" onClick={() => setShowModal(false)}>
+            <div className="modal-overlay" onClick={resetModal}>
               <div className="modal" onClick={e => e.stopPropagation()}>
                 <h3 style={{fontFamily:"var(--font-display)",fontSize:"1.25rem",marginBottom:16}}>Nova tarefa</h3>
                 <div className="field"><label>Título</label><input type="text" value={newTitle} onChange={e=>setNewTitle(e.target.value)} placeholder="Ex: Revisar referencial teórico" autoFocus/></div>
                 <div className="field"><label>Data de entrega</label><input type="date" value={newDue} onChange={e=>setNewDue(e.target.value)}/></div>
-                <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
-                  <button className="btn btn-ghost" onClick={() => setShowModal(false)}>Cancelar</button>
+
+                <div className="field">
+                  <label>Atribuir para</label>
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    <div className={`assign-opt ${assignMode==="all"?"active":""}`} onClick={()=>{setAssignMode("all");setSelectedMembers([]);}}>
+                      <div className="radio"></div>
+                      <div><div style={{fontWeight:500}}>Todos os membros</div><div style={{fontSize:".75rem",color:"var(--muted)"}}>A tarefa será atribuída para toda a equipe</div></div>
+                    </div>
+                    <div className={`assign-opt ${assignMode==="group"?"active":""}`} onClick={()=>setAssignMode("group")}>
+                      <div className="radio"></div>
+                      <div><div style={{fontWeight:500}}>Grupo selecionado</div><div style={{fontSize:".75rem",color:"var(--muted)"}}>Escolha membros específicos</div></div>
+                    </div>
+                    <div className={`assign-opt ${assignMode==="single"?"active":""}`} onClick={()=>{setAssignMode("single");setSelectedMembers([]);}}>
+                      <div className="radio"></div>
+                      <div><div style={{fontWeight:500}}>Uma pessoa</div><div style={{fontSize:".75rem",color:"var(--muted)"}}>Atribua para um único membro</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                {(assignMode === "group" || assignMode === "single") && (
+                  <div className="field">
+                    <label>{assignMode === "single" ? "Selecione o membro" : "Selecione os membros"}</label>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                      {teamMembers.map((m, idx) => {
+                        const sel = selectedMembers.includes(m.id);
+                        return (
+                          <div key={m.id} className={`member-chip ${sel?"selected":""}`}
+                            onClick={() => {
+                              if (assignMode === "single") { setSelectedMembers([m.id]); }
+                              else { toggleMember(m.id); }
+                            }}>
+                            <div className={`av c${(idx%4)+1}`} style={{width:18,height:18,fontSize:".5rem"}}>{getInitials(m.name)}</div>
+                            {m.name || m.email}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:8}}>
+                  <button className="btn btn-ghost" onClick={resetModal}>Cancelar</button>
                   <button className="btn btn-violet" onClick={addTask}>Criar tarefa</button>
                 </div>
               </div>

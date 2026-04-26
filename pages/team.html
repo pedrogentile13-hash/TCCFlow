@@ -5,6 +5,11 @@
   <title>Equipe — TCCFlow</title>
   <link rel="icon" href="../assets/logo.png"/>
   <link rel="stylesheet" href="../css/app.css"/>
+  <style>
+    .proj-card{background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:18px;transition:border-color .2s,box-shadow .2s;cursor:pointer;}
+    .proj-card:hover{border-color:var(--violet);box-shadow:var(--shadow-sm);}
+    .proj-card.active{border-color:var(--violet);background:rgba(124,58,237,.04);}
+  </style>
 </head>
 <body><div id="root"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,8 +22,6 @@
 <script type="text/babel">
 const { useState, useEffect } = React;
 
-const statusColors = { online:"var(--emerald)", away:"var(--amber)", offline:"var(--line-2)" };
-
 function TeamPage() {
   const { user, userData, project, subscription, teamMembers, loading } = useTCCData();
   const [copied, setCopied] = useState(false);
@@ -27,6 +30,8 @@ function TeamPage() {
   const [joining, setJoining] = useState(false);
   const [joinMsg, setJoinMsg] = useState("");
   const [taskCounts, setTaskCounts] = useState({});
+  const [allUserProjects, setAllUserProjects] = useState([]);
+  const [switching, setSwitching] = useState(false);
 
   useEffect(() => {
     if (!project || !teamMembers.length) return;
@@ -42,6 +47,21 @@ function TeamPage() {
     })();
   }, [project, teamMembers]);
 
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      try {
+        const owned = await DB.projects.getOwned(user.uid);
+        const { data: memberOf } = await _supa.from('projects').select('id, name, code, owner_id, members, created_at').contains('members', [user.uid]);
+        const all = [...(owned || [])];
+        (memberOf || []).forEach(p => {
+          if (!all.find(a => a.id === p.id)) all.push({ id: p.id, name: p.name, code: p.code, ownerId: p.owner_id, members: p.members, createdAt: p.created_at });
+        });
+        setAllUserProjects(all);
+      } catch(e) { console.error(e); }
+    })();
+  }, [user]);
+
   function copyCode() {
     if (project?.code) navigator.clipboard.writeText(project.code);
     setCopied(true);
@@ -55,20 +75,47 @@ function TeamPage() {
       const { data: projects } = await _supa.from('projects').select('*').eq('code', joinCode.toUpperCase());
       if (!projects || !projects.length) { setJoinMsg("Código não encontrado"); setJoining(false); return; }
       const proj = projects[0];
-      await _supa.from('users').upsert({ id: user.uid, project_id: proj.id });
-      if (!proj.members.includes(user.uid)) {
-        await _supa.from('projects').update({ members: [...proj.members, user.uid] }).eq('id', proj.id);
+      await _supa.from('users').update({ project_id: proj.id }).eq('id', user.uid);
+      if (!proj.members || !proj.members.includes(user.uid)) {
+        await _supa.from('projects').update({ members: [...(proj.members || []), user.uid] }).eq('id', proj.id);
       }
       window.location.reload();
     } catch(e) { setJoinMsg(e.message); }
     setJoining(false);
   }
 
+  async function switchProject(projId) {
+    if (projId === project?.id) return;
+    setSwitching(true);
+    try {
+      await _supa.from('users').update({ project_id: projId }).eq('id', user.uid);
+      window.location.reload();
+    } catch(e) { alert("Erro ao trocar projeto: " + e.message); setSwitching(false); }
+  }
+
+  async function createNewProject() {
+    const name = prompt("Nome do novo projeto:");
+    if (!name || !name.trim()) return;
+    const canCreate = await DB.projects.canCreateProject(user.uid);
+    if (!canCreate.allowed) {
+      alert("Você atingiu o limite de " + canCreate.max + " projeto(s). Faça upgrade para criar mais.");
+      return;
+    }
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = 'TCC-';
+    for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    const { data: newProj, error } = await _supa.from('projects').insert({
+      name: name.trim(), code, owner_id: user.uid, members: [user.uid]
+    }).select().maybeSingle();
+    if (error) { alert("Erro: " + error.message); return; }
+    await _supa.from('users').update({ project_id: newProj.id }).eq('id', user.uid);
+    window.location.reload();
+  }
+
   if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
 
   const slots = subscription?.seats || 1;
   const used = teamMembers.length;
-  const isOwner = project?.owner_id === user?.uid;
 
   return (
     <div className="app-layout">
@@ -77,10 +124,9 @@ function TeamPage() {
         <Topbar page="Equipe" user={user}/>
         <div className="page-content">
           <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16 }}>
-
             <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
               <div style={{ display:"flex", gap:2, background:"var(--bg-2)", borderRadius:10, padding:4, width:"fit-content" }}>
-                {[["membros","Membros"],["entrar","Entrar em Projeto"]].map(([v,l]) => (
+                {[["membros","Membros"],["projetos","Meus Projetos"],["entrar","Entrar em Projeto"]].map(([v,l]) => (
                   <button key={v} className={`btn btn-sm ${tab===v?"btn-primary":"btn-ghost"}`} style={{ border:"none" }} onClick={() => setTab(v)}>{l}</button>
                 ))}
               </div>
@@ -92,7 +138,7 @@ function TeamPage() {
                     <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)" }}>{used}/{slots} usuários</span>
                   </div>
                   <div style={{ display:"flex", gap:6, marginBottom:20 }}>
-                    {Array.from({ length:slots }).map((_, i) => (
+                    {Array.from({ length:Math.max(slots, used) }).map((_, i) => (
                       <div key={i} style={{ flex:1, height:6, borderRadius:999, background:i<used?"#7c3aed":"var(--line)" }}></div>
                     ))}
                   </div>
@@ -116,6 +162,32 @@ function TeamPage() {
                     })}
                     {teamMembers.length === 0 && <div style={{color:"var(--muted)",padding:12}}>Nenhum membro no projeto</div>}
                   </div>
+                </div>
+              )}
+
+              {tab === "projetos" && (
+                <div className="card">
+                  <div className="card-title" style={{ justifyContent:"space-between" }}>
+                    <span style={{ display:"flex", alignItems:"center", gap:8 }}><span className="ct-icon">📁</span> Meus Projetos</span>
+                    <button className="btn btn-violet btn-sm" onClick={createNewProject}>+ Novo projeto</button>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                    {allUserProjects.length === 0 && <div style={{color:"var(--muted)",padding:12}}>Nenhum projeto encontrado</div>}
+                    {allUserProjects.map(p => (
+                      <div key={p.id} className={`proj-card ${p.id===project?.id?"active":""}`} onClick={() => switchProject(p.id)}>
+                        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
+                          <div style={{ fontWeight:600, fontSize:"0.9375rem" }}>{p.name}</div>
+                          {p.id === project?.id && <span className="tag tag-violet">Ativo</span>}
+                        </div>
+                        <div style={{ display:"flex", gap:12, alignItems:"center" }}>
+                          <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--violet)", background:"rgba(124,58,237,.08)", padding:"2px 8px", borderRadius:6 }}>{p.code}</span>
+                          {p.ownerId === user?.uid && <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", color:"var(--muted)" }}>Criador</span>}
+                          {p.members && <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", color:"var(--muted)" }}>{p.members.length} membro(s)</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {switching && <div style={{textAlign:"center",padding:16,color:"var(--violet)"}}>Trocando projeto...</div>}
                 </div>
               )}
 
@@ -167,7 +239,7 @@ function TeamPage() {
                   <div>
                     <div style={{ fontWeight:600, marginBottom:4 }}>{used} {used===1?'membro ativo':'membros ativos'}</div>
                     <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>Capacidade: {slots} membros</div>
-                    <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--violet)", marginTop:6 }}>+ {slots-used} {slots-used===1?'vaga disponível':'vagas disponíveis'}</div>
+                    <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--violet)", marginTop:6 }}>+ {Math.max(0, slots-used)} {slots-used===1?'vaga disponível':'vagas disponíveis'}</div>
                   </div>
                 </div>
               </div>
