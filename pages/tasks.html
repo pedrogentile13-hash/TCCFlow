@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Tarefas — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <style>
+    .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start;}
+    .col{background:var(--bg-2);border-radius:14px;padding:12px;}
+    .col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 4px;}
+    .col-title{font-size:.8125rem;font-weight:600;display:flex;align-items:center;gap:7px;}
+    .col-dot{width:8px;height:8px;border-radius:50%;}
+    .col-count{font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);background:var(--paper);padding:2px 7px;border-radius:999px;border:1px solid var(--line);}
+    .task-card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;cursor:grab;transition:transform .2s,box-shadow .2s;user-select:none;}
+    .task-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+    .task-card:active{cursor:grabbing;}
+    .task-tag{display:inline-block;font-family:var(--font-mono);font-size:.6rem;padding:2px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:7px;}
+    .task-title{font-size:.875rem;font-weight:500;line-height:1.35;margin-bottom:9px;}
+    .task-meta{display:flex;align-items:center;justify-content:space-between;font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);}
+    .task-avs{display:flex;}
+    .task-av{width:20px;height:20px;border-radius:50%;border:2px solid var(--paper);margin-left:-5px;font-size:.5625rem;font-weight:700;color:white;display:flex;align-items:center;justify-content:center;}
+    .task-av:first-child{margin-left:0;}
+    .add-task{width:100%;padding:8px;border-radius:8px;border:1.5px dashed var(--line);background:transparent;font-size:.8125rem;color:var(--muted);cursor:pointer;transition:border-color .2s,color .2s;margin-top:4px;}
+    .add-task:hover{border-color:var(--violet);color:var(--violet);}
+    .priority-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block;}
+  </style>
+</head>
+<body><div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const INIT_COLS = {
+  todo: {
+    label:"A fazer", dot:"#94a3b8",
+    cards:[
+      { id:1, tag:"Pesquisa", tagCls:"rgba(6,182,212,.12)", tagColor:"var(--cyan)", title:"Buscar artigos sobre redes sociais e cognição", due:"28 abr", avs:["c1","c2"], priority:"alta" },
+      { id:2, tag:"Escrita", tagCls:"rgba(124,58,237,.12)", tagColor:"var(--violet)", title:"Esboço da seção de metodologia", due:"2 mai", avs:["c1"], priority:"média" },
+      { id:3, tag:"Revisão", tagCls:"rgba(245,158,11,.14)", tagColor:"var(--amber)", title:"Revisar objetivos específicos com orientador", due:"29 abr", avs:["c1","c4"], priority:"alta" },
+    ]
+  },
+  doing: {
+    label:"Em andamento", dot:"var(--blue)",
+    cards:[
+      { id:4, tag:"Pesquisa", tagCls:"rgba(6,182,212,.12)", tagColor:"var(--cyan)", title:"Levantamento bibliográfico — capítulo 2", due:"Hoje", avs:["c2","c3"], priority:"alta" },
+      { id:5, tag:"Escrita", tagCls:"rgba(124,58,237,.12)", tagColor:"var(--violet)", title:"Introdução: justificativa e problematização", due:"30 abr", avs:["c1"], priority:"média" },
+    ]
+  },
+  review: {
+    label:"Em revisão", dot:"var(--amber)",
+    cards:[
+      { id:6, tag:"Revisão", tagCls:"rgba(245,158,11,.14)", tagColor:"var(--amber)", title:"Referencial teórico — draft inicial", due:"26 abr", avs:["c1","c2","c4"], priority:"alta" },
+    ]
+  },
+  done: {
+    label:"Concluído", dot:"var(--emerald)",
+    cards:[
+      { id:7, tag:"Pesquisa", tagCls:"rgba(6,182,212,.12)", tagColor:"var(--cyan)", title:"Definição do tema e título provisório", due:"10 abr", avs:["c1"], priority:"baixa" },
+      { id:8, tag:"Reunião", tagCls:"rgba(16,185,129,.12)", tagColor:"var(--emerald)", title:"Reunião kickoff com equipe", due:"8 abr", avs:["c1","c2","c3","c4"], priority:"baixa" },
+      { id:9, tag:"Pesquisa", tagCls:"rgba(6,182,212,.12)", tagColor:"var(--cyan)", title:"Pesquisa bibliográfica inicial (20 artigos)", due:"15 abr", avs:["c2","c3"], priority:"média" },
+    ]
+  }
+};
+
+const priorityColors = { alta:"var(--rose)", média:"var(--amber)", baixa:"var(--emerald)" };
+
+function TasksPage() {
+  const [cols, setCols] = useState(INIT_COLS);
+  const [view, setView] = useState("kanban");
+
+  const totalTasks = Object.values(cols).flatMap(c=>c.cards).length;
+  const doneTasks = cols.done.cards.length;
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="tasks"/>
+      <div className="main-area">
+        <Topbar page="Tarefas" actions={
+          <button className="btn btn-violet btn-sm">+ Nova tarefa</button>
+        }/>
+        <div className="page-content">
+
+          <div style={{ display:"flex", alignItems:"center", gap:20, marginBottom:20, flexWrap:"wrap" }}>
+            <div>
+              <h1 style={{ fontFamily:"var(--font-display)", fontSize:"1.75rem", fontWeight:400, letterSpacing:"-.02em", marginBottom:4 }}>
+                Quadro de <em style={{ fontStyle:"italic", color:"var(--violet)" }}>tarefas</em>
+              </h1>
+            </div>
+            <div style={{ display:"flex", gap:16, marginLeft:"auto", alignItems:"center" }}>
+              <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--muted)" }}>
+                {doneTasks}/{totalTasks} concluídas
+              </div>
+              <div style={{ width:120 }}>
+                <div className="progress-bar"><div className="progress-fill" style={{ width:`${doneTasks/totalTasks*100}%` }}></div></div>
+              </div>
+              <div style={{ display:"flex", gap:4 }}>
+                {[["kanban","⊞ Kanban"],["list","≡ Lista"]].map(([v,l]) => (
+                  <button key={v} className={`btn btn-sm ${view===v?"btn-primary":"btn-ghost"}`} onClick={() => setView(v)}>{l}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {view === "kanban" ? (
+            <div className="kanban">
+              {Object.entries(cols).map(([colId, col]) => (
+                <div key={colId} className="col">
+                  <div className="col-head">
+                    <div className="col-title">
+                      <span className="col-dot" style={{ background:col.dot }}></span>
+                      {col.label}
+                    </div>
+                    <span className="col-count">{col.cards.length}</span>
+                  </div>
+                  {col.cards.map(card => (
+                    <div key={card.id} className="task-card">
+                      <span className="task-tag" style={{ background:card.tagCls, color:card.tagColor }}>{card.tag}</span>
+                      <div className="task-title">{card.title}</div>
+                      <div className="task-meta">
+                        <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                          <span className="priority-dot" style={{ background:priorityColors[card.priority] }}></span>
+                          <span>{card.due}</span>
+                        </div>
+                        <div className="task-avs">
+                          {card.avs.map((c,i) => (
+                            <div key={i} className={`task-av ${c}`} style={{ background:c==="c1"?"#7c3aed":c==="c2"?"#06b6d4":c==="c3"?"#f59e0b":"#10b981" }}>
+                              {c==="c1"?"P":c==="c2"?"A":c==="c3"?"L":"B"}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button className="add-task">+ Adicionar tarefa</button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="card">
+              {Object.values(cols).flatMap(c=>c.cards).map((card,i,arr) => (
+                <div key={card.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 8px", borderBottom:i<arr.length-1?"1px solid var(--line)":"none" }}>
+                  <span className="priority-dot" style={{ background:priorityColors[card.priority] }}></span>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:"0.875rem", fontWeight:500 }}>{card.title}</div>
+                  </div>
+                  <span className="task-tag" style={{ background:card.tagCls, color:card.tagColor, fontSize:"0.625rem", padding:"2px 8px" }}>{card.tag}</span>
+                  <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)", minWidth:60, textAlign:"right" }}>{card.due}</span>
+                  <div className="task-avs">
+                    {card.avs.slice(0,2).map((c,i) => (
+                      <div key={i} className={`task-av ${c}`} style={{ background:c==="c1"?"#7c3aed":c==="c2"?"#06b6d4":c==="c3"?"#f59e0b":"#10b981" }}>
+                        {c==="c1"?"P":c==="c2"?"A":c==="c3"?"L":"B"}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<TasksPage/>);
+</script>
+</body>
+</html>

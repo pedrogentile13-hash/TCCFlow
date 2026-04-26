@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Configurações — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <style>
+    .settings-layout{display:grid;grid-template-columns:200px 1fr;gap:0;height:100%;overflow:hidden;}
+    .settings-nav{border-right:1px solid var(--line);padding:16px 10px;background:var(--paper);}
+    .settings-nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;font-size:.875rem;color:var(--ink-2);cursor:pointer;transition:background .15s;margin-bottom:2px;}
+    .settings-nav-item:hover{background:var(--bg-2);}
+    .settings-nav-item.active{background:var(--grad);color:white;}
+    .settings-content{overflow-y:auto;padding:24px 32px;}
+    .section-title{font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-.02em;margin-bottom:4px;}
+    .section-title em{font-style:italic;color:var(--violet);}
+    .section-sub{font-size:.875rem;color:var(--muted);margin-bottom:24px;}
+    .settings-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line);}
+    .settings-row:last-child{border-bottom:none;}
+    .settings-row .row-info{flex:1;}
+    .settings-row .row-label{font-weight:500;font-size:.9375rem;margin-bottom:2px;}
+    .settings-row .row-desc{font-size:.8125rem;color:var(--muted);}
+    .toggle-switch{width:42px;height:24px;border-radius:999px;background:var(--line-2);position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;}
+    .toggle-switch.on{background:var(--violet);}
+    .toggle-switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .25s;}
+    .toggle-switch.on::after{transform:translateX(18px);}
+  </style>
+</head>
+<body><div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const SECTIONS = [
+  { id:"profile",  icon:"👤", label:"Perfil" },
+  { id:"notif",    icon:"🔔", label:"Notificações" },
+  { id:"appear",   icon:"🎨", label:"Aparência" },
+];
+
+function Toggle({ on, onToggle }) {
+  return <div className={`toggle-switch ${on?"on":""}`} onClick={onToggle}></div>;
+}
+
+function ProfileSection() {
+  return (
+    <div>
+      <div className="section-title">Perfil <em>pessoal</em></div>
+      <div className="section-sub">Informações visíveis para sua equipe.</div>
+      <div className="card" style={{ marginBottom:16 }}>
+        <div style={{ display:"flex", gap:20, alignItems:"center", marginBottom:24 }}>
+          <div style={{ position:"relative" }}>
+            <div className="av c1" style={{ width:64, height:64, fontSize:"1.25rem", fontWeight:700 }}>PG</div>
+          </div>
+          <div>
+            <div style={{ fontWeight:600, fontSize:"1rem" }}>Pedro Gentile</div>
+            <div style={{ color:"var(--muted)", fontSize:"0.875rem" }}>pedro@email.com</div>
+            <span className="tag tag-violet" style={{ marginTop:6, display:"inline-flex" }}>Plano Pro</span>
+          </div>
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+          <div className="field" style={{ marginBottom:0 }}><label>Nome completo</label><input type="text" defaultValue="Pedro Gentile"/></div>
+          <div className="field" style={{ marginBottom:0 }}><label>E-mail</label><input type="email" defaultValue="pedro@email.com"/></div>
+        </div>
+        <div style={{ marginTop:16 }}>
+          <button className="btn btn-primary">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NotifSection({ prefs, toggle }) {
+  return (
+    <div>
+      <div className="section-title">Notificações</div>
+      <div className="section-sub">Controle o que você recebe e quando.</div>
+      <div className="card">
+        {[
+          { id:"tasks", label:"Novas tarefas atribuídas", desc:"Quando alguém te atribuir uma tarefa" },
+          { id:"mentions", label:"Menções no chat", desc:"Quando alguém te mencionar" },
+          { id:"deadlines", label:"Prazos próximos", desc:"Alerta 24h antes do vencimento" },
+        ].map((it, idx, arr) => (
+          <div key={it.id} className="settings-row" style={{borderBottom:idx<arr.length-1?"1px solid var(--line)":"none"}}>
+            <div className="row-info">
+              <div className="row-label">{it.label}</div>
+              <div className="row-desc">{it.desc}</div>
+            </div>
+            <Toggle on={prefs[it.id]} onToggle={() => toggle(it.id)}/>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AppearSection({ prefs, toggle }) {
+  return (
+    <div>
+      <div className="section-title">Aparência</div>
+      <div className="section-sub">Personalize como o TCCFlow aparece.</div>
+      <div className="card">
+        <div className="settings-row">
+          <div className="row-info"><div className="row-label">Modo escuro</div><div className="row-desc">Ativa o tema dark em toda a plataforma</div></div>
+          <Toggle on={prefs.dark} onToggle={() => toggle("dark")}/>
+        </div>
+        <div className="settings-row">
+          <div className="row-info"><div className="row-label">Animações</div><div className="row-desc">Transições e animações de interface</div></div>
+          <Toggle on={prefs.anim} onToggle={() => toggle("anim")}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsPage() {
+  const [section, setSection] = useState("profile");
+  const [prefs, setPrefs] = useState({ tasks:true, mentions:true, deadlines:true, dark:false, anim:true });
+
+  function toggle(key) { setPrefs(p => ({ ...p, [key]:!p[key] })); }
+
+  const content = {
+    profile: <ProfileSection/>,
+    notif: <NotifSection prefs={prefs} toggle={toggle}/>,
+    appear: <AppearSection prefs={prefs} toggle={toggle}/>,
+  };
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="settings"/>
+      <div className="main-area">
+        <Topbar page="Configurações"/>
+        <div style={{ flex:1, display:"grid", gridTemplateColumns:"200px 1fr", overflow:"hidden" }}>
+          <div style={{ borderRight:"1px solid var(--line)", padding:"16px 10px", background:"var(--paper)", overflowY:"auto" }}>
+            <div className="mono-label" style={{ marginBottom:8, padding:"0 4px" }}>Configurações</div>
+            {SECTIONS.map(s => (
+              <div key={s.id} className={`settings-nav-item ${section===s.id?"active":""}`} onClick={() => setSection(s.id)}>
+                <span>{s.icon}</span> {s.label}
+              </div>
+            ))}
+          </div>
+          <div style={{ overflowY:"auto", padding:"28px 32px" }}>
+            {content[section]}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<SettingsPage/>);
+</script>
+</body>
+</html>

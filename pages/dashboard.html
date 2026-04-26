@@ -1,597 +1,186 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-1WX7MD9CL9');
-    </script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
-    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
-    <link rel="icon" type="image/png" href="../favicon.png">
-    <link rel="apple-touch-icon" href="../favicon.png">
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#7c3aed">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - TCCFlow</title>
-    <script src="../js/darkmode.js"></script>
-    <script src="../js/i18n.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
-    </style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Dashboard — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
 
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
+const MY_TASKS = [
+  { id:1, title:"Definir metodologia da pesquisa", tag:"Pesquisa", tagCls:"tag-cyan", due:"Hoje", priority:"alta" },
+  { id:2, title:"Escrever introdução do capítulo 1", tag:"Escrita", tagCls:"tag-violet", due:"Amanhã", priority:"média" },
+  { id:3, title:"Revisar referências ABNT", tag:"Revisão", tagCls:"tag-amber", due:"28 abr", priority:"baixa" },
+  { id:4, title:"Reunião com orientador", tag:"Reunião", tagCls:"tag-emerald", due:"29 abr", priority:"alta" },
+];
 
-    <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm" data-i18n="nav.dashboard">Dashboard</a>
-                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.project">Projeto</a>
-                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.ia">I.A.</a>
-                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.calendar">Calendário</a>
-                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.tools"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
-                    <div class="relative" id="moreDropdown">
-                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1" data-i18n="nav.more">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
-                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.tasks">Tarefas</a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.team">Equipe</a>
-                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
-                            <div class="border-t border-slate-100 my-1"></div>
-                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.plans"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
-                        </div>
-                    </div>
-                </div><div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin">
-                        <i class="fa-solid fa-shield-halved text-sm"></i>
-                    </a>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
-                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
-                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
-                    </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
-                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                    </button>
-                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-bars text-sm"></i>
-                    </button>
-                </div>
+const TEAM_MEMBERS = [
+  { initials:"PG", name:"Pedro Gentile", role:"Líder", cls:"c1", status:"online" },
+  { initials:"AM", name:"Ana Martins",   role:"Pesquisadora", cls:"c2", status:"online" },
+  { initials:"LF", name:"Lucas Ferreira",role:"Redator", cls:"c3", status:"away" },
+  { initials:"BN", name:"Beatriz Nunes", role:"Revisora", cls:"c4", status:"offline" },
+];
+
+const ACTIVITY = [
+  { who:"Ana Martins",   action:"adicionou uma tarefa", what:"Coleta de dados", time:"há 12 min", cls:"c2" },
+  { who:"Lucas Ferreira",action:"concluiu",             what:"Pesquisa bibliográfica", time:"há 1h", cls:"c3" },
+  { who:"Você",          action:"atualizou o projeto",  what:"Objetivos específicos", time:"há 2h", cls:"c1" },
+  { who:"Beatriz Nunes", action:"comentou em",          what:"Introdução rascunho", time:"ontem", cls:"c4" },
+];
+
+function PriorityDot({ p }) {
+  const colors = { alta:"var(--rose)", média:"var(--amber)", baixa:"var(--emerald)" };
+  return <span style={{width:7,height:7,borderRadius:"50%",background:colors[p],display:"inline-block",flexShrink:0}}></span>;
+}
+
+function Dashboard() {
+  const [progress] = useState(34);
+  const [shown, setShown] = useState(false);
+  useEffect(() => { setTimeout(() => setShown(true), 50); }, []);
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="dashboard"/>
+      <div className="main-area">
+        <Topbar page="Dashboard"/>
+        <div className="page-content">
+
+          <div className={`reveal ${shown?"in":""}`} style={{marginBottom:28}}>
+            <div style={{background:"var(--grad)",borderRadius:16,padding:"24px 28px",color:"white",position:"relative",overflow:"hidden"}}>
+              <div style={{position:"absolute",right:-40,top:-40,width:220,height:220,borderRadius:"50%",background:"rgba(255,255,255,.08)"}}></div>
+              <div style={{position:"absolute",right:60,bottom:-60,width:160,height:160,borderRadius:"50%",background:"rgba(255,255,255,.05)"}}></div>
+              <div style={{fontFamily:"var(--font-mono)",fontSize:"0.6875rem",textTransform:"uppercase",letterSpacing:"0.12em",opacity:.8,marginBottom:6}}>Bem-vindo de volta 👋</div>
+              <h2 style={{fontFamily:"var(--font-display)",fontSize:"1.75rem",fontWeight:400,margin:"0 0 4px",letterSpacing:"-0.02em"}}>Bom dia, <em>Pedro!</em></h2>
+              <p style={{margin:0,opacity:.85,fontSize:"0.9375rem"}}>Impacto das Redes Sociais no Desempenho Acadêmico</p>
+              <div style={{display:"flex",alignItems:"center",gap:16,marginTop:16}}>
+                <div style={{fontFamily:"var(--font-mono)",fontSize:"0.75rem",opacity:.8}}>Código de entrada:</div>
+                <div style={{background:"rgba(255,255,255,.2)",padding:"4px 12px",borderRadius:6,fontFamily:"var(--font-mono)",fontSize:"0.875rem",fontWeight:600,letterSpacing:"0.08em"}}>TCC-2026-A4F7</div>
+              </div>
             </div>
-        </div>
-        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50" data-i18n="nav.dashboard">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.project">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tasks">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.ia">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.calendar">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.team">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tools">Ferramentas</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.plans">Planos</a>
-            <a href="painel-admin.html" class="admin-panel-btn hidden px-4 py-2 rounded-lg text-sm font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 transition flex items-center gap-2"><i class="fa-solid fa-shield-halved text-xs"></i>Painel Admin</a>
-        </div>
-    
-    <script>
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('moreDropdown');
-        const menu = document.getElementById('moreMenu');
-        if (dropdown && menu && !dropdown.contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
-    </script>
-    </nav>
+          </div>
 
-    <!-- Main Content -->
-    <main class="relative z-10 pt-16 min-h-screen pb-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className={`stat-grid reveal ${shown?"in":""} d1`}>
+            <div className="stat-card">
+              <div className="stat-label">Membros</div>
+              <div className="stat-value">4</div>
+              <div className="stat-sub">de 8 no plano Pro</div>
+              <div className="stat-icon">👥</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">Minhas Tarefas</div>
+              <div className="stat-value">7</div>
+              <div className="stat-sub">3 com prazo hoje</div>
+              <div className="stat-icon">📋</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">Concluídas</div>
+              <div className="stat-value">12</div>
+              <div className="stat-sub">esta semana: +4</div>
+              <div className="stat-icon">✅</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">Progresso</div>
+              <div className="stat-value">{progress}%</div>
+              <div className="progress-bar"><div className="progress-fill" style={{width:`${progress}%`}}></div></div>
+              <div className="stat-icon">📈</div>
+            </div>
+          </div>
 
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2" data-i18n="dash.welcome">Bem-vindo ao seu TCC!</h1>
-                    <p class="text-slate-500 text-sm sm:text-base" id="projectInfo">Carregando...</p>
-                </div>
-                <button id="quickAddTaskBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-5 py-2.5 rounded-xl font-medium hover:shadow-lg hover:shadow-violet-500/25 transition text-sm w-full sm:w-auto">
-                    <i class="fa-solid fa-plus mr-2"></i><span data-i18n="dash.newTask">Nova Tarefa</span>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 340px",gap:16}} className={`reveal ${shown?"in":""} d2`}>
+            <div className="card">
+              <div className="card-title" style={{justifyContent:"space-between"}}>
+                <span style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span className="ct-icon">📋</span> Minhas Tarefas
+                </span>
+                <a href="tasks.html" className="btn btn-ghost btn-sm">Ver todas</a>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {MY_TASKS.map(t => (
+                  <div key={t.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:10,background:"var(--bg-2)",border:"1px solid var(--line)",transition:"background .15s",cursor:"pointer"}}
+                    onMouseEnter={e=>e.currentTarget.style.background="var(--bg)"}
+                    onMouseLeave={e=>e.currentTarget.style.background="var(--bg-2)"}>
+                    <PriorityDot p={t.priority}/>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"0.875rem",fontWeight:500,marginBottom:2}}>{t.title}</div>
+                      <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                        <span className={`tag ${t.tagCls}`}>{t.tag}</span>
+                        <span style={{fontFamily:"var(--font-mono)",fontSize:"0.6875rem",color:"var(--muted)"}}>Vence {t.due}</span>
+                      </div>
+                    </div>
+                    <button style={{width:22,height:22,borderRadius:6,border:"1.5px solid var(--line)",background:"var(--paper)",cursor:"pointer",flexShrink:0,transition:"all .2s"}}
+                      onMouseEnter={e=>{e.currentTarget.style.background="var(--emerald)";e.currentTarget.style.borderColor="var(--emerald)"}}
+                      onMouseLeave={e=>{e.currentTarget.style.background="var(--paper)";e.currentTarget.style.borderColor="var(--line)"}}></button>
+                  </div>
+                ))}
+                <button className="btn btn-ghost" style={{width:"100%",justifyContent:"center",marginTop:4}}>
+                  + Nova tarefa
                 </button>
+              </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs sm:text-sm text-slate-500" data-i18n="dash.members">Membros</span>
-                        <i class="fa-solid fa-users text-violet-600 text-base sm:text-lg"></i>
-                    </div>
-                    <div class="text-2xl sm:text-3xl font-bold" id="memberCount">0</div>
+            <div style={{display:"flex",flexDirection:"column",gap:16}}>
+              <div className="card">
+                <div className="card-title" style={{justifyContent:"space-between"}}>
+                  <span style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span className="ct-icon">👥</span> Equipe
+                  </span>
+                  <a href="team.html" className="btn btn-ghost btn-sm">Gerenciar</a>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs sm:text-sm text-slate-500" data-i18n="dash.tasks">Tarefas</span>
-                        <i class="fa-solid fa-list-check text-cyan-600 text-base sm:text-lg"></i>
+                <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                  {TEAM_MEMBERS.map(m => (
+                    <div key={m.name} style={{display:"flex",alignItems:"center",gap:10}}>
+                      <div style={{position:"relative"}}>
+                        <div className={`av av-sm ${m.cls}`}>{m.initials}</div>
+                        <span style={{position:"absolute",bottom:0,right:0,width:8,height:8,borderRadius:"50%",
+                          background:m.status==="online"?"var(--emerald)":m.status==="away"?"var(--amber)":"var(--line-2)",
+                          border:"2px solid var(--paper)"}}></span>
+                      </div>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:"0.8125rem",fontWeight:500}}>{m.name}</div>
+                        <div style={{fontFamily:"var(--font-mono)",fontSize:"0.625rem",color:"var(--muted)"}}>{m.role}</div>
+                      </div>
                     </div>
-                    <div class="text-2xl sm:text-3xl font-bold" id="taskCount">0</div>
+                  ))}
                 </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs sm:text-sm text-slate-500" data-i18n="dash.completed">Concluídas</span>
-                        <i class="fa-solid fa-check-circle text-emerald-600 text-base sm:text-lg"></i>
-                    </div>
-                    <div class="text-2xl sm:text-3xl font-bold" id="completedCount">0</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs sm:text-sm text-slate-500" data-i18n="dash.progress">Progresso</span>
-                        <i class="fa-solid fa-chart-pie text-amber-600 text-base sm:text-lg"></i>
-                    </div>
-                    <div class="text-2xl sm:text-3xl font-bold" id="progressPercent">0%</div>
-                </div>
-            </div>
+              </div>
 
-            <!-- Content Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2">
-                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-lg font-bold flex items-center gap-2">
-                                <i class="fa-solid fa-circle-check text-violet-600"></i>
-                                <span data-i18n="dash.myTasks">Minhas Tarefas</span>
-                            </h2>
-                            <a href="organizacao.html" class="text-sm text-violet-600 hover:underline" data-i18n="dash.viewAll">Ver Todas</a>
-                        </div>
-                        <div id="myTasksList" class="space-y-3">
-                            <div class="text-center py-8 text-slate-400">
-                                <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
-                                <p class="text-sm" data-i18n="dash.noTasks">Nenhuma tarefa atribuída</p>
-                            </div>
-                        </div>
-                    </div>
+              <div className="card">
+                <div className="card-title">
+                  <span className="ct-icon">⚡</span> Atividade Recente
                 </div>
-
-                <div>
-                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-lg font-bold flex items-center gap-2">
-                                <i class="fa-solid fa-people-group text-cyan-600"></i>
-                                <span data-i18n="dash.team">Equipe</span>
-                            </h2>
-                            <a href="equipe.html" class="text-sm text-violet-600 hover:underline" data-i18n="dash.manage">Gerenciar</a>
+                <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                  {ACTIVITY.map((a,i) => (
+                    <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+                      <div className={`av av-sm ${a.cls}`} style={{flexShrink:0}}>{a.who.charAt(0)}</div>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:"0.8125rem",lineHeight:1.4}}>
+                          <strong>{a.who}</strong> {a.action} <span style={{color:"var(--violet)"}}>{a.what}</span>
                         </div>
-                        <div id="teamList" class="space-y-2">
-                            <div class="text-center py-6 text-slate-400 text-sm">Carregando...</div>
-                        </div>
+                        <div style={{fontFamily:"var(--font-mono)",fontSize:"0.625rem",color:"var(--muted)",marginTop:2}}>{a.time}</div>
+                      </div>
                     </div>
+                  ))}
                 </div>
+              </div>
             </div>
-
-            <div class="mt-8 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6">
-                <h3 class="font-bold mb-2"><i class="fa-solid fa-lightbulb mr-2 text-amber-600"></i><span data-i18n="dash.tip">Dica:</span></h3>
-                <p class="text-sm text-slate-600" data-i18n="dash.tipText">Acesse a página de <strong>Organização</strong> para ver todas as tarefas do projeto, atribuir atividades e acompanhar o progresso de cada membro da equipe.</p>
-            </div>
+          </div>
 
         </div>
-    </main>
-
-    <!-- Quick Add Task Modal -->
-    <div id="quickTaskModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-            <h2 class="text-xl font-bold mb-4" id="dashModalTitle" data-i18n="dash.newTask">Nova Tarefa</h2>
-            <form id="quickTaskForm" class="space-y-4">
-                <input type="hidden" id="dashEditTaskId" value="">
-                <div>
-                    <label class="block text-sm font-medium mb-1" data-i18n="dash.taskTitle">Título</label>
-                    <input type="text" id="dashTaskTitle" required placeholder="Descrição da tarefa" data-i18n-placeholder="dash.taskPlaceholder"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1" data-i18n="dash.assignedTo">Atribuído a</label>
-                    <select id="dashTaskAssignee" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                        <option value="" data-i18n="dash.selectMember">Selecione um membro...</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1" data-i18n="dash.deadline">Prazo</label>
-                    <input type="date" id="dashTaskDueDate" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                </div>
-                <div id="dashStatusField" class="hidden">
-                    <label class="block text-sm font-medium mb-1" data-i18n="dash.status">Status</label>
-                    <select id="dashTaskStatus"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                        <option value="todo" data-i18n="dash.statusTodo">A Fazer</option>
-                        <option value="progress" data-i18n="dash.statusProgress">Em Andamento</option>
-                        <option value="done" data-i18n="dash.statusDone">Concluído</option>
-                    </select>
-                </div>
-                <div class="flex gap-3">
-                    <button type="submit" id="dashSubmitBtn" class="flex-1 bg-violet-600 hover:bg-violet-500 text-white font-medium py-2 rounded-lg transition" data-i18n="dash.create">Criar</button>
-                    <button type="button" onclick="closeDashModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 font-medium py-2 rounded-lg transition" data-i18n="dash.cancel">Cancelar</button>
-                </div>
-            </form>
-        </div>
+      </div>
     </div>
+  );
+}
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-init.js"></script>
-    <script src="../js/db-service.js"></script>
-    <script>
-        let currentUser = null;
-        let projectId = null;
-        let memberNames = {};
-
-        document.getElementById('mobileNavBtn').addEventListener('click', () => {
-            document.getElementById('mobileNav').classList.toggle('hidden');
-        });
-
-        let _dashInitialized = false;
-        auth.onAuthStateChanged(async user => {
-            if (!user) { window.location.href = 'login.html'; return; }
-            if (_dashInitialized) return;
-            _dashInitialized = true;
-            currentUser = user;
-            document.getElementById('userName').textContent = user.displayName || i18n.t('common.user');
-
-            // Load navbar avatar
-            if (user.photoURL) {
-                const navAvatar = document.getElementById('navAvatar');
-                const navAvatarIcon = document.getElementById('navAvatarIcon');
-                if (navAvatar && navAvatarIcon) {
-                    navAvatar.src = user.photoURL;
-                    navAvatar.classList.remove('hidden');
-                    navAvatarIcon.classList.add('hidden');
-                }
-            }
-
-            // Ensure user doc exists and sync photo
-            // This is critical for Google OAuth: the redirect goes directly to
-            // dashboard.html, so the user record must be created here.
-            try {
-                const { data: existingUser } = await _supa.from('users').select('id, photo_url').eq('id', user.uid).maybeSingle();
-                if (!existingUser) {
-                    // Use upsert with ignoreDuplicates to handle race conditions
-                    // (e.g., login.html callback also trying to create the record)
-                    await _supa.from('users').upsert({
-                        id: user.uid,
-                        name: user.displayName || i18n.t('common.user'),
-                        email: user.email,
-                        photo_url: user.photoURL || null,
-                        role: 'student',
-                        created_at: new Date().toISOString()
-                    }, { onConflict: 'id', ignoreDuplicates: true });
-                    console.log('[DASHBOARD] Created user record for', user.email);
-                } else if (user.photoURL && !existingUser.photo_url) {
-                    await _supa.from('users').update({ photo_url: user.photoURL }).eq('id', user.uid);
-                }
-            } catch (err) { console.log('Auto-create user error:', err); }
-
-
-            if (isFirebaseConfigured()) {
-                try {
-                    const { data: userData, error: userError } = await _supa
-                        .from('users')
-                        .select('project_id')
-                        .eq('id', user.uid)
-                        .maybeSingle();
-
-                    if (userError) console.error('[DASHBOARD] Error fetching user project_id:', userError);
-
-                    if (userData && userData.project_id) {
-                        projectId = userData.project_id;
-                        console.log('[DASHBOARD] Found project_id:', projectId);
-                        await loadDashboard();
-                    } else {
-                        console.log('[DASHBOARD] No project_id found, running fallback checks...');
-                        // Fallback: check if user is in any project's members array
-                        let foundProject = false;
-                        try {
-                            const { data: projects, error: memberErr } = await _supa
-                                .from('projects')
-                                .select('id')
-                                .contains('members', [user.uid])
-                                .limit(1);
-
-                            if (memberErr) console.log('[DASHBOARD] Members fallback query error:', memberErr);
-
-                            if (projects && projects.length > 0) {
-                                // User is in members array but project_id is missing — fix it
-                                projectId = projects[0].id;
-                                console.log('[DASHBOARD] Found project via members array:', projectId);
-                                await _supa.from('users').update({ project_id: projectId }).eq('id', user.uid);
-                                foundProject = true;
-                                await loadDashboard();
-                            }
-                        } catch (e) {
-                            console.log('[DASHBOARD] Fallback member check failed:', e);
-                        }
-
-                        // Also check if user owns any project
-                        if (!foundProject) {
-                            try {
-                                const { data: ownedProjects, error: ownerErr } = await _supa
-                                    .from('projects')
-                                    .select('id')
-                                    .eq('owner_id', user.uid)
-                                    .limit(1);
-
-                                if (ownerErr) console.log('[DASHBOARD] Owner fallback query error:', ownerErr);
-
-                                if (ownedProjects && ownedProjects.length > 0) {
-                                    projectId = ownedProjects[0].id;
-                                    console.log('[DASHBOARD] Found project via owner_id:', projectId);
-                                    await _supa.from('users').update({ project_id: projectId }).eq('id', user.uid);
-                                    foundProject = true;
-                                    await loadDashboard();
-                                }
-                            } catch (e) {
-                                console.log('[DASHBOARD] Fallback owner check failed:', e);
-                            }
-                        }
-
-                        if (!foundProject) {
-                            console.log('[DASHBOARD] No project found for user');
-                            document.getElementById('projectInfo').innerHTML =
-                                '<span class="text-amber-600">' + i18n.t('dash.noProject') + ' <a href="equipe.html" class="underline font-semibold">' + i18n.t('dash.createProject') + '</a> ' + i18n.t('common.or') + ' <a href="equipe.html" class="underline font-semibold">' + i18n.t('dash.joinProject') + '</a></span>';
-                        }
-                    }
-                } catch (err) {
-                    console.error('[DASHBOARD] Supabase error:', err);
-                    document.getElementById('projectInfo').innerHTML =
-                        '<span class="text-amber-600">' + i18n.t('dash.loadError') + '</span>';
-                }
-            } else {
-                document.getElementById('projectInfo').innerHTML =
-                    '<span class="text-amber-600">Configure Supabase em js/supabase-init.js</span>';
-            }
-        });
-
-        async function loadDashboard() {
-            // Load project info from Supabase
-            const { data: project, error: projectError } = await _supa
-                .from('projects')
-                .select('name, code')
-                .eq('id', projectId)
-                .maybeSingle();
-            if (projectError) {
-                console.error('[DASHBOARD] Error loading project:', projectError);
-            }
-            if (!project) {
-                console.error('[DASHBOARD] Project not found or RLS blocked access for id:', projectId);
-                document.getElementById('projectInfo').innerHTML =
-                    '<span class="text-amber-600">' + i18n.t('dash.loadError') + '</span>';
-                return;
-            }
-
-            document.getElementById('projectInfo').innerHTML =
-                `<strong>${project.name}</strong> &bull; ${i18n.t('dash.code')} <code class="bg-slate-100 px-2 py-1 rounded text-violet-600 font-mono">${project.code}</code>`;
-
-            // Load members from USERS table (source of truth)
-            let projectMembers;
-            try {
-                const res = await _supa.from('users').select('id, name, email, photo_url').eq('project_id', projectId);
-                if (res.error) console.log('[DASHBOARD] Error loading members:', res.error);
-                projectMembers = res.error ? null : res.data;
-            } catch(e) { console.log('[DASHBOARD] Members query exception:', e); }
-            if (!projectMembers) {
-                try {
-                    const res2 = await _supa.from('users').select('id, name, email').eq('project_id', projectId);
-                    if (res2.error) console.log('[DASHBOARD] Retry members error:', res2.error);
-                    projectMembers = res2.data;
-                } catch(e) { console.log('[DASHBOARD] Retry members exception:', e); }
-            }
-
-            // Deduplicate by email
-            const seenEmails = new Set();
-            const uniqueMembers = [];
-            for (const m of (projectMembers || [])) {
-                const email = m.email || '';
-                if (email && seenEmails.has(email)) continue;
-                if (email) seenEmails.add(email);
-                uniqueMembers.push(m);
-                memberNames[m.id] = m.name || i18n.t('common.unknown');
-            }
-
-            document.getElementById('memberCount').textContent = uniqueMembers.length;
-
-            // Load member names for assignee select
-            const assigneeSelect = document.getElementById('dashTaskAssignee');
-            assigneeSelect.innerHTML = '<option value="">' + i18n.t('dash.selectMember') + '</option>';
-            for (const member of uniqueMembers) {
-                const option = document.createElement('option');
-                option.value = member.id;
-                option.textContent = member.name || i18n.t('common.noName');
-                assigneeSelect.appendChild(option);
-            }
-
-            // Load ALL tasks for the project from Supabase
-            const { data: tasksData } = await _supa
-                .from('tasks')
-                .select('*')
-                .eq('project_id', projectId);
-            const allTasks = (tasksData || []).map(t => ({
-                id: t.id, title: t.title, assignedTo: t.assigned_to,
-                dueDate: t.due_date, status: t.status
-            }));
-            const myTasks = allTasks.filter(t => t.assignedTo === currentUser.uid);
-
-            document.getElementById('taskCount').textContent = myTasks.length;
-            const completed = myTasks.filter(t => t.status === 'done').length;
-            document.getElementById('completedCount').textContent = completed;
-            document.getElementById('progressPercent').textContent =
-                myTasks.length > 0 ? Math.round((completed / myTasks.length) * 100) + '%' : '0%';
-
-            // Render my tasks with edit/delete
-            if (myTasks.length === 0) {
-                document.getElementById('myTasksList').innerHTML = `
-                    <div class="text-center py-8 text-slate-400">
-                        <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
-                        <p class="text-sm">${i18n.t('dash.noTasksAssigned')}</p>
-                    </div>`;
-            } else {
-                document.getElementById('myTasksList').innerHTML = myTasks.map(task => {
-                    const statusIcon = task.status === 'done' ? 'check-circle' : task.status === 'progress' ? 'spinner' : 'circle';
-                    const statusColor = task.status === 'done' ? 'text-emerald-600' :
-                                        task.status === 'progress' ? 'text-cyan-600' : 'text-amber-600';
-                    const statusLabel = task.status === 'done' ? i18n.t('dash.statusDone') : task.status === 'progress' ? i18n.t('dash.statusProgress') : i18n.t('dash.statusTodo');
-                    return `
-                        <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 group border border-slate-100">
-                            <i class="fa-solid fa-${statusIcon} ${statusColor} mt-0.5"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium">${task.title}</p>
-                                <div class="flex items-center gap-3 mt-1">
-                                    <p class="text-xs text-slate-400">${task.dueDate ? i18n.t('dash.deadlinePrefix') + ' ' + new Date(task.dueDate).toLocaleDateString('pt-BR') : ''}</p>
-                                    <span class="text-xs px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-emerald-50 text-emerald-700' : task.status === 'progress' ? 'bg-cyan-50 text-cyan-700' : 'bg-amber-50 text-amber-700'}">${statusLabel}</span>
-                                </div>
-                                <div class="flex gap-1 mt-2">
-                                    ${task.status !== 'todo' ? `<button onclick="dashChangeStatus('${task.id}', 'todo')" class="text-xs px-2 py-1 rounded bg-amber-50 text-amber-700 hover:bg-amber-100 transition">${i18n.t('dash.statusTodo')}</button>` : ''}
-                                    ${task.status !== 'progress' ? `<button onclick="dashChangeStatus('${task.id}', 'progress')" class="text-xs px-2 py-1 rounded bg-cyan-50 text-cyan-700 hover:bg-cyan-100 transition">${i18n.t('dash.statusProgress')}</button>` : ''}
-                                    ${task.status !== 'done' ? `<button onclick="dashChangeStatus('${task.id}', 'done')" class="text-xs px-2 py-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">${i18n.t('dash.statusDone')}</button>` : ''}
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                                <button onclick="dashEditTask('${task.id}', '${task.title.replace(/'/g, "\\'")}', '${task.assignedTo}', '${task.dueDate}', '${task.status}')"
-                                    class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition" title="Editar">
-                                    <i class="fa-solid fa-pen text-xs"></i>
-                                </button>
-                                <button onclick="dashDeleteTask('${task.id}')"
-                                    class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition" title="Apagar">
-                                    <i class="fa-solid fa-trash text-xs"></i>
-                                </button>
-                            </div>
-                        </div>`;
-                }).join('');
-            }
-
-            // Load team list from uniqueMembers (already loaded above)
-            const teamList = document.getElementById('teamList');
-            if (uniqueMembers.length === 0) {
-                teamList.innerHTML = '<p class="text-sm text-slate-400">' + i18n.t('dash.noMembers') + '</p>';
-            } else {
-                teamList.innerHTML = '';
-                for (const member of uniqueMembers) {
-                    const name = member.name || i18n.t('common.unknown');
-                    const photo = member.photo_url || '';
-                    teamList.innerHTML += `
-                        <div class="flex items-center gap-3 p-2 rounded-lg">
-                            ${photo
-                                ? `<img src="${photo}" alt="${name.charAt(0)}" class="w-8 h-8 rounded-full object-cover">`
-                                : `<div class="w-8 h-8 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">${name.charAt(0).toUpperCase()}</div>`
-                            }
-                            <div>
-                                <p class="text-sm font-medium">${name}</p>
-                                <p class="text-xs text-slate-400">${member.id === currentUser.uid ? i18n.t('common.you') : i18n.t('common.member')}</p>
-                            </div>
-                        </div>`;
-                }
-            }
-        }
-
-        // ========== Quick Task Modal ==========
-        document.getElementById('quickAddTaskBtn').addEventListener('click', () => {
-            document.getElementById('dashEditTaskId').value = '';
-            document.getElementById('dashModalTitle').textContent = i18n.t('dash.newTask');
-            document.getElementById('dashSubmitBtn').textContent = i18n.t('dash.create');
-            document.getElementById('dashStatusField').classList.add('hidden');
-            document.getElementById('quickTaskForm').reset();
-            document.getElementById('quickTaskModal').classList.remove('hidden');
-        });
-
-        function closeDashModal() {
-            document.getElementById('quickTaskModal').classList.add('hidden');
-        }
-
-        window.dashEditTask = function(id, title, assignee, dueDate, status) {
-            document.getElementById('dashEditTaskId').value = id;
-            document.getElementById('dashModalTitle').textContent = i18n.t('dash.editTask');
-            document.getElementById('dashSubmitBtn').textContent = i18n.t('dash.save');
-            document.getElementById('dashTaskTitle').value = title;
-            document.getElementById('dashTaskAssignee').value = assignee;
-            document.getElementById('dashTaskDueDate').value = dueDate;
-            document.getElementById('dashTaskStatus').value = status;
-            document.getElementById('dashStatusField').classList.remove('hidden');
-            document.getElementById('quickTaskModal').classList.remove('hidden');
-        };
-
-        document.getElementById('quickTaskForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!projectId) return;
-
-            const editId = document.getElementById('dashEditTaskId').value;
-            const title = document.getElementById('dashTaskTitle').value;
-            const assigned_to = document.getElementById('dashTaskAssignee').value || null;
-            const due_date = document.getElementById('dashTaskDueDate').value || null;
-            const status = editId ? document.getElementById('dashTaskStatus').value : 'todo';
-
-            try {
-                if (editId) {
-                    const { error } = await _supa.from('tasks')
-                        .update({ title, assigned_to, due_date, status })
-                        .eq('id', editId);
-                    if (error) throw error;
-                } else {
-                    const { error } = await _supa.from('tasks')
-                        .insert({ project_id: projectId, title, assigned_to, due_date, status });
-                    if (error) throw error;
-                }
-                closeDashModal();
-                await loadDashboard();
-            } catch (err) {
-                alert(i18n.t('common.error') + ' ' + err.message);
-            }
-        });
-
-        window.dashChangeStatus = async function(taskId, newStatus) {
-            try {
-                const { error } = await _supa.from('tasks').update({ status: newStatus }).eq('id', taskId);
-                if (error) throw error;
-                await loadDashboard();
-            } catch (err) { alert(i18n.t('common.error') + ' ' + err.message); }
-        };
-
-        window.dashDeleteTask = async function(taskId) {
-            if (!confirm(i18n.t('dash.confirmDelete'))) return;
-            try {
-                const { error } = await _supa.from('tasks').delete().eq('id', taskId);
-                if (error) throw error;
-                await loadDashboard();
-            } catch (err) { alert(i18n.t('common.error') + ' ' + err.message); }
-        };
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await auth.signOut();
-            window.location.href = '../index.html';
-        });
-    </script>
-    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+ReactDOM.createRoot(document.getElementById("root")).render(<Dashboard/>);
+</script>
 </body>
 </html>

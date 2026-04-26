@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Equipe — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+</head>
+<body><div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const MEMBERS = [
+  { initials:"PG", name:"Pedro Gentile",  email:"pedro@email.com",  role:"Líder",       cls:"c1", status:"online",  tasks:7, done:3 },
+  { initials:"AM", name:"Ana Martins",    email:"ana@email.com",    role:"Pesquisadora", cls:"c2", status:"online",  tasks:5, done:4 },
+  { initials:"LF", name:"Lucas Ferreira", email:"lucas@email.com",  role:"Redator",     cls:"c3", status:"away",    tasks:4, done:1 },
+  { initials:"BN", name:"Beatriz Nunes",  email:"beatriz@email.com",role:"Revisora",    cls:"c4", status:"offline", tasks:3, done:2 },
+];
+
+const statusColors = { online:"var(--emerald)", away:"var(--amber)", offline:"var(--line-2)" };
+const roleColors = { "Líder":"tag-violet", "Pesquisadora":"tag-cyan", "Redator":"tag-amber", "Revisora":"tag-emerald" };
+
+function TeamPage() {
+  const [copied, setCopied] = useState(false);
+  const [tab, setTab] = useState("membros");
+
+  function copyCode() {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  const slots = 8;
+  const used = MEMBERS.length;
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="team"/>
+      <div className="main-area">
+        <Topbar page="Equipe"/>
+        <div className="page-content">
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16 }}>
+
+            <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+              <div style={{ display:"flex", gap:2, background:"var(--bg-2)", borderRadius:10, padding:4, width:"fit-content" }}>
+                {[["membros","Membros"],["projetos","Meus Projetos"]].map(([v,l]) => (
+                  <button key={v} className={`btn btn-sm ${tab===v?"btn-primary":"btn-ghost"}`} style={{ border:"none" }} onClick={() => setTab(v)}>{l}</button>
+                ))}
+              </div>
+
+              {tab === "membros" && (
+                <div className="card">
+                  <div className="card-title" style={{ justifyContent:"space-between" }}>
+                    <span style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <span className="ct-icon">👥</span> Membros da Equipe
+                    </span>
+                    <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)" }}>{used}/{slots} usuários</span>
+                  </div>
+
+                  <div style={{ display:"flex", gap:6, marginBottom:20 }}>
+                    {Array.from({ length:slots }).map((_, i) => (
+                      <div key={i} style={{ flex:1, height:6, borderRadius:999, background:i<used?"#7c3aed":"var(--line)" }}></div>
+                    ))}
+                  </div>
+
+                  <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                    {MEMBERS.map(m => (
+                      <div key={m.name} style={{ display:"flex", alignItems:"center", gap:14, padding:"12px 14px", background:"var(--bg-2)", borderRadius:12, border:"1px solid var(--line)" }}>
+                        <div style={{ position:"relative" }}>
+                          <div className={`av av-lg ${m.cls}`}>{m.initials}</div>
+                          <span style={{ position:"absolute", bottom:1, right:1, width:10, height:10, borderRadius:"50%", background:statusColors[m.status], border:"2px solid var(--paper)" }}></span>
+                        </div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontWeight:600, fontSize:"0.9375rem", marginBottom:2 }}>{m.name}</div>
+                          <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>{m.email}</div>
+                        </div>
+                        <span className={`tag ${roleColors[m.role]}`}>{m.role}</span>
+                        <div style={{ textAlign:"right" }}>
+                          <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)" }}>Tarefas</div>
+                          <div style={{ fontWeight:600, fontSize:"0.875rem" }}>{m.done}/{m.tasks}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {tab === "projetos" && (
+                <div className="card">
+                  <div style={{ fontWeight:600, fontSize:"1rem", marginBottom:4 }}>Impacto Redes Sociais — Desempenho Acadêmico</div>
+                  <div style={{ display:"flex", gap:12, alignItems:"center", marginBottom:12 }}>
+                    <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--muted)" }}>TCC-2026-A4F7</span>
+                    <span className="tag tag-emerald">Em andamento</span>
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <div className="progress-bar" style={{ flex:1 }}><div className="progress-fill" style={{ width:"34%" }}></div></div>
+                    <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--muted)" }}>34%</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+              <div className="card" style={{ background:"linear-gradient(135deg,rgba(124,58,237,.06),rgba(6,182,212,.06))", border:"1px solid rgba(124,58,237,.2)" }}>
+                <div className="card-title"><span className="ct-icon">🔗</span> Código de convite</div>
+                <div style={{ textAlign:"center", padding:"12px 0 8px" }}>
+                  <div style={{ fontFamily:"var(--font-mono)", fontSize:"1.375rem", fontWeight:700, color:"var(--violet)", letterSpacing:"0.1em", marginBottom:12 }}>TCC-2026-A4F7</div>
+                  <button className="btn btn-violet" style={{ width:"100%" }} onClick={copyCode}>
+                    {copied ? "✓ Copiado!" : "Copiar código"}
+                  </button>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-title"><span className="ct-icon">⭐</span> Uso do Plano Pro</div>
+                <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:20, padding:"16px 0" }}>
+                  <div style={{ position:"relative", width:80, height:80 }}>
+                    <svg viewBox="0 0 80 80" style={{ transform:"rotate(-90deg)" }}>
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="var(--line)" strokeWidth="8"/>
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="url(#grad)" strokeWidth="8"
+                        strokeDasharray="50 201" strokeLinecap="round"/>
+                      <defs><linearGradient id="grad"><stop offset="0%" stopColor="#7c3aed"/><stop offset="100%" stopColor="#06b6d4"/></linearGradient></defs>
+                    </svg>
+                    <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+                      <div style={{ fontFamily:"var(--font-display)", fontSize:"1.375rem", lineHeight:1 }}>4</div>
+                      <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.5625rem", color:"var(--muted)" }}>/ 8</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight:600, marginBottom:4 }}>4 membros ativos</div>
+                    <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>Capacidade: 8 membros</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<TeamPage/>);
+</script>
+</body>
+</html>

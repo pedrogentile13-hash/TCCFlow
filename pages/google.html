@@ -1,907 +1,124 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-1WX7MD9CL9');
-    </script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
-    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
-    <link rel="icon" type="image/png" href="../favicon.png">
-    <link rel="apple-touch-icon" href="../favicon.png">
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#7c3aed">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google - TCCFlow</title>
-    <script src="../js/darkmode.js"></script>
-    <script src="../js/i18n.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
-        .google-card:hover { transform: translateY(-2px); }
-    </style>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Google — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <style>
+    .g-action-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform .25s,box-shadow .25s;text-decoration:none;color:inherit;}
+    .g-action-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+    .g-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .g-file{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;background:var(--bg-2);border:1px solid var(--line);cursor:pointer;transition:background .15s;}
+    .g-file:hover{background:var(--paper);}
+  </style>
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
+<body><div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
 
-    <!-- Liquid Grass Background -->
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
+const QUICK_ACTIONS = [
+  { icon:"📄", label:"Google Docs", desc:"Criar documento do TCC" },
+  { icon:"📊", label:"Planilhas", desc:"Tabelas e dados da pesquisa" },
+  { icon:"📑", label:"Apresentações", desc:"Slides para a defesa" },
+  { icon:"📅", label:"Google Agenda", desc:"Sincronizar calendário" },
+];
+
+const SAVED_LINKS = [
+  { name:"TCC — Documento Principal", type:"Docs", icon:"📄", modified:"hoje" },
+  { name:"Dados Survey — Planilha", type:"Sheets", icon:"📊", modified:"ontem" },
+  { name:"Apresentação Qualificação", type:"Slides", icon:"📑", modified:"22 abr" },
+];
+
+function GooglePage() {
+  const [connected, setConnected] = useState(true);
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="google"/>
+      <div className="main-area">
+        <Topbar page="Google" actions={
+          connected && (
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <span style={{ width:8, height:8, borderRadius:"50%", background:"var(--emerald)" }}></span>
+              <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--emerald)" }}>pedro@gmail.com</span>
+            </div>
+          )
+        }/>
+        <div className="page-content">
+          {connected && (
+            <>
+              <div style={{ background:"var(--grad)", borderRadius:16, padding:"20px 24px", color:"white", display:"flex", alignItems:"center", gap:20, marginBottom:20 }}>
+                <div style={{ fontSize:"2rem" }}>🗂</div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontWeight:600, marginBottom:2 }}>Pasta compartilhada do TCC</div>
+                  <div style={{ fontSize:"0.8125rem", opacity:.8 }}>drive.google.com/drive/folders/TCC-2026</div>
+                </div>
+                <button className="btn" style={{ background:"white", color:"var(--violet)", fontWeight:600, flexShrink:0 }}>Abrir Drive →</button>
+              </div>
+
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 280px", gap:16 }}>
+                <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+                  <div className="card">
+                    <div className="card-title"><span className="ct-icon">⚡</span> Ações rápidas</div>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                      {QUICK_ACTIONS.map(a => (
+                        <div key={a.label} className="g-action-card">
+                          <div className="g-icon">{a.icon}</div>
+                          <div>
+                            <div style={{ fontWeight:600, fontSize:"0.9375rem" }}>{a.label}</div>
+                            <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>{a.desc}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div className="card-title" style={{ justifyContent:"space-between" }}>
+                      <span style={{ display:"flex", alignItems:"center", gap:8 }}><span className="ct-icon">🔗</span> Links salvos</span>
+                      <button className="btn btn-ghost btn-sm">+ Adicionar</button>
+                    </div>
+                    <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                      {SAVED_LINKS.map((f,i) => (
+                        <div key={i} className="g-file">
+                          <span style={{ fontSize:"1.25rem" }}>{f.icon}</span>
+                          <div style={{ flex:1 }}>
+                            <div style={{ fontSize:"0.875rem", fontWeight:500 }}>{f.name}</div>
+                            <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", color:"var(--muted)" }}>{f.type} · {f.modified}</div>
+                          </div>
+                          <button className="btn btn-ghost btn-sm">Abrir</button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card">
+                  <div className="card-title"><span className="ct-icon">🔧</span> Serviços</div>
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                    {[{icon:"🗂",label:"Drive"},{icon:"📧",label:"Gmail"},{icon:"🔔",label:"Meet"},{icon:"📝",label:"Forms"}].map(s => (
+                      <div key={s.label} style={{ textAlign:"center", padding:"16px", background:"var(--bg-2)", borderRadius:12, cursor:"pointer" }}>
+                        <div style={{ fontSize:"1.5rem", marginBottom:6 }}>{s.icon}</div>
+                        <div style={{ fontWeight:600, fontSize:"0.875rem" }}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
-
-    <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
-                    <div class="relative" id="moreDropdown">
-                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
-                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
-                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
-                            <div class="border-t border-slate-100 my-1"></div>
-                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
-                        </div>
-                    </div>
-                </div><div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
-                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
-                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
-                    </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
-                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                    </button>
-                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-bars text-sm"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
-        </div>
-    
-    <script>
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('moreDropdown');
-        const menu = document.getElementById('moreMenu');
-        if (dropdown && menu && !dropdown.contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
-    </script>
-    </nav>
-
-    <!-- PRO Gate Overlay -->
-    <div id="proGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
-        <div class="text-center max-w-md px-6">
-            <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-lock text-violet-600 text-3xl"></i>
-            </div>
-            <h2 class="text-2xl font-bold mb-3">Recurso Exclusivo PRO</h2>
-            <p class="text-sm text-slate-500 mb-8">As integrações com o Google são exclusivas do plano PRO. Assine para desbloquear Google Drive, Docs, Sheets e muito mais.</p>
-            <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
-                <i class="fa-solid fa-crown mr-2"></i>Assinar Plano PRO
-            </a>
-            <p class="text-xs text-slate-400 mt-4" id="proGatePrice">A partir de R$ 97,00/ano</p>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <main class="relative z-10 pt-16 min-h-screen pb-12">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold">Integrações Google</h1>
-                <p class="text-slate-500 mt-1">Conecte suas ferramentas do Google para potencializar o trabalho no TCC</p>
-            </div>
-
-            <!-- Google Drive - Shared Folder (PRO) -->
-            <div id="driveSection" class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-8 shadow-sm">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h2 class="text-lg font-bold">
-                            <i class="fa-brands fa-google-drive mr-2 text-emerald-600"></i>Pasta Compartilhada
-                            <span class="text-[10px] font-bold uppercase bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-2 py-0.5 rounded-full ml-2">PRO</span>
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-1">Crie uma pasta no Google Drive compartilhada com toda a equipe do TCC</p>
-                    </div>
-                </div>
-
-                <!-- Not connected state -->
-                <div id="driveNotConnected">
-                    <button id="connectDriveBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-5 py-3 rounded-xl transition mb-4">
-                        <i class="fa-brands fa-google mr-2"></i>Conectar Google Drive
-                    </button>
-                    <div id="driveSetupInfo" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-500">
-                        <p class="font-semibold text-slate-700 mb-2"><i class="fa-solid fa-info-circle mr-1"></i>Como configurar</p>
-                        <ol class="list-decimal list-inside space-y-1">
-                            <li>Acesse o <a href="https://console.cloud.google.com" target="_blank" class="text-violet-600 hover:underline">Google Cloud Console</a></li>
-                            <li>Crie um projeto e ative a <strong>Google Drive API</strong></li>
-                            <li>Configure a tela de consentimento OAuth</li>
-                            <li>Crie credenciais OAuth 2.0 (tipo: Aplicativo Web)</li>
-                            <li>Insira o Client ID no código (variável <code>GOOGLE_CLIENT_ID</code>)</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <!-- Connected state -->
-                <div id="driveConnected" class="hidden">
-                    <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-4">
-                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                        <span class="text-sm font-medium text-emerald-700">Google Drive conectado</span>
-                        <button id="disconnectDriveBtn" class="ml-auto text-xs text-slate-400 hover:text-red-500 transition">Desconectar</button>
-                    </div>
-
-                    <!-- No folder yet -->
-                    <div id="driveFolderCreate" class="hidden">
-                        <button id="createFolderBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-5 py-3 rounded-xl transition">
-                            <i class="fa-solid fa-folder-plus mr-2"></i>Criar Pasta Compartilhada do TCC
-                        </button>
-                        <p class="text-xs text-slate-400 mt-2">Uma pasta será criada no seu Google Drive e compartilhada com todos os membros da equipe.</p>
-                    </div>
-
-                    <!-- Folder exists -->
-                    <div id="driveFolderExists" class="hidden">
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
-                            <div class="flex items-center gap-4 mb-4">
-                                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                                    <i class="fa-solid fa-folder-open text-emerald-600 text-lg"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-sm font-bold" id="driveFolderName">Pasta do TCC</h4>
-                                    <p class="text-xs text-slate-400 truncate" id="driveFolderUrl"></p>
-                                </div>
-                                <a id="openFolderLink" href="#" target="_blank" class="bg-violet-100 hover:bg-violet-200 text-violet-600 text-xs font-medium px-4 py-2 rounded-lg transition">
-                                    <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Abrir
-                                </a>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <button id="createDocInFolder" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:bg-blue-50 hover:border-blue-200 transition">
-                                    <i class="fa-solid fa-file-word text-blue-600 text-lg mb-1"></i>
-                                    <p class="text-xs font-semibold">Novo Documento</p>
-                                </button>
-                                <button id="createSheetInFolder" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:bg-emerald-50 hover:border-emerald-200 transition">
-                                    <i class="fa-solid fa-table text-emerald-600 text-lg mb-1"></i>
-                                    <p class="text-xs font-semibold">Nova Planilha</p>
-                                </button>
-                                <button id="createSlidesInFolder" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:bg-amber-50 hover:border-amber-200 transition">
-                                    <i class="fa-solid fa-display text-amber-600 text-lg mb-1"></i>
-                                    <p class="text-xs font-semibold">Nova Apresentação</p>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="driveFeedback" class="hidden mt-3 text-sm rounded-xl px-4 py-3"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-8 shadow-sm">
-                <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-bolt mr-2 text-amber-600"></i>Ações Rápidas</h2>
-                <p class="text-xs text-slate-500 mb-6">Crie documentos e eventos diretamente do TCCFlow</p>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button id="createDocBtn" class="google-card bg-slate-50 border border-slate-200 rounded-xl p-5 text-left transition group">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-file-word text-blue-600 text-lg"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold group-hover:text-violet-600 transition">Novo Documento</h3>
-                                <p class="text-xs text-slate-500">Cria um Google Docs em branco para seu TCC</p>
-                            </div>
-                        </div>
-                    </button>
-
-                    <button id="createSheetBtn" class="google-card bg-slate-50 border border-slate-200 rounded-xl p-5 text-left transition group">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-table text-emerald-600 text-lg"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold group-hover:text-violet-600 transition">Nova Planilha</h3>
-                                <p class="text-xs text-slate-500">Google Sheets para dados e tabulações</p>
-                            </div>
-                        </div>
-                    </button>
-
-                    <button id="createSlidesBtn" class="google-card bg-slate-50 border border-slate-200 rounded-xl p-5 text-left transition group">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-display text-amber-600 text-lg"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold group-hover:text-violet-600 transition">Nova Apresentação</h3>
-                                <p class="text-xs text-slate-500">Google Slides para a defesa do TCC</p>
-                            </div>
-                        </div>
-                    </button>
-
-                    <button id="createEventBtn" class="google-card bg-slate-50 border border-slate-200 rounded-xl p-5 text-left transition group">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-calendar-plus text-violet-600 text-lg"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold group-hover:text-violet-600 transition">Novo Evento</h3>
-                                <p class="text-xs text-slate-500">Agende reunião ou prazo no Google Calendar</p>
-                            </div>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Calendar Event Form -->
-            <div id="eventForm" class="hidden bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
-                <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-calendar-plus mr-2 text-violet-600"></i>Criar Evento no Google Calendar</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-500 mb-1">Título do Evento</label>
-                        <input type="text" id="eventTitle" placeholder="Ex: Reunião com orientador"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-500 mb-1">Local (opcional)</label>
-                        <input type="text" id="eventLocation" placeholder="Ex: Sala 201, Escola..."
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-500 mb-1">Data e Hora Início</label>
-                        <input type="datetime-local" id="eventStart"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-500 mb-1">Data e Hora Fim</label>
-                        <input type="datetime-local" id="eventEnd"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label class="block text-xs font-medium text-slate-500 mb-1">Descrição (opcional)</label>
-                        <textarea id="eventDetails" rows="2" placeholder="Detalhes do evento..."
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
-                    </div>
-                </div>
-                <div class="flex gap-3">
-                    <button id="openCalendarEvent" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-5 py-2 rounded-xl transition">
-                        <i class="fa-brands fa-google mr-1"></i> Abrir no Google Calendar
-                    </button>
-                    <button id="cancelEvent" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold px-5 py-2 rounded-xl transition">
-                        Cancelar
-                    </button>
-                </div>
-            </div>
-
-            <!-- Saved Links -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-8 shadow-sm">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 class="text-lg font-bold"><i class="fa-solid fa-link mr-2 text-cyan-600"></i>Links Salvos</h2>
-                        <p class="text-xs text-slate-500 mt-1">Salve links do Google Drive, Docs, Sheets e outros</p>
-                    </div>
-                    <button id="addLinkBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-4 py-2 rounded-xl transition">
-                        <i class="fa-solid fa-plus mr-1"></i> Novo Link
-                    </button>
-                </div>
-
-                <div id="linkForm" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-1">Nome</label>
-                            <input type="text" id="linkName" placeholder="Ex: TCC - Documento Principal"
-                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-1">URL</label>
-                            <input type="url" id="linkUrl" placeholder="https://docs.google.com/..."
-                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-1">Tipo</label>
-                            <select id="linkType"
-                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                                <option value="docs">Google Docs</option>
-                                <option value="sheets">Google Sheets</option>
-                                <option value="slides">Google Slides</option>
-                                <option value="drive">Google Drive</option>
-                                <option value="calendar">Google Calendar</option>
-                                <option value="forms">Google Forms</option>
-                                <option value="other">Outro</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="flex gap-3">
-                        <button id="saveLink" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition">
-                            <i class="fa-solid fa-check mr-1"></i> Salvar
-                        </button>
-                        <button id="cancelLink" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold px-4 py-2 rounded-xl transition">
-                            Cancelar
-                        </button>
-                    </div>
-                </div>
-
-                <div id="linksList" class="space-y-3">
-                    <div class="text-center py-8 text-slate-400">
-                        <i class="fa-solid fa-link-slash text-2xl mb-2 block"></i>
-                        <p class="text-sm">Nenhum link salvo. Adicione seus documentos do Google!</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Google Services Grid -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                <h2 class="text-lg font-bold mb-2"><i class="fa-brands fa-google mr-2 text-violet-600"></i>Serviços Google</h2>
-                <p class="text-xs text-slate-500 mb-6">Acesse rapidamente os serviços que você mais usa</p>
-
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    <a href="https://drive.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
-                        <i class="fa-brands fa-google-drive text-2xl text-emerald-600 mb-2"></i>
-                        <p class="text-xs font-semibold text-slate-700">Drive</p>
-                    </a>
-                    <a href="https://docs.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
-                        <i class="fa-solid fa-file-word text-2xl text-blue-600 mb-2"></i>
-                        <p class="text-xs font-semibold text-slate-700">Docs</p>
-                    </a>
-                    <a href="https://sheets.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
-                        <i class="fa-solid fa-table text-2xl text-emerald-600 mb-2"></i>
-                        <p class="text-xs font-semibold text-slate-700">Sheets</p>
-                    </a>
-                    <a href="https://slides.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
-                        <i class="fa-solid fa-display text-2xl text-amber-600 mb-2"></i>
-                        <p class="text-xs font-semibold text-slate-700">Slides</p>
-                    </a>
-                    <a href="https://calendar.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
-                        <i class="fa-solid fa-calendar text-2xl text-violet-600 mb-2"></i>
-                        <p class="text-xs font-semibold text-slate-700">Calendar</p>
-                    </a>
-                    <a href="https://forms.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
-                        <i class="fa-solid fa-square-poll-vertical text-2xl text-purple-600 mb-2"></i>
-                        <p class="text-xs font-semibold text-slate-700">Forms</p>
-                    </a>
-                    <a href="https://scholar.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
-                        <i class="fa-solid fa-graduation-cap text-2xl text-cyan-600 mb-2"></i>
-                        <p class="text-xs font-semibold text-slate-700">Scholar</p>
-                    </a>
-                    <a href="https://meet.google.com" target="_blank" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center hover:bg-violet-50 hover:border-violet-200 transition group">
-                        <i class="fa-solid fa-video text-2xl text-rose-600 mb-2"></i>
-                        <p class="text-xs font-semibold text-slate-700">Meet</p>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-init.js"></script>
-    <script src="../js/pricing-config.js"></script>
-    <script src="../js/db-service.js"></script>
-    <script>
-        // Update PRO gate price from config
-        if (typeof PRICING !== 'undefined') {
-            const priceEl = document.getElementById('proGatePrice');
-            if (priceEl) priceEl.textContent = `A partir de ${PRICING.formatBRLDecimal(PRICING.BASE_PRICE)}/ano`;
-        }
-
-        // ========== Auth Check ==========
-        let currentUserId = null;
-        let projectId = null;
-
-        auth.onAuthStateChanged(async user => {
-            if (!user) { window.location.href = 'login.html'; return; }
-            currentUserId = user.uid;
-            document.getElementById('userName').textContent = user.displayName || 'Usuário';
-
-            // Load navbar avatar
-            if (user.photoURL) {
-                const navAvatar = document.getElementById('navAvatar');
-                const navAvatarIcon = document.getElementById('navAvatarIcon');
-                if (navAvatar && navAvatarIcon) {
-                    navAvatar.src = user.photoURL;
-                    navAvatar.classList.remove('hidden');
-                    navAvatarIcon.classList.add('hidden');
-                }
-            }
-
-            if (isFirebaseConfigured()) {
-                projectId = await DB.getProjectId();
-                // Check if user is PRO (by project owner's subscription)
-                const isPro = projectId ? await DB.isProByProject(projectId) : false;
-                if (!isPro) {
-                    document.getElementById('proGateOverlay').classList.remove('hidden');
-                    return;
-                }
-
-                // Hide Drive connect section for non-beta testers
-                const isBeta = await DB.isBetaTester(user.uid);
-                if (!isBeta) {
-                    document.getElementById('driveSection').style.display = 'none';
-                }
-            }
-            await renderLinks();
-        });
-
-        // ========== Mobile Nav ==========
-        document.getElementById('mobileNavBtn').addEventListener('click', () => {
-            document.getElementById('mobileNav').classList.toggle('hidden');
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await auth.signOut();
-            window.location.href = '../index.html';
-        });
-
-        // ========== Quick Actions ==========
-        document.getElementById('createDocBtn').addEventListener('click', () => {
-            window.open('https://docs.google.com/document/create', '_blank');
-        });
-        document.getElementById('createSheetBtn').addEventListener('click', () => {
-            window.open('https://sheets.google.com/create', '_blank');
-        });
-        document.getElementById('createSlidesBtn').addEventListener('click', () => {
-            window.open('https://slides.google.com/create', '_blank');
-        });
-
-        // Calendar Event
-        document.getElementById('createEventBtn').addEventListener('click', () => {
-            document.getElementById('eventForm').classList.toggle('hidden');
-        });
-        document.getElementById('cancelEvent').addEventListener('click', () => {
-            document.getElementById('eventForm').classList.add('hidden');
-        });
-
-        document.getElementById('openCalendarEvent').addEventListener('click', async () => {
-            const title = document.getElementById('eventTitle').value || 'TCC';
-            const location = document.getElementById('eventLocation').value || '';
-            const details = document.getElementById('eventDetails').value || '';
-            const startInput = document.getElementById('eventStart').value;
-            const endInput = document.getElementById('eventEnd').value;
-
-            if (!startInput || !endInput) {
-                alert('Preencha a data e hora de inicio e fim.');
-                return;
-            }
-
-            // Save to Supabase calendar_sessions
-            if (projectId) {
-                try {
-                    const dateStr = startInput.split('T')[0];
-                    const timeStr = startInput.split('T')[1] || '';
-                    await DB.calendarSessions.add(projectId, {
-                        subject: title,
-                        topic: details || location || '',
-                        date: dateStr,
-                        time: timeStr,
-                        completed: false
-                    });
-                } catch (e) { console.log('Error saving to calendar:', e); }
-            }
-
-            // If Google token available, create via Calendar API
-            if (googleAccessToken) {
-                try {
-                    const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': 'Bearer ' + googleAccessToken,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            summary: title,
-                            location: location,
-                            description: details + '\n\nCriado pelo TCCFlow',
-                            start: { dateTime: new Date(startInput).toISOString(), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
-                            end: { dateTime: new Date(endInput).toISOString(), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
-                            reminders: { useDefault: true }
-                        })
-                    });
-                    if (response.ok) {
-                        const event = await response.json();
-                        showDriveFeedback('<i class="fa-solid fa-calendar-check mr-1"></i>Evento criado no Google Calendar!', 'success');
-                        document.getElementById('eventForm').classList.add('hidden');
-                        return;
-                    }
-                } catch (e) { console.log('Calendar API error, falling back to URL:', e); }
-            }
-
-            // Fallback: open Google Calendar URL
-            function toGoogleDate(dt) {
-                if (!dt) return '';
-                return dt.replace(/[-:]/g, '').replace('T', 'T') + '00';
-            }
-            const start = toGoogleDate(startInput);
-            const end = toGoogleDate(endInput);
-            let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}`;
-            if (start && end) url += `&dates=${start}/${end}`;
-            if (location) url += `&location=${encodeURIComponent(location)}`;
-            if (details) url += `&details=${encodeURIComponent(details)}`;
-            window.open(url, '_blank');
-        });
-
-        // ========== Saved Links (Firestore) ==========
-        const linkIcons = {
-            docs: { icon: 'fa-file-word', color: 'text-blue-600', bg: 'bg-blue-100' },
-            sheets: { icon: 'fa-table', color: 'text-emerald-600', bg: 'bg-emerald-100' },
-            slides: { icon: 'fa-display', color: 'text-amber-600', bg: 'bg-amber-100' },
-            drive: { icon: 'fa-hard-drive', color: 'text-emerald-600', bg: 'bg-emerald-100' },
-            calendar: { icon: 'fa-calendar', color: 'text-violet-600', bg: 'bg-violet-100' },
-            forms: { icon: 'fa-square-poll-vertical', color: 'text-purple-600', bg: 'bg-purple-100' },
-            other: { icon: 'fa-link', color: 'text-cyan-600', bg: 'bg-cyan-100' }
-        };
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        async function renderLinks() {
-            const list = document.getElementById('linksList');
-
-            if (!projectId || !isFirebaseConfigured()) {
-                list.innerHTML = `<div class="text-center py-8 text-slate-400">
-                    <i class="fa-solid fa-link-slash text-2xl mb-2 block"></i>
-                    <p class="text-sm">Entre em um projeto para salvar links.</p>
-                </div>`;
-                return;
-            }
-
-            try {
-                const links = await DB.googleLinks.getAll(projectId);
-
-                if (links.length === 0) {
-                    list.innerHTML = `<div class="text-center py-8 text-slate-400">
-                        <i class="fa-solid fa-link-slash text-2xl mb-2 block"></i>
-                        <p class="text-sm">Nenhum link salvo. Adicione seus documentos do Google!</p>
-                    </div>`;
-                    return;
-                }
-
-                list.innerHTML = links.map(link => {
-                    const icon = linkIcons[link.type] || linkIcons.other;
-                    return `
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-3 group">
-                        <div class="flex items-center gap-4 flex-1 min-w-0">
-                            <div class="w-10 h-10 ${icon.bg} rounded-xl flex items-center justify-center shrink-0">
-                                <i class="fa-solid ${icon.icon} ${icon.color}"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <h4 class="text-sm font-semibold truncate">${escapeHtml(link.name)}</h4>
-                                <p class="text-xs text-slate-400 truncate">${escapeHtml(link.url)}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <a href="${escapeHtml(link.url)}" target="_blank" class="bg-violet-100 hover:bg-violet-200 text-violet-600 text-xs font-medium px-3 py-1.5 rounded-lg transition">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                            </a>
-                            <button onclick="deleteLink('${link.id}')" class="bg-red-100 hover:bg-red-200 text-red-600 text-xs font-medium px-3 py-1.5 rounded-lg transition opacity-0 group-hover:opacity-100">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>`;
-                }).join('');
-            } catch (err) {
-                console.error('Error loading links:', err);
-            }
-        }
-
-        document.getElementById('addLinkBtn').addEventListener('click', () => {
-            document.getElementById('linkForm').classList.toggle('hidden');
-        });
-        document.getElementById('cancelLink').addEventListener('click', () => {
-            document.getElementById('linkForm').classList.add('hidden');
-        });
-
-        document.getElementById('saveLink').addEventListener('click', async () => {
-            const name = document.getElementById('linkName').value.trim();
-            const url = document.getElementById('linkUrl').value.trim();
-            const type = document.getElementById('linkType').value;
-            if (!name || !url) { alert('Preencha o nome e a URL.'); return; }
-            if (!projectId) { alert('Você precisa estar em um projeto.'); return; }
-
-            try {
-                await DB.googleLinks.add(projectId, { name, url, type });
-                document.getElementById('linkName').value = '';
-                document.getElementById('linkUrl').value = '';
-                document.getElementById('linkType').value = 'docs';
-                document.getElementById('linkForm').classList.add('hidden');
-                await renderLinks();
-            } catch (err) {
-                alert('Erro ao salvar link: ' + err.message);
-            }
-        });
-
-        window.deleteLink = async function(id) {
-            if (!confirm('Remover este link?')) return;
-            try {
-                await DB.googleLinks.remove(id);
-                await renderLinks();
-            } catch (err) {
-                alert('Erro ao remover link: ' + err.message);
-            }
-        };
-
-        // ========== Google Drive Integration (PRO) ==========
-        // IMPORTANT: Replace with your Google Cloud OAuth Client ID
-        const GOOGLE_CLIENT_ID = '806477208299-iggp8o4409ll8r91089ou446qng4hdq2.apps.googleusercontent.com';
-        const GOOGLE_DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/calendar.events';
-        let googleAccessToken = null;
-        let driveTokenClient = null;
-        let currentFolderId = null;
-
-        async function initGoogleDrive() {
-            if (!projectId) return;
-
-            // Check for existing folder in Firestore
-            const folder = await DB.googleDrive.getFolder(projectId);
-            if (folder) {
-                currentFolderId = folder.id;
-                showDriveFolder(folder);
-            }
-
-            if (GOOGLE_CLIENT_ID !== 'YOUR_CLIENT_ID.apps.googleusercontent.com') {
-                document.getElementById('driveSetupInfo').classList.add('hidden');
-                setupDriveAuth();
-            }
-        }
-
-        let _driveAuthRetries = 0;
-        function setupDriveAuth() {
-            if (typeof google === 'undefined' || !google.accounts) {
-                if (_driveAuthRetries++ < 20) { setTimeout(setupDriveAuth, 500); }
-                else { console.warn('Google GSI failed to load after 10s'); }
-                return;
-            }
-
-            driveTokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: GOOGLE_CLIENT_ID,
-                scope: GOOGLE_DRIVE_SCOPES,
-                ux_mode: 'popup',
-                callback: (response) => {
-                    if (response.error) {
-                        console.error('Google Drive auth error:', response);
-                        alert('Erro ao conectar Google Drive: ' + (response.error_description || response.error));
-                        return;
-                    }
-                    if (response.access_token) {
-                        googleAccessToken = response.access_token;
-                        showDriveConnected(true);
-                    }
-                },
-                error_callback: (error) => {
-                    console.error('Google Drive OAuth error:', error);
-                    if (error.type === 'popup_closed') {
-                        console.log('Popup fechado pelo usuário');
-                    } else if (error.type === 'popup_failed_to_open') {
-                        alert('Não foi possível abrir o popup de autenticação. Verifique se popups estão permitidos.');
-                    } else {
-                        alert('Erro na autenticação do Google Drive. Tente novamente.');
-                    }
-                }
-            });
-
-            document.getElementById('connectDriveBtn').addEventListener('click', () => {
-                driveTokenClient.requestAccessToken();
-            });
-
-            document.getElementById('disconnectDriveBtn').addEventListener('click', () => {
-                googleAccessToken = null;
-                showDriveConnected(false);
-            });
-
-            document.getElementById('createFolderBtn').addEventListener('click', createSharedFolder);
-            document.getElementById('createDocInFolder').addEventListener('click', () => createFileInFolder('document'));
-            document.getElementById('createSheetInFolder').addEventListener('click', () => createFileInFolder('spreadsheet'));
-            document.getElementById('createSlidesInFolder').addEventListener('click', () => createFileInFolder('presentation'));
-        }
-
-        function showDriveConnected(connected) {
-            document.getElementById('driveNotConnected').classList.toggle('hidden', connected);
-            document.getElementById('driveConnected').classList.toggle('hidden', !connected);
-
-            if (connected && currentFolderId) {
-                document.getElementById('driveFolderCreate').classList.add('hidden');
-                document.getElementById('driveFolderExists').classList.remove('hidden');
-            } else if (connected) {
-                document.getElementById('driveFolderCreate').classList.remove('hidden');
-                document.getElementById('driveFolderExists').classList.add('hidden');
-            }
-        }
-
-        function showDriveFolder(folder) {
-            const folderUrl = folder.url || 'https://drive.google.com/drive/folders/' + folder.id;
-            document.getElementById('driveFolderName').textContent = 'Pasta do TCC';
-            document.getElementById('driveFolderUrl').textContent = folderUrl;
-            document.getElementById('openFolderLink').href = folderUrl;
-            document.getElementById('driveFolderExists').classList.remove('hidden');
-            document.getElementById('driveFolderCreate').classList.add('hidden');
-        }
-
-        function showDriveFeedback(msg, type) {
-            const el = document.getElementById('driveFeedback');
-            el.className = `mt-3 text-sm rounded-xl px-4 py-3 ${type === 'success' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'}`;
-            el.innerHTML = msg;
-            el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 5000);
-        }
-
-        async function createSharedFolder() {
-            if (!googleAccessToken) return;
-
-            const btn = document.getElementById('createFolderBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Criando pasta...';
-
-            try {
-                // Get project name
-                const projDoc = await db.collection('projects').doc(projectId).get();
-                const projectName = projDoc.exists ? projDoc.data().name : 'TCC';
-
-                // Create folder
-                const response = await fetch('https://www.googleapis.com/drive/v3/files', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + googleAccessToken,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: 'TCCFlow - ' + projectName,
-                        mimeType: 'application/vnd.google-apps.folder'
-                    })
-                });
-
-                if (response.status === 401) {
-                    googleAccessToken = null;
-                    showDriveConnected(false);
-                    alert('Token expirado. Reconecte o Google Drive.');
-                    return;
-                }
-
-                const folder = await response.json();
-                currentFolderId = folder.id;
-                const folderUrl = 'https://drive.google.com/drive/folders/' + folder.id;
-
-                // Save to Firestore
-                await DB.googleDrive.setFolder(projectId, folder.id, folderUrl);
-
-                // Share with team members (loaded from users table)
-                try {
-                    const { data: teamMembers } = await _supa
-                        .from('users')
-                        .select('id, email')
-                        .eq('project_id', projectId);
-
-                    for (const member of (teamMembers || [])) {
-                        if (member.email) {
-                            try {
-                                await fetch(`https://www.googleapis.com/drive/v3/files/${folder.id}/permissions`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Authorization': 'Bearer ' + googleAccessToken,
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        role: 'writer',
-                                        type: 'user',
-                                        emailAddress: member.email
-                                    })
-                                });
-                            } catch (e) { console.log('Share error for', member.id, e); }
-                        }
-                    }
-                } catch (e) { console.log('Error loading members for sharing:', e); }
-
-                showDriveFolder({ id: folder.id, url: folderUrl });
-                showDriveFeedback('<i class="fa-solid fa-check-circle mr-1"></i>Pasta criada e compartilhada com a equipe!', 'success');
-            } catch (err) {
-                console.error('Error creating folder:', err);
-                showDriveFeedback('<i class="fa-solid fa-exclamation-triangle mr-1"></i>Erro ao criar pasta: ' + err.message, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-folder-plus mr-2"></i>Criar Pasta Compartilhada do TCC';
-            }
-        }
-
-        async function createFileInFolder(type) {
-            if (!googleAccessToken || !currentFolderId) return;
-
-            const mimeTypes = {
-                document: 'application/vnd.google-apps.document',
-                spreadsheet: 'application/vnd.google-apps.spreadsheet',
-                presentation: 'application/vnd.google-apps.presentation'
-            };
-            const names = {
-                document: 'Novo Documento - TCCFlow',
-                spreadsheet: 'Nova Planilha - TCCFlow',
-                presentation: 'Nova Apresentação - TCCFlow'
-            };
-
-            try {
-                const response = await fetch('https://www.googleapis.com/drive/v3/files', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + googleAccessToken,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: names[type],
-                        mimeType: mimeTypes[type],
-                        parents: [currentFolderId]
-                    })
-                });
-
-                if (response.status === 401) {
-                    googleAccessToken = null;
-                    showDriveConnected(false);
-                    alert('Token expirado. Reconecte o Google Drive.');
-                    return;
-                }
-
-                const file = await response.json();
-                const urls = {
-                    document: 'https://docs.google.com/document/d/' + file.id,
-                    spreadsheet: 'https://docs.google.com/spreadsheets/d/' + file.id,
-                    presentation: 'https://docs.google.com/presentation/d/' + file.id
-                };
-
-                window.open(urls[type], '_blank');
-                showDriveFeedback('<i class="fa-solid fa-check-circle mr-1"></i>Arquivo criado na pasta compartilhada!', 'success');
-            } catch (err) {
-                showDriveFeedback('<i class="fa-solid fa-exclamation-triangle mr-1"></i>Erro: ' + err.message, 'error');
-            }
-        }
-
-        // Initialize Drive after auth
-        auth.onAuthStateChanged(async user => {
-            if (user && isFirebaseConfigured() && projectId) {
-                await initGoogleDrive();
-            }
-        });
-        setTimeout(async () => {
-            if (projectId) await initGoogleDrive();
-        }, 2000);
-    </script>
-    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<GooglePage/>);
+</script>
 </body>
 </html>

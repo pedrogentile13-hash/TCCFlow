@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Ferramentas — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <style>
+    .tool-card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:24px;cursor:pointer;transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden;text-decoration:none;color:inherit;display:block;}
+    .tool-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+    .tool-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:14px;position:relative;z-index:1;}
+    .tool-card h3{font-family:var(--font-display);font-size:1.25rem;font-weight:400;letter-spacing:-.01em;margin-bottom:6px;position:relative;z-index:1;}
+    .tool-card p{font-size:.8125rem;color:var(--muted);line-height:1.5;position:relative;z-index:1;margin:0 0 14px;}
+    .tool-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;position:relative;z-index:1;}
+    .pro-badge{position:absolute;top:14px;right:14px;background:var(--grad);color:white;font-family:var(--font-mono);font-size:.6rem;padding:3px 8px;border-radius:999px;font-weight:600;text-transform:uppercase;}
+  </style>
+</head>
+<body><div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const TOOLS = [
+  { id:"references", icon:"📖", title:"Gerador de Referências", desc:"Gere referências ABNT automaticamente a partir de URL, DOI ou título.", tag:"ABNT", tagCls:"tag-violet", pro:false },
+  { id:"notes", icon:"📝", title:"Anotações e Fichamentos", desc:"Organize suas leituras com fichamentos estruturados.", tag:"Organização", tagCls:"tag-cyan", pro:false },
+  { id:"plagiarism", icon:"🔍", title:"Verificador de Plágio", desc:"Analise trechos do seu texto e verifique similaridade.", tag:"Integridade", tagCls:"tag-rose", pro:true },
+  { id:"templates", icon:"🗂", title:"Banco de Templates", desc:"Modelos prontos para TCC: capa, folha de rosto, referências.", tag:"Templates", tagCls:"tag-amber", pro:false },
+  { id:"diary", icon:"📔", title:"Diário de Progresso", desc:"Registre o histórico diário do seu TCC.", tag:"Registro", tagCls:"tag-emerald", pro:true },
+  { id:"ideas", icon:"💡", title:"Quadro de Ideias", desc:"Mapa mental colaborativo para organizar ideias.", tag:"Criatividade", tagCls:"tag-violet", pro:true },
+];
+
+function ToolCard({ t }) {
+  return (
+    <div className="tool-card">
+      {t.pro && <div className="pro-badge">PRO</div>}
+      <div className="tool-icon" style={{ background:t.pro?"rgba(244,63,94,.1)":"rgba(124,58,237,.1)" }}>{t.icon}</div>
+      <h3>{t.title}</h3>
+      <p>{t.desc}</p>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <span className={`tool-tag ${t.tagCls}`}>{t.tag}</span>
+        <span style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>Abrir →</span>
+      </div>
+    </div>
+  );
+}
+
+function ToolsPage() {
+  const [filter, setFilter] = useState("todas");
+  const filtered = filter === "pro" ? TOOLS.filter(t => t.pro) : filter === "gratis" ? TOOLS.filter(t => !t.pro) : TOOLS;
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="tools"/>
+      <div className="main-area">
+        <Topbar page="Ferramentas"/>
+        <div className="page-content">
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
+            <div>
+              <h1 style={{ fontFamily:"var(--font-display)", fontSize:"1.875rem", fontWeight:400, letterSpacing:"-.02em", marginBottom:4 }}>
+                Suas <em style={{ fontStyle:"italic", color:"var(--violet)" }}>ferramentas</em>
+              </h1>
+            </div>
+            <div style={{ display:"flex", gap:6 }}>
+              {[["todas","Todas"],["gratis","Gratuitas"],["pro","PRO"]].map(([v,l]) => (
+                <button key={v} className={`btn btn-sm ${filter===v?"btn-primary":"btn-ghost"}`} onClick={() => setFilter(v)}>{l}</button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))", gap:14 }}>
+            {filtered.map(t => <ToolCard key={t.id} t={t}/>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<ToolsPage/>);
+</script>
+</body>
+</html>
