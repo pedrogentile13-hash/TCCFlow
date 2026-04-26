@@ -41,19 +41,18 @@ function useTCCData() {
           if (!Array.isArray(memberIds)) memberIds = null;
 
           if (memberIds && memberIds.length > 0) {
-            // Tenta com photo_url
-            const { data: m1, error: mErr } = await _supa.from('users').select('id, name, email, photo_url, role').in('id', memberIds);
-            if (mErr || !m1) {
-              // Se falhar, tenta sem photo_url
-              const { data: m2 } = await _supa.from('users').select('id, name, email, role').in('id', memberIds);
-              members = m2 || [];
-            } else {
-              members = m1;
-            }
-            // Se ainda estiver vazio, tenta fetch de todos e filtrar localmente
-            if (!members || members.length === 0) {
-              const { data: allUsers } = await _supa.from('users').select('id, name, email, role');
-              members = (allUsers || []).filter(u => memberIds.includes(u.id));
+            // Fetch all users and filter locally (mais confiável que .in())
+            try {
+              const { data: allUsers, error: err } = await _supa.from('users').select('id, name, email, photo_url, role');
+              if (err) {
+                // Fallback sem photo_url
+                const { data: allUsers2 } = await _supa.from('users').select('id, name, email, role');
+                members = (allUsers2 || []).filter(u => memberIds.includes(u.id));
+              } else {
+                members = (allUsers || []).filter(u => memberIds.includes(u.id));
+              }
+            } catch (e) {
+              console.error('Erro ao buscar usuários:', e);
             }
           }
           setTeam(members);
