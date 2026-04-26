@@ -9,6 +9,7 @@
     .plan-card{background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:32px 28px;display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s;}
     .plan-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
     .plan-card.featured{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+    .plan-card.current{border-color:var(--emerald);box-shadow:0 0 20px rgba(16,185,129,.15);}
     .plan-name{font-family:var(--font-display);font-size:1.75rem;font-weight:400;letter-spacing:-.01em;margin-bottom:4px;}
     .plan-sub{font-size:.875rem;color:var(--muted);min-height:40px;margin-bottom:20px;}
     .plan-card.featured .plan-sub{color:rgba(255,255,255,.6);}
@@ -25,9 +26,13 @@
     .plan-feats li.off{color:var(--muted);text-decoration:line-through;opacity:.5;}
     .plan-feats li.off::before{content:"–";}
     .popular-badge{position:absolute;top:16px;right:16px;background:var(--grad);color:white;font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.1em;padding:4px 10px;border-radius:999px;font-weight:600;}
+    .current-badge{position:absolute;top:16px;left:16px;background:var(--emerald);color:white;font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.1em;padding:4px 10px;border-radius:999px;font-weight:600;}
   </style>
 </head>
 <body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
@@ -55,13 +60,25 @@ const PLANS = [
 ];
 
 function PlansPage() {
+  const { user, userData, subscription, loading } = useTCCData();
   const [billing, setBilling] = useState("yearly");
+  const [upgrading, setUpgrading] = useState(false);
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+
+  const currentPlan = subscription?.plan || "free";
+
+  async function handleUpgrade() {
+    setUpgrading(true);
+    alert("Funcionalidade de upgrade será integrada com gateway de pagamento (Stripe/PagSeguro)");
+    setUpgrading(false);
+  }
 
   return (
     <div className="app-layout">
-      <Sidebar active="plans"/>
+      <Sidebar active="plans" userData={userData} subscription={subscription}/>
       <div className="main-area">
-        <Topbar page="Planos"/>
+        <Topbar page="Planos" user={user}/>
         <div className="page-content">
           <div style={{ textAlign:"center", marginBottom:8 }}>
             <div className="mono-label" style={{ marginBottom:12 }}>Escolha seu plano</div>
@@ -80,46 +97,52 @@ function PlansPage() {
           </div>
 
           <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, maxWidth:960, margin:"0 auto" }}>
-            {PLANS.map(p => (
-              <div key={p.id} className={`plan-card ${p.featured?"featured":""}`} style={{position:"relative"}}>
-                {p.badge && <div className="popular-badge">{p.badge}</div>}
-                <div className="plan-name">{p.name}</div>
-                <div className="plan-sub">{p.sub}</div>
-                {p.monthly !== null ? (
-                  <>
-                    <div className="plan-price">
-                      {p.monthly === 0 ? "R$ 0" : billing==="yearly"
-                        ? `R$ ${(p.yearly/12).toFixed(0)}`
-                        : `R$ ${p.monthly.toFixed(2).replace(".",",")}`}
-                    </div>
-                    <div className="plan-period">
-                      {p.monthly === 0 ? "para sempre" : billing==="yearly" ? `/mês · R$ ${p.yearly}/ano` : `/mês`}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="plan-price" style={{ fontSize:"2rem" }}>Consulte</div>
-                    <div className="plan-period">preço personalizado</div>
-                  </>
-                )}
+            {PLANS.map(p => {
+              const isCurrent = currentPlan === p.id;
+              return (
+                <div key={p.id} className={`plan-card ${p.featured?"featured":""} ${isCurrent?"current":""}`} style={{position:"relative"}}>
+                  {isCurrent && <div className="current-badge">✓ Seu plano</div>}
+                  {p.badge && !isCurrent && <div className="popular-badge">{p.badge}</div>}
+                  <div className="plan-name">{p.name}</div>
+                  <div className="plan-sub">{p.sub}</div>
+                  {p.monthly !== null ? (
+                    <>
+                      <div className="plan-price">
+                        {p.monthly === 0 ? "R$ 0" : billing==="yearly"
+                          ? `R$ ${(p.yearly/12).toFixed(0)}`
+                          : `R$ ${p.monthly.toFixed(2).replace(".",",")}`}
+                      </div>
+                      <div className="plan-period">
+                        {p.monthly === 0 ? "para sempre" : billing==="yearly" ? `/mês · R$ ${p.yearly}/ano` : `/mês`}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="plan-price" style={{ fontSize:"2rem" }}>Consulte</div>
+                      <div className="plan-period">preço personalizado</div>
+                    </>
+                  )}
 
-                <ul className="plan-feats">
-                  {p.feats.map((f,i) => (
-                    <li key={i}>{f}</li>
-                  ))}
-                </ul>
+                  <ul className="plan-feats">
+                    {p.feats.map((f,i) => (
+                      <li key={i}>{f}</li>
+                    ))}
+                  </ul>
 
-                {p.id === "free" && (
-                  <a href="dashboard.html" className="btn btn-ghost" style={{ width:"100%", justifyContent:"center" }}>Usar grátis</a>
-                )}
-                {p.id === "pro" && (
-                  <button className="btn btn-violet" style={{ width:"100%", justifyContent:"center" }}>Testar 7 dias grátis</button>
-                )}
-                {p.id === "inst" && (
-                  <a href="mailto:contato.tccflow@gmail.com" className="btn btn-ghost" style={{ width:"100%", justifyContent:"center" }}>Falar com vendas</a>
-                )}
-              </div>
-            ))}
+                  {isCurrent ? (
+                    <button className="btn btn-ghost" disabled style={{ width:"100%", justifyContent:"center", opacity:0.6 }}>Plano atual</button>
+                  ) : p.id === "free" ? (
+                    <a href="dashboard.html" className="btn btn-ghost" style={{ width:"100%", justifyContent:"center" }}>Usar grátis</a>
+                  ) : p.id === "pro" ? (
+                    <button className="btn btn-violet" style={{ width:"100%", justifyContent:"center" }} onClick={handleUpgrade} disabled={upgrading}>
+                      {upgrading ? "Processando..." : "Testar 7 dias grátis"}
+                    </button>
+                  ) : (
+                    <a href="mailto:contato.tccflow@gmail.com" className="btn btn-ghost" style={{ width:"100%", justifyContent:"center" }}>Falar com vendas</a>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

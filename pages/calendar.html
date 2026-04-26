@@ -36,12 +36,15 @@
   </style>
 </head>
 <body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script type="text/babel" src="../src/sidebar.jsx"></script>
 <script type="text/babel">
-const { useState, useRef } = React;
+const { useState, useRef, useEffect } = React;
 
 const EVENTS = {
   25:[{title:"Reunião orientador",cls:"rgba(124,58,237,.15)",color:"var(--violet)"}],
@@ -175,8 +178,8 @@ function GanttView() {
   );
 }
 
-function MonthView({current, setCurrent}) {
-  const today = new Date(2026,3,25);
+function MonthView({current, setCurrent, goals=[], sessions=[]}) {
+  const today = new Date();
   function buildCells(){
     const first=new Date(current.year,current.month,1);
     const last=new Date(current.year,current.month+1,0);
@@ -188,6 +191,19 @@ function MonthView({current, setCurrent}) {
   }
   const cells=buildCells();
   const isToday=(c)=>!c.other&&c.day===today.getDate()&&current.month===today.getMonth()&&current.year===today.getFullYear();
+
+  const goalsForDay = (day) => {
+    return goals.filter(g => {
+      if (!g.deadline) return false;
+      const d = new Date(g.deadline);
+      return d.getDate()===day && d.getMonth()===current.month && d.getFullYear()===current.year;
+    }).map(g => ({title:g.title, color:"var(--violet)", cls:"rgba(124,58,237,.15)"}));
+  };
+
+  const upcomingEvents = [...goals.filter(g=>g.deadline&&new Date(g.deadline)>=today).slice(0,3).map(g=>({
+    title:g.title, date:new Date(g.deadline).toLocaleDateString('pt-BR'), color:"var(--violet)"
+  }))];
+
   return(
     <div style={{display:"grid",gridTemplateColumns:"1fr 280px",gap:16}}>
       <div>
@@ -207,7 +223,7 @@ function MonthView({current, setCurrent}) {
           {cells.map((c,i)=>(
             <div key={i} className={`cal-cell${isToday(c)?" today":""}${c.other?" other-month":""}`}>
               <div className="day-num">{c.day}</div>
-              {!c.other&&(EVENTS[c.day]||[]).map((ev,j)=>(
+              {!c.other&&(goalsForDay(c.day)||[]).map((ev,j)=>(
                 <span key={j} className="event-pill" style={{background:ev.cls,color:ev.color}}>{ev.title}</span>
               ))}
             </div>
@@ -217,8 +233,9 @@ function MonthView({current, setCurrent}) {
       <div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div className="card">
           <div className="card-title"><span className="ct-icon">📅</span> Próximos eventos</div>
-          {UPCOMING.map((ev,i)=>(
-            <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 0",borderBottom:i<UPCOMING.length-1?"1px dashed var(--line)":"none"}}>
+          {upcomingEvents.length===0 && <div style={{color:"var(--muted)",fontSize:".8125rem",padding:"8px 0"}}>Nenhum evento próximo</div>}
+          {upcomingEvents.map((ev,i)=>(
+            <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 0",borderBottom:i<upcomingEvents.length-1?"1px dashed var(--line)":"none"}}>
               <span style={{width:3,alignSelf:"stretch",borderRadius:999,background:ev.color,flexShrink:0}}></span>
               <div>
                 <div style={{fontSize:".8125rem",fontWeight:500}}>{ev.title}</div>
@@ -241,14 +258,29 @@ function MonthView({current, setCurrent}) {
 }
 
 function CalendarPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
   const [view,setView]=useState("gantt");
   const [current,setCurrent]=useState({year:2026,month:3});
+  const [goals, setGoals] = useState([]);
+  const [sessions, setSessions] = useState([]);
+
+  useEffect(() => {
+    if (!project) return;
+    (async () => {
+      const g = await DB.calendarGoals.getAll(project.id);
+      setGoals(g || []);
+      const s = await DB.calendarSessions.getAll(project.id);
+      setSessions(s || []);
+    })();
+  }, [project]);
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
 
   return(
     <div className="app-layout">
-      <Sidebar active="calendar"/>
+      <Sidebar active="calendar" userData={userData} project={project} subscription={subscription}/>
       <div className="main-area">
-        <Topbar page="Calendário" actions={
+        <Topbar page="Calendário" user={user} actions={
           <button className="btn btn-violet btn-sm">+ Novo evento</button>
         }/>
         <div className="page-content">
@@ -258,7 +290,7 @@ function CalendarPage() {
             ))}
           </div>
           {view==="gantt"  && <GanttView/>}
-          {view==="month"  && <MonthView current={current} setCurrent={setCurrent}/>}
+          {view==="month"  && <MonthView current={current} setCurrent={setCurrent} goals={goals} sessions={sessions}/>}
           {view==="week"   && (
             <div className="empty-state">
               <div className="es-icon">📋</div>

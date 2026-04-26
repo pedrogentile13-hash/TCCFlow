@@ -7,46 +7,80 @@
   <link rel="stylesheet" href="../css/app.css"/>
 </head>
 <body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel" src="../src/sidebar.jsx"></script>
 <script type="text/babel">
-const { useState } = React;
-
-const MEMBERS = [
-  { initials:"PG", name:"Pedro Gentile",  email:"pedro@email.com",  role:"Líder",       cls:"c1", status:"online",  tasks:7, done:3 },
-  { initials:"AM", name:"Ana Martins",    email:"ana@email.com",    role:"Pesquisadora", cls:"c2", status:"online",  tasks:5, done:4 },
-  { initials:"LF", name:"Lucas Ferreira", email:"lucas@email.com",  role:"Redator",     cls:"c3", status:"away",    tasks:4, done:1 },
-  { initials:"BN", name:"Beatriz Nunes",  email:"beatriz@email.com",role:"Revisora",    cls:"c4", status:"offline", tasks:3, done:2 },
-];
+const { useState, useEffect } = React;
 
 const statusColors = { online:"var(--emerald)", away:"var(--amber)", offline:"var(--line-2)" };
-const roleColors = { "Líder":"tag-violet", "Pesquisadora":"tag-cyan", "Redator":"tag-amber", "Revisora":"tag-emerald" };
 
 function TeamPage() {
+  const { user, userData, project, subscription, teamMembers, loading } = useTCCData();
   const [copied, setCopied] = useState(false);
   const [tab, setTab] = useState("membros");
+  const [joinCode, setJoinCode] = useState("");
+  const [joining, setJoining] = useState(false);
+  const [joinMsg, setJoinMsg] = useState("");
+  const [taskCounts, setTaskCounts] = useState({});
+
+  useEffect(() => {
+    if (!project || !teamMembers.length) return;
+    (async () => {
+      const { data } = await _supa.from('tasks').select('assigned_to, status').eq('project_id', project.id);
+      const counts = {};
+      (data || []).forEach(t => {
+        if (!counts[t.assigned_to]) counts[t.assigned_to] = { total: 0, done: 0 };
+        counts[t.assigned_to].total++;
+        if (t.status === 'done') counts[t.assigned_to].done++;
+      });
+      setTaskCounts(counts);
+    })();
+  }, [project, teamMembers]);
 
   function copyCode() {
+    if (project?.code) navigator.clipboard.writeText(project.code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const slots = 8;
-  const used = MEMBERS.length;
+  async function handleJoin() {
+    if (!joinCode.trim()) return;
+    setJoining(true); setJoinMsg("");
+    try {
+      const { data: projects } = await _supa.from('projects').select('*').eq('code', joinCode.toUpperCase());
+      if (!projects || !projects.length) { setJoinMsg("Código não encontrado"); setJoining(false); return; }
+      const proj = projects[0];
+      await _supa.from('users').upsert({ id: user.uid, project_id: proj.id });
+      if (!proj.members.includes(user.uid)) {
+        await _supa.from('projects').update({ members: [...proj.members, user.uid] }).eq('id', proj.id);
+      }
+      window.location.reload();
+    } catch(e) { setJoinMsg(e.message); }
+    setJoining(false);
+  }
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+
+  const slots = subscription?.seats || 1;
+  const used = teamMembers.length;
+  const isOwner = project?.owner_id === user?.uid;
 
   return (
     <div className="app-layout">
-      <Sidebar active="team"/>
+      <Sidebar active="team" userData={userData} project={project} subscription={subscription}/>
       <div className="main-area">
-        <Topbar page="Equipe"/>
+        <Topbar page="Equipe" user={user}/>
         <div className="page-content">
           <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16 }}>
 
             <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
               <div style={{ display:"flex", gap:2, background:"var(--bg-2)", borderRadius:10, padding:4, width:"fit-content" }}>
-                {[["membros","Membros"],["projetos","Meus Projetos"]].map(([v,l]) => (
+                {[["membros","Membros"],["entrar","Entrar em Projeto"]].map(([v,l]) => (
                   <button key={v} className={`btn btn-sm ${tab===v?"btn-primary":"btn-ghost"}`} style={{ border:"none" }} onClick={() => setTab(v)}>{l}</button>
                 ))}
               </div>
@@ -54,84 +88,86 @@ function TeamPage() {
               {tab === "membros" && (
                 <div className="card">
                   <div className="card-title" style={{ justifyContent:"space-between" }}>
-                    <span style={{ display:"flex", alignItems:"center", gap:8 }}>
-                      <span className="ct-icon">👥</span> Membros da Equipe
-                    </span>
+                    <span style={{ display:"flex", alignItems:"center", gap:8 }}><span className="ct-icon">👥</span> Membros da Equipe</span>
                     <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)" }}>{used}/{slots} usuários</span>
                   </div>
-
                   <div style={{ display:"flex", gap:6, marginBottom:20 }}>
                     {Array.from({ length:slots }).map((_, i) => (
                       <div key={i} style={{ flex:1, height:6, borderRadius:999, background:i<used?"#7c3aed":"var(--line)" }}></div>
                     ))}
                   </div>
-
                   <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                    {MEMBERS.map(m => (
-                      <div key={m.name} style={{ display:"flex", alignItems:"center", gap:14, padding:"12px 14px", background:"var(--bg-2)", borderRadius:12, border:"1px solid var(--line)" }}>
-                        <div style={{ position:"relative" }}>
-                          <div className={`av av-lg ${m.cls}`}>{m.initials}</div>
-                          <span style={{ position:"absolute", bottom:1, right:1, width:10, height:10, borderRadius:"50%", background:statusColors[m.status], border:"2px solid var(--paper)" }}></span>
+                    {teamMembers.map((m, idx) => {
+                      const tc = taskCounts[m.id] || { total: 0, done: 0 };
+                      return (
+                        <div key={m.id} style={{ display:"flex", alignItems:"center", gap:14, padding:"12px 14px", background:"var(--bg-2)", borderRadius:12, border:"1px solid var(--line)" }}>
+                          <div className={`av av-lg c${(idx%4)+1}`}>{getInitials(m.name)}</div>
+                          <div style={{ flex:1 }}>
+                            <div style={{ fontWeight:600, fontSize:"0.9375rem", marginBottom:2 }}>{m.name || 'Sem nome'}</div>
+                            <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>{m.email}</div>
+                          </div>
+                          <span className={`tag ${m.role==='orientador'?'tag-amber':'tag-violet'}`}>{m.role==='orientador'?'Orientador':'Estudante'}</span>
+                          <div style={{ textAlign:"right" }}>
+                            <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)" }}>Tarefas</div>
+                            <div style={{ fontWeight:600, fontSize:"0.875rem" }}>{tc.done}/{tc.total}</div>
+                          </div>
                         </div>
-                        <div style={{ flex:1 }}>
-                          <div style={{ fontWeight:600, fontSize:"0.9375rem", marginBottom:2 }}>{m.name}</div>
-                          <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>{m.email}</div>
-                        </div>
-                        <span className={`tag ${roleColors[m.role]}`}>{m.role}</span>
-                        <div style={{ textAlign:"right" }}>
-                          <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)" }}>Tarefas</div>
-                          <div style={{ fontWeight:600, fontSize:"0.875rem" }}>{m.done}/{m.tasks}</div>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
+                    {teamMembers.length === 0 && <div style={{color:"var(--muted)",padding:12}}>Nenhum membro no projeto</div>}
                   </div>
                 </div>
               )}
 
-              {tab === "projetos" && (
-                <div className="card">
-                  <div style={{ fontWeight:600, fontSize:"1rem", marginBottom:4 }}>Impacto Redes Sociais — Desempenho Acadêmico</div>
-                  <div style={{ display:"flex", gap:12, alignItems:"center", marginBottom:12 }}>
-                    <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--muted)" }}>TCC-2026-A4F7</span>
-                    <span className="tag tag-emerald">Em andamento</span>
+              {tab === "entrar" && (
+                <div className="card" style={{ maxWidth:480 }}>
+                  <div className="card-title"><span className="ct-icon">🔑</span> Entrar em um Projeto</div>
+                  <p style={{ fontSize:"0.875rem", color:"var(--muted)", marginBottom:20 }}>Peça ao líder do grupo o código de convite.</p>
+                  <div className="field">
+                    <label>Código de convite</label>
+                    <input type="text" placeholder="TCC-XXXX" value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
+                      style={{ fontFamily:"var(--font-mono)", letterSpacing:"0.08em", fontSize:"1rem" }}/>
                   </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                    <div className="progress-bar" style={{ flex:1 }}><div className="progress-fill" style={{ width:"34%" }}></div></div>
-                    <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--muted)" }}>34%</span>
-                  </div>
+                  {joinMsg && <div style={{color:"var(--rose)",fontSize:".8125rem",marginBottom:12}}>{joinMsg}</div>}
+                  <button className="btn btn-violet" style={{ width:"100%" }} onClick={handleJoin} disabled={joining}>
+                    {joining ? "Entrando..." : "Entrar no projeto"}
+                  </button>
                 </div>
               )}
             </div>
 
             <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
-              <div className="card" style={{ background:"linear-gradient(135deg,rgba(124,58,237,.06),rgba(6,182,212,.06))", border:"1px solid rgba(124,58,237,.2)" }}>
-                <div className="card-title"><span className="ct-icon">🔗</span> Código de convite</div>
-                <div style={{ textAlign:"center", padding:"12px 0 8px" }}>
-                  <div style={{ fontFamily:"var(--font-mono)", fontSize:"1.375rem", fontWeight:700, color:"var(--violet)", letterSpacing:"0.1em", marginBottom:12 }}>TCC-2026-A4F7</div>
-                  <button className="btn btn-violet" style={{ width:"100%" }} onClick={copyCode}>
-                    {copied ? "✓ Copiado!" : "Copiar código"}
-                  </button>
+              {project && (
+                <div className="card" style={{ background:"linear-gradient(135deg,rgba(124,58,237,.06),rgba(6,182,212,.06))", border:"1px solid rgba(124,58,237,.2)" }}>
+                  <div className="card-title"><span className="ct-icon">🔗</span> Código de convite</div>
+                  <div style={{ textAlign:"center", padding:"12px 0 8px" }}>
+                    <div style={{ fontFamily:"var(--font-mono)", fontSize:"1.375rem", fontWeight:700, color:"var(--violet)", letterSpacing:"0.1em", marginBottom:12 }}>{project.code}</div>
+                    <button className="btn btn-violet" style={{ width:"100%" }} onClick={copyCode}>
+                      {copied ? "✓ Copiado!" : "Copiar código"}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="card">
-                <div className="card-title"><span className="ct-icon">⭐</span> Uso do Plano Pro</div>
+                <div className="card-title"><span className="ct-icon">⭐</span> Uso do Plano</div>
                 <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:20, padding:"16px 0" }}>
                   <div style={{ position:"relative", width:80, height:80 }}>
                     <svg viewBox="0 0 80 80" style={{ transform:"rotate(-90deg)" }}>
                       <circle cx="40" cy="40" r="32" fill="none" stroke="var(--line)" strokeWidth="8"/>
                       <circle cx="40" cy="40" r="32" fill="none" stroke="url(#grad)" strokeWidth="8"
-                        strokeDasharray="50 201" strokeLinecap="round"/>
+                        strokeDasharray={`${used/slots*201} 201`} strokeLinecap="round"/>
                       <defs><linearGradient id="grad"><stop offset="0%" stopColor="#7c3aed"/><stop offset="100%" stopColor="#06b6d4"/></linearGradient></defs>
                     </svg>
                     <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-                      <div style={{ fontFamily:"var(--font-display)", fontSize:"1.375rem", lineHeight:1 }}>4</div>
-                      <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.5625rem", color:"var(--muted)" }}>/ 8</div>
+                      <div style={{ fontFamily:"var(--font-display)", fontSize:"1.375rem", lineHeight:1 }}>{used}</div>
+                      <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.5625rem", color:"var(--muted)" }}>/ {slots}</div>
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontWeight:600, marginBottom:4 }}>4 membros ativos</div>
-                    <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>Capacidade: 8 membros</div>
+                    <div style={{ fontWeight:600, marginBottom:4 }}>{used} {used===1?'membro ativo':'membros ativos'}</div>
+                    <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>Capacidade: {slots} membros</div>
+                    <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--violet)", marginTop:6 }}>+ {slots-used} {slots-used===1?'vaga disponível':'vagas disponíveis'}</div>
                   </div>
                 </div>
               </div>

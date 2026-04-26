@@ -6,97 +6,107 @@
   <link rel="icon" href="../assets/logo.png"/>
   <link rel="stylesheet" href="../css/app.css"/>
   <style>
-    .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start;}
+    .kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start;}
     .col{background:var(--bg-2);border-radius:14px;padding:12px;}
     .col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 4px;}
     .col-title{font-size:.8125rem;font-weight:600;display:flex;align-items:center;gap:7px;}
     .col-dot{width:8px;height:8px;border-radius:50%;}
     .col-count{font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);background:var(--paper);padding:2px 7px;border-radius:999px;border:1px solid var(--line);}
-    .task-card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;cursor:grab;transition:transform .2s,box-shadow .2s;user-select:none;}
+    .task-card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;transition:transform .2s,box-shadow .2s;}
     .task-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
-    .task-card:active{cursor:grabbing;}
-    .task-tag{display:inline-block;font-family:var(--font-mono);font-size:.6rem;padding:2px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:7px;}
     .task-title{font-size:.875rem;font-weight:500;line-height:1.35;margin-bottom:9px;}
     .task-meta{display:flex;align-items:center;justify-content:space-between;font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);}
-    .task-avs{display:flex;}
-    .task-av{width:20px;height:20px;border-radius:50%;border:2px solid var(--paper);margin-left:-5px;font-size:.5625rem;font-weight:700;color:white;display:flex;align-items:center;justify-content:center;}
-    .task-av:first-child{margin-left:0;}
     .add-task{width:100%;padding:8px;border-radius:8px;border:1.5px dashed var(--line);background:transparent;font-size:.8125rem;color:var(--muted);cursor:pointer;transition:border-color .2s,color .2s;margin-top:4px;}
     .add-task:hover{border-color:var(--violet);color:var(--violet);}
     .priority-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100;}
+    .modal{background:var(--paper);border-radius:16px;padding:28px;width:420px;max-width:90vw;box-shadow:var(--shadow);}
   </style>
 </head>
 <body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel" src="../src/sidebar.jsx"></script>
 <script type="text/babel">
-const { useState } = React;
+const { useState, useEffect } = React;
 
-const INIT_COLS = {
-  todo: {
-    label:"A fazer", dot:"#94a3b8",
-    cards:[
-      { id:1, tag:"Pesquisa", tagCls:"rgba(6,182,212,.12)", tagColor:"var(--cyan)", title:"Buscar artigos sobre redes sociais e cognição", due:"28 abr", avs:["c1","c2"], priority:"alta" },
-      { id:2, tag:"Escrita", tagCls:"rgba(124,58,237,.12)", tagColor:"var(--violet)", title:"Esboço da seção de metodologia", due:"2 mai", avs:["c1"], priority:"média" },
-      { id:3, tag:"Revisão", tagCls:"rgba(245,158,11,.14)", tagColor:"var(--amber)", title:"Revisar objetivos específicos com orientador", due:"29 abr", avs:["c1","c4"], priority:"alta" },
-    ]
-  },
-  doing: {
-    label:"Em andamento", dot:"var(--blue)",
-    cards:[
-      { id:4, tag:"Pesquisa", tagCls:"rgba(6,182,212,.12)", tagColor:"var(--cyan)", title:"Levantamento bibliográfico — capítulo 2", due:"Hoje", avs:["c2","c3"], priority:"alta" },
-      { id:5, tag:"Escrita", tagCls:"rgba(124,58,237,.12)", tagColor:"var(--violet)", title:"Introdução: justificativa e problematização", due:"30 abr", avs:["c1"], priority:"média" },
-    ]
-  },
-  review: {
-    label:"Em revisão", dot:"var(--amber)",
-    cards:[
-      { id:6, tag:"Revisão", tagCls:"rgba(245,158,11,.14)", tagColor:"var(--amber)", title:"Referencial teórico — draft inicial", due:"26 abr", avs:["c1","c2","c4"], priority:"alta" },
-    ]
-  },
-  done: {
-    label:"Concluído", dot:"var(--emerald)",
-    cards:[
-      { id:7, tag:"Pesquisa", tagCls:"rgba(6,182,212,.12)", tagColor:"var(--cyan)", title:"Definição do tema e título provisório", due:"10 abr", avs:["c1"], priority:"baixa" },
-      { id:8, tag:"Reunião", tagCls:"rgba(16,185,129,.12)", tagColor:"var(--emerald)", title:"Reunião kickoff com equipe", due:"8 abr", avs:["c1","c2","c3","c4"], priority:"baixa" },
-      { id:9, tag:"Pesquisa", tagCls:"rgba(6,182,212,.12)", tagColor:"var(--cyan)", title:"Pesquisa bibliográfica inicial (20 artigos)", due:"15 abr", avs:["c2","c3"], priority:"média" },
-    ]
-  }
-};
-
-const priorityColors = { alta:"var(--rose)", média:"var(--amber)", baixa:"var(--emerald)" };
+const COLS = [
+  { key:"todo", label:"A fazer", dot:"#94a3b8" },
+  { key:"progress", label:"Em andamento", dot:"var(--blue)" },
+  { key:"done", label:"Concluído", dot:"var(--emerald)" },
+];
 
 function TasksPage() {
-  const [cols, setCols] = useState(INIT_COLS);
+  const { user, userData, project, subscription, teamMembers, loading } = useTCCData();
+  const [tasks, setTasks] = useState([]);
   const [view, setView] = useState("kanban");
+  const [showModal, setShowModal] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newDue, setNewDue] = useState("");
 
-  const totalTasks = Object.values(cols).flatMap(c=>c.cards).length;
-  const doneTasks = cols.done.cards.length;
+  useEffect(() => {
+    if (!project) return;
+    loadTasks();
+  }, [project]);
+
+  async function loadTasks() {
+    const { data } = await _supa.from('tasks').select('*').eq('project_id', project.id).order('created_at', { ascending: false });
+    setTasks(data || []);
+  }
+
+  async function addTask() {
+    if (!newTitle.trim() || !project) return;
+    await _supa.from('tasks').insert({
+      project_id: project.id,
+      title: newTitle,
+      status: 'todo',
+      due_date: newDue || null,
+      assigned_to: user.uid,
+      created_at: new Date().toISOString()
+    });
+    setNewTitle(""); setNewDue(""); setShowModal(false);
+    loadTasks();
+  }
+
+  async function moveTask(taskId, newStatus) {
+    await _supa.from('tasks').update({ status: newStatus }).eq('id', taskId);
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+  }
+
+  async function deleteTask(taskId) {
+    if (!confirm('Excluir tarefa?')) return;
+    await _supa.from('tasks').delete().eq('id', taskId);
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+  }
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+
+  const totalTasks = tasks.length;
+  const doneTasks = tasks.filter(t => t.status === 'done').length;
+  const nextStatus = { todo: 'progress', progress: 'done', done: 'todo' };
+
+  const getMember = (id) => teamMembers.find(m => m.id === id);
 
   return (
     <div className="app-layout">
-      <Sidebar active="tasks"/>
+      <Sidebar active="tasks" userData={userData} project={project} subscription={subscription}/>
       <div className="main-area">
-        <Topbar page="Tarefas" actions={
-          <button className="btn btn-violet btn-sm">+ Nova tarefa</button>
+        <Topbar page="Tarefas" user={user} actions={
+          <button className="btn btn-violet btn-sm" onClick={() => setShowModal(true)}>+ Nova tarefa</button>
         }/>
         <div className="page-content">
 
           <div style={{ display:"flex", alignItems:"center", gap:20, marginBottom:20, flexWrap:"wrap" }}>
-            <div>
-              <h1 style={{ fontFamily:"var(--font-display)", fontSize:"1.75rem", fontWeight:400, letterSpacing:"-.02em", marginBottom:4 }}>
-                Quadro de <em style={{ fontStyle:"italic", color:"var(--violet)" }}>tarefas</em>
-              </h1>
-            </div>
+            <h1 style={{ fontFamily:"var(--font-display)", fontSize:"1.75rem", fontWeight:400, letterSpacing:"-.02em" }}>
+              Quadro de <em style={{ fontStyle:"italic", color:"var(--violet)" }}>tarefas</em>
+            </h1>
             <div style={{ display:"flex", gap:16, marginLeft:"auto", alignItems:"center" }}>
-              <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--muted)" }}>
-                {doneTasks}/{totalTasks} concluídas
-              </div>
-              <div style={{ width:120 }}>
-                <div className="progress-bar"><div className="progress-fill" style={{ width:`${doneTasks/totalTasks*100}%` }}></div></div>
-              </div>
+              <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--muted)" }}>{doneTasks}/{totalTasks} concluídas</div>
+              {totalTasks > 0 && <div style={{ width:120 }}><div className="progress-bar"><div className="progress-fill" style={{ width:`${doneTasks/totalTasks*100}%` }}></div></div></div>}
               <div style={{ display:"flex", gap:4 }}>
                 {[["kanban","⊞ Kanban"],["list","≡ Lista"]].map(([v,l]) => (
                   <button key={v} className={`btn btn-sm ${view===v?"btn-primary":"btn-ghost"}`} onClick={() => setView(v)}>{l}</button>
@@ -107,57 +117,64 @@ function TasksPage() {
 
           {view === "kanban" ? (
             <div className="kanban">
-              {Object.entries(cols).map(([colId, col]) => (
-                <div key={colId} className="col">
-                  <div className="col-head">
-                    <div className="col-title">
-                      <span className="col-dot" style={{ background:col.dot }}></span>
-                      {col.label}
+              {COLS.map(col => {
+                const colTasks = tasks.filter(t => t.status === col.key);
+                return (
+                  <div key={col.key} className="col">
+                    <div className="col-head">
+                      <div className="col-title"><span className="col-dot" style={{ background:col.dot }}></span>{col.label}</div>
+                      <span className="col-count">{colTasks.length}</span>
                     </div>
-                    <span className="col-count">{col.cards.length}</span>
-                  </div>
-                  {col.cards.map(card => (
-                    <div key={card.id} className="task-card">
-                      <span className="task-tag" style={{ background:card.tagCls, color:card.tagColor }}>{card.tag}</span>
-                      <div className="task-title">{card.title}</div>
-                      <div className="task-meta">
-                        <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-                          <span className="priority-dot" style={{ background:priorityColors[card.priority] }}></span>
-                          <span>{card.due}</span>
-                        </div>
-                        <div className="task-avs">
-                          {card.avs.map((c,i) => (
-                            <div key={i} className={`task-av ${c}`} style={{ background:c==="c1"?"#7c3aed":c==="c2"?"#06b6d4":c==="c3"?"#f59e0b":"#10b981" }}>
-                              {c==="c1"?"P":c==="c2"?"A":c==="c3"?"L":"B"}
+                    {colTasks.map(t => {
+                      const assignee = getMember(t.assigned_to);
+                      return (
+                        <div key={t.id} className="task-card">
+                          <div className="task-title">{t.title}</div>
+                          <div className="task-meta">
+                            <div style={{display:"flex",alignItems:"center",gap:5}}>
+                              <span className="priority-dot" style={{background:t.due_date && new Date(t.due_date)<new Date()?"var(--rose)":"var(--muted)"}}></span>
+                              {t.due_date && <span>{new Date(t.due_date).toLocaleDateString('pt-BR',{day:'numeric',month:'short'})}</span>}
                             </div>
-                          ))}
+                            <div style={{display:"flex",gap:4}}>
+                              <button style={{fontSize:".6rem",cursor:"pointer",background:"none",border:"none",color:"var(--violet)"}} onClick={()=>moveTask(t.id, nextStatus[col.key])}>→</button>
+                              <button style={{fontSize:".6rem",cursor:"pointer",background:"none",border:"none",color:"var(--rose)"}} onClick={()=>deleteTask(t.id)}>✕</button>
+                            </div>
+                          </div>
+                          {assignee && <div style={{marginTop:6,fontSize:".6875rem",color:"var(--muted)"}}>{assignee.name}</div>}
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                  <button className="add-task">+ Adicionar tarefa</button>
-                </div>
-              ))}
+                      );
+                    })}
+                    <button className="add-task" onClick={() => setShowModal(true)}>+ Adicionar tarefa</button>
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="card">
-              {Object.values(cols).flatMap(c=>c.cards).map((card,i,arr) => (
-                <div key={card.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 8px", borderBottom:i<arr.length-1?"1px solid var(--line)":"none" }}>
-                  <span className="priority-dot" style={{ background:priorityColors[card.priority] }}></span>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontSize:"0.875rem", fontWeight:500 }}>{card.title}</div>
-                  </div>
-                  <span className="task-tag" style={{ background:card.tagCls, color:card.tagColor, fontSize:"0.625rem", padding:"2px 8px" }}>{card.tag}</span>
-                  <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)", minWidth:60, textAlign:"right" }}>{card.due}</span>
-                  <div className="task-avs">
-                    {card.avs.slice(0,2).map((c,i) => (
-                      <div key={i} className={`task-av ${c}`} style={{ background:c==="c1"?"#7c3aed":c==="c2"?"#06b6d4":c==="c3"?"#f59e0b":"#10b981" }}>
-                        {c==="c1"?"P":c==="c2"?"A":c==="c3"?"L":"B"}
-                      </div>
-                    ))}
-                  </div>
+              {tasks.length === 0 && <div style={{padding:20,color:"var(--muted)",textAlign:"center"}}>Nenhuma tarefa criada</div>}
+              {tasks.map((t,i) => (
+                <div key={t.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 8px", borderBottom:i<tasks.length-1?"1px solid var(--line)":"none" }}>
+                  <span className="priority-dot" style={{ background:t.status==="done"?"var(--emerald)":t.status==="progress"?"var(--amber)":"var(--muted)" }}></span>
+                  <div style={{ flex:1,fontSize:"0.875rem",fontWeight:500 }}>{t.title}</div>
+                  <span className="tag tag-cyan">{t.status==="todo"?"A fazer":t.status==="progress"?"Em andamento":"Concluída"}</span>
+                  {t.due_date && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{new Date(t.due_date).toLocaleDateString('pt-BR')}</span>}
+                  <button className="btn btn-ghost btn-sm" onClick={()=>moveTask(t.id, nextStatus[t.status])}>→</button>
                 </div>
               ))}
+            </div>
+          )}
+
+          {showModal && (
+            <div className="modal-overlay" onClick={() => setShowModal(false)}>
+              <div className="modal" onClick={e => e.stopPropagation()}>
+                <h3 style={{fontFamily:"var(--font-display)",fontSize:"1.25rem",marginBottom:16}}>Nova tarefa</h3>
+                <div className="field"><label>Título</label><input type="text" value={newTitle} onChange={e=>setNewTitle(e.target.value)} placeholder="Ex: Revisar referencial teórico" autoFocus/></div>
+                <div className="field"><label>Data de entrega</label><input type="date" value={newDue} onChange={e=>setNewDue(e.target.value)}/></div>
+                <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+                  <button className="btn btn-ghost" onClick={() => setShowModal(false)}>Cancelar</button>
+                  <button className="btn btn-violet" onClick={addTask}>Criar tarefa</button>
+                </div>
+              </div>
             </div>
           )}
         </div>

@@ -13,28 +13,34 @@
     .tool-card p{font-size:.8125rem;color:var(--muted);line-height:1.5;position:relative;z-index:1;margin:0 0 14px;}
     .tool-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;position:relative;z-index:1;}
     .pro-badge{position:absolute;top:14px;right:14px;background:var(--grad);color:white;font-family:var(--font-mono);font-size:.6rem;padding:3px 8px;border-radius:999px;font-weight:600;text-transform:uppercase;}
+    .locked-overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;z-index:10;opacity:0;transition:opacity .2s;}
+    .tool-card:hover .locked-overlay{opacity:1;}
   </style>
 </head>
 <body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel" src="../src/sidebar.jsx"></script>
 <script type="text/babel">
-const { useState } = React;
+const { useState, useEffect } = React;
 
 const TOOLS = [
-  { id:"references", icon:"📖", title:"Gerador de Referências", desc:"Gere referências ABNT automaticamente a partir de URL, DOI ou título.", tag:"ABNT", tagCls:"tag-violet", pro:false },
-  { id:"notes", icon:"📝", title:"Anotações e Fichamentos", desc:"Organize suas leituras com fichamentos estruturados.", tag:"Organização", tagCls:"tag-cyan", pro:false },
-  { id:"plagiarism", icon:"🔍", title:"Verificador de Plágio", desc:"Analise trechos do seu texto e verifique similaridade.", tag:"Integridade", tagCls:"tag-rose", pro:true },
-  { id:"templates", icon:"🗂", title:"Banco de Templates", desc:"Modelos prontos para TCC: capa, folha de rosto, referências.", tag:"Templates", tagCls:"tag-amber", pro:false },
-  { id:"diary", icon:"📔", title:"Diário de Progresso", desc:"Registre o histórico diário do seu TCC.", tag:"Registro", tagCls:"tag-emerald", pro:true },
-  { id:"ideas", icon:"💡", title:"Quadro de Ideias", desc:"Mapa mental colaborativo para organizar ideias.", tag:"Criatividade", tagCls:"tag-violet", pro:true },
+  { id:"referencias", icon:"📖", title:"Gerador de Referências", desc:"Gere referências ABNT automaticamente a partir de URL, DOI ou título.", tag:"ABNT", tagCls:"tag-violet", pro:false, href:"referencias.html" },
+  { id:"anotacoes", icon:"📝", title:"Anotações e Fichamentos", desc:"Organize suas leituras com fichamentos estruturados.", tag:"Organização", tagCls:"tag-cyan", pro:false, href:"anotacoes.html" },
+  { id:"plagio", icon:"🔍", title:"Verificador de Plágio", desc:"Analise trechos do seu texto e verifique similaridade.", tag:"Integridade", tagCls:"tag-rose", pro:true, href:"plagio.html" },
+  { id:"templates", icon:"🗂", title:"Banco de Templates", desc:"Modelos prontos para TCC: capa, folha de rosto, referências.", tag:"Templates", tagCls:"tag-amber", pro:false, href:"templates.html" },
+  { id:"diario", icon:"📔", title:"Diário de Progresso", desc:"Registre o histórico diário do seu TCC.", tag:"Registro", tagCls:"tag-emerald", pro:true, href:"diario.html" },
+  { id:"ideias", icon:"💡", title:"Quadro de Ideias", desc:"Mapa mental colaborativo para organizar ideias.", tag:"Criatividade", tagCls:"tag-violet", pro:true, href:"ideias.html" },
 ];
 
-function ToolCard({ t }) {
+function ToolCard({ t, isPro }) {
+  const isLocked = t.pro && !isPro;
   return (
-    <div className="tool-card">
+    <a href={isLocked ? "#" : t.href} onClick={isLocked ? e => e.preventDefault() : null} className="tool-card" style={{ opacity:isLocked?0.6:1, pointerEvents:isLocked?"none":"auto" }}>
       {t.pro && <div className="pro-badge">PRO</div>}
       <div className="tool-icon" style={{ background:t.pro?"rgba(244,63,94,.1)":"rgba(124,58,237,.1)" }}>{t.icon}</div>
       <h3>{t.title}</h3>
@@ -43,19 +49,24 @@ function ToolCard({ t }) {
         <span className={`tool-tag ${t.tagCls}`}>{t.tag}</span>
         <span style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>Abrir →</span>
       </div>
-    </div>
+      {isLocked && <div className="locked-overlay"><span style={{color:"white",fontSize:".875rem",fontWeight:500}}>Upgrade para PRO</span></div>}
+    </a>
   );
 }
 
 function ToolsPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
   const [filter, setFilter] = useState("todas");
+  const isPro = subscription?.plan === "pro";
   const filtered = filter === "pro" ? TOOLS.filter(t => t.pro) : filter === "gratis" ? TOOLS.filter(t => !t.pro) : TOOLS;
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
 
   return (
     <div className="app-layout">
-      <Sidebar active="tools"/>
+      <Sidebar active="tools" userData={userData} project={project} subscription={subscription}/>
       <div className="main-area">
-        <Topbar page="Ferramentas"/>
+        <Topbar page="Ferramentas" user={user}/>
         <div className="page-content">
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
             <div>
@@ -71,7 +82,7 @@ function ToolsPage() {
           </div>
 
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))", gap:14 }}>
-            {filtered.map(t => <ToolCard key={t.id} t={t}/>)}
+            {filtered.map(t => <ToolCard key={t.id} t={t} isPro={isPro}/>)}
           </div>
         </div>
       </div>

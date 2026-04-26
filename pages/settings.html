@@ -27,12 +27,15 @@
   </style>
 </head>
 <body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel" src="../src/sidebar.jsx"></script>
 <script type="text/babel">
-const { useState } = React;
+const { useState, useEffect } = React;
 
 const SECTIONS = [
   { id:"profile",  icon:"👤", label:"Perfil" },
@@ -44,7 +47,12 @@ function Toggle({ on, onToggle }) {
   return <div className={`toggle-switch ${on?"on":""}`} onClick={onToggle}></div>;
 }
 
-function ProfileSection() {
+function ProfileSection({ user, userData, subscription, saving, onSave }) {
+  const [name, setName] = useState(userData?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const planLabel = subscription?.plan === "pro" ? "Plano Pro" : "Plano Gratuito";
+  const initials = getInitials(name);
+
   return (
     <div>
       <div className="section-title">Perfil <em>pessoal</em></div>
@@ -52,20 +60,22 @@ function ProfileSection() {
       <div className="card" style={{ marginBottom:16 }}>
         <div style={{ display:"flex", gap:20, alignItems:"center", marginBottom:24 }}>
           <div style={{ position:"relative" }}>
-            <div className="av c1" style={{ width:64, height:64, fontSize:"1.25rem", fontWeight:700 }}>PG</div>
+            <div className="av c1" style={{ width:64, height:64, fontSize:"1.25rem", fontWeight:700 }}>{initials}</div>
           </div>
           <div>
-            <div style={{ fontWeight:600, fontSize:"1rem" }}>Pedro Gentile</div>
-            <div style={{ color:"var(--muted)", fontSize:"0.875rem" }}>pedro@email.com</div>
-            <span className="tag tag-violet" style={{ marginTop:6, display:"inline-flex" }}>Plano Pro</span>
+            <div style={{ fontWeight:600, fontSize:"1rem" }}>{name || "Usuário"}</div>
+            <div style={{ color:"var(--muted)", fontSize:"0.875rem" }}>{email}</div>
+            <span className={`tag ${subscription?.plan === "pro" ? "tag-violet" : "tag-cyan"}`} style={{ marginTop:6, display:"inline-flex" }}>{planLabel}</span>
           </div>
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-          <div className="field" style={{ marginBottom:0 }}><label>Nome completo</label><input type="text" defaultValue="Pedro Gentile"/></div>
-          <div className="field" style={{ marginBottom:0 }}><label>E-mail</label><input type="email" defaultValue="pedro@email.com"/></div>
+          <div className="field" style={{ marginBottom:0 }}><label>Nome completo</label><input type="text" value={name} onChange={e=>setName(e.target.value)}/></div>
+          <div className="field" style={{ marginBottom:0 }}><label>E-mail</label><input type="email" value={email} disabled style={{opacity:0.6}}/></div>
         </div>
         <div style={{ marginTop:16 }}>
-          <button className="btn btn-primary">Salvar alterações</button>
+          <button className="btn btn-primary" onClick={() => onSave(name)} disabled={saving}>
+            {saving ? "Salvando..." : "Salvar alterações"}
+          </button>
         </div>
       </div>
     </div>
@@ -116,22 +126,38 @@ function AppearSection({ prefs, toggle }) {
 }
 
 function SettingsPage() {
+  const { user, userData, subscription, loading } = useTCCData();
   const [section, setSection] = useState("profile");
   const [prefs, setPrefs] = useState({ tasks:true, mentions:true, deadlines:true, dark:false, anim:true });
+  const [saving, setSaving] = useState(false);
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
 
   function toggle(key) { setPrefs(p => ({ ...p, [key]:!p[key] })); }
 
+  async function saveProfile(newName) {
+    if (!newName.trim() || !user) return;
+    setSaving(true);
+    try {
+      await _supa.from('users').update({ name: newName }).eq('id', user.uid);
+      alert("Perfil atualizado com sucesso!");
+    } catch(e) {
+      alert("Erro ao salvar: " + e.message);
+    }
+    setSaving(false);
+  }
+
   const content = {
-    profile: <ProfileSection/>,
+    profile: <ProfileSection user={user} userData={userData} subscription={subscription} saving={saving} onSave={saveProfile}/>,
     notif: <NotifSection prefs={prefs} toggle={toggle}/>,
     appear: <AppearSection prefs={prefs} toggle={toggle}/>,
   };
 
   return (
     <div className="app-layout">
-      <Sidebar active="settings"/>
+      <Sidebar active="settings" userData={userData} subscription={subscription}/>
       <div className="main-area">
-        <Topbar page="Configurações"/>
+        <Topbar page="Configurações" user={user}/>
         <div style={{ flex:1, display:"grid", gridTemplateColumns:"200px 1fr", overflow:"hidden" }}>
           <div style={{ borderRight:"1px solid var(--line)", padding:"16px 10px", background:"var(--paper)", overflowY:"auto" }}>
             <div className="mono-label" style={{ marginBottom:8, padding:"0 4px" }}>Configurações</div>

@@ -14,52 +14,86 @@
   </style>
 </head>
 <body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel" src="../src/sidebar.jsx"></script>
 <script type="text/babel">
-const { useState } = React;
+const { useState, useEffect } = React;
 
 const QUICK_ACTIONS = [
-  { icon:"📄", label:"Google Docs", desc:"Criar documento do TCC" },
-  { icon:"📊", label:"Planilhas", desc:"Tabelas e dados da pesquisa" },
-  { icon:"📑", label:"Apresentações", desc:"Slides para a defesa" },
-  { icon:"📅", label:"Google Agenda", desc:"Sincronizar calendário" },
-];
-
-const SAVED_LINKS = [
-  { name:"TCC — Documento Principal", type:"Docs", icon:"📄", modified:"hoje" },
-  { name:"Dados Survey — Planilha", type:"Sheets", icon:"📊", modified:"ontem" },
-  { name:"Apresentação Qualificação", type:"Slides", icon:"📑", modified:"22 abr" },
+  { icon:"📄", label:"Google Docs", desc:"Criar documento do TCC", href:"https://docs.google.com/document/create" },
+  { icon:"📊", label:"Planilhas", desc:"Tabelas e dados da pesquisa", href:"https://sheets.google.com/create" },
+  { icon:"📑", label:"Apresentações", desc:"Slides para a defesa", href:"https://slides.google.com/create" },
+  { icon:"📅", label:"Google Agenda", desc:"Sincronizar calendário", href:"https://calendar.google.com" },
 ];
 
 function GooglePage() {
-  const [connected, setConnected] = useState(true);
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [links, setLinks] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [newLinkName, setNewLinkName] = useState("");
+  const [newLinkUrl, setNewLinkUrl] = useState("");
+
+  useEffect(() => {
+    if (!project) return;
+    (async () => {
+      const ls = await DB.googleLinks.getAll(project.id);
+      setLinks(ls || []);
+    })();
+  }, [project]);
+
+  async function addLink() {
+    if (!newLinkName.trim() || !newLinkUrl.trim() || !project) return;
+    await DB.googleLinks.add(project.id, {
+      name: newLinkName,
+      url: newLinkUrl,
+      type: newLinkUrl.includes("docs.google.com") ? "Docs" : newLinkUrl.includes("sheets.google.com") ? "Sheets" : newLinkUrl.includes("slides.google.com") ? "Slides" : "Link"
+    });
+    const ls = await DB.googleLinks.getAll(project.id);
+    setLinks(ls);
+    setNewLinkName("");
+    setNewLinkUrl("");
+    setShowModal(false);
+  }
+
+  async function removeLink(linkId) {
+    await DB.googleLinks.remove(linkId);
+    setLinks(prev => prev.filter(l => l.id !== linkId));
+  }
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+
+  const googleEmail = user?.email || null;
 
   return (
     <div className="app-layout">
-      <Sidebar active="google"/>
+      <Sidebar active="google" userData={userData} project={project} subscription={subscription}/>
       <div className="main-area">
-        <Topbar page="Google" actions={
-          connected && (
+        <Topbar page="Google" user={user} actions={
+          googleEmail && (
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
               <span style={{ width:8, height:8, borderRadius:"50%", background:"var(--emerald)" }}></span>
-              <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--emerald)" }}>pedro@gmail.com</span>
+              <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--emerald)" }}>{googleEmail}</span>
             </div>
           )
         }/>
         <div className="page-content">
-          {connected && (
+          {googleEmail && (
             <>
-              <div style={{ background:"var(--grad)", borderRadius:16, padding:"20px 24px", color:"white", display:"flex", alignItems:"center", gap:20, marginBottom:20 }}>
-                <div style={{ fontSize:"2rem" }}>🗂</div>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:600, marginBottom:2 }}>Pasta compartilhada do TCC</div>
-                  <div style={{ fontSize:"0.8125rem", opacity:.8 }}>drive.google.com/drive/folders/TCC-2026</div>
+              {project && (
+                <div style={{ background:"var(--grad)", borderRadius:16, padding:"20px 24px", color:"white", display:"flex", alignItems:"center", gap:20, marginBottom:20 }}>
+                  <div style={{ fontSize:"2rem" }}>🗂</div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontWeight:600, marginBottom:2 }}>Pasta do projeto</div>
+                    <div style={{ fontSize:"0.8125rem", opacity:.8 }}>{project.name}</div>
+                  </div>
+                  <a href="https://drive.google.com" target="_blank" className="btn" style={{ background:"white", color:"var(--violet)", fontWeight:600, flexShrink:0 }}>Abrir Drive →</a>
                 </div>
-                <button className="btn" style={{ background:"white", color:"var(--violet)", fontWeight:600, flexShrink:0 }}>Abrir Drive →</button>
-              </div>
+              )}
 
               <div style={{ display:"grid", gridTemplateColumns:"1fr 280px", gap:16 }}>
                 <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
@@ -67,13 +101,13 @@ function GooglePage() {
                     <div className="card-title"><span className="ct-icon">⚡</span> Ações rápidas</div>
                     <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
                       {QUICK_ACTIONS.map(a => (
-                        <div key={a.label} className="g-action-card">
+                        <a key={a.label} href={a.href} target="_blank" className="g-action-card">
                           <div className="g-icon">{a.icon}</div>
                           <div>
                             <div style={{ fontWeight:600, fontSize:"0.9375rem" }}>{a.label}</div>
                             <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>{a.desc}</div>
                           </div>
-                        </div>
+                        </a>
                       ))}
                     </div>
                   </div>
@@ -81,17 +115,19 @@ function GooglePage() {
                   <div className="card">
                     <div className="card-title" style={{ justifyContent:"space-between" }}>
                       <span style={{ display:"flex", alignItems:"center", gap:8 }}><span className="ct-icon">🔗</span> Links salvos</span>
-                      <button className="btn btn-ghost btn-sm">+ Adicionar</button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => setShowModal(true)}>+ Adicionar</button>
                     </div>
                     <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                      {SAVED_LINKS.map((f,i) => (
-                        <div key={i} className="g-file">
-                          <span style={{ fontSize:"1.25rem" }}>{f.icon}</span>
+                      {links.length === 0 && <div style={{color:"var(--muted)",fontSize:".875rem",padding:12}}>Nenhum link salvo</div>}
+                      {links.map(f => (
+                        <div key={f.id} className="g-file">
+                          <span style={{ fontSize:"1.25rem" }}>🔗</span>
                           <div style={{ flex:1 }}>
                             <div style={{ fontSize:"0.875rem", fontWeight:500 }}>{f.name}</div>
-                            <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", color:"var(--muted)" }}>{f.type} · {f.modified}</div>
+                            <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", color:"var(--muted)" }}>{f.type || "Link"}</div>
                           </div>
-                          <button className="btn btn-ghost btn-sm">Abrir</button>
+                          <a href={f.url} target="_blank" className="btn btn-ghost btn-sm">Abrir</a>
+                          <button className="btn btn-ghost btn-sm" onClick={() => removeLink(f.id)} style={{color:"var(--rose)"}}>✕</button>
                         </div>
                       ))}
                     </div>
@@ -101,16 +137,30 @@ function GooglePage() {
                 <div className="card">
                   <div className="card-title"><span className="ct-icon">🔧</span> Serviços</div>
                   <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-                    {[{icon:"🗂",label:"Drive"},{icon:"📧",label:"Gmail"},{icon:"🔔",label:"Meet"},{icon:"📝",label:"Forms"}].map(s => (
-                      <div key={s.label} style={{ textAlign:"center", padding:"16px", background:"var(--bg-2)", borderRadius:12, cursor:"pointer" }}>
+                    {[{icon:"🗂",label:"Drive",href:"https://drive.google.com"},{icon:"📧",label:"Gmail",href:"https://gmail.com"},{icon:"🔔",label:"Meet",href:"https://meet.google.com"},{icon:"📝",label:"Forms",href:"https://forms.google.com"}].map(s => (
+                      <a key={s.label} href={s.href} target="_blank" style={{ textAlign:"center", padding:"16px", background:"var(--bg-2)", borderRadius:12, cursor:"pointer", textDecoration:"none", color:"inherit" }}>
                         <div style={{ fontSize:"1.5rem", marginBottom:6 }}>{s.icon}</div>
                         <div style={{ fontWeight:600, fontSize:"0.875rem" }}>{s.label}</div>
-                      </div>
+                      </a>
                     ))}
                   </div>
                 </div>
               </div>
             </>
+          )}
+
+          {showModal && (
+            <div className="modal-overlay" onClick={() => setShowModal(false)}>
+              <div className="modal" onClick={e => e.stopPropagation()}>
+                <h3 style={{fontFamily:"var(--font-display)",fontSize:"1.25rem",marginBottom:16}}>Adicionar link</h3>
+                <div className="field"><label>Nome</label><input type="text" value={newLinkName} onChange={e=>setNewLinkName(e.target.value)} placeholder="Ex: Referências da pesquisa" autoFocus/></div>
+                <div className="field"><label>URL</label><input type="url" value={newLinkUrl} onChange={e=>setNewLinkUrl(e.target.value)} placeholder="https://..."/></div>
+                <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+                  <button className="btn btn-ghost" onClick={() => setShowModal(false)}>Cancelar</button>
+                  <button className="btn btn-violet" onClick={addLink}>Adicionar link</button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

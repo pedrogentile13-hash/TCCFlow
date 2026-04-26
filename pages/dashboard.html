@@ -9,6 +9,9 @@
 </head>
 <body>
 <div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
@@ -16,75 +19,87 @@
 <script type="text/babel">
 const { useState, useEffect } = React;
 
-const MY_TASKS = [
-  { id:1, title:"Definir metodologia da pesquisa", tag:"Pesquisa", tagCls:"tag-cyan", due:"Hoje", priority:"alta" },
-  { id:2, title:"Escrever introdução do capítulo 1", tag:"Escrita", tagCls:"tag-violet", due:"Amanhã", priority:"média" },
-  { id:3, title:"Revisar referências ABNT", tag:"Revisão", tagCls:"tag-amber", due:"28 abr", priority:"baixa" },
-  { id:4, title:"Reunião com orientador", tag:"Reunião", tagCls:"tag-emerald", due:"29 abr", priority:"alta" },
-];
-
-const TEAM_MEMBERS = [
-  { initials:"PG", name:"Pedro Gentile", role:"Líder", cls:"c1", status:"online" },
-  { initials:"AM", name:"Ana Martins",   role:"Pesquisadora", cls:"c2", status:"online" },
-  { initials:"LF", name:"Lucas Ferreira",role:"Redator", cls:"c3", status:"away" },
-  { initials:"BN", name:"Beatriz Nunes", role:"Revisora", cls:"c4", status:"offline" },
-];
-
-const ACTIVITY = [
-  { who:"Ana Martins",   action:"adicionou uma tarefa", what:"Coleta de dados", time:"há 12 min", cls:"c2" },
-  { who:"Lucas Ferreira",action:"concluiu",             what:"Pesquisa bibliográfica", time:"há 1h", cls:"c3" },
-  { who:"Você",          action:"atualizou o projeto",  what:"Objetivos específicos", time:"há 2h", cls:"c1" },
-  { who:"Beatriz Nunes", action:"comentou em",          what:"Introdução rascunho", time:"ontem", cls:"c4" },
-];
-
 function PriorityDot({ p }) {
   const colors = { alta:"var(--rose)", média:"var(--amber)", baixa:"var(--emerald)" };
-  return <span style={{width:7,height:7,borderRadius:"50%",background:colors[p],display:"inline-block",flexShrink:0}}></span>;
+  return <span style={{width:7,height:7,borderRadius:"50%",background:colors[p]||"var(--muted)",display:"inline-block",flexShrink:0}}></span>;
 }
 
 function Dashboard() {
-  const [progress] = useState(34);
+  const { user, userData, project, subscription, teamMembers, loading } = useTCCData();
+  const [tasks, setTasks] = useState([]);
   const [shown, setShown] = useState(false);
-  useEffect(() => { setTimeout(() => setShown(true), 50); }, []);
+
+  useEffect(() => {
+    if (!project) return;
+    (async () => {
+      try {
+        const { data } = await _supa.from('tasks').select('*').eq('project_id', project.id).order('created_at', { ascending: false });
+        setTasks(data || []);
+      } catch(e) { console.error(e); }
+    })();
+  }, [project]);
+
+  useEffect(() => { if (!loading) setTimeout(() => setShown(true), 50); }, [loading]);
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+
+  const userName = userData?.name || user?.displayName || 'Usuário';
+  const firstName = userName.split(' ')[0];
+  const myTasks = tasks.filter(t => t.assigned_to === user?.uid || (t.assigned_to_list && t.assigned_to_list.includes(user?.uid)));
+  const todayTasks = myTasks.filter(t => t.status !== 'done');
+  const doneTasks = tasks.filter(t => t.status === 'done');
+  const totalTasks = tasks.length;
+  const progress = totalTasks > 0 ? Math.round(doneTasks.length / totalTasks * 100) : 0;
+
+  async function toggleTask(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const newStatus = task.status === 'done' ? 'todo' : 'done';
+    await _supa.from('tasks').update({ status: newStatus }).eq('id', taskId);
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+  }
+
+  const statusLabel = (s) => s === 'todo' ? 'A fazer' : s === 'progress' ? 'Em andamento' : 'Concluída';
 
   return (
     <div className="app-layout">
-      <Sidebar active="dashboard"/>
+      <Sidebar active="dashboard" userData={userData} project={project} subscription={subscription}/>
       <div className="main-area">
-        <Topbar page="Dashboard"/>
+        <Topbar page="Dashboard" user={user}/>
         <div className="page-content">
 
           <div className={`reveal ${shown?"in":""}`} style={{marginBottom:28}}>
             <div style={{background:"var(--grad)",borderRadius:16,padding:"24px 28px",color:"white",position:"relative",overflow:"hidden"}}>
               <div style={{position:"absolute",right:-40,top:-40,width:220,height:220,borderRadius:"50%",background:"rgba(255,255,255,.08)"}}></div>
-              <div style={{position:"absolute",right:60,bottom:-60,width:160,height:160,borderRadius:"50%",background:"rgba(255,255,255,.05)"}}></div>
               <div style={{fontFamily:"var(--font-mono)",fontSize:"0.6875rem",textTransform:"uppercase",letterSpacing:"0.12em",opacity:.8,marginBottom:6}}>Bem-vindo de volta 👋</div>
-              <h2 style={{fontFamily:"var(--font-display)",fontSize:"1.75rem",fontWeight:400,margin:"0 0 4px",letterSpacing:"-0.02em"}}>Bom dia, <em>Pedro!</em></h2>
-              <p style={{margin:0,opacity:.85,fontSize:"0.9375rem"}}>Impacto das Redes Sociais no Desempenho Acadêmico</p>
-              <div style={{display:"flex",alignItems:"center",gap:16,marginTop:16}}>
-                <div style={{fontFamily:"var(--font-mono)",fontSize:"0.75rem",opacity:.8}}>Código de entrada:</div>
-                <div style={{background:"rgba(255,255,255,.2)",padding:"4px 12px",borderRadius:6,fontFamily:"var(--font-mono)",fontSize:"0.875rem",fontWeight:600,letterSpacing:"0.08em"}}>TCC-2026-A4F7</div>
-              </div>
+              <h2 style={{fontFamily:"var(--font-display)",fontSize:"1.75rem",fontWeight:400,margin:"0 0 4px",letterSpacing:"-0.02em"}}>Bom dia, <em>{firstName}!</em></h2>
+              {project && <p style={{margin:0,opacity:.85,fontSize:"0.9375rem"}}>{project.name}</p>}
+              {project?.code && (
+                <div style={{display:"flex",alignItems:"center",gap:16,marginTop:16}}>
+                  <div style={{fontFamily:"var(--font-mono)",fontSize:"0.75rem",opacity:.8}}>Código de entrada:</div>
+                  <div style={{background:"rgba(255,255,255,.2)",padding:"4px 12px",borderRadius:6,fontFamily:"var(--font-mono)",fontSize:"0.875rem",fontWeight:600,letterSpacing:"0.08em"}}>{project.code}</div>
+                </div>
+              )}
             </div>
           </div>
 
           <div className={`stat-grid reveal ${shown?"in":""} d1`}>
             <div className="stat-card">
               <div className="stat-label">Membros</div>
-              <div className="stat-value">4</div>
-              <div className="stat-sub">de 8 no plano Pro</div>
+              <div className="stat-value">{teamMembers.length}</div>
+              <div className="stat-sub">de {subscription?.seats || 1} no plano</div>
               <div className="stat-icon">👥</div>
             </div>
             <div className="stat-card">
               <div className="stat-label">Minhas Tarefas</div>
-              <div className="stat-value">7</div>
-              <div className="stat-sub">3 com prazo hoje</div>
+              <div className="stat-value">{todayTasks.length}</div>
+              <div className="stat-sub">pendentes</div>
               <div className="stat-icon">📋</div>
             </div>
             <div className="stat-card">
               <div className="stat-label">Concluídas</div>
-              <div className="stat-value">12</div>
-              <div className="stat-sub">esta semana: +4</div>
+              <div className="stat-value">{doneTasks.length}</div>
+              <div className="stat-sub">de {totalTasks} total</div>
               <div className="stat-icon">✅</div>
             </div>
             <div className="stat-card">
@@ -104,26 +119,22 @@ function Dashboard() {
                 <a href="tasks.html" className="btn btn-ghost btn-sm">Ver todas</a>
               </div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                {MY_TASKS.map(t => (
-                  <div key={t.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:10,background:"var(--bg-2)",border:"1px solid var(--line)",transition:"background .15s",cursor:"pointer"}}
-                    onMouseEnter={e=>e.currentTarget.style.background="var(--bg)"}
-                    onMouseLeave={e=>e.currentTarget.style.background="var(--bg-2)"}>
-                    <PriorityDot p={t.priority}/>
+                {todayTasks.length === 0 && <div style={{color:"var(--muted)",fontSize:"0.875rem",padding:12}}>Nenhuma tarefa pendente</div>}
+                {todayTasks.slice(0,5).map(t => (
+                  <div key={t.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:10,background:"var(--bg-2)",border:"1px solid var(--line)"}}>
+                    <PriorityDot p={t.due_date && new Date(t.due_date) < new Date() ? "alta" : "média"}/>
                     <div style={{flex:1}}>
                       <div style={{fontSize:"0.875rem",fontWeight:500,marginBottom:2}}>{t.title}</div>
                       <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                        <span className={`tag ${t.tagCls}`}>{t.tag}</span>
-                        <span style={{fontFamily:"var(--font-mono)",fontSize:"0.6875rem",color:"var(--muted)"}}>Vence {t.due}</span>
+                        <span className="tag tag-cyan">{statusLabel(t.status)}</span>
+                        {t.due_date && <span style={{fontFamily:"var(--font-mono)",fontSize:"0.6875rem",color:"var(--muted)"}}>Vence {new Date(t.due_date).toLocaleDateString('pt-BR')}</span>}
                       </div>
                     </div>
-                    <button style={{width:22,height:22,borderRadius:6,border:"1.5px solid var(--line)",background:"var(--paper)",cursor:"pointer",flexShrink:0,transition:"all .2s"}}
+                    <button onClick={() => toggleTask(t.id)} style={{width:22,height:22,borderRadius:6,border:"1.5px solid var(--line)",background:"var(--paper)",cursor:"pointer",flexShrink:0,transition:"all .2s"}}
                       onMouseEnter={e=>{e.currentTarget.style.background="var(--emerald)";e.currentTarget.style.borderColor="var(--emerald)"}}
                       onMouseLeave={e=>{e.currentTarget.style.background="var(--paper)";e.currentTarget.style.borderColor="var(--line)"}}></button>
                   </div>
                 ))}
-                <button className="btn btn-ghost" style={{width:"100%",justifyContent:"center",marginTop:4}}>
-                  + Nova tarefa
-                </button>
               </div>
             </div>
 
@@ -136,39 +147,16 @@ function Dashboard() {
                   <a href="team.html" className="btn btn-ghost btn-sm">Gerenciar</a>
                 </div>
                 <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                  {TEAM_MEMBERS.map(m => (
-                    <div key={m.name} style={{display:"flex",alignItems:"center",gap:10}}>
-                      <div style={{position:"relative"}}>
-                        <div className={`av av-sm ${m.cls}`}>{m.initials}</div>
-                        <span style={{position:"absolute",bottom:0,right:0,width:8,height:8,borderRadius:"50%",
-                          background:m.status==="online"?"var(--emerald)":m.status==="away"?"var(--amber)":"var(--line-2)",
-                          border:"2px solid var(--paper)"}}></span>
-                      </div>
+                  {teamMembers.map((m, i) => (
+                    <div key={m.id} style={{display:"flex",alignItems:"center",gap:10}}>
+                      <div className={`av av-sm c${(i%4)+1}`}>{getInitials(m.name)}</div>
                       <div style={{flex:1}}>
-                        <div style={{fontSize:"0.8125rem",fontWeight:500}}>{m.name}</div>
-                        <div style={{fontFamily:"var(--font-mono)",fontSize:"0.625rem",color:"var(--muted)"}}>{m.role}</div>
+                        <div style={{fontSize:"0.8125rem",fontWeight:500}}>{m.name || m.email}</div>
+                        <div style={{fontFamily:"var(--font-mono)",fontSize:"0.625rem",color:"var(--muted)"}}>{m.role === 'orientador' ? 'Orientador' : 'Estudante'}</div>
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card-title">
-                  <span className="ct-icon">⚡</span> Atividade Recente
-                </div>
-                <div style={{display:"flex",flexDirection:"column",gap:12}}>
-                  {ACTIVITY.map((a,i) => (
-                    <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
-                      <div className={`av av-sm ${a.cls}`} style={{flexShrink:0}}>{a.who.charAt(0)}</div>
-                      <div style={{flex:1}}>
-                        <div style={{fontSize:"0.8125rem",lineHeight:1.4}}>
-                          <strong>{a.who}</strong> {a.action} <span style={{color:"var(--violet)"}}>{a.what}</span>
-                        </div>
-                        <div style={{fontFamily:"var(--font-mono)",fontSize:"0.625rem",color:"var(--muted)",marginTop:2}}>{a.time}</div>
-                      </div>
-                    </div>
-                  ))}
+                  {teamMembers.length === 0 && <div style={{color:"var(--muted)",fontSize:"0.8125rem"}}>Nenhum membro ainda</div>}
                 </div>
               </div>
             </div>

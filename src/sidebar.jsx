@@ -6,10 +6,47 @@ const { useState, useEffect, useRef } = React;
   if (!document.getElementById("tcc-font-switcher-script")) {
     const s = document.createElement("script");
     s.id = "tcc-font-switcher-script";
-    s.src = "font-switch.js";
+    s.src = "../js/font-switch.js";
     document.head.appendChild(s);
   }
 })();
+
+function useTCCData() {
+  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [project, setProject] = useState(null);
+  const [subscription, setSub] = useState(null);
+  const [teamMembers, setTeam] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (typeof auth === 'undefined') { setLoading(false); return; }
+    auth.onAuthStateChanged(async (u) => {
+      if (!u) { window.location.href = 'login.html'; return; }
+      setUser(u);
+      try {
+        const { data: ud } = await _supa.from('users').select('*').eq('id', u.uid).maybeSingle();
+        setUserData(ud);
+        if (ud?.project_id) {
+          const { data: proj } = await _supa.from('projects').select('*').eq('id', ud.project_id).maybeSingle();
+          setProject(proj);
+          const { data: members } = await _supa.from('users').select('id, name, email, photo_url, role').eq('project_id', ud.project_id);
+          setTeam(members || []);
+        }
+        const sub = await DB.subscriptions.get(u.uid);
+        setSub(sub);
+      } catch(e) { console.error('useTCCData error:', e); }
+      setLoading(false);
+    });
+  }, []);
+
+  return { user, userData, project, subscription, teamMembers, loading };
+}
+
+function getInitials(name) {
+  if (!name) return '??';
+  return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+}
 
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", href: "dashboard.html", icon: (
@@ -24,7 +61,7 @@ const NAV_ITEMS = [
       <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
     </svg>
   )},
-  { id: "tasks", label: "Tarefas", href: "tasks.html", badge: "3", icon: (
+  { id: "tasks", label: "Tarefas", href: "tasks.html", icon: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
     </svg>
@@ -99,18 +136,24 @@ function FontSwitcher() {
   );
 }
 
-function Sidebar({ active }) {
+function Sidebar({ active, userData, project, subscription }) {
+  const userName = userData?.name || (typeof auth !== 'undefined' && auth.currentUser?.displayName) || 'Usuário';
+  const userInitials = getInitials(userName);
+  const projectName = project?.name || 'Nenhum projeto';
+  const projectCode = project?.code ? `Código: ${project.code}` : 'Crie ou entre em um projeto';
+  const planLabel = subscription?.plan === 'pro' ? 'Plano Pro' : 'Plano Gratuito';
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <img src="assets/logo.png" alt="TCCFlow" />
+        <img src="../assets/logo.png" alt="TCCFlow" />
         <span>TCCFlow<span className="dot"></span></span>
       </div>
 
       <div className="sidebar-project">
         <div className="proj-label">Projeto ativo</div>
-        <div className="proj-name">Impacto das Redes Sociais no Desempenho Acadêmico</div>
-        <div className="proj-code">Código: TCC-2026-A4F7</div>
+        <div className="proj-name">{projectName}</div>
+        <div className="proj-code">{projectCode}</div>
       </div>
 
       <nav className="sidebar-nav">
@@ -137,12 +180,13 @@ function Sidebar({ active }) {
       <div className="sidebar-bottom">
         <FontSwitcher/>
         <div className="sidebar-user">
-          <div className="av av-sm c1">PG</div>
+          <div className="av av-sm c1">{userInitials}</div>
           <div className="info">
-            <div className="name">Pedro Gentile</div>
-            <div className="plan">Plano Pro</div>
+            <div className="name">{userName}</div>
+            <div className="plan">{planLabel}</div>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft:"auto",color:"var(--muted)"}}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft:"auto",color:"var(--muted)",cursor:"pointer"}}
+            onClick={() => { if(typeof auth !== 'undefined') auth.signOut().then(() => window.location.href = 'login.html'); }}>
             <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
           </svg>
         </div>
@@ -151,7 +195,10 @@ function Sidebar({ active }) {
   );
 }
 
-function Topbar({ page, actions }) {
+function Topbar({ page, actions, user }) {
+  const userName = user?.displayName || 'Usuário';
+  const userInitials = getInitials(userName);
+
   return (
     <div className="topbar">
       <div className="topbar-left">
@@ -175,10 +222,10 @@ function Topbar({ page, actions }) {
           </svg>
           <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:"var(--rose)",border:"2px solid var(--paper)"}}></span>
         </button>
-        <div className="av av-sm c1" style={{cursor:"pointer"}}>PG</div>
+        <div className="av av-sm c1" style={{cursor:"pointer"}}>{userInitials}</div>
       </div>
     </div>
   );
 }
 
-Object.assign(window, { Sidebar, Topbar });
+Object.assign(window, { Sidebar, Topbar, useTCCData, getInitials });
