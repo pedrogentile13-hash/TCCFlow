@@ -34,22 +34,35 @@ function useTCCData() {
           let members = [];
           let memberIds = proj?.members;
 
-          // Normalize members array (handle string format)
+          // Normalize members array (Supabase returns UUID[] as JSON string)
           if (typeof memberIds === 'string') {
-            try { memberIds = JSON.parse(memberIds); } catch { memberIds = null; }
+            try {
+              memberIds = JSON.parse(memberIds);
+            } catch (e) {
+              console.error('Erro ao parsear members:', e);
+              memberIds = null;
+            }
           }
-          if (!Array.isArray(memberIds)) memberIds = null;
+          if (!Array.isArray(memberIds)) {
+            console.warn('members não é array:', memberIds, 'tipo:', typeof memberIds);
+            memberIds = null;
+          }
 
           if (memberIds && memberIds.length > 0) {
             // Fetch all users and filter locally (mais confiável que .in())
             try {
               const { data: allUsers, error: err } = await _supa.from('users').select('id, name, email, photo_url, role');
               if (err) {
+                console.error('Erro ao buscar usuários com photo_url:', err);
                 // Fallback sem photo_url
                 const { data: allUsers2 } = await _supa.from('users').select('id, name, email, role');
                 members = (allUsers2 || []).filter(u => memberIds.includes(u.id));
               } else {
+                console.log('Todos usuários carregados:', allUsers?.length);
+                console.log('Member IDs a procurar:', memberIds);
+                console.log('Primeiros usuários:', allUsers?.[0]);
                 members = (allUsers || []).filter(u => memberIds.includes(u.id));
+                console.log('Membros encontrados após filtro:', members.length);
               }
             } catch (e) {
               console.error('Erro ao buscar usuários:', e);
