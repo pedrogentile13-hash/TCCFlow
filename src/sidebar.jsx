@@ -30,26 +30,24 @@ function useTCCData() {
         if (ud?.project_id) {
           const { data: proj } = await _supa.from('projects').select('*').eq('id', ud.project_id).maybeSingle();
           setProject(proj);
-          console.log('Projeto carregado:', proj);
-          console.log('Members array:', proj?.members);
 
           let members = [];
-          if (proj?.members && proj.members.length > 0) {
-            console.log('Buscando membros com IDs:', proj.members);
+          if (proj?.members && Array.isArray(proj.members) && proj.members.length > 0) {
+            // Tenta com photo_url
             const { data: m1, error: mErr } = await _supa.from('users').select('id, name, email, photo_url, role').in('id', proj.members);
-            console.log('Erro ao buscar com photo_url?', mErr);
-            console.log('Membros encontrados (com photo_url):', m1);
-            if (mErr) {
+            if (mErr || !m1) {
+              // Se falhar, tenta sem photo_url
               const { data: m2 } = await _supa.from('users').select('id, name, email, role').in('id', proj.members);
-              console.log('Membros encontrados (sem photo_url):', m2);
               members = m2 || [];
             } else {
-              members = m1 || [];
+              members = m1;
             }
-          } else {
-            console.log('Nenhum membro no array ou array vazio');
+            // Se ainda estiver vazio, tenta fetch de todos e filtrar localmente
+            if (!members || members.length === 0) {
+              const { data: allUsers } = await _supa.from('users').select('id, name, email, role');
+              members = (allUsers || []).filter(u => proj.members.includes(u.id));
+            }
           }
-          console.log('Members finais:', members);
           setTeam(members);
         }
         const sub = await DB.subscriptions.get(u.uid);
