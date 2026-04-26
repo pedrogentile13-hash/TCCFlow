@@ -30,13 +30,16 @@ function useTCCData() {
         if (ud?.project_id) {
           const { data: proj } = await _supa.from('projects').select('*').eq('id', ud.project_id).maybeSingle();
           setProject(proj);
+
           let members = [];
-          const { data: m1, error: mErr } = await _supa.from('users').select('id, name, email, photo_url, role').eq('project_id', ud.project_id);
-          if (mErr) {
-            const { data: m2 } = await _supa.from('users').select('id, name, email, role').eq('project_id', ud.project_id);
-            members = m2 || [];
-          } else {
-            members = m1 || [];
+          if (proj?.members && proj.members.length > 0) {
+            const { data: m1, error: mErr } = await _supa.from('users').select('id, name, email, photo_url, role').in('id', proj.members);
+            if (mErr) {
+              const { data: m2 } = await _supa.from('users').select('id, name, email, role').in('id', proj.members);
+              members = m2 || [];
+            } else {
+              members = m1 || [];
+            }
           }
           setTeam(members);
         }
