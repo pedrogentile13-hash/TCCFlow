@@ -33,7 +33,7 @@ function isFirebaseConfigured() {
 }
 
 // Admin emails with access to the admin panel
-const ADMIN_EMAILS = ['contato.tccflow@gmail.com'];
+const ADMIN_EMAILS = ['tccflow.contato@gmail.com'];
 
 // ============================================================
 // Compatibility layer - exposes `auth` global with same API
