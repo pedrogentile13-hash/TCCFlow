@@ -215,12 +215,16 @@ function OrientadorMode({ project, user, userData, conversations, activeConv, se
     setSending(true);
 
     try {
-      const { data: { session } } = await _supa.auth.getSession();
+      const { data } = await _supa.auth.getSession();
+      const token = data?.session?.access_token;
+
+      if (!token) throw new Error("Não autenticado");
+
       const response = await fetch("https://fpqvubixlsblanbyppkp.supabase.co/functions/v1/gemini-orientador", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${session?.access_token}`
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
           messages: msgs.concat([{role:"user",text:userMsg}]).map(m => ({
@@ -230,12 +234,16 @@ function OrientadorMode({ project, user, userData, conversations, activeConv, se
         })
       });
 
-      if (!response.ok) throw new Error("Erro na resposta da API");
-      const data = await response.json();
-      setMsgs(prev=>[...prev,{role:"ai",text:data.text}]);
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.error || "Erro na resposta da API");
+      }
+
+      setMsgs(prev=>[...prev,{role:"ai",text:responseData.text}]);
     } catch (err) {
-      setMsgs(prev=>[...prev,{role:"ai",text:"Desculpe, houve um erro ao processar sua mensagem. Tente novamente."}]);
-      console.error("Erro:", err);
+      setMsgs(prev=>[...prev,{role:"ai",text:"Desculpe, houve um erro: " + (err.message || "Tente novamente.")}]);
+      console.error("Erro detalhado:", err);
     }
     setSending(false);
   }
