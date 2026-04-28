@@ -257,22 +257,111 @@ function MonthView({current, setCurrent, goals=[], sessions=[]}) {
   );
 }
 
+function EventModal({ open, onClose, onSave, saving }) {
+  const [type, setType] = useState("goal");
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [topic, setTopic] = useState("");
+
+  if (!open) return null;
+
+  function reset() { setType("goal"); setTitle(""); setDate(""); setTime(""); setTopic(""); }
+
+  function handleSave() {
+    if (!title.trim() || !date) return;
+    onSave({ type, title: title.trim(), date, time, topic: topic.trim() });
+    reset();
+  }
+
+  function handleClose() { reset(); onClose(); }
+
+  return (
+    <div style={{position:"fixed",inset:0,zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",backdropFilter:"blur(4px)"}} onClick={handleClose}></div>
+      <div style={{position:"relative",background:"var(--paper)",borderRadius:20,border:"1px solid var(--line)",boxShadow:"0 20px 60px rgba(0,0,0,.2)",width:"100%",maxWidth:440,padding:"28px 24px",margin:16}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <h2 style={{fontFamily:"var(--font-display)",fontSize:"1.375rem",fontWeight:400}}>Novo <em style={{fontStyle:"italic",color:"var(--violet)"}}>evento</em></h2>
+          <button onClick={handleClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:"1.25rem",color:"var(--muted)"}}>✕</button>
+        </div>
+
+        <div style={{display:"flex",gap:4,marginBottom:18}}>
+          {[["goal","Meta / Entrega"],["session","Sessão / Reunião"]].map(([v,l])=>(
+            <button key={v} className={`btn btn-sm ${type===v?"btn-primary":"btn-ghost"}`} style={{border:"none",flex:1}} onClick={()=>setType(v)}>{l}</button>
+          ))}
+        </div>
+
+        <div className="field">
+          <label>Título</label>
+          <input type="text" placeholder={type==="goal"?"Ex: Entrega do capítulo 2":"Ex: Reunião com orientador"} value={title} onChange={e=>setTitle(e.target.value)}/>
+        </div>
+
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div className="field">
+            <label>Data</label>
+            <input type="date" value={date} onChange={e=>setDate(e.target.value)}/>
+          </div>
+          {type==="session" && (
+            <div className="field">
+              <label>Horário</label>
+              <input type="time" value={time} onChange={e=>setTime(e.target.value)}/>
+            </div>
+          )}
+        </div>
+
+        {type==="session" && (
+          <div className="field">
+            <label>Assunto</label>
+            <input type="text" placeholder="Ex: Revisão da metodologia" value={topic} onChange={e=>setTopic(e.target.value)}/>
+          </div>
+        )}
+
+        <div style={{display:"flex",gap:10,marginTop:20}}>
+          <button className="btn btn-violet" style={{flex:1}} onClick={handleSave} disabled={saving || !title.trim() || !date}>
+            {saving ? "Salvando..." : "Salvar evento"}
+          </button>
+          <button className="btn btn-ghost" onClick={handleClose}>Cancelar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CalendarPage() {
   const { user, userData, project, subscription, loading } = useTCCData();
   const [view,setView]=useState("gantt");
   const [current,setCurrent]=useState({year:2026,month:3});
   const [goals, setGoals] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
+  async function loadEvents() {
     if (!project) return;
-    (async () => {
-      const g = await DB.calendarGoals.getAll(project.id);
-      setGoals(g || []);
-      const s = await DB.calendarSessions.getAll(project.id);
-      setSessions(s || []);
-    })();
-  }, [project]);
+    const g = await DB.calendarGoals.getAll(project.id);
+    setGoals(g || []);
+    const s = await DB.calendarSessions.getAll(project.id);
+    setSessions(s || []);
+  }
+
+  useEffect(() => { loadEvents(); }, [project]);
+
+  async function handleSaveEvent(evt) {
+    if (!project) return;
+    setSaving(true);
+    try {
+      if (evt.type === "goal") {
+        await DB.calendarGoals.add(project.id, { title: evt.title, deadline: evt.date });
+      } else {
+        await DB.calendarSessions.add(project.id, { subject: evt.title, topic: evt.topic, date: evt.date, time: evt.time });
+      }
+      await loadEvents();
+      setShowModal(false);
+    } catch(e) {
+      alert("Erro ao salvar evento: " + (e.message || e));
+    }
+    setSaving(false);
+  }
 
   if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
 
@@ -281,7 +370,7 @@ function CalendarPage() {
       <Sidebar active="calendar" userData={userData} project={project} subscription={subscription}/>
       <div className="main-area">
         <Topbar page="Calendário" user={user} actions={
-          <button className="btn btn-violet btn-sm">+ Novo evento</button>
+          <button className="btn btn-violet btn-sm" onClick={()=>setShowModal(true)}>+ Novo evento</button>
         }/>
         <div className="page-content">
           <div style={{display:"flex",gap:4,marginBottom:20}}>
@@ -300,6 +389,7 @@ function CalendarPage() {
           )}
         </div>
       </div>
+      <EventModal open={showModal} onClose={()=>setShowModal(false)} onSave={handleSaveEvent} saving={saving}/>
     </div>
   );
 }
