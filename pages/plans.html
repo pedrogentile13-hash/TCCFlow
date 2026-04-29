@@ -48,7 +48,7 @@ const PLANS = [
   },
   {
     id:"pro", name:"Pro", sub:"Para equipes que levam a sério.",featured:true,
-    monthly:14.90, yearly:97,
+    monthly:14.90, yearly:124.90,
     badge:"Mais popular",
     feats:["Tudo do Gratuito","Até 8 membros","Tarefas ilimitadas","1.000 buscas I.A./mês","Integração Google","Todas as ferramentas PRO","Suporte prioritário"]
   },
@@ -90,7 +90,7 @@ function PlansPage() {
             </p>
             <div style={{ display:"inline-flex", background:"var(--bg-2)", border:"1px solid var(--line)", borderRadius:999, padding:4, marginBottom:40 }}>
               <button className={`btn btn-sm ${billing==="yearly"?"btn-primary":"btn-ghost"}`} style={{border:"none"}} onClick={() => setBilling("yearly")}>
-                Anual <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", background:"var(--emerald)", color:"white", padding:"1px 6px", borderRadius:999, marginLeft:4 }}>−35%</span>
+                Anual <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", background:"var(--emerald)", color:"white", padding:"1px 6px", borderRadius:999, marginLeft:4 }}>−30%</span>
               </button>
               <button className={`btn btn-sm ${billing==="monthly"?"btn-primary":"btn-ghost"}`} style={{border:"none"}} onClick={() => setBilling("monthly")}>Mensal</button>
             </div>

@@ -49,20 +49,18 @@ function useTCCData() {
           }
 
           if (memberIds && memberIds.length > 0) {
-            // Fetch all users and filter locally
             try {
-              const { data: allUsers, error: err } = await _supa.from('users').select('id, name, email, photo_url, role');
-              if (err) {
-                console.error('Erro ao buscar usuários:', err);
-              }
-              if (allUsers && allUsers.length > 0) {
-                console.log('Usuários carregados:', allUsers.length);
-                console.log('Procurando IDs:', memberIds);
-                members = allUsers.filter(u => memberIds.includes(u.id));
-                console.log('Membros encontrados:', members.length, members);
-              }
+              // Fetch each member individually to bypass RLS restrictions
+              const memberPromises = memberIds.map(mid =>
+                _supa.from('users').select('id, name, email, photo_url, role').eq('id', mid).maybeSingle()
+              );
+              const memberResults = await Promise.all(memberPromises);
+              members = memberResults
+                .filter(r => r.data !== null && !r.error)
+                .map(r => r.data);
+              console.log('Membros encontrados:', members.length);
             } catch (e) {
-              console.error('Erro ao buscar usuários:', e);
+              console.error('Erro ao buscar membros:', e);
             }
           }
           setTeam(members);

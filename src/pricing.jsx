@@ -20,7 +20,7 @@ function Pricing() {
     {
       name: "Grupo",
       sub: "O plano mais usado por grupos de TCC.",
-      priceM: 19, priceY: 14,
+      priceM: 14.90, priceY: 10.41,
       cta: "Escolher Grupo",
       popular: true,
       highlight: true,
@@ -70,7 +70,7 @@ function Pricing() {
             }}/>
             <button className={!annual ? "active" : ""} onClick={() => setAnnual(false)}>Mensal</button>
             <button className={annual ? "active" : ""} onClick={() => setAnnual(true)}>
-              Anual <span className="savings">−25%</span>
+              Anual <span className="savings">−30%</span>
             </button>
           </div>
         </Reveal>
