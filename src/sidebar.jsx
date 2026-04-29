@@ -147,6 +147,12 @@ const NAV_ITEMS = [
   )},
 ];
 
+const ADMIN_ITEM = { id: "admin", label: "Admin", href: "painel-admin.html", icon: (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </svg>
+)};
+
 const BOTTOM_ITEMS = [
   { id: "plans", label: "Planos", href: "plans.html", icon: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -235,6 +241,12 @@ function Sidebar({ active, userData, project, subscription }) {
             {item.label}
           </a>
         ))}
+        {typeof ADMIN_EMAILS !== 'undefined' && typeof auth !== 'undefined' && auth.currentUser && ADMIN_EMAILS.includes(auth.currentUser.email) && (
+          <a href={ADMIN_ITEM.href} className={`nav-item ${active === "admin" ? "active" : ""}`} style={{color:"var(--amber)"}}>
+            <span className="icon">{ADMIN_ITEM.icon}</span>
+            {ADMIN_ITEM.label}
+          </a>
+        )}
       </nav>
 
       <div className="sidebar-bottom">

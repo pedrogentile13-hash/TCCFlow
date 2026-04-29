@@ -24,6 +24,23 @@
     .toggle-switch.on{background:var(--violet);}
     .toggle-switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .25s;}
     .toggle-switch.on::after{transform:translateX(18px);}
+    .cancel-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:20px;}
+    .cancel-modal{background:var(--paper);border:1px solid var(--line);border-radius:20px;max-width:480px;width:100%;padding:32px;box-shadow:0 24px 60px rgba(0,0,0,.18);animation:modalIn .25s ease;}
+    @keyframes modalIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .cancel-modal h3{font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-.02em;margin-bottom:4px;}
+    .cancel-reason-list{list-style:none;padding:0;margin:16px 0;}
+    .cancel-reason-list li{padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;font-size:.875rem;transition:all .15s;display:flex;align-items:center;gap:10px;}
+    .cancel-reason-list li:hover{border-color:var(--violet);background:rgba(124,58,237,.04);}
+    .cancel-reason-list li.selected{border-color:var(--violet);background:rgba(124,58,237,.08);font-weight:500;}
+    .cancel-reason-list li .radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .cancel-reason-list li.selected .radio{border-color:var(--violet);background:var(--violet);}
+    .cancel-reason-list li.selected .radio::after{content:"";width:6px;height:6px;border-radius:50%;background:white;}
+    .plan-card-inner{background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:24px;position:relative;overflow:hidden;}
+    .plan-card-inner.pro{border-color:var(--violet);background:linear-gradient(135deg,rgba(124,58,237,.04),rgba(6,182,212,.04));}
+    .plan-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.1em;padding:4px 10px;border-radius:999px;font-weight:600;}
+    .plan-badge.free{background:var(--bg-2);color:var(--muted);}
+    .plan-badge.pro{background:var(--grad);color:white;}
+    .plan-badge.cancelled{background:rgba(244,63,94,.1);color:var(--rose);}
   </style>
 </head>
 <body><div id="root"></div>
@@ -39,6 +56,7 @@ const { useState, useEffect } = React;
 
 const SECTIONS = [
   { id:"profile",  icon:"👤", label:"Perfil" },
+  { id:"plan",     icon:"⭐", label:"Plano" },
   { id:"notif",    icon:"🔔", label:"Notificações" },
   { id:"appear",   icon:"🎨", label:"Aparência" },
 ];
@@ -125,6 +143,202 @@ function AppearSection({ prefs, toggle }) {
   );
 }
 
+const CANCEL_REASONS = [
+  { id:"expensive", label:"Achei caro para o que oferece" },
+  { id:"not_using", label:"Não estou usando o suficiente" },
+  { id:"alternative", label:"Encontrei outra ferramenta" },
+  { id:"missing", label:"Faltam funcionalidades que preciso" },
+  { id:"ended", label:"Meu TCC já terminou" },
+  { id:"other", label:"Outro motivo" },
+];
+
+function PlanSection({ user, userData, subscription }) {
+  const [showCancel, setShowCancel] = useState(false);
+  const [reason, setReason] = useState("");
+  const [detail, setDetail] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+  const [step, setStep] = useState(1);
+
+  const isPro = subscription?.status === 'active' && subscription?.plan === 'pro';
+  const isCancelled = subscription?.status === 'cancelled';
+  const planName = isPro ? "Pro" : isCancelled ? "Cancelado" : "Gratuito";
+  const badgeClass = isPro ? "pro" : isCancelled ? "cancelled" : "free";
+
+  async function handleCancel() {
+    if (!reason) return;
+    setCancelling(true);
+    try {
+      const updateData = { status: 'cancelled' };
+      await _supa.from('subscriptions').update(updateData).eq('id', user.uid);
+
+      try {
+        await _supa.from('subscriptions').update({
+          cancel_reason: reason,
+          cancel_detail: detail || null,
+          cancelled_at: new Date().toISOString()
+        }).eq('id', user.uid);
+      } catch(e) {}
+
+      setShowCancel(false);
+      setStep(1);
+      setReason("");
+      setDetail("");
+      alert("Assinatura cancelada com sucesso.\nO pagamento automático do Mercado Pago será interrompido.\n\nVocê ainda pode usar os recursos Pro até o fim do período atual.");
+      window.location.reload();
+    } catch(e) {
+      alert("Erro ao cancelar: " + (e.message || e));
+    }
+    setCancelling(false);
+  }
+
+  return (
+    <div>
+      <div className="section-title">Seu <em>Plano</em></div>
+      <div className="section-sub">Gerencie sua assinatura e forma de pagamento.</div>
+
+      <div className={`plan-card-inner ${isPro ? "pro" : ""}`} style={{marginBottom:16}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+          <div>
+            <div style={{fontSize:".75rem",color:"var(--muted)",marginBottom:4,fontFamily:"var(--font-mono)",textTransform:"uppercase",letterSpacing:".08em"}}>Plano atual</div>
+            <div style={{fontFamily:"var(--font-display)",fontSize:"1.75rem",fontWeight:400,letterSpacing:"-.02em"}}>{planName}</div>
+          </div>
+          <span className={`plan-badge ${badgeClass}`}>
+            {isPro ? "Ativo" : isCancelled ? "Cancelado" : "Free"}
+          </span>
+        </div>
+
+        {isPro && (
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
+            <div style={{background:"var(--bg-2)",borderRadius:10,padding:"12px 14px"}}>
+              <div style={{fontSize:".6875rem",color:"var(--muted)",marginBottom:2}}>Assentos</div>
+              <div style={{fontWeight:600}}>{subscription?.seats || 1} membros</div>
+            </div>
+            <div style={{background:"var(--bg-2)",borderRadius:10,padding:"12px 14px"}}>
+              <div style={{fontSize:".6875rem",color:"var(--muted)",marginBottom:2}}>Pagamento</div>
+              <div style={{fontWeight:600}}>{subscription?.paymentMethod === 'mercadopago' ? 'Mercado Pago' : subscription?.paymentMethod || 'N/A'}</div>
+            </div>
+          </div>
+        )}
+
+        {!isPro && !isCancelled && (
+          <div style={{background:"var(--bg-2)",borderRadius:12,padding:"16px 18px",marginBottom:20}}>
+            <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:4}}>Desbloqueie o Pro</div>
+            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>
+              Tarefas ilimitadas, IA completa, integracao Google, suporte prioritario e mais.
+            </div>
+          </div>
+        )}
+
+        {isCancelled && (
+          <div style={{background:"rgba(244,63,94,.06)",borderRadius:12,padding:"16px 18px",marginBottom:20,border:"1px solid rgba(244,63,94,.15)"}}>
+            <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:4,color:"var(--rose)"}}>Assinatura cancelada</div>
+            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>
+              Seu plano foi cancelado. Voce pode reativar a qualquer momento escolhendo um novo plano.
+            </div>
+          </div>
+        )}
+
+        <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+          {isPro ? (
+            <>
+              <a href="plans.html" className="btn btn-ghost" style={{fontSize:".8125rem"}}>Trocar plano</a>
+              <button className="btn" style={{fontSize:".8125rem",color:"var(--rose)",border:"1px solid rgba(244,63,94,.25)",background:"rgba(244,63,94,.05)"}}
+                onClick={() => { setShowCancel(true); setStep(1); setReason(""); setDetail(""); }}>
+                Cancelar assinatura
+              </button>
+            </>
+          ) : (
+            <a href="plans.html" className="btn btn-primary" style={{fontSize:".8125rem"}}>
+              {isCancelled ? "Reativar plano" : "Fazer upgrade"}
+            </a>
+          )}
+        </div>
+      </div>
+
+      <div className="card" style={{marginTop:20}}>
+        <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:8}}>Recursos do seu plano</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+          {(isPro ? [
+            "Grupos ilimitados",
+            "Ate 8 membros",
+            "Tarefas ilimitadas",
+            "1.000 buscas I.A./mes",
+            "Integracao Google completa",
+            "Suporte prioritario"
+          ] : [
+            "1 grupo",
+            "Ate 2 pessoas",
+            "Ate 5 tarefas",
+            "20 buscas I.A./mes",
+            "Calendario basico",
+            "Dashboard"
+          ]).map((f,i) => (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,fontSize:".8125rem",color:"var(--ink-2)",padding:"6px 0"}}>
+              <span style={{color:isPro?"var(--violet)":"var(--emerald)",fontWeight:700,fontSize:".75rem"}}>&#10003;</span> {f}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {showCancel && (
+        <div className="cancel-overlay" onClick={(e) => { if(e.target===e.currentTarget) setShowCancel(false); }}>
+          <div className="cancel-modal">
+            {step === 1 && (
+              <>
+                <h3>Sentiremos sua falta</h3>
+                <p style={{color:"var(--muted)",fontSize:".875rem",marginBottom:4}}>
+                  Antes de ir, nos conte o motivo. Isso nos ajuda a melhorar.
+                </p>
+                <ul className="cancel-reason-list">
+                  {CANCEL_REASONS.map(r => (
+                    <li key={r.id} className={reason===r.id?"selected":""} onClick={() => setReason(r.id)}>
+                      <span className="radio"></span>
+                      {r.label}
+                    </li>
+                  ))}
+                </ul>
+                {reason === "other" && (
+                  <textarea placeholder="Conte-nos mais..." value={detail} onChange={e => setDetail(e.target.value)}
+                    style={{width:"100%",minHeight:60,borderRadius:10,border:"1.5px solid var(--line)",padding:"10px 12px",fontSize:".875rem",resize:"vertical",background:"var(--bg-2)",marginBottom:8}}/>
+                )}
+                <div style={{display:"flex",gap:10,marginTop:12}}>
+                  <button className="btn btn-ghost" style={{flex:1}} onClick={() => setShowCancel(false)}>Voltar</button>
+                  <button className="btn" style={{flex:1,background:"var(--rose)",color:"white",border:"none",opacity:reason?1:0.5}} disabled={!reason} onClick={() => setStep(2)}>
+                    Continuar
+                  </button>
+                </div>
+              </>
+            )}
+            {step === 2 && (
+              <>
+                <h3 style={{color:"var(--rose)"}}>Confirmar cancelamento</h3>
+                <p style={{color:"var(--muted)",fontSize:".875rem",marginBottom:16}}>
+                  Ao confirmar, sua assinatura Pro sera cancelada e o pagamento automatico no Mercado Pago sera interrompido.
+                </p>
+                <div style={{background:"rgba(244,63,94,.06)",border:"1px solid rgba(244,63,94,.15)",borderRadius:12,padding:"14px 16px",marginBottom:20}}>
+                  <div style={{fontWeight:500,fontSize:".8125rem",color:"var(--rose)",marginBottom:6}}>Voce perdera acesso a:</div>
+                  <ul style={{margin:0,paddingLeft:18,fontSize:".8125rem",color:"var(--ink-2)",lineHeight:1.8}}>
+                    <li>Tarefas e grupos ilimitados</li>
+                    <li>IA com 1.000 buscas/mes</li>
+                    <li>Integracao Google completa</li>
+                    <li>Suporte prioritario</li>
+                  </ul>
+                </div>
+                <div style={{display:"flex",gap:10}}>
+                  <button className="btn btn-ghost" style={{flex:1}} onClick={() => setStep(1)}>Voltar</button>
+                  <button className="btn" style={{flex:1,background:"var(--rose)",color:"white",border:"none"}} onClick={handleCancel} disabled={cancelling}>
+                    {cancelling ? "Cancelando..." : "Confirmar cancelamento"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SettingsPage() {
   const { user, userData, subscription, loading } = useTCCData();
   const [section, setSection] = useState("profile");
@@ -149,6 +363,7 @@ function SettingsPage() {
 
   const content = {
     profile: <ProfileSection user={user} userData={userData} subscription={subscription} saving={saving} onSave={saveProfile}/>,
+    plan: <PlanSection user={user} userData={userData} subscription={subscription}/>,
     notif: <NotifSection prefs={prefs} toggle={toggle}/>,
     appear: <AppearSection prefs={prefs} toggle={toggle}/>,
   };

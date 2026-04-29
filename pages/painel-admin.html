@@ -89,6 +89,9 @@
                     <button class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition" data-tab="coupons">
                         <i class="fa-solid fa-ticket mr-2"></i>Cupons
                     </button>
+                    <button class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition" data-tab="subscriptions">
+                        <i class="fa-solid fa-crown mr-2"></i>Assinaturas
+                    </button>
                     <button class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition" data-tab="users">
                         <i class="fa-solid fa-users mr-2"></i>Usuários
                     </button>
@@ -129,7 +132,7 @@
                 <!-- Create Coupon -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-6">
                     <h2 class="font-bold mb-4"><i class="fa-solid fa-plus-circle mr-2 text-emerald-600"></i>Criar Novo Cupom</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Código</label>
                             <input type="text" id="newCouponCode" placeholder="EX: TCCFLOW50" maxlength="30"
@@ -139,6 +142,15 @@
                             <label class="block text-xs font-medium text-slate-600 mb-1">Desconto (%)</label>
                             <input type="number" id="newCouponDiscount" min="1" max="100" placeholder="50"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Plano aplicável</label>
+                            <select id="newCouponPlan"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                                <option value="both">Mensal + Anual</option>
+                                <option value="monthly">Só Mensal</option>
+                                <option value="yearly">Só Anual</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Usos Máx. <span class="text-slate-400">(vazio = ilimitado)</span></label>
@@ -171,6 +183,7 @@
                                 <tr>
                                     <th class="text-left py-3 px-4 font-semibold text-slate-600">Código</th>
                                     <th class="text-center py-3 px-4 font-semibold text-slate-600">Desconto</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-slate-600">Plano</th>
                                     <th class="text-center py-3 px-4 font-semibold text-slate-600">Usos</th>
                                     <th class="text-center py-3 px-4 font-semibold text-slate-600">Limite</th>
                                     <th class="text-center py-3 px-4 font-semibold text-slate-600">Expira</th>
@@ -179,6 +192,55 @@
                                 </tr>
                             </thead>
                             <tbody id="couponsTable" class="divide-y divide-slate-100">
+                                <tr><td colspan="8" class="py-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Subscriptions -->
+            <div class="tab-panel" id="panel-subscriptions">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                        <p class="text-xs text-slate-500 mb-1">Ativas</p>
+                        <p class="text-2xl font-bold text-emerald-600" id="subsActive">-</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                        <p class="text-xs text-slate-500 mb-1">Canceladas</p>
+                        <p class="text-2xl font-bold text-red-500" id="subsCancelled">-</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                        <p class="text-xs text-slate-500 mb-1">MRR Estimado</p>
+                        <p class="text-2xl font-bold text-violet-600" id="subsMRR">-</p>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                        <h2 class="font-bold"><i class="fa-solid fa-crown mr-2 text-violet-600"></i>Todas as Assinaturas</h2>
+                        <div class="flex items-center gap-3">
+                            <select id="subsFilter" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none">
+                                <option value="all">Todos</option>
+                                <option value="active">Ativas</option>
+                                <option value="cancelled">Canceladas</option>
+                            </select>
+                            <button onclick="loadSubscriptions()" class="text-sm text-violet-600 hover:underline"><i class="fa-solid fa-refresh mr-1"></i>Atualizar</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-600">Usuário</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-600">Email</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-slate-600">Plano</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-slate-600">Status</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-slate-600">Pagamento</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-600">Motivo cancelamento</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-slate-600">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subsTable" class="divide-y divide-slate-100">
                                 <tr><td colspan="7" class="py-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando...</td></tr>
                             </tbody>
                         </table>
@@ -243,7 +305,7 @@
         });
 
         async function loadAll() {
-            await Promise.all([loadKPIs(), loadPayments(), loadCoupons(), loadUsers()]);
+            await Promise.all([loadKPIs(), loadPayments(), loadCoupons(), loadSubscriptions(), loadUsers()]);
         }
 
         // ========== Tabs ==========
@@ -318,14 +380,14 @@
         // ========== Coupons ==========
         async function loadCoupons() {
             const tbody = document.getElementById('couponsTable');
-            tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando...</td></tr>';
 
             try {
                 const { data: coupons, error } = await _supa.from('coupons').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
 
                 if (!coupons || coupons.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400">Nenhum cupom criado</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-400">Nenhum cupom criado</td></tr>';
                     return;
                 }
 
@@ -336,12 +398,15 @@
                     const statusLabel = !c.active ? 'Desativado' : expired ? 'Expirado' : exhausted ? 'Esgotado' : 'Ativo';
                     const statusClass = isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500';
                     const expiresLabel = c.expires_at ? new Date(c.expires_at).toLocaleDateString('pt-BR') : 'Nunca';
+                    const planLabels = { both: 'Mensal + Anual', monthly: 'Mensal', yearly: 'Anual' };
+                    const planLabel = planLabels[c.plan_type] || 'Todos';
 
                     return `<tr class="hover:bg-slate-50">
                         <td class="py-3 px-4 font-mono font-bold text-violet-600">${c.code}</td>
                         <td class="py-3 px-4 text-center font-semibold">${c.discount_percent}%</td>
+                        <td class="py-3 px-4 text-center"><span class="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">${planLabel}</span></td>
                         <td class="py-3 px-4 text-center">${c.used_count}</td>
-                        <td class="py-3 px-4 text-center">${c.max_uses !== null ? c.max_uses : '∞'}</td>
+                        <td class="py-3 px-4 text-center">${c.max_uses !== null ? c.max_uses : '&#8734;'}</td>
                         <td class="py-3 px-4 text-center text-xs">${expiresLabel}</td>
                         <td class="py-3 px-4 text-center"><span class="text-xs font-bold px-2 py-0.5 rounded-full ${statusClass}">${statusLabel}</span></td>
                         <td class="py-3 px-4 text-center">
@@ -353,7 +418,7 @@
                 }).join('');
             } catch (e) {
                 console.error('Coupons error:', e);
-                tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-red-400">Erro ao carregar cupons</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-red-400">Erro ao carregar cupons</td></tr>';
             }
         }
 
@@ -361,6 +426,7 @@
         document.getElementById('createCouponBtn').addEventListener('click', async () => {
             const code = document.getElementById('newCouponCode').value.trim().toUpperCase();
             const discount = parseInt(document.getElementById('newCouponDiscount').value);
+            const planType = document.getElementById('newCouponPlan').value;
             const maxUsesVal = document.getElementById('newCouponMaxUses').value;
             const expiresVal = document.getElementById('newCouponExpires').value;
             const msg = document.getElementById('couponCreateMsg');
@@ -376,6 +442,7 @@
                 const couponData = {
                     code: code,
                     discount_percent: discount,
+                    plan_type: planType,
                     max_uses: maxUsesVal ? parseInt(maxUsesVal) : null,
                     expires_at: expiresVal ? new Date(expiresVal + 'T23:59:59').toISOString() : null,
                     active: true,
@@ -389,9 +456,9 @@
                 msg.innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i>Cupom <strong>${code}</strong> criado com sucesso!`;
                 msg.classList.remove('hidden');
 
-                // Clear form
                 document.getElementById('newCouponCode').value = '';
                 document.getElementById('newCouponDiscount').value = '';
+                document.getElementById('newCouponPlan').value = 'both';
                 document.getElementById('newCouponMaxUses').value = '';
                 document.getElementById('newCouponExpires').value = '';
 
@@ -413,6 +480,99 @@
                 loadKPIs();
             } catch (e) {
                 alert('Erro ao alterar cupom: ' + e.message);
+            }
+        }
+
+        // ========== Subscriptions ==========
+        let allSubs = [];
+
+        async function loadSubscriptions() {
+            const tbody = document.getElementById('subsTable');
+            tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando...</td></tr>';
+
+            try {
+                const { data: subs, error } = await _supa.from('subscriptions').select('*').order('activated_at', { ascending: false });
+                if (error) throw error;
+
+                allSubs = subs || [];
+                const activeSubs = allSubs.filter(s => s.status === 'active');
+                const cancelledSubs = allSubs.filter(s => s.status === 'cancelled');
+
+                document.getElementById('subsActive').textContent = activeSubs.length;
+                document.getElementById('subsCancelled').textContent = cancelledSubs.length;
+
+                const mrr = activeSubs.reduce((sum, s) => sum + (parseFloat(s.paid_amount) || 14.90), 0);
+                document.getElementById('subsMRR').textContent = `R$ ${mrr.toFixed(2).replace('.', ',')}`;
+
+                renderSubscriptions(allSubs);
+            } catch (e) {
+                console.error('Subscriptions error:', e);
+                tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-red-400">Erro ao carregar assinaturas</td></tr>';
+            }
+        }
+
+        function renderSubscriptions(subs) {
+            const tbody = document.getElementById('subsTable');
+            if (!subs || subs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400">Nenhuma assinatura encontrada</td></tr>';
+                return;
+            }
+
+            const cancelReasonLabels = {
+                expensive: 'Achou caro',
+                not_using: 'Nao usa o suficiente',
+                alternative: 'Outra ferramenta',
+                missing: 'Faltam funcionalidades',
+                ended: 'TCC terminou',
+                other: 'Outro'
+            };
+
+            tbody.innerHTML = subs.map(s => {
+                const statusClass = s.status === 'active' ? 'bg-emerald-100 text-emerald-700' : s.status === 'cancelled' ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-500';
+                const statusLabel = s.status === 'active' ? 'Ativa' : s.status === 'cancelled' ? 'Cancelada' : s.status;
+                const reasonLabel = s.cancel_reason ? (cancelReasonLabels[s.cancel_reason] || s.cancel_reason) : '-';
+                const cancelDate = s.cancelled_at ? new Date(s.cancelled_at).toLocaleDateString('pt-BR') : '';
+                const reasonDisplay = s.cancel_reason ? `<span class="text-xs text-red-500">${reasonLabel}</span>${cancelDate ? '<br><span class="text-[10px] text-slate-400">' + cancelDate + '</span>' : ''}${s.cancel_detail ? '<br><span class="text-[10px] text-slate-400 italic">"' + s.cancel_detail + '"</span>' : ''}` : '<span class="text-xs text-slate-400">-</span>';
+
+                return `<tr class="hover:bg-slate-50">
+                    <td class="py-3 px-4 font-medium">${s.user_name || '-'}</td>
+                    <td class="py-3 px-4 text-slate-500">${s.user_email || '-'}</td>
+                    <td class="py-3 px-4 text-center"><span class="bg-violet-100 text-violet-700 text-xs font-bold px-2 py-0.5 rounded-full uppercase">${s.plan || 'free'}</span></td>
+                    <td class="py-3 px-4 text-center"><span class="text-xs font-bold px-2 py-0.5 rounded-full ${statusClass}">${statusLabel}</span></td>
+                    <td class="py-3 px-4 text-center text-xs text-slate-500">${s.payment_method || '-'}</td>
+                    <td class="py-3 px-4">${reasonDisplay}</td>
+                    <td class="py-3 px-4 text-center">
+                        ${s.status === 'cancelled' ? `<button onclick="reactivateSub('${s.id}')" class="text-xs text-emerald-500 hover:text-emerald-700 font-semibold"><i class="fa-solid fa-rotate-right mr-1"></i>Reativar</button>` : `<button onclick="cancelSubAdmin('${s.id}')" class="text-xs text-red-500 hover:text-red-700 font-semibold"><i class="fa-solid fa-ban mr-1"></i>Cancelar</button>`}
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        document.getElementById('subsFilter').addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (val === 'all') { renderSubscriptions(allSubs); return; }
+            renderSubscriptions(allSubs.filter(s => s.status === val));
+        });
+
+        async function reactivateSub(subId) {
+            if (!confirm('Reativar esta assinatura?')) return;
+            try {
+                await _supa.from('subscriptions').update({ status: 'active', cancel_reason: null, cancel_detail: null, cancelled_at: null }).eq('id', subId);
+                loadSubscriptions();
+                loadKPIs();
+            } catch (e) {
+                alert('Erro: ' + e.message);
+            }
+        }
+
+        async function cancelSubAdmin(subId) {
+            if (!confirm('Cancelar esta assinatura pelo admin?')) return;
+            try {
+                await _supa.from('subscriptions').update({ status: 'cancelled', cancel_reason: 'admin', cancelled_at: new Date().toISOString() }).eq('id', subId);
+                loadSubscriptions();
+                loadKPIs();
+            } catch (e) {
+                alert('Erro: ' + e.message);
             }
         }
 
