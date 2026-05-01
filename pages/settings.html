@@ -5,13 +5,11 @@
   <title>Configurações — TCCFlow</title>
   <link rel="icon" href="../assets/logo.png"/>
   <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
   <style>
-    .settings-layout{display:grid;grid-template-columns:200px 1fr;gap:0;height:100%;overflow:hidden;}
-    .settings-nav{border-right:1px solid var(--line);padding:16px 10px;background:var(--paper);}
     .settings-nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;font-size:.875rem;color:var(--ink-2);cursor:pointer;transition:background .15s;margin-bottom:2px;}
     .settings-nav-item:hover{background:var(--bg-2);}
     .settings-nav-item.active{background:var(--grad);color:white;}
-    .settings-content{overflow-y:auto;padding:24px 32px;}
     .section-title{font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-.02em;margin-bottom:4px;}
     .section-title em{font-style:italic;color:var(--violet);}
     .section-sub{font-size:.875rem;color:var(--muted);margin-bottom:24px;}
@@ -41,6 +39,19 @@
     .plan-badge.free{background:var(--bg-2);color:var(--muted);}
     .plan-badge.pro{background:var(--grad);color:white;}
     .plan-badge.cancelled{background:rgba(244,63,94,.1);color:var(--rose);}
+    .avatar-upload{position:relative;cursor:pointer;}
+    .avatar-upload:hover .avatar-overlay{opacity:1;}
+    .avatar-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;color:white;font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+    .avatar-img{width:64px;height:64px;border-radius:50%;object-fit:cover;}
+    .notif-permission{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;margin-bottom:20px;}
+    .notif-permission.granted{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);}
+    .notif-permission.denied{background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);}
+    .notif-permission.default{background:var(--bg-2);border:1px solid var(--line);}
+    .security-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;}
+    .security-card h4{font-size:.9375rem;font-weight:600;margin-bottom:4px;}
+    .security-card p{font-size:.8125rem;color:var(--muted);margin-bottom:14px;}
+    .delete-zone{background:rgba(244,63,94,.04);border:1.5px solid rgba(244,63,94,.2);border-radius:14px;padding:20px;}
+    .no-animations *,.no-animations *::before,.no-animations *::after{animation-duration:0s!important;transition-duration:0s!important;transition-delay:0s!important;}
   </style>
 </head>
 <body><div id="root"></div>
@@ -52,24 +63,68 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel" src="../src/sidebar.jsx"></script>
 <script type="text/babel">
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
 
 const SECTIONS = [
-  { id:"profile",  icon:"👤", label:"Perfil" },
-  { id:"plan",     icon:"⭐", label:"Plano" },
-  { id:"notif",    icon:"🔔", label:"Notificações" },
-  { id:"appear",   icon:"🎨", label:"Aparência" },
+  { id:"profile",  icon:"\u{1F464}", label:"Perfil" },
+  { id:"plan",     icon:"⭐",    label:"Plano" },
+  { id:"notif",    icon:"\u{1F514}", label:"Notificações" },
+  { id:"appear",   icon:"\u{1F3A8}", label:"Aparência" },
+  { id:"security", icon:"\u{1F512}", label:"Segurança" },
 ];
 
 function Toggle({ on, onToggle }) {
   return <div className={`toggle-switch ${on?"on":""}`} onClick={onToggle}></div>;
 }
 
-function ProfileSection({ user, userData, subscription, saving, onSave }) {
+// ===================== PROFILE =====================
+function ProfileSection({ user, userData, subscription, saving, onSave, onPhotoChange }) {
   const [name, setName] = useState(userData?.name || "");
-  const [email, setEmail] = useState(user?.email || "");
+  const [email] = useState(user?.email || "");
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef(null);
   const planLabel = subscription?.plan === "pro" ? "Plano Pro" : "Plano Gratuito";
   const initials = getInitials(name);
+  const photoUrl = userData?.photo_url || null;
+
+  async function handlePhotoUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 2 * 1024 * 1024) { alert("Imagem deve ter no máximo 2MB."); return; }
+    if (!file.type.startsWith('image/')) { alert("Selecione uma imagem válida."); return; }
+
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `${user.uid}/avatar.${ext}`;
+
+      await _supa.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type });
+      const { data: urlData } = _supa.storage.from('avatars').getPublicUrl(path);
+      const publicUrl = urlData.publicUrl + '?t=' + Date.now();
+
+      await _supa.from('users').update({ photo_url: publicUrl }).eq('id', user.uid);
+      await _supa.auth.updateUser({ data: { photo_url: publicUrl } });
+      if (onPhotoChange) onPhotoChange(publicUrl);
+      alert("Foto atualizada!");
+    } catch(err) {
+      console.error('Upload error:', err);
+      alert("Erro ao enviar foto: " + (err.message || err));
+    }
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = '';
+  }
+
+  async function removePhoto() {
+    if (!user || !photoUrl) return;
+    if (!confirm("Remover foto de perfil?")) return;
+    setUploading(true);
+    try {
+      await _supa.from('users').update({ photo_url: null }).eq('id', user.uid);
+      await _supa.auth.updateUser({ data: { photo_url: null } });
+      if (onPhotoChange) onPhotoChange(null);
+    } catch(err) { alert("Erro: " + err.message); }
+    setUploading(false);
+  }
 
   return (
     <div>
@@ -77,13 +132,22 @@ function ProfileSection({ user, userData, subscription, saving, onSave }) {
       <div className="section-sub">Informações visíveis para sua equipe.</div>
       <div className="card" style={{ marginBottom:16 }}>
         <div style={{ display:"flex", gap:20, alignItems:"center", marginBottom:24 }}>
-          <div style={{ position:"relative" }}>
-            <div className="av c1" style={{ width:64, height:64, fontSize:"1.25rem", fontWeight:700 }}>{initials}</div>
+          <div className="avatar-upload" onClick={() => fileRef.current?.click()}>
+            {photoUrl ? (
+              <img src={photoUrl} className="avatar-img" alt="Avatar"/>
+            ) : (
+              <div className="av c1" style={{ width:64, height:64, fontSize:"1.25rem", fontWeight:700 }}>{initials}</div>
+            )}
+            <div className="avatar-overlay">{uploading ? "..." : "Trocar"}</div>
+            <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={handlePhotoUpload}/>
           </div>
           <div>
             <div style={{ fontWeight:600, fontSize:"1rem" }}>{name || "Usuário"}</div>
             <div style={{ color:"var(--muted)", fontSize:"0.875rem" }}>{email}</div>
-            <span className={`tag ${subscription?.plan === "pro" ? "tag-violet" : "tag-cyan"}`} style={{ marginTop:6, display:"inline-flex" }}>{planLabel}</span>
+            <div style={{display:"flex",gap:8,alignItems:"center",marginTop:6}}>
+              <span className={`tag ${subscription?.plan === "pro" ? "tag-violet" : "tag-cyan"}`}>{planLabel}</span>
+              {photoUrl && <button onClick={(e) => { e.stopPropagation(); removePhoto(); }} style={{fontSize:".6875rem",color:"var(--rose)",cursor:"pointer",background:"none",border:"none",textDecoration:"underline"}}>Remover foto</button>}
+            </div>
           </div>
         </div>
         <div className="info-fields-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
@@ -100,23 +164,84 @@ function ProfileSection({ user, userData, subscription, saving, onSave }) {
   );
 }
 
-function NotifSection({ prefs, toggle }) {
+// ===================== NOTIFICATIONS =====================
+function NotifSection() {
+  const [permission, setPermission] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'default');
+  const [prefs, setPrefs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('tccflow_notif_prefs')) || {}; } catch(e) { return {}; }
+  });
+
+  const defaults = { tasks:true, deadlines:true, mentions:true, team:true, orientador:true, calendar:true };
+  const getP = (key) => prefs[key] !== undefined ? prefs[key] : defaults[key];
+
+  function togglePref(key) {
+    const next = { ...prefs, [key]: !getP(key) };
+    setPrefs(next);
+    localStorage.setItem('tccflow_notif_prefs', JSON.stringify(next));
+  }
+
+  async function requestPermission() {
+    if (typeof Notification === 'undefined') { alert("Seu navegador não suporta notificações."); return; }
+    const result = await Notification.requestPermission();
+    setPermission(result);
+    if (result === 'granted') {
+      new Notification("TCCFlow", { body: "Notificações ativadas com sucesso!", icon: "../assets/logo.png" });
+    }
+  }
+
+  function sendTestNotif() {
+    if (permission !== 'granted') { alert("Ative as notificações primeiro."); return; }
+    new Notification("TCCFlow - Teste", { body: "Esta é uma notificação de teste. Tudo funcionando!", icon: "../assets/logo.png", tag: "test" });
+  }
+
+  const NOTIF_ITEMS = [
+    { id:"tasks", label:"Novas tarefas atribuídas", desc:"Quando alguém te atribuir uma tarefa" },
+    { id:"deadlines", label:"Prazos próximos", desc:"Alerta 24h antes do vencimento" },
+    { id:"mentions", label:"Menções no chat", desc:"Quando alguém te mencionar" },
+    { id:"team", label:"Atualizações da equipe", desc:"Membros entrando/saindo do projeto" },
+    { id:"orientador", label:"Comentários do orientador", desc:"Quando o orientador deixar feedback" },
+    { id:"calendar", label:"Eventos do calendário", desc:"Lembretes de sessões e metas" },
+  ];
+
+  const permClass = permission === 'granted' ? 'granted' : permission === 'denied' ? 'denied' : 'default';
+  const permLabel = permission === 'granted' ? 'Ativadas' : permission === 'denied' ? 'Bloqueadas' : 'Não configuradas';
+  const permColor = permission === 'granted' ? 'var(--emerald)' : permission === 'denied' ? 'var(--rose)' : 'var(--muted)';
+
   return (
     <div>
       <div className="section-title">Notificações</div>
       <div className="section-sub">Controle o que você recebe e quando.</div>
+
+      <div className={`notif-permission ${permClass}`}>
+        <div style={{width:36,height:36,borderRadius:"50%",background:permColor,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </div>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:600,fontSize:".875rem"}}>Notificações push: <span style={{color:permColor}}>{permLabel}</span></div>
+          <div style={{fontSize:".75rem",color:"var(--muted)"}}>
+            {permission === 'granted' ? "Você receberá notificações no celular e desktop." :
+             permission === 'denied' ? "Desbloqueie nas configurações do navegador." :
+             "Ative para receber alertas em tempo real."}
+          </div>
+        </div>
+        {permission !== 'granted' && permission !== 'denied' && (
+          <button className="btn btn-violet btn-sm" onClick={requestPermission}>Ativar</button>
+        )}
+        {permission === 'granted' && (
+          <button className="btn btn-ghost btn-sm" onClick={sendTestNotif}>Testar</button>
+        )}
+      </div>
+
       <div className="card">
-        {[
-          { id:"tasks", label:"Novas tarefas atribuídas", desc:"Quando alguém te atribuir uma tarefa" },
-          { id:"mentions", label:"Menções no chat", desc:"Quando alguém te mencionar" },
-          { id:"deadlines", label:"Prazos próximos", desc:"Alerta 24h antes do vencimento" },
-        ].map((it, idx, arr) => (
+        {NOTIF_ITEMS.map((it, idx, arr) => (
           <div key={it.id} className="settings-row" style={{borderBottom:idx<arr.length-1?"1px solid var(--line)":"none"}}>
             <div className="row-info">
               <div className="row-label">{it.label}</div>
               <div className="row-desc">{it.desc}</div>
             </div>
-            <Toggle on={prefs[it.id]} onToggle={() => toggle(it.id)}/>
+            <Toggle on={getP(it.id)} onToggle={() => togglePref(it.id)}/>
           </div>
         ))}
       </div>
@@ -124,7 +249,31 @@ function NotifSection({ prefs, toggle }) {
   );
 }
 
-function AppearSection({ prefs, toggle }) {
+// ===================== APPEARANCE =====================
+function AppearSection() {
+  const [dark, setDark] = useState(() => typeof TCCDark !== 'undefined' ? TCCDark.isEnabled() : false);
+  const [anim, setAnim] = useState(() => localStorage.getItem('tccflow_animations') !== 'false');
+
+  useEffect(() => {
+    const handler = (e) => setDark(e.detail.enabled);
+    window.addEventListener('tccflow-dark-changed', handler);
+    return () => window.removeEventListener('tccflow-dark-changed', handler);
+  }, []);
+
+  useEffect(() => {
+    if (anim) {
+      document.body.classList.remove('no-animations');
+    } else {
+      document.body.classList.add('no-animations');
+    }
+    localStorage.setItem('tccflow_animations', anim ? 'true' : 'false');
+  }, [anim]);
+
+  function toggleDark() {
+    if (typeof TCCDark !== 'undefined') TCCDark.toggle();
+    setDark(d => !d);
+  }
+
   return (
     <div>
       <div className="section-title">Aparência</div>
@@ -132,17 +281,147 @@ function AppearSection({ prefs, toggle }) {
       <div className="card">
         <div className="settings-row">
           <div className="row-info"><div className="row-label">Modo escuro</div><div className="row-desc">Ativa o tema dark em toda a plataforma</div></div>
-          <Toggle on={prefs.dark} onToggle={() => toggle("dark")}/>
+          <Toggle on={dark} onToggle={toggleDark}/>
         </div>
         <div className="settings-row">
           <div className="row-info"><div className="row-label">Animações</div><div className="row-desc">Transições e animações de interface</div></div>
-          <Toggle on={prefs.anim} onToggle={() => toggle("anim")}/>
+          <Toggle on={anim} onToggle={() => setAnim(a => !a)}/>
         </div>
       </div>
     </div>
   );
 }
 
+// ===================== SECURITY =====================
+function SecuritySection({ user }) {
+  const [curPass, setCurPass] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
+  const [changing, setChanging] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleChangePassword() {
+    if (!curPass || !newPass || !confirmPass) { alert("Preencha todos os campos."); return; }
+    if (newPass !== confirmPass) { alert("As senhas não coincidem."); return; }
+    if (newPass.length < 6) { alert("A nova senha deve ter pelo menos 6 caracteres."); return; }
+    setChanging(true);
+    try {
+      const { error: reErr } = await _supa.auth.signInWithPassword({ email: user.email, password: curPass });
+      if (reErr) throw { message: "Senha atual incorreta." };
+      const { error } = await _supa.auth.updateUser({ password: newPass });
+      if (error) throw error;
+      alert("Senha alterada com sucesso!");
+      setCurPass(""); setNewPass(""); setConfirmPass("");
+    } catch(e) {
+      alert("Erro: " + (e.message || e));
+    }
+    setChanging(false);
+  }
+
+  async function handleDeleteAccount() {
+    if (deleteConfirm !== "EXCLUIR") { alert('Digite "EXCLUIR" para confirmar.'); return; }
+    setDeleting(true);
+    try {
+      await _supa.from('users').delete().eq('id', user.uid);
+      await _supa.auth.signOut();
+      alert("Conta excluída. Você será redirecionado.");
+      window.location.href = "../index.html";
+    } catch(e) {
+      alert("Erro ao excluir conta: " + (e.message || e));
+      setDeleting(false);
+    }
+  }
+
+  const createdAt = user?.uid ? "Conta ativa" : "";
+
+  return (
+    <div>
+      <div className="section-title">Segurança</div>
+      <div className="section-sub">Proteja sua conta e gerencie o acesso.</div>
+
+      <div className="security-card">
+        <h4>Alterar senha</h4>
+        <p>Use uma senha forte com pelo menos 6 caracteres.</p>
+        <div style={{display:"grid",gap:12,maxWidth:400}}>
+          <div className="field" style={{marginBottom:0}}>
+            <label>Senha atual</label>
+            <input type="password" value={curPass} onChange={e=>setCurPass(e.target.value)} placeholder="Digite sua senha atual"/>
+          </div>
+          <div className="field" style={{marginBottom:0}}>
+            <label>Nova senha</label>
+            <input type="password" value={newPass} onChange={e=>setNewPass(e.target.value)} placeholder="Mínimo 6 caracteres"/>
+          </div>
+          <div className="field" style={{marginBottom:0}}>
+            <label>Confirmar nova senha</label>
+            <input type="password" value={confirmPass} onChange={e=>setConfirmPass(e.target.value)} placeholder="Repita a nova senha"/>
+          </div>
+          <button className="btn btn-primary" style={{width:"fit-content"}} onClick={handleChangePassword} disabled={changing}>
+            {changing ? "Alterando..." : "Alterar senha"}
+          </button>
+        </div>
+      </div>
+
+      <div className="security-card">
+        <h4>Sessão ativa</h4>
+        <p>Informações sobre sua sessão atual.</p>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div style={{background:"var(--bg-2)",borderRadius:10,padding:"12px 14px"}}>
+            <div style={{fontSize:".6875rem",color:"var(--muted)",marginBottom:2}}>Navegador</div>
+            <div style={{fontWeight:600,fontSize:".8125rem"}}>{navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop'}</div>
+          </div>
+          <div style={{background:"var(--bg-2)",borderRadius:10,padding:"12px 14px"}}>
+            <div style={{fontSize:".6875rem",color:"var(--muted)",marginBottom:2}}>Status</div>
+            <div style={{fontWeight:600,fontSize:".8125rem",color:"var(--emerald)"}}>Conectado</div>
+          </div>
+        </div>
+        <button className="btn btn-ghost" style={{marginTop:14,fontSize:".8125rem"}} onClick={async () => { await _supa.auth.signOut(); window.location.href = 'login.html'; }}>
+          Encerrar sessão
+        </button>
+      </div>
+
+      <div className="security-card">
+        <h4>E-mail de recuperação</h4>
+        <p>Envie um link para redefinir sua senha por e-mail.</p>
+        <button className="btn btn-ghost" style={{fontSize:".8125rem"}} onClick={async () => {
+          try {
+            await _supa.auth.resetPasswordForEmail(user.email, { redirectTo: window.location.origin + '/pages/nova-senha.html' });
+            alert("Link de recuperação enviado para " + user.email);
+          } catch(e) { alert("Erro: " + e.message); }
+        }}>Enviar link de recuperação</button>
+      </div>
+
+      <div className="delete-zone">
+        <h4 style={{color:"var(--rose)",marginBottom:4}}>Zona perigosa</h4>
+        <p style={{fontSize:".8125rem",color:"var(--muted)",marginBottom:14}}>
+          Ao excluir sua conta, todos os seus dados serão removidos permanentemente. Esta ação não pode ser desfeita.
+        </p>
+        {!showDelete ? (
+          <button className="btn" style={{background:"rgba(244,63,94,.08)",color:"var(--rose)",border:"1px solid rgba(244,63,94,.25)",fontSize:".8125rem"}}
+            onClick={() => setShowDelete(true)}>Excluir minha conta</button>
+        ) : (
+          <div style={{background:"var(--paper)",borderRadius:12,padding:16,border:"1px solid rgba(244,63,94,.2)",marginTop:8}}>
+            <p style={{fontSize:".8125rem",color:"var(--rose)",fontWeight:500,marginBottom:10}}>
+              Digite <strong>EXCLUIR</strong> para confirmar:
+            </p>
+            <div className="field" style={{marginBottom:10}}>
+              <input type="text" value={deleteConfirm} onChange={e => setDeleteConfirm(e.target.value)} placeholder='Digite "EXCLUIR"' style={{borderColor:"rgba(244,63,94,.3)"}}/>
+            </div>
+            <div style={{display:"flex",gap:10}}>
+              <button className="btn btn-ghost btn-sm" onClick={() => { setShowDelete(false); setDeleteConfirm(""); }}>Cancelar</button>
+              <button className="btn btn-sm" style={{background:"var(--rose)",color:"white",border:"none"}} onClick={handleDeleteAccount} disabled={deleting || deleteConfirm !== "EXCLUIR"}>
+                {deleting ? "Excluindo..." : "Confirmar exclusão"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ===================== PLAN (kept from before) =====================
 const CANCEL_REASONS = [
   { id:"expensive", label:"Achei caro para o que oferece" },
   { id:"not_using", label:"Não estou usando o suficiente" },
@@ -168,26 +447,12 @@ function PlanSection({ user, userData, subscription }) {
     if (!reason) return;
     setCancelling(true);
     try {
-      const updateData = { status: 'cancelled' };
-      await _supa.from('subscriptions').update(updateData).eq('id', user.uid);
-
-      try {
-        await _supa.from('subscriptions').update({
-          cancel_reason: reason,
-          cancel_detail: detail || null,
-          cancelled_at: new Date().toISOString()
-        }).eq('id', user.uid);
-      } catch(e) {}
-
-      setShowCancel(false);
-      setStep(1);
-      setReason("");
-      setDetail("");
-      alert("Assinatura cancelada com sucesso.\nO pagamento automático do Mercado Pago será interrompido.\n\nVocê ainda pode usar os recursos Pro até o fim do período atual.");
+      await _supa.from('subscriptions').update({ status: 'cancelled' }).eq('id', user.uid);
+      try { await _supa.from('subscriptions').update({ cancel_reason: reason, cancel_detail: detail || null, cancelled_at: new Date().toISOString() }).eq('id', user.uid); } catch(e) {}
+      setShowCancel(false); setStep(1); setReason(""); setDetail("");
+      alert("Assinatura cancelada com sucesso.\nO pagamento automático do Mercado Pago será interrompido.");
       window.location.reload();
-    } catch(e) {
-      alert("Erro ao cancelar: " + (e.message || e));
-    }
+    } catch(e) { alert("Erro ao cancelar: " + (e.message || e)); }
     setCancelling(false);
   }
 
@@ -195,18 +460,14 @@ function PlanSection({ user, userData, subscription }) {
     <div>
       <div className="section-title">Seu <em>Plano</em></div>
       <div className="section-sub">Gerencie sua assinatura e forma de pagamento.</div>
-
       <div className={`plan-card-inner ${isPro ? "pro" : ""}`} style={{marginBottom:16}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
           <div>
             <div style={{fontSize:".75rem",color:"var(--muted)",marginBottom:4,fontFamily:"var(--font-mono)",textTransform:"uppercase",letterSpacing:".08em"}}>Plano atual</div>
             <div style={{fontFamily:"var(--font-display)",fontSize:"1.75rem",fontWeight:400,letterSpacing:"-.02em"}}>{planName}</div>
           </div>
-          <span className={`plan-badge ${badgeClass}`}>
-            {isPro ? "Ativo" : isCancelled ? "Cancelado" : "Free"}
-          </span>
+          <span className={`plan-badge ${badgeClass}`}>{isPro ? "Ativo" : isCancelled ? "Cancelado" : "Free"}</span>
         </div>
-
         {isPro && (
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
             <div style={{background:"var(--bg-2)",borderRadius:10,padding:"12px 14px"}}>
@@ -219,119 +480,78 @@ function PlanSection({ user, userData, subscription }) {
             </div>
           </div>
         )}
-
         {!isPro && !isCancelled && (
           <div style={{background:"var(--bg-2)",borderRadius:12,padding:"16px 18px",marginBottom:20}}>
             <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:4}}>Desbloqueie o Pro</div>
-            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>
-              Tarefas ilimitadas, IA completa, integracao Google, suporte prioritario e mais.
-            </div>
+            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>Tarefas ilimitadas, IA completa, integração Google, suporte prioritário e mais.</div>
           </div>
         )}
-
         {isCancelled && (
           <div style={{background:"rgba(244,63,94,.06)",borderRadius:12,padding:"16px 18px",marginBottom:20,border:"1px solid rgba(244,63,94,.15)"}}>
             <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:4,color:"var(--rose)"}}>Assinatura cancelada</div>
-            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>
-              Seu plano foi cancelado. Voce pode reativar a qualquer momento escolhendo um novo plano.
-            </div>
+            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>Seu plano foi cancelado. Você pode reativar a qualquer momento.</div>
           </div>
         )}
-
         <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
           {isPro ? (
             <>
               <a href="plans.html" className="btn btn-ghost" style={{fontSize:".8125rem"}}>Trocar plano</a>
               <button className="btn" style={{fontSize:".8125rem",color:"var(--rose)",border:"1px solid rgba(244,63,94,.25)",background:"rgba(244,63,94,.05)"}}
-                onClick={() => { setShowCancel(true); setStep(1); setReason(""); setDetail(""); }}>
-                Cancelar assinatura
-              </button>
+                onClick={() => { setShowCancel(true); setStep(1); setReason(""); setDetail(""); }}>Cancelar assinatura</button>
             </>
           ) : (
-            <a href="plans.html" className="btn btn-primary" style={{fontSize:".8125rem"}}>
-              {isCancelled ? "Reativar plano" : "Fazer upgrade"}
-            </a>
+            <a href="plans.html" className="btn btn-primary" style={{fontSize:".8125rem"}}>{isCancelled ? "Reativar plano" : "Fazer upgrade"}</a>
           )}
         </div>
       </div>
-
       <div className="card" style={{marginTop:20}}>
         <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:8}}>Recursos do seu plano</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-          {(isPro ? [
-            "Grupos ilimitados",
-            "Ate 8 membros",
-            "Tarefas ilimitadas",
-            "1.000 buscas I.A./mes",
-            "Integracao Google completa",
-            "Suporte prioritario"
-          ] : [
-            "1 grupo",
-            "Ate 2 pessoas",
-            "Ate 5 tarefas",
-            "20 buscas I.A./mes",
-            "Calendario basico",
-            "Dashboard"
-          ]).map((f,i) => (
+          {(isPro ? ["Grupos ilimitados","Até 8 membros","Tarefas ilimitadas","1.000 buscas I.A./mês","Integração Google completa","Suporte prioritário"]
+            : ["1 grupo","Até 2 pessoas","Até 5 tarefas","20 buscas I.A./mês","Calendário básico","Dashboard"]
+          ).map((f,i) => (
             <div key={i} style={{display:"flex",alignItems:"center",gap:8,fontSize:".8125rem",color:"var(--ink-2)",padding:"6px 0"}}>
               <span style={{color:isPro?"var(--violet)":"var(--emerald)",fontWeight:700,fontSize:".75rem"}}>&#10003;</span> {f}
             </div>
           ))}
         </div>
       </div>
-
       {showCancel && (
         <div className="cancel-overlay" onClick={(e) => { if(e.target===e.currentTarget) setShowCancel(false); }}>
           <div className="cancel-modal">
-            {step === 1 && (
-              <>
-                <h3>Sentiremos sua falta</h3>
-                <p style={{color:"var(--muted)",fontSize:".875rem",marginBottom:4}}>
-                  Antes de ir, nos conte o motivo. Isso nos ajuda a melhorar.
-                </p>
-                <ul className="cancel-reason-list">
-                  {CANCEL_REASONS.map(r => (
-                    <li key={r.id} className={reason===r.id?"selected":""} onClick={() => setReason(r.id)}>
-                      <span className="radio"></span>
-                      {r.label}
-                    </li>
-                  ))}
+            {step === 1 && (<>
+              <h3>Sentiremos sua falta</h3>
+              <p style={{color:"var(--muted)",fontSize:".875rem",marginBottom:4}}>Antes de ir, nos conte o motivo. Isso nos ajuda a melhorar.</p>
+              <ul className="cancel-reason-list">
+                {CANCEL_REASONS.map(r => (
+                  <li key={r.id} className={reason===r.id?"selected":""} onClick={() => setReason(r.id)}>
+                    <span className="radio"></span>{r.label}
+                  </li>
+                ))}
+              </ul>
+              {reason === "other" && (
+                <textarea placeholder="Conte-nos mais..." value={detail} onChange={e => setDetail(e.target.value)}
+                  style={{width:"100%",minHeight:60,borderRadius:10,border:"1.5px solid var(--line)",padding:"10px 12px",fontSize:".875rem",resize:"vertical",background:"var(--bg-2)",marginBottom:8}}/>
+              )}
+              <div style={{display:"flex",gap:10,marginTop:12}}>
+                <button className="btn btn-ghost" style={{flex:1}} onClick={() => setShowCancel(false)}>Voltar</button>
+                <button className="btn" style={{flex:1,background:"var(--rose)",color:"white",border:"none",opacity:reason?1:0.5}} disabled={!reason} onClick={() => setStep(2)}>Continuar</button>
+              </div>
+            </>)}
+            {step === 2 && (<>
+              <h3 style={{color:"var(--rose)"}}>Confirmar cancelamento</h3>
+              <p style={{color:"var(--muted)",fontSize:".875rem",marginBottom:16}}>Ao confirmar, sua assinatura Pro será cancelada e o pagamento automático no Mercado Pago será interrompido.</p>
+              <div style={{background:"rgba(244,63,94,.06)",border:"1px solid rgba(244,63,94,.15)",borderRadius:12,padding:"14px 16px",marginBottom:20}}>
+                <div style={{fontWeight:500,fontSize:".8125rem",color:"var(--rose)",marginBottom:6}}>Você perderá acesso a:</div>
+                <ul style={{margin:0,paddingLeft:18,fontSize:".8125rem",color:"var(--ink-2)",lineHeight:1.8}}>
+                  <li>Tarefas e grupos ilimitados</li><li>IA com 1.000 buscas/mês</li><li>Integração Google completa</li><li>Suporte prioritário</li>
                 </ul>
-                {reason === "other" && (
-                  <textarea placeholder="Conte-nos mais..." value={detail} onChange={e => setDetail(e.target.value)}
-                    style={{width:"100%",minHeight:60,borderRadius:10,border:"1.5px solid var(--line)",padding:"10px 12px",fontSize:".875rem",resize:"vertical",background:"var(--bg-2)",marginBottom:8}}/>
-                )}
-                <div style={{display:"flex",gap:10,marginTop:12}}>
-                  <button className="btn btn-ghost" style={{flex:1}} onClick={() => setShowCancel(false)}>Voltar</button>
-                  <button className="btn" style={{flex:1,background:"var(--rose)",color:"white",border:"none",opacity:reason?1:0.5}} disabled={!reason} onClick={() => setStep(2)}>
-                    Continuar
-                  </button>
-                </div>
-              </>
-            )}
-            {step === 2 && (
-              <>
-                <h3 style={{color:"var(--rose)"}}>Confirmar cancelamento</h3>
-                <p style={{color:"var(--muted)",fontSize:".875rem",marginBottom:16}}>
-                  Ao confirmar, sua assinatura Pro sera cancelada e o pagamento automatico no Mercado Pago sera interrompido.
-                </p>
-                <div style={{background:"rgba(244,63,94,.06)",border:"1px solid rgba(244,63,94,.15)",borderRadius:12,padding:"14px 16px",marginBottom:20}}>
-                  <div style={{fontWeight:500,fontSize:".8125rem",color:"var(--rose)",marginBottom:6}}>Voce perdera acesso a:</div>
-                  <ul style={{margin:0,paddingLeft:18,fontSize:".8125rem",color:"var(--ink-2)",lineHeight:1.8}}>
-                    <li>Tarefas e grupos ilimitados</li>
-                    <li>IA com 1.000 buscas/mes</li>
-                    <li>Integracao Google completa</li>
-                    <li>Suporte prioritario</li>
-                  </ul>
-                </div>
-                <div style={{display:"flex",gap:10}}>
-                  <button className="btn btn-ghost" style={{flex:1}} onClick={() => setStep(1)}>Voltar</button>
-                  <button className="btn" style={{flex:1,background:"var(--rose)",color:"white",border:"none"}} onClick={handleCancel} disabled={cancelling}>
-                    {cancelling ? "Cancelando..." : "Confirmar cancelamento"}
-                  </button>
-                </div>
-              </>
-            )}
+              </div>
+              <div style={{display:"flex",gap:10}}>
+                <button className="btn btn-ghost" style={{flex:1}} onClick={() => setStep(1)}>Voltar</button>
+                <button className="btn" style={{flex:1,background:"var(--rose)",color:"white",border:"none"}} onClick={handleCancel} disabled={cancelling}>{cancelling ? "Cancelando..." : "Confirmar cancelamento"}</button>
+              </div>
+            </>)}
           </div>
         </div>
       )}
@@ -339,15 +559,20 @@ function PlanSection({ user, userData, subscription }) {
   );
 }
 
+// ===================== MAIN PAGE =====================
 function SettingsPage() {
   const { user, userData, subscription, loading } = useTCCData();
   const [section, setSection] = useState("profile");
-  const [prefs, setPrefs] = useState({ tasks:true, mentions:true, deadlines:true, dark:false, anim:true });
   const [saving, setSaving] = useState(false);
+  const [, forceUpdate] = useState(0);
+
+  useEffect(() => {
+    if (localStorage.getItem('tccflow_animations') === 'false') {
+      document.body.classList.add('no-animations');
+    }
+  }, []);
 
   if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
-
-  function toggle(key) { setPrefs(p => ({ ...p, [key]:!p[key] })); }
 
   async function saveProfile(newName) {
     if (!newName.trim() || !user) return;
@@ -355,17 +580,16 @@ function SettingsPage() {
     try {
       await _supa.from('users').update({ name: newName }).eq('id', user.uid);
       alert("Perfil atualizado com sucesso!");
-    } catch(e) {
-      alert("Erro ao salvar: " + e.message);
-    }
+    } catch(e) { alert("Erro ao salvar: " + e.message); }
     setSaving(false);
   }
 
   const content = {
-    profile: <ProfileSection user={user} userData={userData} subscription={subscription} saving={saving} onSave={saveProfile}/>,
+    profile: <ProfileSection user={user} userData={userData} subscription={subscription} saving={saving} onSave={saveProfile} onPhotoChange={() => forceUpdate(n=>n+1)}/>,
     plan: <PlanSection user={user} userData={userData} subscription={subscription}/>,
-    notif: <NotifSection prefs={prefs} toggle={toggle}/>,
-    appear: <AppearSection prefs={prefs} toggle={toggle}/>,
+    notif: <NotifSection/>,
+    appear: <AppearSection/>,
+    security: <SecuritySection user={user}/>,
   };
 
   return (
