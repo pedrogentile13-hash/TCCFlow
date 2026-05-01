@@ -171,6 +171,81 @@
                 <p class="text-xs text-slate-400 mt-3 ml-1"><i class="fa-solid fa-circle-info mr-1"></i>A alteração será aplicada em todas as páginas.</p>
             </div>
 
+            <!-- Notifications -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h3 class="text-lg font-bold mb-6">
+                    <i class="fa-solid fa-bell mr-2 text-amber-600"></i><span data-i18n="settings.notifications">Notificações</span>
+                </h3>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-200 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-bell text-amber-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium" data-i18n="settings.enableNotifications">Ativar Notificações</p>
+                                <p class="text-xs text-slate-500" data-i18n="settings.notificationsDesc">Receba atualizações importantes sobre suas tarefas e eventos</p>
+                            </div>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="notificationsToggle"
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-2 border-slate-300 appearance-none cursor-pointer transition-all duration-300"
+                                style="top: 2px; left: 2px;">
+                            <label for="notificationsToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+
+                    <div class="ml-16 space-y-3 border-l-2 border-slate-200 pl-4">
+                        <div class="flex items-center gap-3 p-2">
+                            <input type="checkbox" id="notif-tasks" checked class="w-4 h-4 rounded">
+                            <label for="notif-tasks" class="text-sm font-medium cursor-pointer">Notificações de Tarefas</label>
+                        </div>
+                        <div class="flex items-center gap-3 p-2">
+                            <input type="checkbox" id="notif-team" checked class="w-4 h-4 rounded">
+                            <label for="notif-team" class="text-sm font-medium cursor-pointer">Notificações da Equipe</label>
+                        </div>
+                        <div class="flex items-center gap-3 p-2">
+                            <input type="checkbox" id="notif-deadlines" checked class="w-4 h-4 rounded">
+                            <label for="notif-deadlines" class="text-sm font-medium cursor-pointer">Lembretes de Prazos</label>
+                        </div>
+                        <div class="flex items-center gap-3 p-2">
+                            <input type="checkbox" id="notif-messages" checked class="w-4 h-4 rounded">
+                            <label for="notif-messages" class="text-sm font-medium cursor-pointer">Notificações de Mensagens</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="testNotifBtn" class="mt-6 bg-amber-600 hover:bg-amber-500 text-white font-semibold px-6 py-2.5 rounded-xl transition text-sm">
+                    <i class="fa-solid fa-paper-plane mr-2"></i>Enviar Notificação de Teste
+                </button>
+            </div>
+
+            <!-- Animations / Performance -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h3 class="text-lg font-bold mb-6">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-2 text-cyan-600"></i><span data-i18n="settings.animations">Animações</span>
+                </h3>
+
+                <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-200 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-play text-cyan-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium" data-i18n="settings.enableAnimations">Ativar Animações</p>
+                            <p class="text-xs text-slate-500" data-i18n="settings.animationsDesc">Melhore a experiência com transições e efeitos visuais</p>
+                        </div>
+                    </div>
+                    <div class="relative inline-block w-12 align-middle select-none">
+                        <input type="checkbox" id="animationsToggle"
+                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-2 border-slate-300 appearance-none cursor-pointer transition-all duration-300"
+                            style="top: 2px; left: 2px;">
+                        <label for="animationsToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                    </div>
+                </div>
+            </div>
+
             <!-- Profile Card -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <div class="flex items-center gap-5 mb-8">
@@ -216,6 +291,63 @@
                         <i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Alterações
                     </button>
                 </form>
+            </div>
+
+            <!-- Security Section -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h3 class="text-lg font-bold mb-6">
+                    <i class="fa-solid fa-shield-halved mr-2 text-blue-600"></i>Segurança da Conta
+                </h3>
+
+                <div class="space-y-4">
+                    <!-- Last Login -->
+                    <div class="flex items-start justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                        <div>
+                            <p class="font-medium">Último Login</p>
+                            <p class="text-xs text-slate-500 mt-1" id="lastLoginTime">-</p>
+                        </div>
+                        <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Ativo Agora</span>
+                    </div>
+
+                    <!-- Active Sessions -->
+                    <div class="flex items-start justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                        <div>
+                            <p class="font-medium">Sessões Ativas</p>
+                            <p class="text-xs text-slate-500 mt-1" id="activeSessions">1 sessão ativa</p>
+                        </div>
+                        <button id="logoutAllBtn" class="text-xs font-semibold text-red-600 hover:text-red-700 transition">
+                            Sair de Todas
+                        </button>
+                    </div>
+
+                    <!-- Two-Factor Authentication -->
+                    <div class="flex items-start justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                        <div>
+                            <p class="font-medium">Autenticação em Duas Etapas (2FA)</p>
+                            <p class="text-xs text-slate-500 mt-1">Adicione uma camada extra de segurança</p>
+                        </div>
+                        <button id="enable2FABtn" class="text-xs font-semibold text-blue-600 hover:text-blue-700 transition">
+                            Ativar
+                        </button>
+                    </div>
+
+                    <!-- Login Alerts -->
+                    <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                        <div>
+                            <p class="font-medium">Alertas de Login</p>
+                            <p class="text-xs text-slate-500 mt-1">Notifique-me de novos logins em outros dispositivos</p>
+                        </div>
+                        <input type="checkbox" id="loginAlertsToggle" checked class="w-4 h-4 rounded">
+                    </div>
+
+                    <!-- Connected Apps -->
+                    <div class="pt-4 border-t border-slate-200">
+                        <p class="font-medium mb-3">Aplicativos Conectados</p>
+                        <div class="space-y-2 max-h-32 overflow-y-auto" id="connectedApps">
+                            <div class="text-sm text-slate-500">Nenhum aplicativo conectado</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Change Password -->
@@ -303,6 +435,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-init.js"></script>
     <script src="../js/db-service.js"></script>
+    <script src="../js/notifications.js"></script>
     <script>
         // ========== Language Select ==========
         const langSelect = document.getElementById('langSelect');
@@ -315,15 +448,65 @@
 
         // ========== Dark Mode Toggle ==========
         const darkToggle = document.getElementById('darkModeToggle');
-        darkToggle.checked = localStorage.getItem('tccflow_darkmode') === 'true';
+        darkToggle.checked = window.ThemeManager.isDark();
 
         darkToggle.addEventListener('change', function() {
+            window.ThemeManager.setDark(this.checked);
+        });
+
+        window.addEventListener('themechange', (e) => {
+            darkToggle.checked = e.detail.isDark;
+        });
+
+        // ========== Animations Toggle ==========
+        const animationsToggle = document.getElementById('animationsToggle');
+        animationsToggle.checked = window.ThemeManager.animationsEnabled();
+
+        animationsToggle.addEventListener('change', function() {
+            window.ThemeManager.setAnimations(this.checked);
+        });
+
+        window.addEventListener('animationschange', (e) => {
+            animationsToggle.checked = e.detail.enabled;
+        });
+
+        // ========== Notifications Toggle ==========
+        const notificationsToggle = document.getElementById('notificationsToggle');
+        notificationsToggle.checked = localStorage.getItem('tccflow_notif_permission') === 'granted';
+
+        notificationsToggle.addEventListener('change', async function() {
             if (this.checked) {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('tccflow_darkmode', 'true');
+                const granted = await window.NotificationManager.requestPermission();
+                if (!granted) {
+                    this.checked = false;
+                    alert('Você precisa permitir notificações nas configurações do navegador.');
+                }
             } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('tccflow_darkmode', 'false');
+                await window.NotificationManager.unsubscribe();
+            }
+        });
+
+        // Test notification button
+        document.getElementById('testNotifBtn').addEventListener('click', () => {
+            if (window.NotificationManager.isEnabled) {
+                window.NotificationManager.notify('Teste de Notificação', {
+                    body: 'Se você viu esta mensagem, as notificações estão funcionando corretamente!',
+                    icon: '../favicon.png'
+                });
+            } else {
+                alert('Notificações não estão ativadas. Ative a permissão acima.');
+            }
+        });
+
+        // Save notification preferences
+        ['notif-tasks', 'notif-team', 'notif-deadlines', 'notif-messages'].forEach(id => {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                const savedValue = localStorage.getItem(`tccflow_${id}`);
+                checkbox.checked = savedValue !== 'false';
+                checkbox.addEventListener('change', () => {
+                    localStorage.setItem(`tccflow_${id}`, checkbox.checked);
+                });
             }
         });
 
@@ -337,6 +520,8 @@
 
             loadProfile();
             loadProjectLimits();
+            updateSecurityInfo();
+            localStorage.setItem('tccflow_last_login', new Date().toLocaleString('pt-BR'));
         });
 
         // ========== Mobile Nav ==========
@@ -536,6 +721,34 @@
                 showMsg('profileMsg', 'Erro ao atualizar perfil: ' + err.message, 'error');
             }
         });
+
+        // ========== Security Section ==========
+        function updateSecurityInfo() {
+            const lastLogin = localStorage.getItem('tccflow_last_login') || new Date().toLocaleString('pt-BR');
+            document.getElementById('lastLoginTime').textContent = lastLogin;
+
+            // Logout all sessions
+            document.getElementById('logoutAllBtn').addEventListener('click', async () => {
+                if (confirm('Isto irá encerrar todas as suas sessões ativas. Continuar?')) {
+                    localStorage.setItem('tccflow_force_logout', 'true');
+                    await auth.signOut();
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // 2FA button
+            document.getElementById('enable2FABtn').addEventListener('click', () => {
+                alert('2FA ainda não está disponível. Esta funcionalidade será adicionada em breve.');
+            });
+
+            // Login alerts toggle
+            const loginAlerts = document.getElementById('loginAlertsToggle');
+            const savedAlerts = localStorage.getItem('tccflow_login_alerts');
+            if (savedAlerts !== null) loginAlerts.checked = savedAlerts === 'true';
+            loginAlerts.addEventListener('change', () => {
+                localStorage.setItem('tccflow_login_alerts', loginAlerts.checked);
+            });
+        }
 
         // ========== Password Change ==========
         document.getElementById('passwordForm').addEventListener('submit', async function(e) {

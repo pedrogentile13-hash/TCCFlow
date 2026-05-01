@@ -19,6 +19,7 @@ const PRECACHE_ASSETS = [
   '/favicon.png',
   '/css/dark.css',
   '/js/darkmode.js',
+  '/js/notifications.js',
   '/js/supabase-init.js',
   '/js/db-service.js'
 ];

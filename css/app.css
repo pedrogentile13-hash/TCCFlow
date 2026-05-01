@@ -40,7 +40,8 @@
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
 }
 
-[data-theme="dark"] {
+[data-theme="dark"],
+.dark {
   --bg:        #0a0818;
   --bg-2:      #120f24;
   --paper:     #15112a;
@@ -563,6 +564,27 @@ input, textarea, select { font-family: inherit; }
 .d2 { transition-delay: .12s; }
 .d3 { transition-delay: .18s; }
 .d4 { transition-delay: .24s; }
+
+/* ============ Animations Control ============ */
+html.no-animations,
+html.no-animations * {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+html.no-animations .reveal { transition: none; opacity: 1; transform: translateY(0); }
+html.no-animations .stat-card { transition: none; }
+html.no-animations .nav-item { transition: none; }
+html.no-animations .btn { transition: none; }
+html.no-animations .field input:focus,
+html.no-animations .field select:focus,
+html.no-animations .field textarea:focus { transition: none; }
+
+/* Dark mode transition */
+html { transition: background-color .2s, color .2s; }
+html.no-animations { transition: none; }
 
 /* ============ Mobile Responsive ============ */
 .hamburger-btn {
