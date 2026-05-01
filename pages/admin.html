@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../css/dark.css">
+    <script src="../js/preferences.js"></script>
+    <script src="../js/profile-photo.js"></script>
     <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -87,61 +89,96 @@
                 <p class="text-slate-500 mt-1">Gerencie o seu perfil e preferências</p>
             </div>
 
-            <!-- Appearance / Dark Mode -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+            <!-- Appearance / Dark Mode & Animations -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm dark:bg-slate-800 dark:border-slate-700">
                 <h3 class="text-lg font-bold mb-6">
                     <i class="fa-solid fa-palette mr-2 text-violet-600"></i>Aparência
                 </h3>
 
-                <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-moon text-amber-400 text-lg"></i>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700/50 transition">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-moon text-amber-400 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">Modo Escuro</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Ative o tema escuro para reduzir o cansaço visual</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="font-medium">Modo Escuro</p>
-                            <p class="text-xs text-slate-500">Ative o tema escuro para reduzir o cansaço visual</p>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="darkModeToggle"
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-2 border-slate-300 appearance-none cursor-pointer transition-all duration-300"
+                                style="top: 2px; left: 2px;">
+                            <label for="darkModeToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
                         </div>
                     </div>
-                    <div class="relative inline-block w-12 align-middle select-none">
-                        <input type="checkbox" id="darkModeToggle"
-                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-2 border-slate-300 appearance-none cursor-pointer transition-all duration-300"
-                            style="top: 2px; left: 2px;">
-                        <label for="darkModeToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+
+                    <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700/50 transition">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-sparkles text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">Animações</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Ative ou desative animações para melhor performance</p>
+                            </div>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="animationsToggle"
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-2 border-slate-300 appearance-none cursor-pointer transition-all duration-300"
+                                style="top: 2px; left: 2px;">
+                            <label for="animationsToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Profile Card -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
-                <div class="flex items-center gap-5 mb-8">
-                    <div class="w-20 h-20 bg-violet-100 rounded-2xl flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-user text-violet-600 text-2xl"></i>
+            <!-- Profile Card with Photo Upload -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm dark:bg-slate-800 dark:border-slate-700">
+                <h3 class="text-lg font-bold mb-6">
+                    <i class="fa-solid fa-user mr-2 text-violet-600"></i>Perfil
+                </h3>
+
+                <div class="flex flex-col sm:flex-row items-center gap-6 mb-8 pb-6 border-b border-slate-200 dark:border-slate-700">
+                    <div class="w-32 h-32 bg-violet-100 dark:bg-violet-900/30 rounded-2xl flex items-center justify-center shrink-0 border-2 border-dashed border-slate-300 dark:border-slate-600">
+                        <img id="profilePhoto" class="w-full h-full rounded-xl object-cover" alt="Foto de perfil" style="display:none;">
+                        <i id="profilePhotoPlaceholder" class="fa-solid fa-user text-violet-600 dark:text-violet-400 text-4xl"></i>
                     </div>
-                    <div>
+                    <div class="flex-1 text-center sm:text-left">
                         <h2 class="text-xl font-bold" id="profileName">Usuário</h2>
-                        <p class="text-sm text-slate-500" id="profileEmail">email@example.com</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-4" id="profileEmail">email@example.com</p>
+                        <div class="flex gap-2 flex-wrap justify-center sm:justify-start">
+                            <button type="button" id="uploadPhotoBtn" class="bg-violet-600 hover:bg-violet-500 text-white font-medium px-4 py-2 rounded-xl transition text-sm">
+                                <i class="fa-solid fa-cloud-arrow-up mr-1"></i>Upload Foto
+                            </button>
+                            <button type="button" id="removePhotoBtn" class="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 font-medium px-4 py-2 rounded-xl transition text-sm border border-red-200 dark:border-red-800 hidden">
+                                <i class="fa-solid fa-trash mr-1"></i>Remover
+                            </button>
+                        </div>
+                        <input type="file" id="profilePhotoInput" accept="image/jpeg,image/png,image/webp" style="display:none;">
                     </div>
                 </div>
 
                 <form id="profileForm" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             <i class="fa-solid fa-user mr-1 text-violet-600"></i> Nome
                         </label>
                         <input type="text" id="editName" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             <i class="fa-solid fa-envelope mr-1 text-violet-600"></i> Email
                         </label>
                         <input type="email" id="editEmail" disabled
-                            class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-500 cursor-not-allowed">
+                            class="w-full bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-500 dark:text-slate-400 cursor-not-allowed">
                     </div>
 
                     <div id="profileMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
+                    <div id="photoMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
 
                     <button type="submit" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
                         <i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Alterações
@@ -149,35 +186,95 @@
                 </form>
             </div>
 
-            <!-- Change Password -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+            <!-- Security Section -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm dark:bg-slate-800 dark:border-slate-700">
                 <h3 class="text-lg font-bold mb-6">
-                    <i class="fa-solid fa-key mr-2 text-amber-600"></i>Alterar Senha
+                    <i class="fa-solid fa-shield mr-2 text-emerald-600"></i>Segurança
                 </h3>
 
-                <form id="passwordForm" class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Senha Atual</label>
-                        <input type="password" id="currentPassword" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Nova Senha</label>
-                        <input type="password" id="newPassword" required minlength="6"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Confirmar Nova Senha</label>
-                        <input type="password" id="confirmNewPassword" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                <div class="space-y-6">
+                    <!-- Change Password -->
+                    <div class="pb-6 border-b border-slate-200 dark:border-slate-700">
+                        <h4 class="font-semibold mb-4 text-sm">
+                            <i class="fa-solid fa-key mr-2 text-amber-600"></i>Alterar Senha
+                        </h4>
+                        <form id="passwordForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Senha Atual</label>
+                                <input type="password" id="currentPassword" required
+                                    class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nova Senha</label>
+                                <input type="password" id="newPassword" required minlength="6"
+                                    class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Confirmar Nova Senha</label>
+                                <input type="password" id="confirmNewPassword" required
+                                    class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            </div>
+
+                            <div id="passwordMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
+
+                            <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
+                                <i class="fa-solid fa-key mr-2"></i>Alterar Senha
+                            </button>
+                        </form>
                     </div>
 
-                    <div id="passwordMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
+                    <!-- Login Alerts -->
+                    <div class="pb-6 border-b border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-sm">
+                                    <i class="fa-solid fa-bell mr-2 text-blue-600"></i>Alertas de Login
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Receba notificações quando sua conta for acessada de um novo dispositivo</p>
+                            </div>
+                            <div class="relative inline-block w-12 align-middle select-none">
+                                <input type="checkbox" id="loginAlertsToggle"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-2 border-slate-300 appearance-none cursor-pointer transition-all duration-300"
+                                    style="top: 2px; left: 2px;">
+                                <label for="loginAlertsToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                            </div>
+                        </div>
+                    </div>
 
-                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
-                        <i class="fa-solid fa-key mr-2"></i>Alterar Senha
-                    </button>
-                </form>
+                    <!-- Session Timeout -->
+                    <div class="pb-6 border-b border-slate-200 dark:border-slate-700">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                            <i class="fa-solid fa-hourglass-end mr-2 text-orange-600"></i>Timeout de Sessão
+                        </label>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Sair automaticamente após inatividade</p>
+                        <select id="sessionTimeoutSelect"
+                            class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            <option value="15">15 minutos</option>
+                            <option value="30" selected>30 minutos</option>
+                            <option value="60">1 hora</option>
+                            <option value="120">2 horas</option>
+                            <option value="480">8 horas</option>
+                        </select>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-sm">
+                                    <i class="fa-solid fa-bell mr-2 text-violet-600"></i>Notificações Push
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Receba notificações de tarefas e prazos</p>
+                            </div>
+                            <div class="relative inline-block w-12 align-middle select-none">
+                                <input type="checkbox" id="notificationsToggle"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-2 border-slate-300 appearance-none cursor-pointer transition-all duration-300"
+                                    style="top: 2px; left: 2px;">
+                                <label for="notificationsToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Danger Zone -->
@@ -206,26 +303,61 @@
     <script src="../js/firebase-init.js"></script>
     <script src="../js/db-service.js"></script>
     <script>
-        // ========== Dark Mode Toggle ==========
-        const darkToggle = document.getElementById('darkModeToggle');
-        darkToggle.checked = localStorage.getItem('tccflow_darkmode') === 'true';
+        let currentUser = null;
+        let profilePhotoManager = null;
 
-        darkToggle.addEventListener('change', function() {
-            if (this.checked) {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('tccflow_darkmode', 'true');
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('tccflow_darkmode', 'false');
+        // ========== Preferences & UI Setup ==========
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Initialize animations toggle
+            const animToggle = document.getElementById('animationsToggle');
+            if (animToggle) {
+                animToggle.checked = preferences.prefs.animationsEnabled;
+                animToggle.addEventListener('change', function() {
+                    preferences.setAnimationsEnabled(this.checked);
+                });
+            }
+
+            // Initialize notifications toggle
+            const notifToggle = document.getElementById('notificationsToggle');
+            if (notifToggle) {
+                notifToggle.checked = preferences.prefs.notificationsEnabled;
+                notifToggle.addEventListener('change', function() {
+                    preferences.setNotificationsEnabled(this.checked);
+                });
+            }
+
+            // Initialize login alerts toggle
+            const loginAlertsToggle = document.getElementById('loginAlertsToggle');
+            if (loginAlertsToggle) {
+                loginAlertsToggle.checked = preferences.prefs.loginAlerts;
+                loginAlertsToggle.addEventListener('change', function() {
+                    preferences.setLoginAlerts(this.checked);
+                });
+            }
+
+            // Initialize session timeout
+            const sessionSelect = document.getElementById('sessionTimeoutSelect');
+            if (sessionSelect) {
+                sessionSelect.value = preferences.prefs.sessionTimeout;
+                sessionSelect.addEventListener('change', function() {
+                    preferences.setSessionTimeout(parseInt(this.value));
+                });
+            }
+
+            // Load profile photo if available
+            if (profilePhotoManager) {
+                const photoData = await profilePhotoManager.loadProfilePhoto();
+                if (photoData) {
+                    profilePhotoManager.updatePhotoDisplay(photoData);
+                }
             }
         });
 
         // ========== Auth Check ==========
-        let currentUser = null;
-
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
             currentUser = user;
+            window.currentUser = currentUser;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
             // Update navbar for PRO users
@@ -242,6 +374,14 @@
             } catch(e) { console.log(e); }
 
             loadProfile();
+
+            // Load profile photo
+            if (profilePhotoManager) {
+                const photoData = await profilePhotoManager.loadProfilePhoto();
+                if (photoData) {
+                    profilePhotoManager.updatePhotoDisplay(photoData);
+                }
+            }
         });
 
         // ========== Mobile Nav ==========
@@ -264,7 +404,8 @@
 
         function showMsg(id, text, type) {
             const el = document.getElementById(id);
-            el.className = `text-sm rounded-xl px-4 py-3 ${type === 'success' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'}`;
+            if (!el) return;
+            el.className = `text-sm rounded-xl px-4 py-3 ${type === 'success' ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'}`;
             el.textContent = text;
             el.classList.remove('hidden');
             setTimeout(() => el.classList.add('hidden'), 4000);
