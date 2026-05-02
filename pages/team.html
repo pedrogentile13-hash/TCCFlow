@@ -33,6 +33,58 @@ function TeamPage() {
   const [taskCounts, setTaskCounts] = useState({});
   const [allUserProjects, setAllUserProjects] = useState([]);
   const [switching, setSwitching] = useState(false);
+  const [orientadorInviteCode, setOrientadorInviteCode] = useState("");
+  const [linkedOrientador, setLinkedOrientador] = useState(null);
+  const [generatingCode, setGeneratingCode] = useState(false);
+  const [removingOrientador, setRemovingOrientador] = useState(false);
+
+  useEffect(() => {
+    if (!project) return;
+    (async () => {
+      try {
+        const relation = await DB.orientador.getProjectOrientador(project.id);
+        if (relation?.users) {
+          setLinkedOrientador(relation.users);
+        } else {
+          setLinkedOrientador(null);
+        }
+      } catch(e) { console.error('Error loading orientador:', e); }
+    })();
+  }, [project]);
+
+  async function generateOrientadorCode() {
+    if (!project) return;
+    setGeneratingCode(true);
+    try {
+      const result = await DB.orientador.createInvite(project.id);
+      setOrientadorInviteCode(result.code);
+      await loadOrientador();
+    } catch(e) { alert("Erro ao gerar código: " + (e.message || e)); }
+    setGeneratingCode(false);
+  }
+
+  async function loadOrientador() {
+    if (!project) return;
+    try {
+      const relation = await DB.orientador.getProjectOrientador(project.id);
+      if (relation?.users) {
+        setLinkedOrientador(relation.users);
+      } else {
+        setLinkedOrientador(null);
+      }
+    } catch(e) { console.error('Error loading orientador:', e); }
+  }
+
+  async function removeOrientador() {
+    if (!linkedOrientador || !confirm("Remover orientador do projeto?")) return;
+    setRemovingOrientador(true);
+    try {
+      await _supa.from('orientador_projects').delete().eq('project_id', project.id);
+      setLinkedOrientador(null);
+      setOrientadorInviteCode("");
+    } catch(e) { alert("Erro ao remover: " + (e.message || e)); }
+    setRemovingOrientador(false);
+  }
 
   useEffect(() => {
     if (!project || !teamMembers.length) return;
@@ -142,7 +194,7 @@ function TeamPage() {
           <div className="page-grid" style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16 }}>
             <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
               <div style={{ display:"flex", gap:2, background:"var(--bg-2)", borderRadius:10, padding:4, width:"fit-content" }}>
-                {[["membros","Membros"],["projetos","Meus Projetos"],["entrar","Entrar em Projeto"]].map(([v,l]) => (
+                {[["membros","Membros"],["orientador","Orientador"],["projetos","Meus Projetos"],["entrar","Entrar em Projeto"]].map(([v,l]) => (
                   <button key={v} className={`btn btn-sm ${tab===v?"btn-primary":"btn-ghost"}`} style={{ border:"none" }} onClick={() => setTab(v)}>{l}</button>
                 ))}
               </div>
@@ -178,6 +230,43 @@ function TeamPage() {
                     })}
                     {teamMembers.length === 0 && <div style={{color:"var(--muted)",padding:12}}>Nenhum membro no projeto</div>}
                   </div>
+                </div>
+              )}
+
+              {tab === "orientador" && (
+                <div className="card">
+                  <div className="card-title"><span className="ct-icon">👨‍🏫</span> Orientador do Projeto</div>
+                  {linkedOrientador ? (
+                    <div>
+                      <div style={{ display:"flex", alignItems:"center", gap:14, padding:"16px 14px", background:"var(--bg-2)", borderRadius:12, border:"1px solid var(--line)", marginBottom:16 }}>
+                        <div className={`av av-lg c1`}>{getInitials(linkedOrientador.name)}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontWeight:600, fontSize:"0.9375rem", marginBottom:2 }}>{linkedOrientador.name || 'Sem nome'}</div>
+                          <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>{linkedOrientador.email}</div>
+                        </div>
+                        <span className="tag tag-amber">Orientador</span>
+                      </div>
+                      <button className="btn btn-ghost" style={{ width:"100%", color:"var(--rose)" }} onClick={removeOrientador} disabled={removingOrientador}>
+                        {removingOrientador ? "Removendo..." : "Remover Orientador"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize:"0.875rem", color:"var(--muted)", marginBottom:20 }}>Gere um código para convidar seu orientador.</p>
+                      {orientadorInviteCode && (
+                        <div style={{ background:"rgba(124,58,237,.08)", border:"1px solid var(--violet)", borderRadius:12, padding:16, marginBottom:16, textAlign:"center" }}>
+                          <div style={{ fontSize:"0.6875rem", color:"var(--muted)", marginBottom:6 }}>Código de convite</div>
+                          <div style={{ fontFamily:"var(--font-mono)", fontSize:"1.5rem", fontWeight:700, color:"var(--violet)", letterSpacing:"0.1em", marginBottom:12 }}>{orientadorInviteCode}</div>
+                          <button className="btn btn-violet" style={{ width:"100%" }} onClick={() => { navigator.clipboard.writeText(orientadorInviteCode); alert("Código copiado!"); }}>
+                            Copiar código
+                          </button>
+                        </div>
+                      )}
+                      <button className="btn btn-violet" style={{ width:"100%" }} onClick={generateOrientadorCode} disabled={generatingCode}>
+                        {generatingCode ? "Gerando..." : orientadorInviteCode ? "Gerar novo código" : "Gerar código de convite"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
