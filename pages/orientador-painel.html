@@ -55,6 +55,7 @@
                 </a>
                 <div class="flex items-center gap-2">
                     <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="orientador-stats.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50 transition" title="Dashboard"><i class="fa-solid fa-chart-line text-sm"></i></a>
                     <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
                     <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
                         <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
@@ -84,6 +85,18 @@
                     <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1.5 rounded-full">
                         <i class="fa-solid fa-flask"></i> Funcionalidade BETA
                     </span>
+                </div>
+            </div>
+
+            <!-- Notifications Bell (Phase 3) -->
+            <div style="position:fixed;top:20px;right:20px;z-index:100">
+                <button onclick="toggleNotifications()" id="notifBell" style="width:44px;height:44px;background:white;border:1px solid #e2e8f0;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.1)">
+                    <i class="fa-solid fa-bell text-emerald-600"></i>
+                    <span id="notifBadge" style="position:absolute;top:-4px;right:-4px;background:#f43f5e;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;display:none">0</span>
+                </button>
+                <div id="notificationPanel" style="display:none;position:absolute;top:56px;right:0;width:320px;background:white;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.1);max-height:400px;overflow-y:auto;z-index:101">
+                    <div style="padding:12px;border-bottom:1px solid #f1f5f9;font-weight:600;font-size:14px">Notificações</div>
+                    <div id="notificationList" style="padding:8px"></div>
                 </div>
             </div>
 
@@ -185,6 +198,19 @@
                     </form>
                     <div id="commentsList" class="space-y-3">
                         <p class="text-sm text-slate-400 text-center py-4">Nenhum comentário ainda</p>
+                    </div>
+                </div>
+
+                <!-- Phase 5: Reports & Export -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold"><i class="fa-solid fa-file-pdf text-emerald-600 mr-2"></i>Relatórios</h3>
+                        <button onclick="generateReport()" id="generateReportBtn" class="bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold px-4 py-2 rounded-xl text-sm hover:shadow-lg transition">
+                            <i class="fa-solid fa-plus mr-1"></i>Gerar Relatório
+                        </button>
+                    </div>
+                    <div id="reportsList" class="space-y-3">
+                        <p class="text-sm text-slate-400 text-center py-4">Nenhum relatório gerado</p>
                     </div>
                 </div>
             </div>
@@ -540,6 +566,149 @@
                 alert('Erro: ' + err.message);
             }
         };
+
+        // ========== Phase 4: Update Stats ==========
+        async function updateProjectStats() {
+            if (!selectedProjectId) return;
+            try {
+                await DB.orientador.updateProjectStats(currentUser.uid, selectedProjectId);
+            } catch(err) {
+                console.warn('Error updating stats:', err);
+            }
+        }
+
+        // ========== Phase 5: Reports & Export ==========
+        window.generateReport = async function() {
+            if (!selectedProjectId) { alert('Selecione um projeto primeiro'); return; }
+            const btn = document.getElementById('generateReportBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Gerando...';
+
+            try {
+                const result = await DB.orientador.generateReport(currentUser.uid, selectedProjectId);
+                alert('Relatório gerado com sucesso!');
+                await loadReports();
+                await updateProjectStats();
+            } catch(err) {
+                alert('Erro ao gerar relatório: ' + err.message);
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-plus mr-1"></i>Gerar Relatório';
+        };
+
+        async function loadReports() {
+            const el = document.getElementById('reportsList');
+            try {
+                const reports = await DB.orientador.getReports(currentUser.uid);
+
+                if (reports.length === 0) {
+                    el.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Nenhum relatório gerado</p>';
+                    return;
+                }
+
+                el.innerHTML = '';
+                for (const r of reports) {
+                    const date = new Date(r.generated_at).toLocaleDateString('pt-BR');
+                    el.innerHTML += `
+                        <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium">${r.title}</p>
+                                <p class="text-xs text-slate-400 mt-1">${date} • ${r.download_count || 0} downloads</p>
+                            </div>
+                            <button onclick="downloadReport('${r.id}')" class="text-emerald-600 hover:text-emerald-700 transition">
+                                <i class="fa-solid fa-download text-lg"></i>
+                            </button>
+                        </div>`;
+                }
+            } catch(err) {
+                el.innerHTML = '<p class="text-sm text-red-400 text-center py-4">Erro ao carregar relatórios</p>';
+            }
+        }
+
+        window.downloadReport = async function(reportId) {
+            try {
+                const content = await DB.orientador.exportReportAsPDF(reportId);
+                const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `relatorio-${new Date().getTime()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch(err) {
+                alert('Erro ao baixar: ' + err.message);
+            }
+        };
+
+        // Load reports on project change
+        const originalOpenProject = window.openProject;
+        window.openProject = async function(projId, projName) {
+            await originalOpenProject(projId, projName);
+            await loadReports();
+            await updateProjectStats();
+        };
+
+        // ========== Phase 3: Notifications ==========
+        async function loadNotifications() {
+            try {
+                const notifications = await DB.orientador.getNotifications(currentUser.uid, 10);
+                const unreadCount = notifications.filter(n => !n.read).length;
+
+                const badge = document.getElementById('notifBadge');
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+
+                const notifList = document.getElementById('notificationList');
+                if (notifications.length === 0) {
+                    notifList.innerHTML = '<div style="padding:12px;text-align:center;color:#94a3b8;font-size:13px">Nenhuma notificação</div>';
+                    return;
+                }
+
+                notifList.innerHTML = '';
+                for (const n of notifications) {
+                    const date = new Date(n.created_at).toLocaleDateString('pt-BR');
+                    const typeLabel = n.type === 'new_comment' ? '💬 Novo Comentário' : '👥 Orientador Vinculado';
+                    notifList.innerHTML += `
+                        <div style="padding:10px 8px;border-bottom:1px solid #f1f5f9;cursor:pointer;opacity:${n.read?0.6:1};transition:background .2s" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                            <div style="font-size:12px;font-weight:600;margin-bottom:2px">${typeLabel}</div>
+                            <div style="font-size:11px;color:#64748b;margin-bottom:4px">${n.section ? 'Seção: ' + n.section : 'Projeto: ' + n.project_id.substring(0, 8)}</div>
+                            <div style="font-size:11px;color:#cbd5e1">${date}</div>
+                            ${!n.read ? `<button onclick="markAsRead('${n.id}')" style="margin-top:6px;font-size:11px;background:#e0f2fe;color:#0369a1;border:none;padding:3px 8px;border-radius:4px;cursor:pointer">Marcar como lido</button>` : ''}
+                        </div>`;
+                }
+            } catch(err) {
+                console.error('Error loading notifications:', err);
+            }
+        }
+
+        window.toggleNotifications = function() {
+            const panel = document.getElementById('notificationPanel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                loadNotifications();
+            } else {
+                panel.style.display = 'none';
+            }
+        };
+
+        window.markAsRead = async function(notifId) {
+            try {
+                await DB.orientador.markNotificationAsRead(notifId);
+                await loadNotifications();
+            } catch(err) {
+                console.error('Error marking as read:', err);
+            }
+        };
+
+        // Refresh notifications every 30 seconds
+        setInterval(() => {
+            if (currentUser) loadNotifications();
+        }, 30000);
     </script>
     <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>

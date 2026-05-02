@@ -570,6 +570,191 @@ const DB = {
                 .delete()
                 .eq('id', commentId);
             if (error) throw error;
+        },
+
+        // ===== Phase 3: Notifications =====
+        async getNotifications(userId, limit = 20) {
+            const { data, error } = await _supa
+                .from('orientador_notifications')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            if (error) throw error;
+            return data || [];
+        },
+
+        async markNotificationAsRead(notificationId) {
+            const { error } = await _supa
+                .from('orientador_notifications')
+                .update({ read: true })
+                .eq('id', notificationId);
+            if (error) throw error;
+        },
+
+        async createNotification(userId, projectId, type, details = {}) {
+            const { error } = await _supa
+                .from('orientador_notifications')
+                .insert({
+                    user_id: userId,
+                    project_id: projectId,
+                    orientador_id: details.orientadorId || null,
+                    comment_id: details.commentId || null,
+                    type: type,
+                    section: details.section || null,
+                    read: false
+                });
+            if (error) throw error;
+        },
+
+        // ===== Phase 4: Orientador Stats =====
+        async getOrientadorStats(orientadorId) {
+            const { data, error } = await _supa
+                .from('orientador_stats')
+                .select('*')
+                .eq('orientador_id', orientadorId)
+                .order('updated_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        },
+
+        async updateProjectStats(orientadorId, projectId) {
+            // Count comments
+            const { data: comments } = await _supa
+                .from('orientador_comments')
+                .select('section')
+                .eq('orientador_id', orientadorId)
+                .eq('project_id', projectId);
+
+            const totalComments = (comments || []).length;
+            const sections = [...new Set((comments || []).map(c => c.section))];
+            const lastComment = comments?.[0]?.created_at || null;
+
+            // Count students and tasks
+            const { data: members } = await _supa
+                .from('users')
+                .select('id')
+                .eq('project_id', projectId);
+            const studentsCount = (members || []).length;
+
+            const { data: tasks } = await _supa
+                .from('tasks')
+                .select('status')
+                .eq('project_id', projectId);
+            const tasksCount = (tasks || []).length;
+            const tasksCompleted = (tasks || []).filter(t => t.status === 'done').length;
+
+            const { error } = await _supa
+                .from('orientador_stats')
+                .upsert({
+                    orientador_id: orientadorId,
+                    project_id: projectId,
+                    total_comments: totalComments,
+                    sections_commented: sections,
+                    students_count: studentsCount,
+                    tasks_count: tasksCount,
+                    tasks_completed: tasksCompleted,
+                    last_comment_at: lastComment,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'orientador_id,project_id' });
+            if (error) throw error;
+        },
+
+        // ===== Phase 5: Reports & Export =====
+        async generateReport(orientadorId, projectId) {
+            try {
+                // Fetch project info
+                const { data: proj } = await _supa
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .maybeSingle();
+
+                // Fetch all comments
+                const { data: comments } = await _supa
+                    .from('orientador_comments')
+                    .select('*')
+                    .eq('project_id', projectId)
+                    .eq('orientador_id', orientadorId)
+                    .order('section, created_at');
+
+                // Fetch project members
+                const { data: members } = await _supa
+                    .from('users')
+                    .select('name, email')
+                    .eq('project_id', projectId);
+
+                // Build report JSON
+                const report = {
+                    project: proj?.name || 'Sem nome',
+                    code: proj?.code || '-',
+                    students: (members || []).map(m => ({ name: m.name, email: m.email })),
+                    generatedAt: new Date().toISOString(),
+                    sections: {}
+                };
+
+                // Group comments by section
+                (comments || []).forEach(c => {
+                    if (!report.sections[c.section]) {
+                        report.sections[c.section] = [];
+                    }
+                    report.sections[c.section].push({
+                        date: c.created_at,
+                        comment: c.comment
+                    });
+                });
+
+                // Save report
+                const { data: savedReport, error } = await _supa
+                    .from('orientador_reports')
+                    .insert({
+                        orientador_id: orientadorId,
+                        project_id: projectId,
+                        title: `Relatório - ${proj?.name || 'Projeto'}`,
+                        content: JSON.stringify(report),
+                        format: 'json',
+                        expiry_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                    })
+                    .select()
+                    .maybeSingle();
+
+                if (error) throw error;
+                return { id: savedReport?.id, report };
+            } catch(e) {
+                throw e;
+            }
+        },
+
+        async getReports(orientadorId) {
+            const { data, error } = await _supa
+                .from('orientador_reports')
+                .select('*')
+                .eq('orientador_id', orientadorId)
+                .order('generated_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        },
+
+        async exportReportAsPDF(reportId) {
+            const { data: report, error } = await _supa
+                .from('orientador_reports')
+                .select('*')
+                .eq('id', reportId)
+                .maybeSingle();
+
+            if (error || !report) throw { message: 'Relatório não encontrado' };
+
+            const content = typeof report.content === 'string'
+                ? JSON.parse(report.content)
+                : report.content;
+
+            // Update download count
+            await _supa
+                .from('orientador_reports')
+                .update({ download_count: (report.download_count || 0) + 1 })
+                .eq('id', reportId);
+
+            return content;
         }
     },
 
