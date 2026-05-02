@@ -50,14 +50,12 @@ function useTCCData() {
 
           if (memberIds && memberIds.length > 0) {
             try {
-              // Fetch each member individually to bypass RLS restrictions
-              const memberPromises = memberIds.map(mid =>
-                _supa.from('users').select('id, name, email, photo_url, role').eq('id', mid).maybeSingle()
-              );
-              const memberResults = await Promise.all(memberPromises);
-              members = memberResults
-                .filter(r => r.data !== null && !r.error)
-                .map(r => r.data);
+              // Try with all columns first, fallback to basic columns
+              let memberRes = await _supa.from('users').select('id, name, email, photo_url, role').in('id', memberIds);
+              if (memberRes.error) {
+                memberRes = await _supa.from('users').select('id, name, email').in('id', memberIds);
+              }
+              members = (memberRes.data || []);
               console.log('Membros encontrados:', members.length);
             } catch (e) {
               console.error('Erro ao buscar membros:', e);
