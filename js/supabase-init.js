@@ -210,15 +210,17 @@ const auth = {
     },
 
     async signInWithPopup(provider, options) {
-        const redirectPage = '/pages/login.html';
+        // Preserve the ?redirect= param so login.html knows where to send the user after OAuth
+        const currentParams = new URLSearchParams(window.location.search);
+        const redirectParam = currentParams.get('redirect') || 'dashboard.html';
+        const redirectTo = window.location.origin + '/pages/login.html?redirect=' + encodeURIComponent(redirectParam);
+
         const { data, error } = await _supa.auth.signInWithOAuth({
             provider: 'google',
-            options: {
-                redirectTo: window.location.origin + redirectPage
-            }
+            options: { redirectTo }
         });
         if (error) {
-            throw { code: 'auth/popup-closed-by-user', message: error.message };
+            throw { code: 'auth/unauthorized-domain', message: error.message };
         }
         return { user: this.currentUser };
     },
