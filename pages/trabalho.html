@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Trabalho Escrito — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .trabalho-layout{display:grid;grid-template-columns:260px 1fr 0px;height:calc(100vh - var(--topbar-h));overflow:hidden;transition:grid-template-columns .3s ease;}
+    .trabalho-layout.right-open{grid-template-columns:260px 1fr 280px;}
+    .panel-left{background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
+    .panel-left-header{padding:16px 14px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+    .panel-left-header h3{font-size:.8125rem;font-weight:600;display:flex;align-items:center;gap:6px;}
+    .panel-left-scroll{flex:1;overflow-y:auto;padding:8px 6px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;}
+    .panel-left-scroll::-webkit-scrollbar{width:3px;}
+    .panel-left-scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px;}
+    .chapter-group{margin-bottom:4px;}
+    .chapter-header{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s;font-size:.8125rem;font-weight:600;color:var(--ink);}
+    .chapter-header:hover{background:var(--paper);}
+    .chapter-header .ch-toggle{width:16px;height:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:transform .2s;flex-shrink:0;}
+    .chapter-header .ch-toggle.open{transform:rotate(90deg);}
+    .chapter-header .ch-count{margin-left:auto;font-family:var(--font-mono);font-size:.625rem;color:var(--muted);font-weight:400;}
+    .chapter-actions{display:flex;gap:2px;margin-left:4px;opacity:0;transition:opacity .15s;}
+    .chapter-header:hover .chapter-actions{opacity:1;}
+    .chapter-actions button{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.625rem;color:var(--muted);transition:background .15s,color .15s;}
+    .chapter-actions button:hover{background:var(--line);color:var(--ink);}
+    .section-list{padding-left:12px;}
+    .section-item{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:8px;cursor:pointer;transition:background .15s;font-size:.8125rem;color:var(--ink-2);}
+    .section-item:hover{background:var(--paper);}
+    .section-item.active{background:var(--paper);color:var(--violet);font-weight:500;box-shadow:var(--shadow-sm);}
+    .section-item .sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .section-item .sec-words{margin-left:auto;font-family:var(--font-mono);font-size:.5625rem;color:var(--muted);}
+    .section-order-btns{display:flex;flex-direction:column;gap:0;margin-left:auto;opacity:0;transition:opacity .15s;}
+    .section-item:hover .section-order-btns{opacity:1;}
+    .section-order-btns button{width:14px;height:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.5rem;border-radius:2px;}
+    .section-order-btns button:hover{color:var(--violet);}
+    .add-section-btn{display:flex;align-items:center;gap:4px;padding:5px 10px;margin-left:12px;border-radius:6px;font-size:.75rem;color:var(--muted);cursor:pointer;transition:color .15s;}
+    .add-section-btn:hover{color:var(--violet);}
+    .add-chapter-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;margin:4px 6px;border-radius:8px;border:1.5px dashed var(--line);font-size:.8125rem;color:var(--muted);cursor:pointer;transition:border-color .2s,color .2s;}
+    .add-chapter-btn:hover{border-color:var(--violet);color:var(--violet);}
+    .panel-main{display:flex;flex-direction:column;overflow:hidden;}
+    .panel-main-top{padding:16px 24px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0;flex-wrap:wrap;}
+    .panel-main-top .save-indicator{margin-left:auto;font-family:var(--font-mono);font-size:.6875rem;display:flex;align-items:center;gap:5px;}
+    .panel-main-top .save-indicator .dot-saving{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse-dot 1s infinite;}
+    .panel-main-top .save-indicator .dot-saved{width:6px;height:6px;border-radius:50%;background:var(--emerald);}
+    @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+    .editor-area{flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;}
+    .editor-area::-webkit-scrollbar{width:4px;}
+    .editor-area::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px;}
+    .editor-title-input{width:100%;border:none;outline:none;background:transparent;font-family:var(--font-display);font-size:1.5rem;font-weight:400;color:var(--ink);padding:0 0 12px;border-bottom:1px solid var(--line);margin-bottom:16px;}
+    .editor-title-input::placeholder{color:var(--line-2);}
+    .editor-textarea{width:100%;min-height:500px;border:none;outline:none;background:transparent;font-family:var(--font-body);font-size:.9375rem;line-height:1.8;color:var(--ink);resize:vertical;padding:0;}
+    .editor-textarea::placeholder{color:var(--line-2);}
+    .editor-footer{padding:12px 24px;border-top:1px solid var(--line);display:flex;align-items:center;gap:16px;flex-shrink:0;font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);}
+    .panel-right{background:var(--paper);border-left:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
+    .panel-right-header{padding:14px 14px 10px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .panel-right-header h3{font-size:.8125rem;font-weight:600;display:flex;align-items:center;gap:6px;}
+    .panel-right-scroll{flex:1;overflow-y:auto;padding:12px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;}
+    .panel-right-scroll::-webkit-scrollbar{width:3px;}
+    .panel-right-scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px;}
+    .feedback-card{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;}
+    .feedback-card .fb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    .feedback-card .fb-grade{font-family:var(--font-display);font-size:1.25rem;font-weight:400;color:var(--violet);}
+    .feedback-card .fb-date{font-family:var(--font-mono);font-size:.625rem;color:var(--muted);}
+    .feedback-card .fb-comment{font-size:.8125rem;line-height:1.6;color:var(--ink-2);}
+    .feedback-card .fb-user{font-family:var(--font-mono);font-size:.625rem;color:var(--muted);margin-top:8px;}
+    .feedback-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:24px;text-align:center;color:var(--muted);}
+    .feedback-empty .fe-icon{font-size:2rem;opacity:.3;margin-bottom:8px;}
+    .feedback-empty .fe-text{font-size:.8125rem;}
+    .feedback-empty .fe-sub{font-size:.75rem;margin-top:4px;color:var(--line-2);}
+    .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 24px;border-bottom:1px solid var(--line);flex-shrink:0;}
+    .stats-bar .sb-item{display:flex;flex-direction:column;gap:2px;}
+    .stats-bar .sb-label{font-family:var(--font-mono);font-size:.5625rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+    .stats-bar .sb-value{font-family:var(--font-display);font-size:1.25rem;color:var(--ink);}
+    .stats-bar .sb-sub{font-size:.6875rem;color:var(--muted);}
+    .stats-bar .sb-progress{height:4px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:4px;}
+    .stats-bar .sb-progress-fill{height:100%;background:var(--grad);border-radius:999px;transition:width .6s ease;}
+    .status-select{appearance:none;background:var(--bg-2);border:1px solid var(--line);border-radius:6px;padding:4px 24px 4px 8px;font-family:var(--font-mono);font-size:.6875rem;color:var(--ink);cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b6480' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;}
+    .toggle-right-btn{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid var(--line);transition:background .15s,color .15s;cursor:pointer;flex-shrink:0;}
+    .toggle-right-btn:hover{background:var(--bg-2);color:var(--ink);}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:200;}
+    .modal{background:var(--paper);border-radius:16px;padding:28px;width:420px;max-width:90vw;box-shadow:var(--shadow-lg);}
+    .modal h3{font-size:1rem;font-weight:600;margin-bottom:16px;}
+    .modal .field{margin-bottom:14px;}
+    .modal .field label{display:block;font-size:.8125rem;font-weight:500;margin-bottom:4px;color:var(--ink-2);}
+    .modal .field input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:.875rem;background:var(--bg);color:var(--ink);outline:none;transition:border-color .2s;}
+    .modal .field input:focus{border-color:var(--violet);}
+    .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;}
+    @media(max-width:900px){
+      .trabalho-layout{grid-template-columns:1fr !important;}
+      .panel-left{display:none;}
+      .panel-right{display:none;}
+      .stats-bar{grid-template-columns:repeat(2,1fr);}
+    }
+  </style>
+</head>
+<body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const STATUS_MAP = {
+  draft:    { label: "Rascunho",           color: "var(--muted)",   tag: "tag-slate"   },
+  review:   { label: "Em revisão",    color: "var(--amber)",   tag: "tag-amber"   },
+  approved: { label: "Aprovado",           color: "var(--emerald)", tag: "tag-emerald" },
+  revision: { label: "Revisão necessária", color: "var(--rose)", tag: "tag-rose" }
+};
+
+const DEFAULT_CHAPTERS = [
+  "Introdução",
+  "Referencial Teórico",
+  "Metodologia",
+  "Resultados e Discussão",
+  "Conclusão",
+  "Referências"
+];
+
+function countWords(text) {
+  if (!text || !text.trim()) return 0;
+  return text.trim().split(/\s+/).length;
+}
+
+function TrabalhoPage() {
+  const { user, userData, project, subscription, teamMembers, loading } = useTCCData();
+  const [chapters, setChapters] = useState([]);
+  const [sections, setSections] = useState([]);
+  const [feedback, setFeedback] = useState([]);
+  const [expandedChapters, setExpandedChapters] = useState({});
+  const [selectedSectionId, setSelectedSectionId] = useState(null);
+  const [rightOpen, setRightOpen] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [showChapterModal, setShowChapterModal] = useState(false);
+  const [showSectionModal, setShowSectionModal] = useState(false);
+  const [modalChapterId, setModalChapterId] = useState(null);
+  const [modalTitle, setModalTitle] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [editStatus, setEditStatus] = useState("draft");
+  const saveTimerRef = useRef(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!project) return;
+    loadData();
+  }, [project]);
+
+  async function loadData() {
+    try {
+      const { data: ch, error: chErr } = await _supa
+        .from("thesis_chapters")
+        .select("*")
+        .eq("project_id", project.id)
+        .order("sort_order", { ascending: true });
+
+      if (chErr) {
+        setChapters([]);
+        setSections([]);
+        setDataLoaded(true);
+        return;
+      }
+
+      let loadedChapters = ch || [];
+
+      if (loadedChapters.length === 0) {
+        const inserts = DEFAULT_CHAPTERS.map((title, i) => ({
+          project_id: project.id,
+          title: title,
+          sort_order: i,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }));
+        const { data: newCh, error: insErr } = await _supa
+          .from("thesis_chapters")
+          .insert(inserts)
+          .select();
+        if (!insErr && newCh) {
+          loadedChapters = newCh;
+        }
+      }
+
+      setChapters(loadedChapters);
+
+      const expanded = {};
+      loadedChapters.forEach(c => { expanded[c.id] = true; });
+      setExpandedChapters(expanded);
+
+      const { data: sec, error: secErr } = await _supa
+        .from("thesis_sections")
+        .select("*")
+        .eq("project_id", project.id)
+        .order("sort_order", { ascending: true });
+
+      const loadedSections = (!secErr && sec) ? sec : [];
+      setSections(loadedSections);
+
+      if (loadedSections.length > 0 && !selectedSectionId) {
+        const firstChapter = loadedChapters[0];
+        if (firstChapter) {
+          const firstSection = loadedSections.find(s => s.chapter_id === firstChapter.id);
+          if (firstSection) {
+            setSelectedSectionId(firstSection.id);
+            setEditTitle(firstSection.title || "");
+            setEditContent(firstSection.content || "");
+            setEditStatus(firstSection.status || "draft");
+          }
+        }
+      }
+
+      await loadFeedback();
+      setDataLoaded(true);
+    } catch (e) {
+      console.error(e);
+      setDataLoaded(true);
+    }
+  }
+
+  async function loadFeedback() {
+    try {
+      const { data: fb, error: fbErr } = await _supa
+        .from("thesis_feedback")
+        .select("*")
+        .eq("project_id", project.id)
+        .order("created_at", { ascending: false });
+      if (!fbErr && fb) setFeedback(fb);
+    } catch (e) {
+      setFeedback([]);
+    }
+  }
+
+  function selectSection(sec) {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+      if (selectedSectionId) {
+        saveSection(selectedSectionId, editTitle, editContent, editStatus);
+      }
+    }
+    setSelectedSectionId(sec.id);
+    setEditTitle(sec.title || "");
+    setEditContent(sec.content || "");
+    setEditStatus(sec.status || "draft");
+  }
+
+  async function saveSection(sectionId, title, content, status) {
+    setSaving(true);
+    const wc = countWords(content);
+    try {
+      await _supa
+        .from("thesis_sections")
+        .update({
+          title: title,
+          content: content,
+          status: status,
+          word_count: wc,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", sectionId);
+      setSections(prev =>
+        prev.map(s => s.id === sectionId
+          ? { ...s, title, content, status, word_count: wc, updated_at: new Date().toISOString() }
+          : s
+        )
+      );
+      setLastSaved(new Date());
+    } catch (e) {
+      console.error(e);
+    }
+    setSaving(false);
+  }
+
+  function scheduleAutoSave(title, content, status) {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      if (selectedSectionId) {
+        saveSection(selectedSectionId, title, content, status);
+      }
+    }, 2000);
+  }
+
+  function handleTitleChange(val) {
+    setEditTitle(val);
+    scheduleAutoSave(val, editContent, editStatus);
+  }
+
+  function handleContentChange(val) {
+    setEditContent(val);
+    scheduleAutoSave(editTitle, val, editStatus);
+  }
+
+  function handleStatusChange(val) {
+    setEditStatus(val);
+    if (selectedSectionId) {
+      saveSection(selectedSectionId, editTitle, editContent, val);
+    }
+  }
+
+  function handleSendToReview() {
+    handleStatusChange("review");
+  }
+
+  async function addChapter() {
+    if (!modalTitle.trim() || !project) return;
+    const maxOrder = chapters.reduce((m, c) => Math.max(m, c.sort_order || 0), -1);
+    const { data, error } = await _supa
+      .from("thesis_chapters")
+      .insert({
+        project_id: project.id,
+        title: modalTitle.trim(),
+        sort_order: maxOrder + 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select();
+    if (!error && data && data[0]) {
+      setChapters(prev => [...prev, data[0]]);
+      setExpandedChapters(prev => ({ ...prev, [data[0].id]: true }));
+    }
+    setModalTitle("");
+    setShowChapterModal(false);
+  }
+
+  async function addSection() {
+    if (!modalTitle.trim() || !modalChapterId) return;
+    const chSections = sections.filter(s => s.chapter_id === modalChapterId);
+    const maxOrder = chSections.reduce((m, s) => Math.max(m, s.sort_order || 0), -1);
+    const { data, error } = await _supa
+      .from("thesis_sections")
+      .insert({
+        chapter_id: modalChapterId,
+        project_id: project.id,
+        title: modalTitle.trim(),
+        content: "",
+        sort_order: maxOrder + 1,
+        status: "draft",
+        word_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select();
+    if (!error && data && data[0]) {
+      setSections(prev => [...prev, data[0]]);
+      selectSection(data[0]);
+    }
+    setModalTitle("");
+    setShowSectionModal(false);
+    setModalChapterId(null);
+  }
+
+  async function deleteChapter(chId) {
+    if (!confirm("Excluir este capítulo e todas as suas seções?")) return;
+    await _supa.from("thesis_sections").delete().eq("chapter_id", chId);
+    await _supa.from("thesis_chapters").delete().eq("id", chId);
+    setChapters(prev => prev.filter(c => c.id !== chId));
+    const removedSections = sections.filter(s => s.chapter_id === chId);
+    setSections(prev => prev.filter(s => s.chapter_id !== chId));
+    if (removedSections.find(s => s.id === selectedSectionId)) {
+      setSelectedSectionId(null);
+      setEditTitle("");
+      setEditContent("");
+      setEditStatus("draft");
+    }
+  }
+
+  async function deleteSection(secId) {
+    if (!confirm("Excluir esta seção?")) return;
+    await _supa.from("thesis_sections").delete().eq("id", secId);
+    setSections(prev => prev.filter(s => s.id !== secId));
+    if (secId === selectedSectionId) {
+      setSelectedSectionId(null);
+      setEditTitle("");
+      setEditContent("");
+      setEditStatus("draft");
+    }
+  }
+
+  async function moveSection(secId, direction) {
+    const sec = sections.find(s => s.id === secId);
+    if (!sec) return;
+    const chSections = sections
+      .filter(s => s.chapter_id === sec.chapter_id)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    const idx = chSections.findIndex(s => s.id === secId);
+    const swapIdx = idx + direction;
+    if (swapIdx < 0 || swapIdx >= chSections.length) return;
+    const other = chSections[swapIdx];
+    const tempOrder = sec.sort_order;
+    await _supa.from("thesis_sections").update({ sort_order: other.sort_order }).eq("id", sec.id);
+    await _supa.from("thesis_sections").update({ sort_order: tempOrder }).eq("id", other.id);
+    setSections(prev =>
+      prev.map(s => {
+        if (s.id === sec.id) return { ...s, sort_order: other.sort_order };
+        if (s.id === other.id) return { ...s, sort_order: tempOrder };
+        return s;
+      })
+    );
+  }
+
+  async function moveChapter(chId, direction) {
+    const sorted = [...chapters].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    const idx = sorted.findIndex(c => c.id === chId);
+    const swapIdx = idx + direction;
+    if (swapIdx < 0 || swapIdx >= sorted.length) return;
+    const ch = sorted[idx];
+    const other = sorted[swapIdx];
+    const tempOrder = ch.sort_order;
+    await _supa.from("thesis_chapters").update({ sort_order: other.sort_order }).eq("id", ch.id);
+    await _supa.from("thesis_chapters").update({ sort_order: tempOrder }).eq("id", other.id);
+    setChapters(prev =>
+      prev.map(c => {
+        if (c.id === ch.id) return { ...c, sort_order: other.sort_order };
+        if (c.id === other.id) return { ...c, sort_order: tempOrder };
+        return c;
+      })
+    );
+  }
+
+  function toggleChapter(chId) {
+    setExpandedChapters(prev => ({ ...prev, [chId]: !prev[chId] }));
+  }
+
+  if (loading) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", color: "var(--muted)" }}>
+        Carregando...
+      </div>
+    );
+  }
+
+  const sortedChapters = [...chapters].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  const selectedSection = sections.find(s => s.id === selectedSectionId);
+  const sectionFeedback = feedback.filter(f => f.section_id === selectedSectionId);
+
+  const totalWords = sections.reduce((sum, s) => sum + (s.word_count || 0), 0);
+  const totalSections = sections.length;
+  const approvedSections = sections.filter(s => s.status === "approved").length;
+  const progressPct = totalSections > 0 ? Math.round((approvedSections / totalSections) * 100) : 0;
+  const lastUpdated = sections.reduce((latest, s) => {
+    if (!s.updated_at) return latest;
+    const d = new Date(s.updated_at);
+    return d > latest ? d : latest;
+  }, new Date(0));
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="trabalho" userData={userData} project={project} subscription={subscription} />
+      <div className="main-area">
+        <Topbar page="Trabalho Escrito" user={user} actions={
+          <button className="toggle-right-btn" onClick={() => setRightOpen(p => !p)} title={rightOpen ? "Ocultar feedback" : "Mostrar feedback"}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {rightOpen
+                ? <React.Fragment><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></React.Fragment>
+                : <React.Fragment><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></React.Fragment>
+              }
+            </svg>
+          </button>
+        } />
+
+        <div className={"trabalho-layout" + (rightOpen ? " right-open" : "")}>
+          <div className="panel-left">
+            <div className="panel-left-header">
+              <h3>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                Capítulos
+              </h3>
+            </div>
+            <div className="panel-left-scroll">
+              {sortedChapters.map((ch, chIdx) => {
+                const chSections = sections
+                  .filter(s => s.chapter_id === ch.id)
+                  .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+                const isExpanded = expandedChapters[ch.id];
+                const chWords = chSections.reduce((sum, s) => sum + (s.word_count || 0), 0);
+                return (
+                  <div className="chapter-group" key={ch.id}>
+                    <div className="chapter-header" onClick={() => toggleChapter(ch.id)}>
+                      <span className={"ch-toggle" + (isExpanded ? " open" : "")}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 6 15 12 9 18"/></svg>
+                      </span>
+                      <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {ch.title}
+                      </span>
+                      <span className="ch-count">{chWords}p</span>
+                      <div className="chapter-actions" onClick={e => e.stopPropagation()}>
+                        <button title="Mover para cima" onClick={() => moveChapter(ch.id, -1)}>
+                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="18 15 12 9 6 15"/></svg>
+                        </button>
+                        <button title="Mover para baixo" onClick={() => moveChapter(ch.id, 1)}>
+                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <button title="Excluir capítulo" onClick={() => deleteChapter(ch.id)}>
+                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                    {isExpanded && (
+                      <div className="section-list">
+                        {chSections.map(sec => {
+                          const st = STATUS_MAP[sec.status] || STATUS_MAP.draft;
+                          return (
+                            <div
+                              key={sec.id}
+                              className={"section-item" + (sec.id === selectedSectionId ? " active" : "")}
+                              onClick={() => selectSection(sec)}
+                            >
+                              <span className="sec-dot" style={{ background: st.color }}></span>
+                              <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {sec.title || "Sem título"}
+                              </span>
+                              <span className="sec-words">{sec.word_count || 0}</span>
+                              <div className="section-order-btns" onClick={e => e.stopPropagation()}>
+                                <button onClick={() => moveSection(sec.id, -1)}>
+                                  <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><polyline points="18 15 12 9 6 15"/></svg>
+                                </button>
+                                <button onClick={() => moveSection(sec.id, 1)}>
+                                  <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><polyline points="6 9 12 15 18 9"/></svg>
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        <div
+                          className="add-section-btn"
+                          onClick={() => {
+                            setModalChapterId(ch.id);
+                            setModalTitle("");
+                            setShowSectionModal(true);
+                          }}
+                        >
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                          Adicionar seção
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              <div className="add-chapter-btn" onClick={() => { setModalTitle(""); setShowChapterModal(true); }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Adicionar capítulo
+              </div>
+            </div>
+          </div>
+
+          <div className="panel-main">
+            <div className="stats-bar">
+              <div className="sb-item">
+                <span className="sb-label">Palavras totais</span>
+                <span className="sb-value">{totalWords.toLocaleString("pt-BR")}</span>
+              </div>
+              <div className="sb-item">
+                <span className="sb-label">Seções aprovadas</span>
+                <span className="sb-value">{approvedSections} <span style={{ fontSize: ".75rem", color: "var(--muted)" }}>/ {totalSections}</span></span>
+              </div>
+              <div className="sb-item">
+                <span className="sb-label">Progresso</span>
+                <span className="sb-value">{progressPct}%</span>
+                <div className="sb-progress">
+                  <div className="sb-progress-fill" style={{ width: progressPct + "%" }}></div>
+                </div>
+              </div>
+              <div className="sb-item">
+                <span className="sb-label">Última atualização</span>
+                <span className="sb-sub">
+                  {lastUpdated.getTime() > 0
+                    ? lastUpdated.toLocaleDateString("pt-BR") + " " + lastUpdated.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+                    : "—"
+                  }
+                </span>
+              </div>
+            </div>
+
+            {selectedSection ? (
+              <React.Fragment>
+                <div className="panel-main-top">
+                  <select
+                    className="status-select"
+                    value={editStatus}
+                    onChange={e => handleStatusChange(e.target.value)}
+                  >
+                    <option value="draft">Rascunho</option>
+                    <option value="review">Em revisão</option>
+                    <option value="approved">Aprovado</option>
+                    <option value="revision">Revisão necessária</option>
+                  </select>
+                  <span className={"tag " + (STATUS_MAP[editStatus] || STATUS_MAP.draft).tag}>
+                    {(STATUS_MAP[editStatus] || STATUS_MAP.draft).label}
+                  </span>
+                  {editStatus !== "review" && (
+                    <button className="btn btn-ghost btn-sm" onClick={handleSendToReview}>
+                      Enviar para revisão
+                    </button>
+                  )}
+                  <button className="btn btn-ghost btn-sm" style={{ color: "var(--rose)" }} onClick={() => deleteSection(selectedSectionId)}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                  <div className="save-indicator">
+                    {saving ? (
+                      <React.Fragment><span className="dot-saving"></span> Salvando...</React.Fragment>
+                    ) : lastSaved ? (
+                      <React.Fragment><span className="dot-saved"></span> Salvo</React.Fragment>
+                    ) : null}
+                  </div>
+                </div>
+                <div className="editor-area">
+                  <input
+                    className="editor-title-input"
+                    type="text"
+                    value={editTitle}
+                    onChange={e => handleTitleChange(e.target.value)}
+                    placeholder="Título da seção..."
+                  />
+                  <textarea
+                    className="editor-textarea"
+                    value={editContent}
+                    onChange={e => handleContentChange(e.target.value)}
+                    placeholder="Comece a escrever o conteúdo desta seção..."
+                  />
+                </div>
+                <div className="editor-footer">
+                  <span>{countWords(editContent)} palavras</span>
+                  <span>{editContent.length} caracteres</span>
+                </div>
+              </React.Fragment>
+            ) : (
+              <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: "var(--muted)", gap: 8, padding: 40 }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: .25 }}>
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                <span style={{ fontSize: ".875rem" }}>Selecione uma seção para editar</span>
+                <span style={{ fontSize: ".75rem" }}>
+                  {sections.length === 0 && chapters.length > 0
+                    ? "Adicione uma seção em um capítulo para começar"
+                    : "Clique em uma seção no painel esquerdo"
+                  }
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="panel-right" style={{ display: rightOpen ? "flex" : "none" }}>
+            <div className="panel-right-header">
+              <h3>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Feedback
+              </h3>
+            </div>
+            <div className="panel-right-scroll">
+              {selectedSectionId && sectionFeedback.length > 0 ? (
+                sectionFeedback.map(fb => {
+                  const st = STATUS_MAP[fb.status] || STATUS_MAP.draft;
+                  return (
+                    <div className="feedback-card" key={fb.id}>
+                      <div className="fb-header">
+                        <span className="fb-grade">{fb.grade != null ? fb.grade + "/10" : "—"}</span>
+                        <span className={"tag " + st.tag} style={{ fontSize: ".5625rem", padding: "2px 6px" }}>{st.label}</span>
+                      </div>
+                      <div className="fb-comment">{fb.comment}</div>
+                      <div className="fb-user">
+                        {fb.user_name || "Orientador"} &middot; {fb.created_at ? new Date(fb.created_at).toLocaleDateString("pt-BR") : ""}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="feedback-empty">
+                  <div className="fe-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: .4 }}>
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </div>
+                  <div className="fe-text">Nenhum feedback ainda</div>
+                  <div className="fe-sub">
+                    {selectedSectionId
+                      ? "O orientador poderá deixar comentários aqui"
+                      : "Selecione uma seção para ver feedback"
+                    }
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showChapterModal && (
+        <div className="modal-overlay" onClick={() => setShowChapterModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h3>Novo Capítulo</h3>
+            <div className="field">
+              <label>Título do capítulo</label>
+              <input
+                type="text"
+                value={modalTitle}
+                onChange={e => setModalTitle(e.target.value)}
+                placeholder="Ex: Revisão Bibliográfica"
+                autoFocus
+                onKeyDown={e => { if (e.key === "Enter") addChapter(); }}
+              />
+            </div>
+            <div className="modal-actions">
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowChapterModal(false)}>Cancelar</button>
+              <button className="btn btn-violet btn-sm" onClick={addChapter}>Adicionar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSectionModal && (
+        <div className="modal-overlay" onClick={() => { setShowSectionModal(false); setModalChapterId(null); }}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h3>Nova Seção</h3>
+            <div className="field">
+              <label>Título da seção</label>
+              <input
+                type="text"
+                value={modalTitle}
+                onChange={e => setModalTitle(e.target.value)}
+                placeholder="Ex: Contextualização do problema"
+                autoFocus
+                onKeyDown={e => { if (e.key === "Enter") addSection(); }}
+              />
+            </div>
+            <div className="modal-actions">
+              <button className="btn btn-ghost btn-sm" onClick={() => { setShowSectionModal(false); setModalChapterId(null); }}>Cancelar</button>
+              <button className="btn btn-violet btn-sm" onClick={addSection}>Adicionar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<TrabalhoPage />);
+</script>
+</body>
+</html>
