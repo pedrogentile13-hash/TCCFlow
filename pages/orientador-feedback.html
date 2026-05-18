@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Orientador — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;padding-bottom:0;}
+    .tab-btn{padding:10px 18px;font-size:.875rem;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;margin-bottom:-1px;}
+    .tab-btn:hover{color:var(--ink);}
+    .tab-btn.active{color:var(--violet);border-bottom-color:var(--violet);font-weight:600;}
+    .chapter-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:box-shadow .2s;}
+    .chapter-card:hover{box-shadow:var(--shadow-sm);}
+    .chapter-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none;transition:background .15s;}
+    .chapter-head:hover{background:var(--bg-2);}
+    .chapter-head .ch-title{font-size:.9375rem;font-weight:600;display:flex;align-items:center;gap:10px;}
+    .chapter-head .ch-meta{font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);display:flex;align-items:center;gap:12px;}
+    .chapter-head .chevron{transition:transform .2s;color:var(--muted);font-size:.75rem;}
+    .chapter-head .chevron.open{transform:rotate(180deg);}
+    .chapter-body{border-top:1px solid var(--line);}
+    .section-row{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line);transition:background .15s;}
+    .section-row:last-child{border-bottom:none;}
+    .section-row:hover{background:rgba(124,58,237,.02);}
+    .section-info{flex:1;min-width:0;}
+    .section-title{font-size:.875rem;font-weight:500;margin-bottom:4px;}
+    .section-feedback{font-size:.8125rem;color:var(--muted);line-height:1.5;margin-top:6px;padding:8px 12px;background:var(--bg-2);border-radius:8px;border-left:3px solid var(--violet);}
+    .section-date{font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);margin-top:4px;}
+    .grade-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.875rem;color:white;flex-shrink:0;}
+    .advisor-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;align-items:center;gap:14px;}
+    .advisor-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#10b981,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.9375rem;flex-shrink:0;}
+    .advisor-info{flex:1;min-width:0;}
+    .advisor-name{font-size:.9375rem;font-weight:600;}
+    .advisor-email{font-size:.75rem;color:var(--muted);margin-top:1px;}
+    .advisor-since{font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);margin-top:3px;}
+    .timeline-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);}
+    .timeline-item:last-child{border-bottom:none;}
+    .timeline-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+    .timeline-content{flex:1;min-width:0;}
+    .timeline-type{font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+    .timeline-text{font-size:.875rem;line-height:1.5;}
+    .timeline-meta{font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);margin-top:4px;}
+    .task-feedback-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:10px;transition:box-shadow .2s;}
+    .task-feedback-card:hover{box-shadow:var(--shadow-sm);}
+    .no-advisor-card{background:var(--grad-soft);border:1px solid rgba(124,58,237,.15);border-radius:var(--radius);padding:24px;text-align:center;}
+    @media(max-width:768px){
+      .overview-grid{grid-template-columns:repeat(2,1fr) !important;}
+      .top-row{flex-direction:column !important;}
+      .top-row .advisor-card{width:100% !important;}
+    }
+  </style>
+</head>
+<body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const STATUS_MAP = {
+  draft: { label: "Rascunho", tag: "tag-slate", color: "var(--muted)" },
+  review: { label: "Em revisao", tag: "tag-amber", color: "var(--amber)" },
+  approved: { label: "Aprovado", tag: "tag-emerald", color: "var(--emerald)" },
+  revision: { label: "Revisao necessaria", tag: "tag-rose", color: "var(--rose)" },
+};
+STATUS_MAP.review.label = "Em revisão";
+STATUS_MAP.revision.label = "Revisão necessária";
+
+function gradeColor(g) {
+  if (g >= 9) return "var(--emerald)";
+  if (g >= 7) return "var(--cyan)";
+  if (g >= 5) return "var(--amber)";
+  return "var(--rose)";
+}
+
+function gradeLabel(g) {
+  if (g >= 9) return "Excelente";
+  if (g >= 7) return "Bom";
+  if (g >= 5) return "Regular";
+  return "Insuficiente";
+}
+
+function formatDate(str) {
+  if (!str) return "";
+  try {
+    const d = str.length === 10 ? new Date(str + "T00:00:00") : new Date(str);
+    return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
+  } catch(e) { return str; }
+}
+
+function OrientadorFeedbackPage() {
+  const { user, userData, project, subscription, teamMembers, loading } = useTCCData();
+  const [tab, setTab] = useState("trabalho");
+  const [chapters, setChapters] = useState([]);
+  const [sections, setSections] = useState([]);
+  const [feedback, setFeedback] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [orientador, setOrientador] = useState(null);
+  const [orientadorRelation, setOrientadorRelation] = useState(null);
+  const [expandedChapters, setExpandedChapters] = useState({});
+  const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => {
+    if (!project) return;
+    loadAllData();
+  }, [project]);
+
+  async function loadAllData() {
+    setDataLoading(true);
+    await Promise.all([
+      loadChaptersAndSections(),
+      loadFeedback(),
+      loadComments(),
+      loadTasks(),
+      loadOrientador(),
+    ]);
+    setDataLoading(false);
+  }
+
+  async function loadChaptersAndSections() {
+    try {
+      const { data: ch, error: chErr } = await _supa
+        .from("thesis_chapters")
+        .select("*")
+        .eq("project_id", project.id)
+        .order("sort_order", { ascending: true });
+      if (chErr) throw chErr;
+      setChapters(ch || []);
+
+      const { data: sec, error: secErr } = await _supa
+        .from("thesis_sections")
+        .select("*")
+        .eq("project_id", project.id)
+        .order("sort_order", { ascending: true });
+      if (secErr) throw secErr;
+      setSections(sec || []);
+    } catch(e) {
+      console.warn("Could not load thesis structure:", e);
+      setChapters([]);
+      setSections([]);
+    }
+  }
+
+  async function loadFeedback() {
+    try {
+      const { data, error } = await _supa
+        .from("thesis_feedback")
+        .select("*")
+        .eq("project_id", project.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      setFeedback(data || []);
+    } catch(e) {
+      console.warn("Could not load feedback:", e);
+      setFeedback([]);
+    }
+  }
+
+  async function loadComments() {
+    try {
+      const data = await DB.orientador.getComments(project.id);
+      setComments(data || []);
+    } catch(e) {
+      console.warn("Could not load comments:", e);
+      setComments([]);
+    }
+  }
+
+  async function loadTasks() {
+    try {
+      const { data, error } = await _supa
+        .from("tasks")
+        .select("*")
+        .eq("project_id", project.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      setTasks(data || []);
+    } catch(e) {
+      console.warn("Could not load tasks:", e);
+      setTasks([]);
+    }
+  }
+
+  async function loadOrientador() {
+    try {
+      const relation = await DB.orientador.getProjectOrientador(project.id);
+      if (relation?.users) {
+        setOrientador(relation.users);
+        setOrientadorRelation(relation);
+      } else {
+        setOrientador(null);
+        setOrientadorRelation(null);
+      }
+    } catch(e) {
+      console.warn("Could not load orientador:", e);
+      setOrientador(null);
+    }
+  }
+
+  function toggleChapter(chId) {
+    setExpandedChapters(prev => ({ ...prev, [chId]: !prev[chId] }));
+  }
+
+  if (loading) return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", color: "var(--muted)" }}>
+      Carregando...
+    </div>
+  );
+
+  const feedbackBySectionId = {};
+  feedback.forEach(f => {
+    if (!f.section_id) return;
+    if (!feedbackBySectionId[f.section_id]) feedbackBySectionId[f.section_id] = [];
+    feedbackBySectionId[f.section_id].push(f);
+  });
+
+  const sectionsWithFeedback = sections.filter(s => feedbackBySectionId[s.id] && feedbackBySectionId[s.id].length > 0);
+  const approvedCount = sections.filter(s => {
+    const fb = feedbackBySectionId[s.id];
+    if (!fb || fb.length === 0) return false;
+    return fb[0].status === "approved";
+  }).length;
+  const revisionCount = sections.filter(s => {
+    const fb = feedbackBySectionId[s.id];
+    if (!fb || fb.length === 0) return false;
+    return fb[0].status === "revision";
+  }).length;
+
+  const allGrades = feedback.filter(f => f.grade != null && f.grade !== "").map(f => Number(f.grade));
+  const avgGrade = allGrades.length > 0 ? (allGrades.reduce((a, b) => a + b, 0) / allGrades.length) : null;
+
+  const sectionsByChapter = {};
+  sections.forEach(s => {
+    const key = s.chapter_id || "none";
+    if (!sectionsByChapter[key]) sectionsByChapter[key] = [];
+    sectionsByChapter[key].push(s);
+  });
+
+  const allTimeline = [];
+  feedback.forEach(f => {
+    const sec = sections.find(s => s.id === f.section_id);
+    allTimeline.push({
+      date: f.created_at,
+      type: f.status === "approved" ? "approval" : f.grade != null ? "grade" : "comment",
+      typeLabel: f.status === "approved" ? "Aprovacao" : f.grade != null ? "Nota" : "Comentario",
+      content: f.comment || "",
+      grade: f.grade,
+      status: f.status,
+      section: sec?.title || "",
+      userName: f.user_name || "Orientador",
+    });
+  });
+  allTimeline.push(...(comments || []).map(c => {
+    const sectionLabels = {
+      geral: "Geral", introducao: "Introducao", metodologia: "Metodologia",
+      resultados: "Resultados", conclusao: "Conclusao", referencias: "Referencias",
+      formatacao: "Formatacao",
+    };
+    return {
+      date: c.created_at,
+      type: "comment",
+      typeLabel: "Comentario",
+      content: c.comment || c.content || "",
+      grade: null,
+      status: null,
+      section: sectionLabels[c.section] || c.section || "Geral",
+      userName: "Orientador",
+    };
+  }));
+  allTimeline.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const taskFeedback = feedback.filter(f => f.task_id);
+  const taskFeedbackByTaskId = {};
+  taskFeedback.forEach(f => {
+    if (!taskFeedbackByTaskId[f.task_id]) taskFeedbackByTaskId[f.task_id] = [];
+    taskFeedbackByTaskId[f.task_id].push(f);
+  });
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="orientador" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Orientador" user={user}/>
+        <div className="page-content">
+
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: 24, flexWrap: "wrap" }} className="top-row">
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", fontWeight: 400, letterSpacing: "-.02em", marginBottom: 4 }}>
+                Feedback do <em style={{ fontStyle: "italic", color: "var(--violet)" }}>orientador</em>
+              </h1>
+              <p style={{ fontSize: ".875rem", color: "var(--muted)" }}>
+                Acompanhe as avaliações, notas e comentários do seu orientador
+              </p>
+            </div>
+            <div style={{ width: 320, flexShrink: 0 }}>
+              {orientador ? (
+                <div className="advisor-card">
+                  <div className="advisor-av">{getInitials(orientador.name || orientador.email)}</div>
+                  <div className="advisor-info">
+                    <div className="advisor-name">{orientador.name || "Orientador"}</div>
+                    <div className="advisor-email">{orientador.email || ""}</div>
+                    {orientadorRelation?.created_at && (
+                      <div className="advisor-since">Vinculado desde {formatDate(orientadorRelation.created_at.slice(0, 10))}</div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="no-advisor-card">
+                  <div style={{ fontSize: "1.5rem", marginBottom: 8, opacity: .5 }}>{"🎓"}</div>
+                  <div style={{ fontSize: ".875rem", fontWeight: 500, marginBottom: 4 }}>Nenhum orientador vinculado</div>
+                  <div style={{ fontSize: ".75rem", color: "var(--muted)", marginBottom: 12 }}>
+                    Convide seu orientador para acompanhar seu projeto
+                  </div>
+                  <a href="team.html" className="btn btn-violet btn-sm">Vincular orientador</a>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {dataLoading ? (
+            <div style={{ textAlign: "center", padding: 60, color: "var(--muted)" }}>Carregando dados...</div>
+          ) : (
+            <>
+              <div className="overview-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 24 }}>
+                <div className="stat-card">
+                  <div className="stat-label">Nota Média</div>
+                  {avgGrade !== null ? (
+                    <>
+                      <div className="stat-value" style={{ color: avgGrade >= 8 ? "var(--emerald)" : avgGrade >= 6 ? "var(--amber)" : "var(--rose)" }}>
+                        {avgGrade.toFixed(1)}
+                      </div>
+                      <div className="stat-sub">{gradeLabel(avgGrade)}</div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="stat-value" style={{ color: "var(--muted)", fontSize: "1.5rem" }}>&mdash;</div>
+                      <div className="stat-sub">Sem notas ainda</div>
+                    </>
+                  )}
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">Seções Avaliadas</div>
+                  <div className="stat-value">{sectionsWithFeedback.length}<span style={{ fontSize: "1rem", color: "var(--muted)", fontFamily: "var(--font-body)" }}> / {sections.length}</span></div>
+                  <div className="stat-sub">{sections.length > 0 ? Math.round((sectionsWithFeedback.length / sections.length) * 100) : 0}% avaliadas</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">Aprovadas</div>
+                  <div className="stat-value" style={{ color: "var(--emerald)" }}>{approvedCount}</div>
+                  <div className="stat-sub">{approvedCount === 1 ? "seção aprovada" : "seções aprovadas"}</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">Revisão Necessária</div>
+                  <div className="stat-value" style={{ color: revisionCount > 0 ? "var(--rose)" : "var(--muted)" }}>{revisionCount}</div>
+                  <div className="stat-sub">{revisionCount === 0 ? "Nenhuma pendente" : (revisionCount === 1 ? "seção para revisar" : "seções para revisar")}</div>
+                </div>
+              </div>
+
+              <div className="tabs">
+                {[["trabalho", "Trabalho Escrito"], ["tarefas", "Tarefas"], ["geral", "Geral"]].map(([key, label]) => (
+                  <button key={key} className={`tab-btn ${tab === key ? "active" : ""}`} onClick={() => setTab(key)}>{label}</button>
+                ))}
+              </div>
+
+              {tab === "trabalho" && <TrabalhoTab chapters={chapters} sectionsByChapter={sectionsByChapter} feedbackBySectionId={feedbackBySectionId} expandedChapters={expandedChapters} toggleChapter={toggleChapter} sections={sections}/>}
+              {tab === "tarefas" && <TarefasTab tasks={tasks} taskFeedbackByTaskId={taskFeedbackByTaskId} feedback={feedback}/>}
+              {tab === "geral" && <GeralTab timeline={allTimeline}/>}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TrabalhoTab({ chapters, sectionsByChapter, feedbackBySectionId, expandedChapters, toggleChapter, sections }) {
+  if (chapters.length === 0 && sections.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="es-icon">{"📚"}</div>
+        <h3>Nenhum capítulo encontrado</h3>
+        <p>Comece a escrever seu trabalho na página Trabalho Escrito para receber feedback do orientador.</p>
+        <a href="trabalho.html" className="btn btn-violet">Ir para Trabalho Escrito</a>
+      </div>
+    );
+  }
+
+  const orphanSections = sectionsByChapter["none"] || [];
+
+  return (
+    <div>
+      {chapters.map(ch => {
+        const chSections = sectionsByChapter[ch.id] || [];
+        const isOpen = expandedChapters[ch.id] !== false;
+        const evaluated = chSections.filter(s => feedbackBySectionId[s.id] && feedbackBySectionId[s.id].length > 0).length;
+        return (
+          <div key={ch.id} className="chapter-card">
+            <div className="chapter-head" onClick={() => toggleChapter(ch.id)}>
+              <div className="ch-title">
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--violet)", flexShrink: 0 }}></span>
+                {ch.title || "Capítulo sem título"}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span className="ch-meta">{evaluated}/{chSections.length} avaliadas</span>
+                <span className={`chevron ${isOpen ? "open" : ""}`}>{"▼"}</span>
+              </div>
+            </div>
+            {isOpen && (
+              <div className="chapter-body">
+                {chSections.length === 0 ? (
+                  <div style={{ padding: "16px 18px", color: "var(--muted)", fontSize: ".8125rem" }}>Nenhuma seção neste capítulo</div>
+                ) : (
+                  chSections.map(sec => <SectionRow key={sec.id} section={sec} feedbackList={feedbackBySectionId[sec.id] || []}/>)
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      {orphanSections.length > 0 && (
+        <div className="chapter-card">
+          <div className="chapter-head" onClick={() => toggleChapter("none")}>
+            <div className="ch-title">
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--muted)", flexShrink: 0 }}></span>
+              Seções sem capítulo
+            </div>
+            <span className={`chevron ${expandedChapters["none"] !== false ? "open" : ""}`}>{"▼"}</span>
+          </div>
+          {expandedChapters["none"] !== false && (
+            <div className="chapter-body">
+              {orphanSections.map(sec => <SectionRow key={sec.id} section={sec} feedbackList={feedbackBySectionId[sec.id] || []}/>)}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SectionRow({ section, feedbackList }) {
+  const latest = feedbackList[0] || null;
+  const statusInfo = latest?.status ? (STATUS_MAP[latest.status] || STATUS_MAP.draft) : (STATUS_MAP[section.status] || STATUS_MAP.draft);
+
+  return (
+    <div className="section-row">
+      {latest && latest.grade != null && latest.grade !== "" ? (
+        <div className="grade-circle" style={{ background: gradeColor(Number(latest.grade)) }}>
+          {Number(latest.grade).toFixed(0)}
+        </div>
+      ) : (
+        <div className="grade-circle" style={{ background: "var(--line)", color: "var(--muted)", fontSize: ".6875rem" }}>
+          &mdash;
+        </div>
+      )}
+      <div className="section-info">
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <div className="section-title">{section.title || "Seção sem título"}</div>
+          <span className={`tag ${statusInfo.tag}`}>{statusInfo.label}</span>
+        </div>
+        {latest ? (
+          <>
+            {latest.comment && <div className="section-feedback">{latest.comment}</div>}
+            <div className="section-date">
+              {latest.user_name || "Orientador"} &middot; {formatDate(latest.created_at ? latest.created_at.slice(0, 10) : "")}
+              {latest.grade != null && latest.grade !== "" && (
+                <span style={{ marginLeft: 8, color: gradeColor(Number(latest.grade)), fontWeight: 600 }}>
+                  Nota: {Number(latest.grade).toFixed(1)} ({gradeLabel(Number(latest.grade))})
+                </span>
+              )}
+            </div>
+          </>
+        ) : (
+          <div style={{ fontSize: ".8125rem", color: "var(--muted)", fontStyle: "italic", marginTop: 4 }}>
+            Aguardando avaliação do orientador
+          </div>
+        )}
+      </div>
+      <a href="trabalho.html" className="btn btn-ghost btn-sm" style={{ flexShrink: 0, alignSelf: "center" }} title="Ver trabalho">
+        Ver trabalho
+      </a>
+    </div>
+  );
+}
+
+function TarefasTab({ tasks, taskFeedbackByTaskId, feedback }) {
+  const tasksWithGrades = tasks.filter(t => {
+    const fb = taskFeedbackByTaskId[t.id];
+    return fb && fb.length > 0;
+  });
+  const tasksWithout = tasks.filter(t => {
+    const fb = taskFeedbackByTaskId[t.id];
+    return !fb || fb.length === 0;
+  });
+
+  if (tasks.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="es-icon">{"✅"}</div>
+        <h3>Nenhuma tarefa encontrada</h3>
+        <p>Crie tarefas no quadro kanban para organizar o progresso do seu TCC.</p>
+        <a href="tasks.html" className="btn btn-violet">Ir para Tarefas</a>
+      </div>
+    );
+  }
+
+  const statusLabels = { todo: "A fazer", progress: "Em andamento", review: "Em revisao", done: "Concluida" };
+  statusLabels.review = "Em revisão";
+  statusLabels.done = "Concluída";
+  const statusTags = { todo: "tag-slate", progress: "tag-cyan", review: "tag-amber", done: "tag-emerald" };
+
+  return (
+    <div>
+      {tasksWithGrades.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6875rem", textTransform: "uppercase", letterSpacing: ".1em", color: "var(--muted)", marginBottom: 10 }}>
+            Tarefas com feedback ({tasksWithGrades.length})
+          </div>
+          {tasksWithGrades.map(t => {
+            const fb = taskFeedbackByTaskId[t.id][0];
+            return (
+              <div key={t.id} className="task-feedback-card">
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                  <span style={{ fontSize: ".875rem", fontWeight: 500, flex: 1 }}>{t.title}</span>
+                  <span className={`tag ${statusTags[t.status] || "tag-slate"}`}>{statusLabels[t.status] || t.status}</span>
+                  {fb.grade != null && fb.grade !== "" && (
+                    <div className="grade-circle" style={{ background: gradeColor(Number(fb.grade)), width: 32, height: 32, fontSize: ".8125rem" }}>
+                      {Number(fb.grade).toFixed(0)}
+                    </div>
+                  )}
+                </div>
+                {fb.comment && (
+                  <div className="section-feedback" style={{ marginBottom: 6 }}>{fb.comment}</div>
+                )}
+                <div className="section-date">
+                  {fb.user_name || "Orientador"} &middot; {formatDate(fb.created_at ? fb.created_at.slice(0, 10) : "")}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {tasksWithout.length > 0 && (
+        <div>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6875rem", textTransform: "uppercase", letterSpacing: ".1em", color: "var(--muted)", marginBottom: 10 }}>
+            Aguardando feedback ({tasksWithout.length})
+          </div>
+          {tasksWithout.map(t => (
+            <div key={t.id} className="task-feedback-card" style={{ opacity: .7 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: ".875rem", fontWeight: 500, flex: 1 }}>{t.title}</span>
+                <span className={`tag ${statusTags[t.status] || "tag-slate"}`}>{statusLabels[t.status] || t.status}</span>
+              </div>
+              {t.due_date && (
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6875rem", color: "var(--muted)", marginTop: 6 }}>
+                  Prazo: {formatDate(t.due_date)}
+                </div>
+              )}
+              <div style={{ fontSize: ".8125rem", color: "var(--muted)", fontStyle: "italic", marginTop: 6 }}>
+                Aguardando avaliação do orientador
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GeralTab({ timeline }) {
+  if (timeline.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="es-icon">{"💬"}</div>
+        <h3>Nenhuma interação registrada</h3>
+        <p>Quando seu orientador avaliar seu trabalho ou deixar comentários, eles aparecerão aqui em ordem cronológica.</p>
+      </div>
+    );
+  }
+
+  function dotColor(type) {
+    if (type === "approval") return "var(--emerald)";
+    if (type === "grade") return "var(--cyan)";
+    return "var(--violet)";
+  }
+
+  function typeColor(type) {
+    if (type === "approval") return "var(--emerald)";
+    if (type === "grade") return "var(--cyan)";
+    return "var(--muted)";
+  }
+
+  return (
+    <div className="card" style={{ padding: "6px 20px" }}>
+      {timeline.map((item, i) => (
+        <div key={i} className="timeline-item">
+          <div className="timeline-dot" style={{ background: dotColor(item.type) }}></div>
+          <div className="timeline-content">
+            <div className="timeline-type" style={{ color: typeColor(item.type) }}>
+              {item.type === "approval" ? "Aprovação" : item.type === "grade" ? "Nota" : "Comentário"}
+              {item.section && <span style={{ color: "var(--muted)", marginLeft: 8 }}>&middot; {item.section}</span>}
+            </div>
+            {item.content && <div className="timeline-text">{item.content}</div>}
+            {item.grade != null && item.grade !== "" && (
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 4, padding: "3px 10px", borderRadius: 999, background: "rgba(6,182,212,.08)", fontSize: ".8125rem", fontWeight: 600, color: gradeColor(Number(item.grade)) }}>
+                Nota: {Number(item.grade).toFixed(1)}
+              </div>
+            )}
+            <div className="timeline-meta">
+              {item.userName} &middot; {formatDate(item.date ? (typeof item.date === "string" ? item.date.slice(0, 10) : "") : "")}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<OrientadorFeedbackPage/>);
+</script>
+</body>
+</html>
