@@ -261,6 +261,73 @@ function Topbar({ page, actions, user }) {
   const userName = user?.displayName || 'Usuário';
   const userInitials = getInitials(userName);
 
+  const [showNotif, setShowNotif] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [notifLoading, setNotifLoading] = useState(false);
+
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  async function loadNotifications() {
+    if (!user) return;
+    setNotifLoading(true);
+    try {
+      let res = await _supa.from('orientador_notifications').select('*').eq('user_id', user.uid).order('created_at', { ascending: false }).limit(10);
+      if (res.error) {
+        setNotifications([]);
+      } else {
+        setNotifications(res.data || []);
+      }
+    } catch(e) { setNotifications([]); }
+    setNotifLoading(false);
+  }
+
+  function toggleNotif() {
+    if (!showNotif) loadNotifications();
+    setShowNotif(!showNotif);
+    setShowSearch(false);
+  }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowSearch(true);
+        setShowNotif(false);
+      }
+      if (e.key === 'Escape') {
+        setShowSearch(false);
+        setShowNotif(false);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  async function handleSearch(query) {
+    setSearchQuery(query);
+    if (!query.trim() || query.length < 2) { setSearchResults([]); return; }
+
+    try {
+      const results = [];
+
+      const { data: tasks } = await _supa.from('tasks').select('id, title, status').ilike('title', `%${query}%`).limit(5);
+      (tasks || []).forEach(t => results.push({ type: 'task', title: t.title, sub: t.status === 'done' ? 'Concluída' : 'Tarefa', icon: '✓', href: 'tasks.html' }));
+
+      const { data: projects } = await _supa.from('projects').select('id, name, code').ilike('name', `%${query}%`).limit(3);
+      (projects || []).forEach(p => results.push({ type: 'project', title: p.name, sub: p.code, icon: '📁', href: 'project.html' }));
+
+      const { data: users } = await _supa.from('users').select('id, name, email').ilike('name', `%${query}%`).limit(3);
+      (users || []).forEach(u => results.push({ type: 'user', title: u.name || u.email, sub: u.email, icon: '👤', href: 'team.html' }));
+
+      setSearchResults(results);
+    } catch(e) {
+      console.error('Search error:', e);
+      setSearchResults([]);
+    }
+  }
+
   return (
     <div className="topbar">
       <div className="topbar-left">
@@ -271,8 +338,8 @@ function Topbar({ page, actions, user }) {
         <span className="sep">›</span>
         <span className="current">{page}</span>
       </div>
-      <div className="topbar-right">
-        <div className="topbar-search">
+      <div className="topbar-right" style={{position:"relative"}}>
+        <div className="topbar-search" onClick={() => { setShowSearch(true); setShowNotif(false); }} style={{cursor:"pointer"}}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
@@ -280,15 +347,80 @@ function Topbar({ page, actions, user }) {
           <kbd>⌘K</kbd>
         </div>
         {actions}
-        <button className="topbar-btn" title="Notificações" style={{position:"relative"}}>
+        <button className="topbar-btn" title="Notificações" style={{position:"relative"}} onClick={toggleNotif}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
           </svg>
-          <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:"var(--rose)",border:"2px solid var(--paper)"}}></span>
+          {notifications.filter(n => !n.read).length > 0 && (
+            <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:"var(--rose)",border:"2px solid var(--paper)"}}></span>
+          )}
         </button>
+        {showNotif && (
+          <div style={{position:"absolute",top:"100%",right:0,width:340,maxHeight:400,overflowY:"auto",background:"var(--paper)",border:"1px solid var(--line)",borderRadius:14,boxShadow:"0 10px 30px rgba(0,0,0,.15)",zIndex:999,marginTop:8}}>
+            <div style={{padding:"14px 16px",borderBottom:"1px solid var(--line)",fontFamily:"var(--font-display)",fontSize:"1rem",fontWeight:500,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              Notificações
+              <button style={{background:"none",border:"none",cursor:"pointer",fontSize:".75rem",color:"var(--violet)"}} onClick={() => setShowNotif(false)}>✕</button>
+            </div>
+            <div>
+              {notifLoading && <div style={{padding:20,textAlign:"center",color:"var(--muted)",fontSize:".8125rem"}}>Carregando...</div>}
+              {!notifLoading && notifications.length === 0 && (
+                <div style={{padding:"30px 20px",textAlign:"center"}}>
+                  <div style={{fontSize:"1.5rem",marginBottom:8,opacity:.4}}>🔔</div>
+                  <div style={{color:"var(--muted)",fontSize:".8125rem"}}>Nenhuma notificação</div>
+                </div>
+              )}
+              {!notifLoading && notifications.map(n => (
+                <div key={n.id} style={{padding:"12px 16px",borderBottom:"1px solid var(--line)",display:"flex",gap:10,alignItems:"flex-start",opacity:n.read?0.6:1,cursor:"pointer"}}
+                  onClick={async () => {
+                    await _supa.from('orientador_notifications').update({ read: true }).eq('id', n.id);
+                    loadNotifications();
+                  }}>
+                  <span style={{fontSize:"1rem"}}>{n.type === 'new_comment' ? '💬' : n.type === 'orientador_joined' ? '👥' : '🔔'}</span>
+                  <div>
+                    <div style={{fontSize:".8125rem",fontWeight:n.read?400:600}}>{n.type === 'new_comment' ? 'Novo comentário' : n.type === 'orientador_joined' ? 'Orientador vinculado' : 'Notificação'}</div>
+                    <div style={{fontSize:".6875rem",color:"var(--muted)",marginTop:2}}>{new Date(n.created_at).toLocaleDateString('pt-BR')}</div>
+                  </div>
+                  {!n.read && <span style={{width:8,height:8,borderRadius:"50%",background:"var(--violet)",flexShrink:0,marginTop:4,marginLeft:"auto"}}></span>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="av av-sm c1" style={{cursor:"pointer"}}>{userInitials}</div>
       </div>
+      {showSearch && (
+        <div style={{position:"fixed",inset:0,zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:"15vh"}}>
+          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.4)",backdropFilter:"blur(4px)"}} onClick={() => setShowSearch(false)}></div>
+          <div style={{position:"relative",background:"var(--paper)",border:"1px solid var(--line)",borderRadius:16,boxShadow:"0 20px 60px rgba(0,0,0,.2)",width:"100%",maxWidth:560,overflow:"hidden"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",borderBottom:"1px solid var(--line)"}}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" value={searchQuery} onChange={e => handleSearch(e.target.value)} placeholder="Buscar tarefas, projetos, pessoas..." autoFocus
+                style={{flex:1,border:"none",outline:"none",background:"transparent",fontSize:".9375rem",color:"var(--ink)"}}/>
+              <kbd style={{fontSize:".625rem",padding:"2px 6px",borderRadius:4,border:"1px solid var(--line)",color:"var(--muted)"}}>ESC</kbd>
+            </div>
+            <div style={{maxHeight:320,overflowY:"auto"}}>
+              {searchResults.length === 0 && searchQuery.length >= 2 && (
+                <div style={{padding:"30px 20px",textAlign:"center",color:"var(--muted)",fontSize:".8125rem"}}>Nenhum resultado para "{searchQuery}"</div>
+              )}
+              {searchResults.length === 0 && searchQuery.length < 2 && (
+                <div style={{padding:"30px 20px",textAlign:"center",color:"var(--muted)",fontSize:".8125rem"}}>Digite para buscar...</div>
+              )}
+              {searchResults.map((r, i) => (
+                <a key={i} href={r.href} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 18px",borderBottom:"1px solid var(--line)",textDecoration:"none",color:"inherit",transition:"background .15s"}}
+                  onMouseOver={e => e.currentTarget.style.background="var(--bg-2)"} onMouseOut={e => e.currentTarget.style.background=""}>
+                  <span style={{fontSize:"1rem",width:28,textAlign:"center"}}>{r.icon}</span>
+                  <div>
+                    <div style={{fontSize:".875rem",fontWeight:500}}>{r.title}</div>
+                    <div style={{fontSize:".6875rem",color:"var(--muted)"}}>{r.sub}</div>
+                  </div>
+                  <span style={{marginLeft:"auto",fontSize:".625rem",fontFamily:"var(--font-mono)",color:"var(--muted)",textTransform:"uppercase"}}>{r.type}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

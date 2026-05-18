@@ -59,6 +59,7 @@ function TasksPage() {
   const [newDue, setNewDue] = useState("");
   const [assignMode, setAssignMode] = useState("all");
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [editingTask, setEditingTask] = useState(null);
 
   useEffect(() => {
     if (!project) return;
@@ -72,6 +73,7 @@ function TasksPage() {
 
   function resetModal() {
     setNewTitle(""); setNewDue(""); setAssignMode("all"); setSelectedMembers([]);
+    setEditingTask(null);
     setShowModal(false);
   }
 
@@ -105,8 +107,45 @@ function TasksPage() {
   }
 
   async function moveTask(taskId, newStatus) {
-    await _supa.from('tasks').update({ status: newStatus }).eq('id', taskId);
+    const { error } = await _supa.from('tasks').update({ status: newStatus }).eq('id', taskId);
+    if (error) {
+        console.error('Error moving task:', error);
+        alert('Erro ao mover tarefa: ' + error.message);
+        return;
+    }
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+  }
+
+  async function updateTask() {
+    if (!editingTask || !newTitle.trim()) return;
+    await _supa.from('tasks').update({
+        title: newTitle,
+        due_date: newDue || null,
+        assigned_to: assignMode === "all" ? user.uid : (selectedMembers[0] || user.uid),
+        assigned_to_list: assignMode === "all" ? teamMembers.map(m => m.id) :
+                          assignMode === "group" ? selectedMembers :
+                          selectedMembers.length > 0 ? selectedMembers : [user.uid]
+    }).eq('id', editingTask.id);
+    resetModal();
+    loadTasks();
+  }
+
+  function openEdit(task) {
+    setEditingTask(task);
+    setNewTitle(task.title);
+    setNewDue(task.due_date || "");
+    const list = task.assigned_to_list || [];
+    if (list.length === teamMembers.length && teamMembers.length > 1) {
+        setAssignMode("all");
+        setSelectedMembers([]);
+    } else if (list.length > 1) {
+        setAssignMode("group");
+        setSelectedMembers(list);
+    } else {
+        setAssignMode("single");
+        setSelectedMembers(list);
+    }
+    setShowModal(true);
   }
 
   async function deleteTask(taskId) {
@@ -190,6 +229,7 @@ function TasksPage() {
                               {t.due_date && <span>{new Date(t.due_date).toLocaleDateString('pt-BR',{day:'numeric',month:'short'})}</span>}
                             </div>
                             <div style={{display:"flex",gap:4}}>
+                              <button style={{fontSize:".7rem",cursor:"pointer",background:"none",border:"none",color:"var(--blue)",padding:"2px 4px"}} title="Editar" onClick={()=>openEdit(t)}>✎</button>
                               <button style={{fontSize:".7rem",cursor:"pointer",background:"none",border:"none",color:"var(--violet)",padding:"2px 4px"}} title="Avançar" onClick={()=>moveTask(t.id, nextStatus[col.key])}>→</button>
                               <button style={{fontSize:".7rem",cursor:"pointer",background:"none",border:"none",color:"var(--rose)",padding:"2px 4px"}} title="Excluir" onClick={()=>deleteTask(t.id)}>✕</button>
                             </div>
@@ -226,6 +266,7 @@ function TasksPage() {
                   <div style={{ flex:1,fontSize:"0.875rem",fontWeight:500 }}>{t.title}</div>
                   <span className="tag tag-cyan">{statusLabel(t.status)}</span>
                   {t.due_date && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{new Date(t.due_date).toLocaleDateString('pt-BR')}</span>}
+                  <button className="btn btn-ghost btn-sm" onClick={()=>openEdit(t)}>✎</button>
                   <button className="btn btn-ghost btn-sm" onClick={()=>moveTask(t.id, nextStatus[t.status])}>→</button>
                 </div>
               ))}
@@ -235,7 +276,7 @@ function TasksPage() {
           {showModal && (
             <div className="modal-overlay" onClick={resetModal}>
               <div className="modal" onClick={e => e.stopPropagation()}>
-                <h3 style={{fontFamily:"var(--font-display)",fontSize:"1.25rem",marginBottom:16}}>Nova tarefa</h3>
+                <h3 style={{fontFamily:"var(--font-display)",fontSize:"1.25rem",marginBottom:16}}>{editingTask ? "Editar tarefa" : "Nova tarefa"}</h3>
                 <div className="field"><label>Título</label><input type="text" value={newTitle} onChange={e=>setNewTitle(e.target.value)} placeholder="Ex: Revisar referencial teórico" autoFocus/></div>
                 <div className="field"><label>Data de entrega</label><input type="date" value={newDue} onChange={e=>setNewDue(e.target.value)}/></div>
 
@@ -280,7 +321,7 @@ function TasksPage() {
 
                 <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:8}}>
                   <button className="btn btn-ghost" onClick={resetModal}>Cancelar</button>
-                  <button className="btn btn-violet" onClick={addTask}>Criar tarefa</button>
+                  <button className="btn btn-violet" onClick={editingTask ? updateTask : addTask}>{editingTask ? "Salvar alterações" : "Criar tarefa"}</button>
                 </div>
               </div>
             </div>

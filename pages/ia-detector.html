@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Detector de IA — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .score-ring{position:relative;width:140px;height:140px;margin:0 auto 16px;}
+    .score-ring svg{transform:rotate(-90deg);}
+    .score-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .score-num{font-family:var(--font-display);font-size:2rem;line-height:1;}
+    .score-label{font-family:var(--font-mono);font-size:.625rem;color:var(--muted);margin-top:4px;}
+    .indicator{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--bg-2);border-radius:12px;border:1px solid var(--line);}
+    .indicator-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .sentence-row{padding:10px 14px;border-radius:8px;margin-bottom:6px;font-size:.8125rem;line-height:1.5;border-left:3px solid transparent;}
+    .sentence-row.human{background:rgba(16,185,129,.06);border-left-color:var(--emerald);}
+    .sentence-row.ai{background:rgba(244,63,94,.06);border-left-color:var(--rose);}
+    .sentence-row.mixed{background:rgba(245,158,11,.06);border-left-color:var(--amber);}
+  </style>
+</head>
+<body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+function analyzeText(text) {
+  if (!text || text.trim().length < 50) return null;
+
+  const sentences = text.replace(/([.!?])\s+/g, '$1|||').split('|||').filter(s => s.trim().length > 10);
+  let aiScore = 0;
+  let totalChecks = 0;
+
+  const aiPatterns = [
+    /\bé importante\b/gi, /\bvale ressaltar\b/gi, /\bnesse contexto\b/gi,
+    /\bdiante disso\b/gi, /\bpor conseguinte\b/gi, /\bdessa forma\b/gi,
+    /\bem suma\b/gi, /\bde acordo com\b/gi, /\bno que tange\b/gi,
+    /\bno âmbito\b/gi, /\bsob essa perspectiva\b/gi, /\bcabe salientar\b/gi,
+    /\bfaz-se necessário\b/gi, /\bem relação a\b/gi, /\bé fundamental\b/gi,
+    /\bportanto\b/gi, /\bentretanto\b/gi, /\btodavia\b/gi,
+    /\bcontudo\b/gi, /\bé possível\b/gi, /\bpode-se\b/gi,
+    /\bno entanto\b/gi, /\bconforme mencionado\b/gi, /\bconvém\b/gi,
+    /\bé notório\b/gi, /\bé sabido\b/gi, /\bà luz de\b/gi,
+  ];
+
+  const humanPatterns = [
+    /\beu acho\b/gi, /\bna minha\b/gi, /\bpra mim\b/gi,
+    /\btipo\b/gi, /\bné\b/gi, /\bvou\b/gi,
+    /\btá\b/gi, /\bdaí\b/gi, /\bsó que\b/gi,
+    /\!{2,}/g, /\?{2,}/g, /\.{3,}/g,
+  ];
+
+  const analyzedSentences = sentences.map(sentence => {
+    let sentenceAiScore = 0;
+    let checks = 0;
+
+    aiPatterns.forEach(p => { if (p.test(sentence)) { sentenceAiScore += 3; } checks++; p.lastIndex = 0; });
+    humanPatterns.forEach(p => { if (p.test(sentence)) { sentenceAiScore -= 4; } checks++; p.lastIndex = 0; });
+
+    const words = sentence.split(/\s+/);
+    const avgWordLen = words.reduce((s, w) => s + w.length, 0) / words.length;
+    if (avgWordLen > 6.5) sentenceAiScore += 2;
+    if (avgWordLen < 4.5) sentenceAiScore -= 2;
+
+    if (words.length > 25) sentenceAiScore += 1;
+    if (words.length < 8) sentenceAiScore -= 1;
+
+    const uniqueWords = new Set(words.map(w => w.toLowerCase()));
+    const diversity = uniqueWords.size / words.length;
+    if (diversity > 0.85) sentenceAiScore += 1;
+
+    totalChecks += checks;
+    aiScore += sentenceAiScore;
+
+    const pct = Math.max(0, Math.min(100, 50 + sentenceAiScore * 8));
+    return { text: sentence.trim(), pct, label: pct > 65 ? 'ai' : pct < 35 ? 'human' : 'mixed' };
+  });
+
+  const overallPct = Math.max(0, Math.min(100, Math.round(50 + (aiScore / Math.max(sentences.length, 1)) * 10)));
+
+  return { overall: overallPct, sentences: analyzedSentences, wordCount: text.split(/\s+/).length, sentenceCount: sentences.length };
+}
+
+function IADetectorPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [text, setText] = useState("");
+  const [result, setResult] = useState(null);
+  const [analyzing, setAnalyzing] = useState(false);
+
+  function handleAnalyze() {
+    if (text.trim().length < 50) { alert("Digite pelo menos 50 caracteres."); return; }
+    setAnalyzing(true);
+    setTimeout(() => {
+      setResult(analyzeText(text));
+      setAnalyzing(false);
+    }, 800);
+  }
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+
+  const scoreColor = result ? (result.overall > 65 ? 'var(--rose)' : result.overall < 35 ? 'var(--emerald)' : 'var(--amber)') : 'var(--muted)';
+  const scoreText = result ? (result.overall > 65 ? 'Provavelmente IA' : result.overall < 35 ? 'Provavelmente Humano' : 'Inconclusivo') : '';
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="tools" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Detector de IA" user={user}/>
+        <div className="page-content">
+          <div style={{marginBottom:24}}>
+            <h1 style={{fontFamily:"var(--font-display)",fontSize:"1.75rem",fontWeight:400,letterSpacing:"-.02em",marginBottom:4}}>
+              Detector de <em style={{fontStyle:"italic",color:"var(--violet)"}}>IA</em>
+            </h1>
+            <p style={{color:"var(--muted)",fontSize:".875rem"}}>Analise se um texto foi gerado por inteligência artificial</p>
+          </div>
+
+          <div style={{display:"grid",gridTemplateColumns:result?"1fr 360px":"1fr",gap:16}}>
+            <div>
+              <div className="card">
+                <div className="card-title"><span className="ct-icon">🤖</span> Texto para análise</div>
+                <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Cole aqui o texto que deseja analisar (mínimo 50 caracteres)..."
+                  style={{width:"100%",minHeight:200,padding:14,border:"1px solid var(--line)",borderRadius:10,background:"var(--bg-2)",fontSize:".875rem",lineHeight:1.6,resize:"vertical",fontFamily:"inherit"}}/>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:12}}>
+                  <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{text.split(/\s+/).filter(Boolean).length} palavras</span>
+                  <button className="btn btn-violet" onClick={handleAnalyze} disabled={analyzing || text.trim().length < 50}>
+                    {analyzing ? "Analisando..." : "Analisar texto"}
+                  </button>
+                </div>
+              </div>
+
+              {result && result.sentences.length > 0 && (
+                <div className="card" style={{marginTop:16}}>
+                  <div className="card-title"><span className="ct-icon">📝</span> Análise por frase</div>
+                  <div style={{display:"flex",gap:12,marginBottom:16,flexWrap:"wrap"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6,fontSize:".75rem"}}><span style={{width:10,height:10,borderRadius:2,background:"var(--emerald)"}}></span> Humano</div>
+                    <div style={{display:"flex",alignItems:"center",gap:6,fontSize:".75rem"}}><span style={{width:10,height:10,borderRadius:2,background:"var(--amber)"}}></span> Inconclusivo</div>
+                    <div style={{display:"flex",alignItems:"center",gap:6,fontSize:".75rem"}}><span style={{width:10,height:10,borderRadius:2,background:"var(--rose)"}}></span> Provável IA</div>
+                  </div>
+                  {result.sentences.map((s, i) => (
+                    <div key={i} className={`sentence-row ${s.label}`}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+                        <span>{s.text}</span>
+                        <span style={{fontFamily:"var(--font-mono)",fontSize:".625rem",color:"var(--muted)",flexShrink:0}}>{s.pct}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {result && (
+              <div style={{display:"flex",flexDirection:"column",gap:16}}>
+                <div className="card" style={{textAlign:"center"}}>
+                  <div className="score-ring">
+                    <svg width="140" height="140" viewBox="0 0 140 140">
+                      <circle cx="70" cy="70" r="58" fill="none" stroke="var(--line)" strokeWidth="10"/>
+                      <circle cx="70" cy="70" r="58" fill="none" stroke={scoreColor} strokeWidth="10"
+                        strokeDasharray={`${result.overall / 100 * 364} 364`} strokeLinecap="round"/>
+                    </svg>
+                    <div className="score-val">
+                      <div className="score-num" style={{color:scoreColor}}>{result.overall}%</div>
+                      <div className="score-label">Probabilidade IA</div>
+                    </div>
+                  </div>
+                  <div style={{fontFamily:"var(--font-display)",fontSize:"1.125rem",fontWeight:500,color:scoreColor,marginBottom:4}}>{scoreText}</div>
+                  <div style={{fontSize:".8125rem",color:"var(--muted)"}}>{result.wordCount} palavras · {result.sentenceCount} frases</div>
+                </div>
+
+                <div className="card">
+                  <div className="card-title"><span className="ct-icon">📊</span> Indicadores</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    <div className="indicator">
+                      <div className="indicator-dot" style={{background:"var(--emerald)"}}></div>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:".8125rem",fontWeight:500}}>Frases humanas</div>
+                        <div style={{fontSize:".6875rem",color:"var(--muted)"}}>{result.sentences.filter(s=>s.label==='human').length} de {result.sentenceCount}</div>
+                      </div>
+                    </div>
+                    <div className="indicator">
+                      <div className="indicator-dot" style={{background:"var(--amber)"}}></div>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:".8125rem",fontWeight:500}}>Inconclusivas</div>
+                        <div style={{fontSize:".6875rem",color:"var(--muted)"}}>{result.sentences.filter(s=>s.label==='mixed').length} de {result.sentenceCount}</div>
+                      </div>
+                    </div>
+                    <div className="indicator">
+                      <div className="indicator-dot" style={{background:"var(--rose)"}}></div>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:".8125rem",fontWeight:500}}>Provável IA</div>
+                        <div style={{fontSize:".6875rem",color:"var(--muted)"}}>{result.sentences.filter(s=>s.label==='ai').length} de {result.sentenceCount}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card" style={{background:"rgba(124,58,237,.04)",border:"1px solid rgba(124,58,237,.15)"}}>
+                  <div style={{fontSize:".75rem",color:"var(--muted)",lineHeight:1.6}}>
+                    <strong>Aviso:</strong> Esta análise usa heurísticas locais (padrões linguísticos, diversidade lexical, complexidade). Não substitui ferramentas profissionais de detecção de IA. Use como referência inicial.
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<IADetectorPage/>);
+</script>
+</body>
+</html>

@@ -15,7 +15,10 @@
     .cal-cell.other-month{opacity:.35;}
     .cal-cell .day-num{font-family:var(--font-mono);font-size:.75rem;font-weight:600;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin-bottom:4px;}
     .cal-cell.today .day-num{background:var(--grad);color:white;}
-    .event-pill{display:block;padding:2px 7px;border-radius:4px;font-size:.625rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+    .event-pill{display:flex;align-items:center;gap:3px;padding:2px 7px;border-radius:4px;font-size:.625rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;position:relative;}
+    .event-pill .pill-text{overflow:hidden;text-overflow:ellipsis;flex:1;}
+    .event-pill .pill-del{display:none;background:none;border:none;cursor:pointer;font-size:.625rem;line-height:1;padding:0 2px;opacity:.6;flex-shrink:0;color:inherit;}
+    .event-pill:hover .pill-del{display:inline-flex;}
 
     /* Gantt */
     .gantt-container{overflow-x:auto;padding-bottom:8px;}
@@ -47,48 +50,122 @@
 <script type="text/babel">
 const { useState, useRef, useEffect } = React;
 
-const EVENTS = {
-  25:[{title:"Reunião orientador",cls:"rgba(124,58,237,.15)",color:"var(--violet)"}],
-  28:[{title:"Entrega metodologia",cls:"rgba(245,158,11,.15)",color:"var(--amber)"}],
-  30:[{title:"Sessão de escrita",cls:"rgba(6,182,212,.15)",color:"var(--cyan)"}],
-  3: [{title:"Revisão cap.1",cls:"rgba(16,185,129,.15)",color:"var(--emerald)"}],
-  5: [{title:"Apresentação parcial",cls:"rgba(244,63,94,.15)",color:"var(--rose)"},{title:"Sprint pesquisa",cls:"rgba(6,182,212,.15)",color:"var(--cyan)"}],
-  10:[{title:"Reunião orientador",cls:"rgba(124,58,237,.15)",color:"var(--violet)"}],
-  15:[{title:"Entrega do Projeto",cls:"rgba(245,158,11,.15)",color:"var(--amber)"}],
-};
-
 const MONTHS=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 const DAYS_ABBR=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 
-const UPCOMING=[
-  {title:"Reunião orientador",date:"Hoje, 14:00",color:"var(--violet)"},
-  {title:"Entrega da metodologia",date:"28 abr, 23:59",color:"var(--amber)"},
-  {title:"Sessão de escrita",date:"30 abr, 10:00",color:"var(--cyan)"},
-  {title:"Revisão capítulo 1",date:"3 mai, 18:00",color:"var(--emerald)"},
-  {title:"Entrega do Projeto",date:"15 mai, 23:59",color:"var(--rose)"},
-];
+function GanttView({ goals, sessions, tasks }) {
+  const today = new Date();
+  const labelW = 200;
 
-const GANTT_MONTHS = ["Mar","Abr","Mai","Jun","Jul","Ago","Set","Out"];
-const GANTT_TASKS = [
-  { label:"Pesquisa bibliográfica",   sub:"Coleta de fontes",          start:0,    end:2.5,  color:"linear-gradient(90deg,#7c3aed,#8b5cf6)", pct:70 },
-  { label:"Referencial teórico",      sub:"Cap. 1 & 2",                start:1,    end:4,    color:"linear-gradient(90deg,#06b6d4,#14b8a6)", pct:45 },
-  { label:"Metodologia",              sub:"Elaboração do survey",      start:1.5,  end:3,    color:"linear-gradient(90deg,#f59e0b,#f97316)", pct:30 },
-  { label:"Coleta de dados",          sub:"Aplicação do questionário", start:3,    end:4.5,  color:"linear-gradient(90deg,#10b981,#06b6d4)", pct:0  },
-  { label:"Análise e resultados",     sub:"Estatística & interpretação",start:4,   end:6,    color:"linear-gradient(90deg,#3b82f6,#8b5cf6)", pct:0  },
-  { label:"Redação final",            sub:"Escrita completa",          start:5,    end:7.5,  color:"linear-gradient(90deg,#ec4899,#f43f5e)", pct:0  },
-  { label:"Revisão & entrega",        sub:"Correções finais",          start:7,    end:7.8,  color:"linear-gradient(90deg,#f97316,#f59e0b)", pct:0  },
-  { label:"Defesa",                   sub:"Apresentação banca",        start:7.8,  end:8,    color:"linear-gradient(90deg,#7c3aed,#06b6d4)", pct:0  },
-];
-const MILESTONES = [
-  { label:"Qualificação", month:3,   color:"var(--violet)" },
-  { label:"Entrega Final",month:6.5, color:"var(--amber)" },
-  { label:"Defesa",       month:7.9, color:"var(--rose)" },
-];
-const TODAY_POS = 1.8;
-const TOTAL_MONTHS = 8;
+  // Build bars from tasks
+  const allItems = [];
+  (tasks || []).forEach(t => {
+    if (!t.due_date) return;
+    const created = new Date(t.created_at);
+    const due = new Date(t.due_date + 'T23:59:59');
+    if (isNaN(created) || isNaN(due)) return;
+    const colors = {
+      todo:     "linear-gradient(90deg,#94a3b8,#64748b)",
+      progress: "linear-gradient(90deg,#3b82f6,#06b6d4)",
+      review:   "linear-gradient(90deg,#f59e0b,#f97316)",
+      done:     "linear-gradient(90deg,#10b981,#06b6d4)"
+    };
+    const statusLabels = { done:'Concluida', review:'Em revisao', progress:'Em andamento', todo:'A fazer' };
+    allItems.push({
+      label: t.title,
+      sub: statusLabels[t.status] || 'A fazer',
+      start: created,
+      end: due,
+      color: colors[t.status] || colors.todo,
+      pct: t.status === 'done' ? 100 : t.status === 'review' ? 75 : t.status === 'progress' ? 50 : 0,
+      type: 'task'
+    });
+  });
 
-function GanttView() {
-  const labelW = 180;
+  // Goals become milestones
+  const milestones = (goals || []).filter(g => g.deadline).map(g => ({
+    label: g.title,
+    date: new Date(g.deadline + (g.deadline.includes('T') ? '' : 'T12:00:00')),
+    color: g.completed ? "var(--emerald)" : "var(--amber)"
+  })).filter(m => !isNaN(m.date));
+
+  // Sessions become markers
+  const sessionMarkers = (sessions || []).filter(s => s.date).map(s => ({
+    label: s.subject,
+    date: new Date(s.date + (s.date.includes('T') ? '' : 'T12:00:00')),
+    color: "var(--cyan)"
+  })).filter(m => !isNaN(m.date));
+
+  // Collect all dates to determine range
+  const allDates = [
+    ...allItems.map(i => i.start),
+    ...allItems.map(i => i.end),
+    ...milestones.map(m => m.date),
+    ...sessionMarkers.map(m => m.date),
+    today
+  ].filter(d => d && !isNaN(d));
+
+  if (allItems.length === 0 && milestones.length === 0 && sessionMarkers.length === 0) {
+    return (
+      <div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <h2 style={{fontFamily:"var(--font-display)",fontSize:"1.375rem",fontWeight:400,letterSpacing:"-.02em"}}>
+            Cronograma <em style={{fontStyle:"italic",color:"var(--violet)"}}>Gantt</em>
+          </h2>
+        </div>
+        <div className="card" style={{padding:40,textAlign:"center"}}>
+          <div style={{fontSize:"2rem",marginBottom:12,opacity:.4}}>📊</div>
+          <h3 style={{fontFamily:"var(--font-display)",marginBottom:8}}>Gantt vazio</h3>
+          <p style={{color:"var(--muted)",fontSize:".875rem"}}>Crie tarefas com datas de entrega ou metas com prazo para visualizar o cronograma.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Expand to full months
+  const minDate = new Date(Math.min(...allDates.map(d => d.getTime())));
+  const maxDate = new Date(Math.max(...allDates.map(d => d.getTime())));
+  minDate.setDate(1);
+  maxDate.setMonth(maxDate.getMonth() + 1, 0);
+
+  const startMonth = minDate.getMonth();
+  const startYear = minDate.getFullYear();
+  const endMonth = maxDate.getMonth();
+  const endYear = maxDate.getFullYear();
+  const totalMonths = (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
+
+  const monthLabels = [];
+  for (let i = 0; i < totalMonths; i++) {
+    const mIdx = (startMonth + i) % 12;
+    const yr = startYear + Math.floor((startMonth + i) / 12);
+    monthLabels.push({ short: MONTHS[mIdx].substring(0, 3), year: yr });
+  }
+
+  // Convert date to fractional month position (0-based)
+  function dateToPos(d) {
+    const monthDiff = (d.getFullYear() - startYear) * 12 + (d.getMonth() - startMonth);
+    const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    const dayFrac = d.getDate() / daysInMonth;
+    return monthDiff + dayFrac;
+  }
+
+  const todayPos = dateToPos(today);
+
+  // Convert allItems start/end to fractional month positions
+  const ganttBars = allItems.map(item => ({
+    ...item,
+    startPos: dateToPos(item.start),
+    endPos: dateToPos(item.end)
+  }));
+
+  // Overall progress
+  const totalPct = ganttBars.length > 0
+    ? Math.round(ganttBars.reduce((s, b) => s + b.pct, 0) / ganttBars.length)
+    : 0;
+
+  // Date range label
+  const rangeLabel = `${MONTHS[startMonth].substring(0,3)} ${startYear} — ${MONTHS[endMonth].substring(0,3)} ${endYear}`;
+
   return (
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
@@ -96,7 +173,7 @@ function GanttView() {
           <h2 style={{fontFamily:"var(--font-display)",fontSize:"1.375rem",fontWeight:400,letterSpacing:"-.02em"}}>
             Cronograma <em style={{fontStyle:"italic",color:"var(--violet)"}}>Gantt</em>
           </h2>
-          <p style={{fontSize:".8125rem",color:"var(--muted)",marginTop:2}}>Mar 2026 — Out 2026</p>
+          <p style={{fontSize:".8125rem",color:"var(--muted)",marginTop:2}}>{rangeLabel}</p>
         </div>
         <div style={{display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
           <div style={{display:"flex",alignItems:"center",gap:5,fontSize:".8125rem",color:"var(--muted)"}}>
@@ -105,6 +182,9 @@ function GanttView() {
           <div style={{display:"flex",alignItems:"center",gap:5,fontSize:".8125rem",color:"var(--muted)"}}>
             <span style={{width:10,height:10,background:"var(--amber)",borderRadius:2,rotate:"45deg",display:"inline-block"}}></span> Marco
           </div>
+          <div style={{display:"flex",alignItems:"center",gap:5,fontSize:".8125rem",color:"var(--muted)"}}>
+            <span style={{width:8,height:8,background:"var(--cyan)",borderRadius:"50%",display:"inline-block"}}></span> Sessao
+          </div>
           <button className="btn btn-ghost btn-sm">Exportar PDF</button>
         </div>
       </div>
@@ -112,46 +192,59 @@ function GanttView() {
       <div className="card" style={{padding:0,overflow:"hidden"}}>
         <div className="gantt-container">
           <div className="gantt-table">
-            <div style={{display:"grid",gridTemplateColumns:`${labelW}px repeat(${TOTAL_MONTHS},1fr)`,borderBottom:"2px solid var(--line)",background:"var(--bg-2)"}}>
+            {/* Header */}
+            <div style={{display:"grid",gridTemplateColumns:`${labelW}px repeat(${totalMonths},1fr)`,borderBottom:"2px solid var(--line)",background:"var(--bg-2)"}}>
               <div style={{padding:"10px 14px",fontFamily:"var(--font-mono)",fontSize:".625rem",textTransform:"uppercase",letterSpacing:".1em",color:"var(--muted)"}}>Fase</div>
-              {GANTT_MONTHS.map(m=>(
-                <div key={m} style={{textAlign:"center",padding:"10px 4px",fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)",fontWeight:600,textTransform:"uppercase",letterSpacing:".06em"}}>{m}</div>
+              {monthLabels.map((m,i)=>(
+                <div key={i} style={{textAlign:"center",padding:"10px 4px",fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)",fontWeight:600,textTransform:"uppercase",letterSpacing:".06em"}}>{m.short}</div>
               ))}
             </div>
 
-            {GANTT_TASKS.map((task,i)=>(
+            {/* Task bars */}
+            {ganttBars.map((bar,i)=>(
               <div key={i} className="gantt-row-wrap">
-                <div className="gantt-row" style={{gridTemplateColumns:`${labelW}px repeat(${TOTAL_MONTHS},1fr)`}}>
+                <div className="gantt-row" style={{gridTemplateColumns:`${labelW}px repeat(${totalMonths},1fr)`}}>
                   <div className="gantt-label">
                     <div style={{display:"flex",alignItems:"center",gap:7}}>
-                      <div style={{width:3,height:36,borderRadius:999,background:task.color,flexShrink:0}}></div>
+                      <div style={{width:3,height:36,borderRadius:999,background:bar.color,flexShrink:0}}></div>
                       <div>
-                        <div>{task.label}</div>
-                        <div className="sub">{task.sub}</div>
+                        <div>{bar.label}</div>
+                        <div className="sub">{bar.sub}</div>
                       </div>
                     </div>
                   </div>
-                  {Array.from({length:TOTAL_MONTHS}).map((_,ci)=>{
+                  {Array.from({length:totalMonths}).map((_,ci)=>{
                     const colStart = ci;
                     const colEnd = ci + 1;
-                    const barStart = Math.max(task.start, colStart);
-                    const barEnd = Math.min(task.end, colEnd);
+                    const barStart = Math.max(bar.startPos, colStart);
+                    const barEnd = Math.min(bar.endPos, colEnd);
                     const hasBar = barEnd > barStart;
                     const left = `${(barStart - colStart) * 100}%`;
                     const width = `${(barEnd - barStart) * 100}%`;
-                    const isTodayCol = TODAY_POS >= colStart && TODAY_POS < colEnd;
-                    const todayLeft = `${(TODAY_POS - colStart) * 100}%`;
+                    const isTodayCol = todayPos >= colStart && todayPos < colEnd;
+                    const todayLeft = `${(todayPos - colStart) * 100}%`;
 
                     return (
                       <div key={ci} className="gantt-cell" style={{background:ci%2===0?"transparent":"rgba(0,0,0,.015)"}}>
                         {isTodayCol && <div className="gantt-today-line" style={{left:todayLeft}}></div>}
                         {hasBar && (
-                          <div className="gantt-bar" style={{left,width,background:task.color,opacity:task.pct>0?1:.7}}>
-                            {(barEnd - barStart) > 0.4 && task.pct > 0 && `${task.pct}%`}
+                          <div className="gantt-bar" style={{left,width,background:bar.color,opacity:bar.pct>0?1:.7}}>
+                            {(barEnd - barStart) > 0.4 && bar.pct > 0 && `${bar.pct}%`}
                           </div>
                         )}
-                        {MILESTONES.filter(ms=>ms.month>=colStart && ms.month<colEnd).map((ms,mi)=>(
-                          <div key={mi} className="milestone" style={{left:`${(ms.month-colStart)*100}%`,background:ms.color}} title={ms.label}></div>
+                        {/* Milestones in first row only */}
+                        {i===0 && milestones.filter(ms=>{
+                          const mp = dateToPos(ms.date);
+                          return mp>=colStart && mp<colEnd;
+                        }).map((ms,mi)=>(
+                          <div key={'m'+mi} className="milestone" style={{left:`${(dateToPos(ms.date)-colStart)*100}%`,background:ms.color}} title={ms.label}></div>
+                        ))}
+                        {/* Session markers in first row only */}
+                        {i===0 && sessionMarkers.filter(sm=>{
+                          const sp = dateToPos(sm.date);
+                          return sp>=colStart && sp<colEnd;
+                        }).map((sm,si)=>(
+                          <div key={'s'+si} style={{position:"absolute",top:"50%",transform:"translate(-50%,-50%)",left:`${(dateToPos(sm.date)-colStart)*100}%`,width:8,height:8,borderRadius:"50%",background:sm.color,cursor:"pointer",transition:"scale .2s",zIndex:1}} title={sm.label}></div>
                         ))}
                       </div>
                     );
@@ -159,19 +252,61 @@ function GanttView() {
                 </div>
               </div>
             ))}
+
+            {/* If no task bars but milestones/sessions exist, show a single row for markers */}
+            {ganttBars.length === 0 && (
+              <div className="gantt-row-wrap">
+                <div className="gantt-row" style={{gridTemplateColumns:`${labelW}px repeat(${totalMonths},1fr)`}}>
+                  <div className="gantt-label">
+                    <div style={{display:"flex",alignItems:"center",gap:7}}>
+                      <div style={{width:3,height:36,borderRadius:999,background:"var(--violet)",flexShrink:0}}></div>
+                      <div>
+                        <div>Marcos e Sessoes</div>
+                        <div className="sub">Nenhuma tarefa com prazo</div>
+                      </div>
+                    </div>
+                  </div>
+                  {Array.from({length:totalMonths}).map((_,ci)=>{
+                    const colStart = ci;
+                    const colEnd = ci + 1;
+                    const isTodayCol = todayPos >= colStart && todayPos < colEnd;
+                    const todayLeft = `${(todayPos - colStart) * 100}%`;
+                    return (
+                      <div key={ci} className="gantt-cell" style={{background:ci%2===0?"transparent":"rgba(0,0,0,.015)"}}>
+                        {isTodayCol && <div className="gantt-today-line" style={{left:todayLeft}}></div>}
+                        {milestones.filter(ms=>{ const mp=dateToPos(ms.date); return mp>=colStart&&mp<colEnd; }).map((ms,mi)=>(
+                          <div key={'m'+mi} className="milestone" style={{left:`${(dateToPos(ms.date)-colStart)*100}%`,background:ms.color}} title={ms.label}></div>
+                        ))}
+                        {sessionMarkers.filter(sm=>{ const sp=dateToPos(sm.date); return sp>=colStart&&sp<colEnd; }).map((sm,si)=>(
+                          <div key={'s'+si} style={{position:"absolute",top:"50%",transform:"translate(-50%,-50%)",left:`${(dateToPos(sm.date)-colStart)*100}%`,width:8,height:8,borderRadius:"50%",background:sm.color,cursor:"pointer",zIndex:1}} title={sm.label}></div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Footer with milestones legend and progress */}
         <div style={{padding:"12px 16px",borderTop:"1px solid var(--line)",background:"var(--bg-2)",display:"flex",gap:20,flexWrap:"wrap",alignItems:"center"}}>
-          <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>Marcos:</span>
-          {MILESTONES.map((ms,i)=>(
-            <div key={i} style={{display:"flex",alignItems:"center",gap:6,fontSize:".8125rem",color:"var(--ink-2)"}}>
-              <span style={{width:10,height:10,background:ms.color,borderRadius:2,display:"inline-block",rotate:"45deg",flexShrink:0}}></span>
-              {ms.label}
-            </div>
-          ))}
+          {milestones.length > 0 && (
+            <React.Fragment>
+              <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>Marcos:</span>
+              {milestones.map((ms,i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",gap:6,fontSize:".8125rem",color:"var(--ink-2)"}}>
+                  <span style={{width:10,height:10,background:ms.color,borderRadius:2,display:"inline-block",rotate:"45deg",flexShrink:0}}></span>
+                  {ms.label}
+                </div>
+              ))}
+            </React.Fragment>
+          )}
+          {milestones.length === 0 && (
+            <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>Nenhum marco definido</span>
+          )}
           <div style={{marginLeft:"auto",fontSize:".8125rem",color:"var(--muted)"}}>
-            Progresso atual: <strong style={{color:"var(--violet)"}}>34%</strong>
+            Progresso atual: <strong style={{color:"var(--violet)"}}>{totalPct}%</strong>
           </div>
         </div>
       </div>
@@ -179,7 +314,7 @@ function GanttView() {
   );
 }
 
-function MonthView({current, setCurrent, goals=[], sessions=[]}) {
+function MonthView({current, setCurrent, goals=[], sessions=[], onDeleteGoal, onDeleteSession}) {
   const today = new Date();
   function buildCells(){
     const first=new Date(current.year,current.month,1);
@@ -198,12 +333,31 @@ function MonthView({current, setCurrent, goals=[], sessions=[]}) {
       if (!g.deadline) return false;
       const d = new Date(g.deadline);
       return d.getDate()===day && d.getMonth()===current.month && d.getFullYear()===current.year;
-    }).map(g => ({title:g.title, color:"var(--violet)", cls:"rgba(124,58,237,.15)"}));
+    }).map(g => ({id:g.id, title:g.title, color:"var(--violet)", cls:"rgba(124,58,237,.15)", type:"goal"}));
   };
 
-  const upcomingEvents = [...goals.filter(g=>g.deadline&&new Date(g.deadline)>=today).slice(0,3).map(g=>({
-    title:g.title, date:new Date(g.deadline).toLocaleDateString('pt-BR'), color:"var(--violet)"
-  }))];
+  const sessionsForDay = (day) => {
+    return sessions.filter(s => {
+      if (!s.date) return false;
+      const d = new Date(s.date);
+      return d.getDate()===day && d.getMonth()===current.month && d.getFullYear()===current.year;
+    }).map(s => ({id:s.id, title:s.subject, color:"var(--cyan)", cls:"rgba(6,182,212,.15)", type:"session"}));
+  };
+
+  // Combine goals and sessions for upcoming, sorted by date
+  const upcomingGoals = goals.filter(g=>g.deadline&&new Date(g.deadline)>=today).map(g=>({
+    id:g.id, title:g.title, date:new Date(g.deadline).toLocaleDateString('pt-BR'), color:"var(--violet)", sortDate:new Date(g.deadline), type:"goal"
+  }));
+  const upcomingSessions = sessions.filter(s=>s.date&&new Date(s.date)>=today).map(s=>({
+    id:s.id, title:s.subject, date:new Date(s.date).toLocaleDateString('pt-BR') + (s.time ? `, ${s.time}` : ''), color:"var(--cyan)", sortDate:new Date(s.date), type:"session"
+  }));
+  const upcomingEvents = [...upcomingGoals, ...upcomingSessions].sort((a,b)=>a.sortDate-b.sortDate).slice(0,6);
+
+  function handleDeletePill(ev, e) {
+    e.stopPropagation();
+    if (ev.type === 'goal' && onDeleteGoal) onDeleteGoal(ev.id);
+    if (ev.type === 'session' && onDeleteSession) onDeleteSession(ev.id);
+  }
 
   return(
     <div className="cal-grid-layout" style={{display:"grid",gridTemplateColumns:"1fr 280px",gap:16}}>
@@ -224,8 +378,11 @@ function MonthView({current, setCurrent, goals=[], sessions=[]}) {
           {cells.map((c,i)=>(
             <div key={i} className={`cal-cell${isToday(c)?" today":""}${c.other?" other-month":""}`}>
               <div className="day-num">{c.day}</div>
-              {!c.other&&(goalsForDay(c.day)||[]).map((ev,j)=>(
-                <span key={j} className="event-pill" style={{background:ev.cls,color:ev.color}}>{ev.title}</span>
+              {!c.other && [...goalsForDay(c.day), ...sessionsForDay(c.day)].map((ev,j)=>(
+                <span key={j} className="event-pill" style={{background:ev.cls,color:ev.color}}>
+                  <span className="pill-text">{ev.title}</span>
+                  <button className="pill-del" title="Excluir" onClick={(e)=>handleDeletePill(ev,e)}>✕</button>
+                </span>
               ))}
             </div>
           ))}
@@ -233,20 +390,26 @@ function MonthView({current, setCurrent, goals=[], sessions=[]}) {
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div className="card">
-          <div className="card-title"><span className="ct-icon">📅</span> Próximos eventos</div>
-          {upcomingEvents.length===0 && <div style={{color:"var(--muted)",fontSize:".8125rem",padding:"8px 0"}}>Nenhum evento próximo</div>}
+          <div className="card-title"><span className="ct-icon">📅</span> Proximos eventos</div>
+          {upcomingEvents.length===0 && <div style={{color:"var(--muted)",fontSize:".8125rem",padding:"8px 0"}}>Nenhum evento proximo</div>}
           {upcomingEvents.map((ev,i)=>(
             <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 0",borderBottom:i<upcomingEvents.length-1?"1px dashed var(--line)":"none"}}>
               <span style={{width:3,alignSelf:"stretch",borderRadius:999,background:ev.color,flexShrink:0}}></span>
-              <div>
+              <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:".8125rem",fontWeight:500}}>{ev.title}</div>
                 <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)",marginTop:2}}>{ev.date}</div>
               </div>
+              <button onClick={()=>{
+                if (ev.type==='goal' && onDeleteGoal) onDeleteGoal(ev.id);
+                if (ev.type==='session' && onDeleteSession) onDeleteSession(ev.id);
+              }} style={{background:"none",border:"none",cursor:"pointer",color:"var(--muted)",fontSize:".75rem",padding:"2px 4px",borderRadius:4,flexShrink:0,opacity:.5,transition:"opacity .15s"}} title="Excluir evento"
+              onMouseEnter={e=>e.currentTarget.style.opacity='1'}
+              onMouseLeave={e=>e.currentTarget.style.opacity='.5'}>✕</button>
             </div>
           ))}
         </div>
         <div className="card">
-          <div className="card-title"><span className="ct-icon">⏱</span> Sessão de Foco</div>
+          <div className="card-title"><span className="ct-icon">⏱</span> Sessao de Foco</div>
           <div style={{textAlign:"center",padding:"16px 0"}}>
             <div style={{fontFamily:"var(--font-display)",fontSize:"2.5rem",letterSpacing:"-.04em",lineHeight:1,color:"var(--violet)"}}>25:00</div>
             <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)",margin:"6px 0 14px"}}>Pomodoro · Foco</div>
@@ -331,9 +494,10 @@ function EventModal({ open, onClose, onSave, saving }) {
 function CalendarPage() {
   const { user, userData, project, subscription, loading } = useTCCData();
   const [view,setView]=useState("gantt");
-  const [current,setCurrent]=useState({year:2026,month:3});
+  const [current,setCurrent]=useState({year:new Date().getFullYear(),month:new Date().getMonth()});
   const [goals, setGoals] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -343,6 +507,10 @@ function CalendarPage() {
     setGoals(g || []);
     const s = await DB.calendarSessions.getAll(project.id);
     setSessions(s || []);
+    try {
+      const { data: t } = await _supa.from('tasks').select('*').eq('project_id', project.id);
+      setTasks(t || []);
+    } catch(e) { setTasks([]); }
   }
 
   useEffect(() => { loadEvents(); }, [project]);
@@ -364,28 +532,48 @@ function CalendarPage() {
     setSaving(false);
   }
 
+  async function handleDeleteGoal(goalId) {
+    if (!confirm("Excluir esta meta?")) return;
+    try {
+      await DB.calendarGoals.remove(goalId);
+      await loadEvents();
+    } catch(e) {
+      alert("Erro ao excluir: " + (e.message || e));
+    }
+  }
+
+  async function handleDeleteSession(sessionId) {
+    if (!confirm("Excluir esta sessao?")) return;
+    try {
+      await DB.calendarSessions.remove(sessionId);
+      await loadEvents();
+    } catch(e) {
+      alert("Erro ao excluir: " + (e.message || e));
+    }
+  }
+
   if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
 
   return(
     <div className="app-layout">
       <Sidebar active="calendar" userData={userData} project={project} subscription={subscription}/>
       <div className="main-area">
-        <Topbar page="Calendário" user={user} actions={
+        <Topbar page="Calendario" user={user} actions={
           <button className="btn btn-violet btn-sm" onClick={()=>setShowModal(true)}>+ Novo evento</button>
         }/>
         <div className="page-content">
           <div style={{display:"flex",gap:4,marginBottom:20}}>
-            {[["gantt","📊 Gantt"],["month","📅 Mês"],["week","📋 Semana"]].map(([v,l])=>(
+            {[["gantt","📊 Gantt"],["month","📅 Mes"],["week","📋 Semana"]].map(([v,l])=>(
               <button key={v} className={`btn btn-sm ${view===v?"btn-primary":"btn-ghost"}`} onClick={()=>setView(v)}>{l}</button>
             ))}
           </div>
-          {view==="gantt"  && <GanttView/>}
-          {view==="month"  && <MonthView current={current} setCurrent={setCurrent} goals={goals} sessions={sessions}/>}
+          {view==="gantt"  && <GanttView goals={goals} sessions={sessions} tasks={tasks}/>}
+          {view==="month"  && <MonthView current={current} setCurrent={setCurrent} goals={goals} sessions={sessions} onDeleteGoal={handleDeleteGoal} onDeleteSession={handleDeleteSession}/>}
           {view==="week"   && (
             <div className="empty-state">
               <div className="es-icon">📋</div>
-              <h3>Visão Semanal</h3>
-              <p>Em breve — use a visão Mensal ou o Gantt por enquanto.</p>
+              <h3>Visao Semanal</h3>
+              <p>Em breve — use a visao Mensal ou o Gantt por enquanto.</p>
             </div>
           )}
         </div>
