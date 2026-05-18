@@ -263,9 +263,11 @@
             else { p.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
         }
 
-        // Detect redirect target (e.g., ?redirect=orientador-painel.html)
+        // Detect redirect target — check URL param first, then localStorage (set by Google OAuth flow)
         const urlParams = new URLSearchParams(window.location.search);
-        const redirectTarget = urlParams.get('redirect') || 'dashboard.html';
+        const storedRedirect = (() => { try { return localStorage.getItem('tccflow_oauth_redirect'); } catch(e) { return null; } })();
+        const redirectTarget = urlParams.get('redirect') || storedRedirect || 'dashboard.html';
+        try { localStorage.removeItem('tccflow_oauth_redirect'); } catch(e) {}
 
         // If redirect is orientador, show visual indicator
         if (redirectTarget.includes('orientador')) {

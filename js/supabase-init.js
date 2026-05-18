@@ -210,11 +210,13 @@ const auth = {
     },
 
     async signInWithPopup(provider, options) {
-        // Preserve the ?redirect= param so login.html knows where to send the user after OAuth
+        // Save redirect target in localStorage before leaving the page
+        // (can't use query params in redirectTo — Supabase rejects URLs not in allowed list)
         const currentParams = new URLSearchParams(window.location.search);
-        const redirectParam = currentParams.get('redirect') || 'dashboard.html';
-        const redirectTo = window.location.origin + '/pages/login.html?redirect=' + encodeURIComponent(redirectParam);
+        const redirectTarget = currentParams.get('redirect') || 'dashboard.html';
+        try { localStorage.setItem('tccflow_oauth_redirect', redirectTarget); } catch(e) {}
 
+        const redirectTo = window.location.origin + '/pages/login.html';
         const { data, error } = await _supa.auth.signInWithOAuth({
             provider: 'google',
             options: { redirectTo }
