@@ -388,7 +388,7 @@ function Topbar({ page, actions, user }) {
         <div className="av av-sm c1" style={{cursor:"pointer"}}>{userInitials}</div>
       </div>
       {showNotif && (
-        <div style={{position:"fixed",inset:0,zIndex:99999}} onClick={() => setShowNotif(false)}>
+        <div style={{position:"fixed",inset:0,zIndex:10000}} onClick={() => setShowNotif(false)}>
           <div style={{position:"fixed",top:bellPos.top,right:bellPos.right,width:360,maxHeight:440,overflowY:"auto",background:"var(--paper)",border:"1px solid var(--line)",borderRadius:14,boxShadow:"0 10px 40px rgba(0,0,0,.2)"}} onClick={e => e.stopPropagation()}>
             <div style={{padding:"14px 16px",borderBottom:"1px solid var(--line)",fontFamily:"var(--font-display)",fontSize:"1rem",fontWeight:500,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               Notificações
@@ -429,7 +429,7 @@ function Topbar({ page, actions, user }) {
         </div>
       )}
       {showSearch && (
-        <div style={{position:"fixed",inset:0,zIndex:99999,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:"15vh"}}>
+        <div style={{position:"fixed",inset:0,zIndex:10000,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:"15vh"}}>
           <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.4)",backdropFilter:"blur(4px)"}} onClick={() => setShowSearch(false)}></div>
           <div style={{position:"relative",background:"var(--paper)",border:"1px solid var(--line)",borderRadius:16,boxShadow:"0 20px 60px rgba(0,0,0,.2)",width:"100%",maxWidth:560,overflow:"hidden"}}>
             <div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",borderBottom:"1px solid var(--line)"}}>

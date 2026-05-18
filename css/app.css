@@ -280,6 +280,8 @@ input, textarea, select { font-family: inherit; }
   flex-direction: column;
   overflow: hidden;
   min-width: 0;
+  position: relative;
+  z-index: 50;
 }
 
 .topbar {
@@ -293,6 +295,8 @@ input, textarea, select { font-family: inherit; }
   background: color-mix(in srgb, var(--paper) 90%, transparent);
   backdrop-filter: blur(12px);
   gap: 16px;
+  position: relative;
+  z-index: 100;
 }
 .topbar-left {
   display: flex;
@@ -307,6 +311,8 @@ input, textarea, select { font-family: inherit; }
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+  z-index: 101;
 }
 .topbar-btn {
   width: 34px; height: 34px;
