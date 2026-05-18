@@ -31,37 +31,12 @@ function useTCCData() {
           const { data: proj } = await _supa.from('projects').select('*').eq('id', ud.project_id).maybeSingle();
           setProject(proj);
 
-          let members = [];
-          let memberIds = proj?.members;
-
-          // Normalize members array (Supabase returns UUID[] as JSON string)
-          if (typeof memberIds === 'string') {
-            try {
-              memberIds = JSON.parse(memberIds);
-            } catch (e) {
-              console.error('Erro ao parsear members:', e);
-              memberIds = null;
-            }
+          // Fetch members by project_id directly — more reliable than reading proj.members array
+          let memberRes = await _supa.from('users').select('id, name, email, role').eq('project_id', ud.project_id);
+          if (memberRes.error) {
+            memberRes = await _supa.from('users').select('id, name, email').eq('project_id', ud.project_id);
           }
-          if (!Array.isArray(memberIds)) {
-            console.warn('members não é array:', memberIds, 'tipo:', typeof memberIds);
-            memberIds = null;
-          }
-
-          if (memberIds && memberIds.length > 0) {
-            try {
-              // Try with all columns first, fallback to basic columns
-              let memberRes = await _supa.from('users').select('id, name, email, photo_url, role').in('id', memberIds);
-              if (memberRes.error) {
-                memberRes = await _supa.from('users').select('id, name, email').in('id', memberIds);
-              }
-              members = (memberRes.data || []);
-              console.log('Membros encontrados:', members.length);
-            } catch (e) {
-              console.error('Erro ao buscar membros:', e);
-            }
-          }
-          setTeam(members);
+          setTeam(memberRes.data || []);
         }
         const sub = await DB.subscriptions.get(u.uid);
         setSub(sub);
