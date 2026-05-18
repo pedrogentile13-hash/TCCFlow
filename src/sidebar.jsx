@@ -264,27 +264,49 @@ function Topbar({ page, actions, user }) {
   const [showNotif, setShowNotif] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notifLoading, setNotifLoading] = useState(false);
+  const bellRef = useRef(null);
+  const [bellPos, setBellPos] = useState({top:0,right:0});
 
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const searchTimerRef = useRef(null);
 
   async function loadNotifications() {
     if (!user) return;
     setNotifLoading(true);
     try {
-      let res = await _supa.from('orientador_notifications').select('*').eq('user_id', user.uid).order('created_at', { ascending: false }).limit(10);
-      if (res.error) {
-        setNotifications([]);
-      } else {
-        setNotifications(res.data || []);
+      const notifs = [];
+      const res1 = await _supa.from('orientador_notifications').select('*').eq('user_id', user.uid).order('created_at', { ascending: false }).limit(10);
+      if (!res1.error && res1.data) notifs.push(...res1.data);
+      const res2 = await _supa.from('notifications').select('*').eq('user_id', user.uid).order('created_at', { ascending: false }).limit(10);
+      if (!res2.error && res2.data) notifs.push(...res2.data);
+
+      if (notifs.length === 0) {
+        const { data: tasks } = await _supa.from('tasks').select('id, title, due_date, status').eq('assigned_to', user.uid).not('status', 'eq', 'done').not('due_date', 'is', null).order('due_date', { ascending: true }).limit(5);
+        (tasks || []).forEach(t => {
+          const due = new Date(t.due_date + 'T00:00:00');
+          const now = new Date();
+          const diff = Math.ceil((due - now) / 86400000);
+          if (diff <= 3) {
+            notifs.push({ id: 'task-' + t.id, type: diff < 0 ? 'overdue' : 'deadline', title: t.title, message: diff < 0 ? 'Tarefa atrasada!' : diff === 0 ? 'Vence hoje!' : `Vence em ${diff} dia${diff>1?'s':''}`, created_at: new Date().toISOString(), read: false });
+          }
+        });
       }
+      notifs.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+      setNotifications(notifs.slice(0, 10));
     } catch(e) { setNotifications([]); }
     setNotifLoading(false);
   }
 
   function toggleNotif() {
-    if (!showNotif) loadNotifications();
+    if (!showNotif) {
+      loadNotifications();
+      if (bellRef.current) {
+        const r = bellRef.current.getBoundingClientRect();
+        setBellPos({ top: r.bottom + 8, right: window.innerWidth - r.right });
+      }
+    }
     setShowNotif(!showNotif);
     setShowSearch(false);
   }
@@ -306,20 +328,27 @@ function Topbar({ page, actions, user }) {
   }, []);
 
   async function handleSearch(query) {
-    setSearchQuery(query);
-    if (!query.trim() || query.length < 2) { setSearchResults([]); return; }
+    if (!query || !query.trim() || query.length < 2) { setSearchResults([]); return; }
 
     try {
       const results = [];
+      const statusLabels = { todo: 'A fazer', progress: 'Em andamento', review: 'Em revisão', done: 'Concluída' };
+      const statusBadges = { todo: {text:'A fazer',cls:'tag-muted'}, progress: {text:'Em andamento',cls:'tag-blue'}, review: {text:'Em revisão',cls:'tag-amber'}, done: {text:'Concluída',cls:'tag-emerald'} };
 
-      const { data: tasks } = await _supa.from('tasks').select('id, title, status').ilike('title', `%${query}%`).limit(5);
-      (tasks || []).forEach(t => results.push({ type: 'task', title: t.title, sub: t.status === 'done' ? 'Concluída' : 'Tarefa', icon: '✓', href: 'tasks.html' }));
+      const { data: tasks } = await _supa.from('tasks').select('id, title, status, due_date').ilike('title', `%${query}%`).limit(5);
+      (tasks || []).forEach(t => {
+        const dueSub = t.due_date ? new Date(t.due_date + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+        results.push({ type: 'tarefa', title: t.title, sub: dueSub ? `Prazo: ${dueSub}` : statusLabels[t.status] || 'Tarefa', icon: '✓', href: 'tasks.html', badge: statusBadges[t.status] });
+      });
 
       const { data: projects } = await _supa.from('projects').select('id, name, code').ilike('name', `%${query}%`).limit(3);
-      (projects || []).forEach(p => results.push({ type: 'project', title: p.name, sub: p.code, icon: '📁', href: 'project.html' }));
+      (projects || []).forEach(p => results.push({ type: 'projeto', title: p.name, sub: p.code || 'Projeto', icon: '📁', href: 'project.html' }));
 
       const { data: users } = await _supa.from('users').select('id, name, email').ilike('name', `%${query}%`).limit(3);
-      (users || []).forEach(u => results.push({ type: 'user', title: u.name || u.email, sub: u.email, icon: '👤', href: 'team.html' }));
+      (users || []).forEach(u => results.push({ type: 'pessoa', title: u.name || u.email, sub: u.email, icon: '👤', href: 'team.html' }));
+
+      const { data: goals } = await _supa.from('calendar_goals').select('id, title, deadline').ilike('title', `%${query}%`).limit(3);
+      (goals || []).forEach(g => results.push({ type: 'meta', title: g.title, sub: g.deadline ? new Date(g.deadline + 'T00:00:00').toLocaleDateString('pt-BR') : 'Meta', icon: '🎯', href: 'calendar.html' }));
 
       setSearchResults(results);
     } catch(e) {
@@ -347,7 +376,7 @@ function Topbar({ page, actions, user }) {
           <kbd>⌘K</kbd>
         </div>
         {actions}
-        <button className="topbar-btn" title="Notificações" style={{position:"relative"}} onClick={toggleNotif}>
+        <button ref={bellRef} className="topbar-btn" title="Notificações" style={{position:"relative"}} onClick={toggleNotif}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
@@ -356,8 +385,11 @@ function Topbar({ page, actions, user }) {
             <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:"var(--rose)",border:"2px solid var(--paper)"}}></span>
           )}
         </button>
-        {showNotif && (
-          <div style={{position:"absolute",top:"100%",right:0,width:340,maxHeight:400,overflowY:"auto",background:"var(--paper)",border:"1px solid var(--line)",borderRadius:14,boxShadow:"0 10px 30px rgba(0,0,0,.15)",zIndex:999,marginTop:8}}>
+        <div className="av av-sm c1" style={{cursor:"pointer"}}>{userInitials}</div>
+      </div>
+      {showNotif && (
+        <div style={{position:"fixed",inset:0,zIndex:99999}} onClick={() => setShowNotif(false)}>
+          <div style={{position:"fixed",top:bellPos.top,right:bellPos.right,width:360,maxHeight:440,overflowY:"auto",background:"var(--paper)",border:"1px solid var(--line)",borderRadius:14,boxShadow:"0 10px 40px rgba(0,0,0,.2)"}} onClick={e => e.stopPropagation()}>
             <div style={{padding:"14px 16px",borderBottom:"1px solid var(--line)",fontFamily:"var(--font-display)",fontSize:"1rem",fontWeight:500,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               Notificações
               <button style={{background:"none",border:"none",cursor:"pointer",fontSize:".75rem",color:"var(--violet)"}} onClick={() => setShowNotif(false)}>✕</button>
@@ -368,52 +400,77 @@ function Topbar({ page, actions, user }) {
                 <div style={{padding:"30px 20px",textAlign:"center"}}>
                   <div style={{fontSize:"1.5rem",marginBottom:8,opacity:.4}}>🔔</div>
                   <div style={{color:"var(--muted)",fontSize:".8125rem"}}>Nenhuma notificação</div>
+                  <div style={{color:"var(--muted)",fontSize:".75rem",marginTop:4}}>Notificações de tarefas e prazos aparecerão aqui</div>
                 </div>
               )}
-              {!notifLoading && notifications.map(n => (
-                <div key={n.id} style={{padding:"12px 16px",borderBottom:"1px solid var(--line)",display:"flex",gap:10,alignItems:"flex-start",opacity:n.read?0.6:1,cursor:"pointer"}}
-                  onClick={async () => {
-                    await _supa.from('orientador_notifications').update({ read: true }).eq('id', n.id);
-                    loadNotifications();
-                  }}>
-                  <span style={{fontSize:"1rem"}}>{n.type === 'new_comment' ? '💬' : n.type === 'orientador_joined' ? '👥' : '🔔'}</span>
-                  <div>
-                    <div style={{fontSize:".8125rem",fontWeight:n.read?400:600}}>{n.type === 'new_comment' ? 'Novo comentário' : n.type === 'orientador_joined' ? 'Orientador vinculado' : 'Notificação'}</div>
-                    <div style={{fontSize:".6875rem",color:"var(--muted)",marginTop:2}}>{new Date(n.created_at).toLocaleDateString('pt-BR')}</div>
+              {!notifLoading && notifications.map(n => {
+                const icon = n.type === 'overdue' ? '🔴' : n.type === 'deadline' ? '⏰' : n.type === 'new_comment' ? '💬' : n.type === 'orientador_joined' ? '👥' : '🔔';
+                const label = n.title || (n.type === 'new_comment' ? 'Novo comentário' : n.type === 'orientador_joined' ? 'Orientador vinculado' : 'Notificação');
+                return (
+                  <div key={n.id} style={{padding:"12px 16px",borderBottom:"1px solid var(--line)",display:"flex",gap:10,alignItems:"flex-start",opacity:n.read?0.6:1,cursor:"pointer"}}
+                    onClick={async () => {
+                      if (typeof n.id === 'string' && n.id.startsWith('task-')) return;
+                      await _supa.from('orientador_notifications').update({ read: true }).eq('id', n.id);
+                      await _supa.from('notifications').update({ read: true }).eq('id', n.id);
+                      loadNotifications();
+                    }}>
+                    <span style={{fontSize:"1rem"}}>{icon}</span>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:".8125rem",fontWeight:n.read?400:600}}>{label}</div>
+                      {n.message && <div style={{fontSize:".75rem",color:"var(--muted)",marginTop:1}}>{n.message}</div>}
+                      <div style={{fontSize:".6875rem",color:"var(--muted)",marginTop:2}}>{new Date(n.created_at).toLocaleDateString('pt-BR')}</div>
+                    </div>
+                    {!n.read && <span style={{width:8,height:8,borderRadius:"50%",background:"var(--violet)",flexShrink:0,marginTop:4}}></span>}
                   </div>
-                  {!n.read && <span style={{width:8,height:8,borderRadius:"50%",background:"var(--violet)",flexShrink:0,marginTop:4,marginLeft:"auto"}}></span>}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
-        )}
-        <div className="av av-sm c1" style={{cursor:"pointer"}}>{userInitials}</div>
-      </div>
+        </div>
+      )}
       {showSearch && (
-        <div style={{position:"fixed",inset:0,zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:"15vh"}}>
+        <div style={{position:"fixed",inset:0,zIndex:99999,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:"15vh"}}>
           <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.4)",backdropFilter:"blur(4px)"}} onClick={() => setShowSearch(false)}></div>
           <div style={{position:"relative",background:"var(--paper)",border:"1px solid var(--line)",borderRadius:16,boxShadow:"0 20px 60px rgba(0,0,0,.2)",width:"100%",maxWidth:560,overflow:"hidden"}}>
             <div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",borderBottom:"1px solid var(--line)"}}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" value={searchQuery} onChange={e => handleSearch(e.target.value)} placeholder="Buscar tarefas, projetos, pessoas..." autoFocus
+              <input type="text" value={searchQuery} onChange={e => { const v = e.target.value; setSearchQuery(v); clearTimeout(searchTimerRef.current); searchTimerRef.current = setTimeout(() => handleSearch(v), 300); }} placeholder="Buscar tarefas, projetos, pessoas..." autoFocus
                 style={{flex:1,border:"none",outline:"none",background:"transparent",fontSize:".9375rem",color:"var(--ink)"}}/>
               <kbd style={{fontSize:".625rem",padding:"2px 6px",borderRadius:4,border:"1px solid var(--line)",color:"var(--muted)"}}>ESC</kbd>
             </div>
-            <div style={{maxHeight:320,overflowY:"auto"}}>
+            <div style={{maxHeight:380,overflowY:"auto"}}>
+              {searchResults.length === 0 && searchQuery.length < 2 && (
+                <div>
+                  <div style={{padding:"10px 18px 6px",fontFamily:"var(--font-mono)",fontSize:".625rem",textTransform:"uppercase",letterSpacing:".08em",color:"var(--muted)"}}>Acesso rápido</div>
+                  {[
+                    {icon:"✓",title:"Tarefas",sub:"Ver quadro kanban",href:"tasks.html"},
+                    {icon:"📊",title:"Cronograma Gantt",sub:"Ver timeline do projeto",href:"calendar.html"},
+                    {icon:"📅",title:"Calendário",sub:"Ver eventos e metas",href:"calendar.html"},
+                    {icon:"👥",title:"Equipe",sub:"Ver membros do projeto",href:"team.html"},
+                    {icon:"🛠",title:"Ferramentas",sub:"SMART, Detector IA, Referências",href:"tools.html"},
+                    {icon:"📁",title:"Projeto",sub:"Detalhes e configurações",href:"project.html"},
+                  ].map((q,i)=>(
+                    <a key={i} href={q.href} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 18px",textDecoration:"none",color:"inherit",transition:"background .15s"}}
+                      onMouseOver={e=>e.currentTarget.style.background="var(--bg-2)"} onMouseOut={e=>e.currentTarget.style.background=""}>
+                      <span style={{fontSize:"1rem",width:28,textAlign:"center"}}>{q.icon}</span>
+                      <div><div style={{fontSize:".875rem",fontWeight:500}}>{q.title}</div><div style={{fontSize:".6875rem",color:"var(--muted)"}}>{q.sub}</div></div>
+                      <span style={{marginLeft:"auto",fontSize:".75rem",color:"var(--muted)"}}>→</span>
+                    </a>
+                  ))}
+                </div>
+              )}
               {searchResults.length === 0 && searchQuery.length >= 2 && (
                 <div style={{padding:"30px 20px",textAlign:"center",color:"var(--muted)",fontSize:".8125rem"}}>Nenhum resultado para "{searchQuery}"</div>
-              )}
-              {searchResults.length === 0 && searchQuery.length < 2 && (
-                <div style={{padding:"30px 20px",textAlign:"center",color:"var(--muted)",fontSize:".8125rem"}}>Digite para buscar...</div>
               )}
               {searchResults.map((r, i) => (
                 <a key={i} href={r.href} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 18px",borderBottom:"1px solid var(--line)",textDecoration:"none",color:"inherit",transition:"background .15s"}}
                   onMouseOver={e => e.currentTarget.style.background="var(--bg-2)"} onMouseOut={e => e.currentTarget.style.background=""}>
                   <span style={{fontSize:"1rem",width:28,textAlign:"center"}}>{r.icon}</span>
-                  <div>
+                  <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:".875rem",fontWeight:500}}>{r.title}</div>
                     <div style={{fontSize:".6875rem",color:"var(--muted)"}}>{r.sub}</div>
                   </div>
+                  {r.badge && <span className={`tag ${r.badge.cls}`} style={{fontSize:".6rem",padding:"2px 6px"}}>{r.badge.text}</span>}
                   <span style={{marginLeft:"auto",fontSize:".625rem",fontFamily:"var(--font-mono)",color:"var(--muted)",textTransform:"uppercase"}}>{r.type}</span>
                 </a>
               ))}

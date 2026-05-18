@@ -225,8 +225,8 @@ function TasksPage() {
                           <div className="task-title">{t.title}</div>
                           <div className="task-meta">
                             <div style={{display:"flex",alignItems:"center",gap:5}}>
-                              <span className="priority-dot" style={{background:t.due_date && new Date(t.due_date)<new Date()?"var(--rose)":"var(--muted)"}}></span>
-                              {t.due_date && <span>{new Date(t.due_date).toLocaleDateString('pt-BR',{day:'numeric',month:'short'})}</span>}
+                              <span className="priority-dot" style={{background:t.due_date && new Date(t.due_date+'T00:00:00')<new Date()?"var(--rose)":"var(--muted)"}}></span>
+                              {t.due_date && <span>{new Date(t.due_date+'T00:00:00').toLocaleDateString('pt-BR',{day:'numeric',month:'short'})}</span>}
                             </div>
                             <div style={{display:"flex",gap:4}}>
                               <button style={{fontSize:".7rem",cursor:"pointer",background:"none",border:"none",color:"var(--blue)",padding:"2px 4px"}} title="Editar" onClick={()=>openEdit(t)}>✎</button>
@@ -265,7 +265,7 @@ function TasksPage() {
                   <span className="priority-dot" style={{ background:statusDot(t.status) }}></span>
                   <div style={{ flex:1,fontSize:"0.875rem",fontWeight:500 }}>{t.title}</div>
                   <span className="tag tag-cyan">{statusLabel(t.status)}</span>
-                  {t.due_date && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{new Date(t.due_date).toLocaleDateString('pt-BR')}</span>}
+                  {t.due_date && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{new Date(t.due_date+'T00:00:00').toLocaleDateString('pt-BR')}</span>}
                   <button className="btn btn-ghost btn-sm" onClick={()=>openEdit(t)}>✎</button>
                   <button className="btn btn-ghost btn-sm" onClick={()=>moveTask(t.id, nextStatus[t.status])}>→</button>
                 </div>

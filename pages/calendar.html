@@ -62,7 +62,7 @@ function GanttView({ goals, sessions, tasks }) {
   (tasks || []).forEach(t => {
     if (!t.due_date) return;
     const created = new Date(t.created_at);
-    const due = new Date(t.due_date + 'T23:59:59');
+    const due = t.due_date.includes('T') ? new Date(t.due_date) : new Date(t.due_date + 'T23:59:59');
     if (isNaN(created) || isNaN(due)) return;
     const colors = {
       todo:     "linear-gradient(90deg,#94a3b8,#64748b)",
@@ -82,17 +82,23 @@ function GanttView({ goals, sessions, tasks }) {
     });
   });
 
+  function parseLocalDate(str) {
+    if (!str) return new Date(NaN);
+    if (str.includes('T')) return new Date(str);
+    return new Date(str + 'T00:00:00');
+  }
+
   // Goals become milestones
   const milestones = (goals || []).filter(g => g.deadline).map(g => ({
     label: g.title,
-    date: new Date(g.deadline + (g.deadline.includes('T') ? '' : 'T12:00:00')),
+    date: parseLocalDate(g.deadline),
     color: g.completed ? "var(--emerald)" : "var(--amber)"
   })).filter(m => !isNaN(m.date));
 
   // Sessions become markers
   const sessionMarkers = (sessions || []).filter(s => s.date).map(s => ({
     label: s.subject,
-    date: new Date(s.date + (s.date.includes('T') ? '' : 'T12:00:00')),
+    date: parseLocalDate(s.date),
     color: "var(--cyan)"
   })).filter(m => !isNaN(m.date));
 
@@ -328,10 +334,16 @@ function MonthView({current, setCurrent, goals=[], sessions=[], onDeleteGoal, on
   const cells=buildCells();
   const isToday=(c)=>!c.other&&c.day===today.getDate()&&current.month===today.getMonth()&&current.year===today.getFullYear();
 
+  function parseLocal(str) {
+    if (!str) return new Date(NaN);
+    if (str.includes('T')) return new Date(str);
+    return new Date(str + 'T00:00:00');
+  }
+
   const goalsForDay = (day) => {
     return goals.filter(g => {
       if (!g.deadline) return false;
-      const d = new Date(g.deadline);
+      const d = parseLocal(g.deadline);
       return d.getDate()===day && d.getMonth()===current.month && d.getFullYear()===current.year;
     }).map(g => ({id:g.id, title:g.title, color:"var(--violet)", cls:"rgba(124,58,237,.15)", type:"goal"}));
   };
@@ -339,17 +351,17 @@ function MonthView({current, setCurrent, goals=[], sessions=[], onDeleteGoal, on
   const sessionsForDay = (day) => {
     return sessions.filter(s => {
       if (!s.date) return false;
-      const d = new Date(s.date);
+      const d = parseLocal(s.date);
       return d.getDate()===day && d.getMonth()===current.month && d.getFullYear()===current.year;
     }).map(s => ({id:s.id, title:s.subject, color:"var(--cyan)", cls:"rgba(6,182,212,.15)", type:"session"}));
   };
 
   // Combine goals and sessions for upcoming, sorted by date
-  const upcomingGoals = goals.filter(g=>g.deadline&&new Date(g.deadline)>=today).map(g=>({
-    id:g.id, title:g.title, date:new Date(g.deadline).toLocaleDateString('pt-BR'), color:"var(--violet)", sortDate:new Date(g.deadline), type:"goal"
+  const upcomingGoals = goals.filter(g=>g.deadline&&parseLocal(g.deadline)>=today).map(g=>({
+    id:g.id, title:g.title, date:parseLocal(g.deadline).toLocaleDateString('pt-BR'), color:"var(--violet)", sortDate:parseLocal(g.deadline), type:"goal"
   }));
-  const upcomingSessions = sessions.filter(s=>s.date&&new Date(s.date)>=today).map(s=>({
-    id:s.id, title:s.subject, date:new Date(s.date).toLocaleDateString('pt-BR') + (s.time ? `, ${s.time}` : ''), color:"var(--cyan)", sortDate:new Date(s.date), type:"session"
+  const upcomingSessions = sessions.filter(s=>s.date&&parseLocal(s.date)>=today).map(s=>({
+    id:s.id, title:s.subject, date:parseLocal(s.date).toLocaleDateString('pt-BR') + (s.time ? `, ${s.time}` : ''), color:"var(--cyan)", sortDate:parseLocal(s.date), type:"session"
   }));
   const upcomingEvents = [...upcomingGoals, ...upcomingSessions].sort((a,b)=>a.sortDate-b.sortDate).slice(0,6);
 
