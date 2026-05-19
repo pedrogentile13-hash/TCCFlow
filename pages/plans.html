@@ -77,6 +77,11 @@ function PlansPage() {
 
     setUpgrading(true);
     try {
+      // Determinar valor e tipo de plano baseado na seleção (mensal ou anual)
+      const isYearly = billing === "yearly";
+      const amount = isYearly ? 124.90 : 14.90;
+      const planType = isYearly ? 'pro_annual' : 'pro_monthly';
+
       // Chamar Netlify Function para criar assinatura recorrente
       const response = await fetch('/.netlify/functions/create-preapproval', {
         method: 'POST',
@@ -86,7 +91,8 @@ function PlansPage() {
           userEmail: user.email,
           userName: userData.name || user.displayName || 'Usuário',
           seats: 1,
-          planType: 'pro_annual'
+          planType: planType,
+          amount: amount
         })
       });
 

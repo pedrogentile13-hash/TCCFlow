@@ -10,11 +10,16 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { userId, userEmail, userName, seats, planType } = JSON.parse(event.body);
+        const { userId, userEmail, userName, seats, planType, amount } = JSON.parse(event.body);
 
         if (!userId || !userEmail) {
             return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields: userId, userEmail' }) };
         }
+
+        // Validar amount e definir frequência
+        const finalAmount = amount || 97.90;
+        const frequency = planType === 'pro_monthly' ? 1 : 12;
+        const frequencyType = planType === 'pro_monthly' ? 'months' : 'months';
 
         const client = new MercadoPagoConfig({
             accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN
@@ -27,15 +32,15 @@ exports.handler = async (event) => {
 
         const result = await preapprovalClient.create({
             body: {
-                reason: 'TCCFlow - Assinatura Anual PRO',
+                reason: planType === 'pro_monthly' ? 'TCCFlow - Assinatura Mensal PRO' : 'TCCFlow - Assinatura Anual PRO',
                 reference_id: userId,
                 external_reference: userId,
                 payer_email: userEmail,
                 back_url: `${siteUrl}/pages/pagamento-sucesso.html`,
                 auto_recurring: {
-                    frequency: 12, // a cada 12 meses
-                    frequency_type: 'months',
-                    transaction_amount: 97.90,
+                    frequency: frequency,
+                    frequency_type: frequencyType,
+                    transaction_amount: finalAmount,
                     currency_id: 'BRL',
                     start_date: new Date().toISOString(),
                     end_date: null // sem data de término
