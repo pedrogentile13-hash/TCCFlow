@@ -519,34 +519,30 @@ const DB = {
 
         async getProjectOrientador(projectId) {
             try {
-                const { data, error } = await _supa
-                    .from('orientador_projects')
-                    .select('id, project_id, orientador_id, status, invite_code')
-                    .eq('project_id', projectId)
-                    .eq('status', 'accepted')
-                    .not('orientador_id', 'is', null)
-                    .maybeSingle();
+                const { data, error } = await _supa.rpc('get_project_orientador', {
+                    project_uuid: projectId
+                }).maybeSingle();
 
                 if (error || !data) {
                     return null;
                 }
 
-                // Tenta pegar dados do usuário na tabela users (se existir)
-                const { data: userFromTable } = await _supa
-                    .from('users')
-                    .select('id, email, name, photo_url')
-                    .eq('id', data.orientador_id)
-                    .maybeSingle();
-
-                if (userFromTable) {
-                    return {
-                        ...data,
-                        users: userFromTable
-                    };
-                }
-
-                // Se não encontrou na tabela users, retorna só com orientador_id
-                return data;
+                return {
+                    id: data.id,
+                    project_id: data.project_id,
+                    orientador_id: data.orientador_id,
+                    status: data.status,
+                    invite_code: data.invite_code,
+                    name: data.name,
+                    email: data.email,
+                    photo_url: data.photo_url,
+                    users: {
+                        id: data.orientador_id,
+                        name: data.name,
+                        email: data.email,
+                        photo_url: data.photo_url
+                    }
+                };
             } catch(e) {
                 console.error('getProjectOrientador error:', e);
                 return null;
