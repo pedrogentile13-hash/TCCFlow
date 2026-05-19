@@ -18,13 +18,99 @@ exports.handler = async (event) => {
     try {
         const body = JSON.parse(event.body || '{}');
 
-        // Mercado Pago sends different notification types
-        // We only care about payment notifications
-        if (body.type !== 'payment' && body.action !== 'payment.updated' && body.action !== 'payment.created') {
-            console.log('Ignoring notification type:', body.type, body.action);
+        console.log('Webhook received:', body.type || body.action);
+
+        // Handle PreApproval (recurring subscription) notifications
+        if (body.type === 'subscription_preapproval' || body.action === 'subscription_preapproval.created' || body.action === 'subscription_preapproval.updated') {
+            console.log('Processing PreApproval:', body.data?.id);
+            return await handlePreApproval(body, event);
+        }
+
+        // Handle Payment notifications (one-time checkout or recurring payments)
+        if (body.type === 'payment' || body.action === 'payment.updated' || body.action === 'payment.created') {
+            console.log('Processing Payment:', body.data?.id);
+            return await handlePayment(body, event);
+        }
+
+        console.log('Ignoring notification type:', body.type, body.action);
+        return { statusCode: 200, body: 'OK' };
+
+    } catch (err) {
+        console.error('Webhook error:', err);
+        // Always return 200 to Mercado Pago to prevent retries on our errors
+        return { statusCode: 200, body: 'OK' };
+    }
+};
+
+// Handler para PreApproval (assinatura recorrente)
+async function handlePreApproval(body, event) {
+    try {
+        const preapprovalId = body.data?.id;
+        if (!preapprovalId) {
+            console.log('No preapproval ID in webhook body');
             return { statusCode: 200, body: 'OK' };
         }
 
+        // Fetch PreApproval details
+        const client = new MercadoPagoConfig({
+            accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN
+        });
+
+        const preapprovalClient = new (require('mercadopago')).PreApproval(client);
+        const preapproval = await preapprovalClient.get({ id: preapprovalId });
+
+        console.log('PreApproval status:', preapproval.status);
+
+        // Status: pending, authorized, paused, active, suspended, cancelled, expired
+        if (preapproval.status === 'active' || preapproval.status === 'authorized') {
+            const userId = preapproval.external_reference || preapproval.reference_id;
+            if (!userId) {
+                console.error('No user_id in preapproval');
+                return { statusCode: 200, body: 'OK' };
+            }
+
+            const supabase = createClient(
+                process.env.SUPABASE_URL,
+                process.env.SUPABASE_SERVICE_KEY
+            );
+
+            // Calcular próxima cobrança (12 meses a partir de agora)
+            const nextBillingDate = new Date();
+            nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
+
+            // Atualizar assinatura para 'active'
+            const { error } = await supabase
+                .from('subscriptions')
+                .update({
+                    status: 'active',
+                    plan: 'pro',
+                    plan_type: 'pro_annual',
+                    mercadopago_preapproval_id: preapprovalId,
+                    current_period_start: new Date().toISOString(),
+                    current_period_end: nextBillingDate.toISOString(),
+                    next_billing_date: nextBillingDate.toISOString(),
+                    activated_at: new Date().toISOString()
+                })
+                .eq('user_id', userId);
+
+            if (error) {
+                console.error('Supabase update error:', error);
+                return { statusCode: 200, body: 'OK' };
+            }
+
+            console.log('Subscription activated for user:', userId);
+        }
+
+        return { statusCode: 200, body: 'OK' };
+    } catch (err) {
+        console.error('PreApproval handler error:', err);
+        return { statusCode: 200, body: 'OK' };
+    }
+}
+
+// Handler para Payment (pagamentos únicos e cobranças recorrentes)
+async function handlePayment(body, event) {
+    try {
         const paymentId = body.data?.id;
         if (!paymentId) {
             console.log('No payment ID in webhook body');
@@ -77,6 +163,7 @@ exports.handler = async (event) => {
                 id: userId,
                 status: 'active',
                 plan: plan,
+                plan_type: 'pro_annual',
                 seats: seats,
                 payment_id: String(paymentId),
                 payment_method: payment.payment_method_id || 'mercadopago',
@@ -86,24 +173,19 @@ exports.handler = async (event) => {
                 coupon_code: couponCode,
                 discount_percent: discountPercent,
                 original_amount: originalAmount,
-                paid_amount: paidAmount
+                paid_amount: paidAmount,
+                activated_at: new Date().toISOString()
             }, { onConflict: 'id' });
 
         if (error) {
             console.error('Supabase upsert error:', error);
-            return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+            return { statusCode: 200, body: 'OK' };
         }
 
         console.log('PRO activated for user:', userId, 'seats:', seats);
 
-        // Send confirmation email via Resend
-        console.log('Email check — userEmail:', userEmail || '(empty)', 'RESEND_API_KEY configured:', !!process.env.RESEND_API_KEY);
-
-        if (!userEmail) {
-            console.warn('SKIPPING EMAIL: userEmail is empty. metadata:', JSON.stringify(metadata), 'payer:', JSON.stringify(payment.payer));
-        } else if (!process.env.RESEND_API_KEY) {
-            console.error('SKIPPING EMAIL: RESEND_API_KEY is not configured in environment variables');
-        } else {
+        // Send confirmation email via Resend (if configured)
+        if (userEmail && process.env.RESEND_API_KEY) {
             try {
                 const amount = (payment.transaction_amount || 0).toFixed(2).replace('.', ',');
                 const seatsPlural = seats > 1 ? 's' : '';
@@ -156,7 +238,7 @@ exports.handler = async (event) => {
 
                 console.log('Sending confirmation email to:', userEmail);
 
-                const emailRes = await fetch('https://api.resend.com/emails', {
+                await fetch('https://api.resend.com/emails', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
@@ -168,28 +250,16 @@ exports.handler = async (event) => {
                         subject: '🎉 Seu plano TCCFlow Pro foi ativado!',
                         html: emailHtml
                     })
-                });
-
-                const emailResBody = await emailRes.text();
-                if (emailRes.ok) {
-                    console.log('Confirmation email sent successfully to:', userEmail, 'Response:', emailResBody);
-                } else {
-                    console.error('Failed to send confirmation email. Status:', emailRes.status, 'Response:', emailResBody);
-                }
+                }).catch(emailError => console.error('Email error:', emailError));
             } catch (emailError) {
-                // Email failure should not block the webhook response
-                console.error('Email sending error:', emailError.message || emailError);
+                console.error('Email sending error:', emailError);
             }
         }
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ success: true, userId, plan, seats })
-        };
+        return { statusCode: 200, body: 'OK' };
 
     } catch (err) {
-        console.error('Webhook error:', err);
-        // Always return 200 to Mercado Pago to prevent retries on our errors
+        console.error('Payment handler error:', err);
         return { statusCode: 200, body: 'OK' };
     }
-};
+}
