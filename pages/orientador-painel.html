@@ -335,7 +335,9 @@
             .eq('project_id', projectId);
           if (error) throw error;
           setDetail(null);
-          onRefresh();
+          await onRefresh();
+          alert('Você saiu do projeto. Voltando ao dashboard...');
+          window.location.href = 'dashboard.html';
         } catch(e) {
           alert('Erro ao sair: ' + (e.message || e));
         }
