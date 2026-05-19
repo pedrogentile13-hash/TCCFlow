@@ -6,29 +6,6 @@
   <link rel="icon" href="../assets/logo.png"/>
   <link rel="stylesheet" href="../css/app.css"/>
   <script src="../js/darkmode.js"></script>
-  <style>
-    .plan-card{background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:32px 28px;display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s;}
-    .plan-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
-    .plan-card.featured{background:var(--ink);color:var(--bg);border-color:var(--ink);}
-    .plan-card.current{border-color:var(--emerald);box-shadow:0 0 20px rgba(16,185,129,.15);}
-    .plan-name{font-family:var(--font-display);font-size:1.75rem;font-weight:400;letter-spacing:-.01em;margin-bottom:4px;}
-    .plan-sub{font-size:.875rem;color:var(--muted);min-height:40px;margin-bottom:20px;}
-    .plan-card.featured .plan-sub{color:rgba(255,255,255,.6);}
-    .plan-price{font-family:var(--font-display);font-size:3.25rem;line-height:1;letter-spacing:-.04em;margin-bottom:6px;}
-    .plan-period{font-size:.875rem;color:var(--muted);margin-bottom:24px;}
-    .plan-card.featured .plan-period{color:rgba(255,255,255,.55);}
-    .plan-feats{list-style:none;flex:1;font-size:.875rem;margin:0 0 28px;}
-    .plan-feats li{padding:9px 0 9px 22px;position:relative;border-top:1px dashed var(--line);color:var(--ink-2);}
-    .plan-card.featured .plan-feats li{border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.85);}
-    .plan-feats li:last-child{border-bottom:1px dashed var(--line);}
-    .plan-card.featured .plan-feats li:last-child{border-color:rgba(255,255,255,.12);}
-    .plan-feats li::before{content:"✓";position:absolute;left:0;top:9px;color:var(--violet);font-weight:700;}
-    .plan-card.featured .plan-feats li::before{color:var(--cyan);}
-    .plan-feats li.off{color:var(--muted);text-decoration:line-through;opacity:.5;}
-    .plan-feats li.off::before{content:"–";}
-    .popular-badge{position:absolute;top:16px;right:16px;background:var(--grad);color:white;font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.1em;padding:4px 10px;border-radius:999px;font-weight:600;}
-    .current-badge{position:absolute;top:16px;left:16px;background:var(--emerald);color:white;font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.1em;padding:4px 10px;border-radius:999px;font-weight:600;}
-  </style>
 </head>
 <body><div id="root"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -39,160 +16,263 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel" src="../src/sidebar.jsx"></script>
 <script type="text/babel">
-const { useState, useRef, useEffect } = React;
-
-const PLANS = [
-  {
-    id:"free", name:"Gratuito", sub:"Para começar com o pé direito.",
-    monthly:0, yearly:0, featured:false,
-    feats:["Dashboard e Projeto","Até 5 tarefas","Calendário básico","20 buscas I.A./mês","Equipe: 1 integrante"]
-  },
-  {
-    id:"pro", name:"Pro", sub:"Para equipes que levam a sério.",featured:true,
-    monthly:14.90, yearly:124.90,
-    badge:"Mais popular",
-    feats:["Tudo do Gratuito","Até 8 membros","Tarefas ilimitadas","1.000 buscas I.A./mês","Integração Google","Todas as ferramentas PRO","Suporte prioritário"]
-  },
-  {
-    id:"inst", name:"Instituição", sub:"Para coordenadores.",
-    monthly:null, yearly:null, featured:false,
-    feats:["Tudo do Pro","Múltiplos grupos","Painel do coordenador","Relatórios de turma","Integração sistemas"]
-  }
-];
+const { useState, useEffect } = React;
 
 function PlansPage() {
   const { user, userData, subscription, loading } = useTCCData();
-  const [billing, setBilling] = useState("yearly");
-  const [upgrading, setUpgrading] = useState(false);
+  const [processingPlan, setProcessingPlan] = useState(null);
 
-  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+  if (loading) {
+    return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+  }
 
   const currentPlan = subscription?.plan || "free";
 
-  async function handleUpgrade() {
-    console.log('handleUpgrade called', { user: !!user, userData: !!userData, billing });
-
-    if (!user || !userData) {
+  async function handleSelectPlan(planId, amount) {
+    if (!user) {
       alert("Faça login para continuar");
       return;
     }
 
-    setUpgrading(true);
+    if (planId === "free") {
+      window.location.href = "dashboard.html";
+      return;
+    }
+
+    if (planId === "inst") {
+      window.location.href = "mailto:tccflow.contato@gmail.com";
+      return;
+    }
+
+    setProcessingPlan(planId);
+
     try {
-      // Determinar valor e tipo de plano baseado na seleção (mensal ou anual)
-      const isYearly = billing === "yearly";
-      const amount = isYearly ? 124.90 : 14.90;
-      const planType = isYearly ? 'pro_annual' : 'pro_monthly';
+      console.log("Iniciando assinatura:", { userId: user.uid, amount, planId });
 
-      console.log('Calling create-preapproval with:', { userId: user.uid, amount, planType });
-
-      // Chamar Netlify Function para criar assinatura recorrente
-      const response = await fetch('/.netlify/functions/create-preapproval', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/.netlify/functions/create-preapproval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user.uid,
           userEmail: user.email,
-          userName: userData.name || user.displayName || 'Usuário',
+          userName: userData?.name || user.displayName || "Usuário",
           seats: 1,
-          planType: planType,
+          planType: planId === "pro" ? "pro_annual" : "pro_monthly",
           amount: amount
         })
       });
 
       const data = await response.json();
-      console.log('Response from create-preapproval:', data);
+      console.log("Resposta da API:", data);
 
       if (data.error) {
-        alert('Erro: ' + data.error);
+        alert("Erro: " + data.error);
+        setProcessingPlan(null);
         return;
       }
 
       if (data.url) {
-        console.log('Redirecting to:', data.url);
-        // Redirecionar para Mercado Pago
+        console.log("Redirecionando para:", data.url);
         window.location.href = data.url;
       } else {
-        console.warn('No URL returned from API');
-        alert('Erro: Não foi possível redirecionar para Mercado Pago');
+        alert("Erro ao processar pagamento. Tente novamente.");
+        setProcessingPlan(null);
       }
-    } catch(e) {
-      console.error('Erro ao criar assinatura:', e);
-      alert('Erro ao processar pagamento. Tente novamente: ' + e.message);
-    } finally {
-      setUpgrading(false);
+    } catch (e) {
+      console.error("Erro:", e);
+      alert("Erro ao conectar ao servidor: " + e.message);
+      setProcessingPlan(null);
     }
   }
 
   return (
     <div className="app-layout">
-      <Sidebar active="plans" userData={userData} subscription={subscription}/>
+      <Sidebar active="plans" userData={userData} subscription={subscription} />
       <div className="main-area">
-        <Topbar page="Planos" user={user}/>
-        <div className="page-content">
-          <div style={{ textAlign:"center", marginBottom:8 }}>
-            <div className="mono-label" style={{ marginBottom:12 }}>Escolha seu plano</div>
-            <h1 style={{ fontFamily:"var(--font-display)", fontSize:"2.5rem", fontWeight:400, letterSpacing:"-.03em", marginBottom:8 }}>
-              Invista no seu <em style={{ fontStyle:"italic", color:"var(--violet)" }}>TCC</em>
+        <Topbar page="Planos" user={user} />
+        <div className="page-content" style={{ maxWidth: "1000px", margin: "0 auto" }}>
+
+          <div style={{ textAlign: "center", marginBottom: 60, paddingTop: 20 }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 400, letterSpacing: "-0.03em", marginBottom: 16, color: "var(--ink)" }}>
+              Escolha seu plano
             </h1>
-            <p style={{ color:"var(--muted)", fontSize:"0.9375rem", maxWidth:"48ch", margin:"0 auto 24px" }}>
-              7 dias grátis para testar o Pro. Cancele quando quiser.
+            <p style={{ fontSize: "1rem", color: "var(--muted)", marginBottom: 8 }}>
+              Comece grátis. Atualize quando precisar.
             </p>
-            <div style={{ display:"inline-flex", background:"var(--bg-2)", border:"1px solid var(--line)", borderRadius:999, padding:4, marginBottom:40 }}>
-              <button className={`btn btn-sm ${billing==="yearly"?"btn-primary":"btn-ghost"}`} style={{border:"none"}} onClick={() => setBilling("yearly")}>
-                Anual <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", background:"var(--emerald)", color:"white", padding:"1px 6px", borderRadius:999, marginLeft:4 }}>−30%</span>
+            {currentPlan !== "free" && (
+              <div style={{ background: "rgba(16, 185, 129, 0.1)", color: "var(--emerald)", padding: "8px 16px", borderRadius: 8, display: "inline-block", fontSize: "0.875rem", fontWeight: 600, marginTop: 12 }}>
+                ✓ Você está no plano <strong>{currentPlan === "pro" ? "Pro" : "Instituição"}</strong>
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
+
+            {/* PLANO GRATUITO */}
+            <div style={{
+              background: "var(--paper)",
+              border: "1.5px solid var(--line)",
+              borderRadius: 16,
+              padding: 32,
+              display: "flex",
+              flexDirection: "column",
+              opacity: currentPlan === "free" ? 1 : 0.9
+            }}>
+              <div style={{ marginBottom: 24 }}>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", fontWeight: 400, margin: "0 0 8px", color: "var(--ink)" }}>
+                  Gratuito
+                </h2>
+                <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
+                  Para começar com o pé direito
+                </p>
+              </div>
+
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "var(--ink)", marginBottom: 4 }}>
+                  R$ 0
+                </div>
+                <div style={{ fontSize: "0.875rem", color: "var(--muted)" }}>
+                  para sempre
+                </div>
+              </div>
+
+              <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 24px", fontSize: "0.875rem" }}>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Dashboard e Projeto</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Até 5 tarefas</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Calendário básico</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ 20 buscas I.A./mês</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Equipe: 1 integrante</li>
+                <li style={{ padding: "8px 0", color: "var(--muted)", textDecoration: "line-through" }}>Suporte prioritário</li>
+              </ul>
+
+              {currentPlan === "free" ? (
+                <button className="btn" style={{ width: "100%", justifyContent: "center", opacity: 0.6, cursor: "default" }}>
+                  Seu plano atual
+                </button>
+              ) : (
+                <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center" }} onClick={() => handleSelectPlan("free")}>
+                  Usar grátis
+                </button>
+              )}
+            </div>
+
+            {/* PLANO PRO */}
+            <div style={{
+              background: "var(--paper)",
+              border: "2px solid var(--violet)",
+              borderRadius: 16,
+              padding: 32,
+              display: "flex",
+              flexDirection: "column",
+              position: "relative",
+              transform: "scale(1.02)",
+              boxShadow: "0 10px 40px rgba(124, 58, 237, 0.15)"
+            }}>
+              <div style={{ position: "absolute", top: 16, right: 16, background: "var(--violet)", color: "white", padding: "4px 12px", borderRadius: 999, fontSize: "0.6875rem", fontWeight: 600, textTransform: "uppercase" }}>
+                Popular
+              </div>
+
+              <div style={{ marginBottom: 24 }}>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", fontWeight: 400, margin: "0 0 8px", color: "var(--ink)" }}>
+                  Pro
+                </h2>
+                <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
+                  Para equipes que levam a sério
+                </p>
+              </div>
+
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "var(--ink)", marginBottom: 4 }}>
+                  R$ 124,90
+                </div>
+                <div style={{ fontSize: "0.875rem", color: "var(--muted)" }}>
+                  por ano (R$ 10,41/mês)
+                </div>
+              </div>
+
+              <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 24px", fontSize: "0.875rem" }}>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Tudo do Gratuito</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Até 8 membros</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Tarefas ilimitadas</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ 1.000 buscas I.A./mês</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Integração Google</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Todas as ferramentas PRO</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Suporte prioritário</li>
+              </ul>
+
+              {currentPlan === "pro" ? (
+                <button className="btn" style={{ width: "100%", justifyContent: "center", opacity: 0.6, cursor: "default" }}>
+                  Seu plano atual
+                </button>
+              ) : (
+                <button
+                  className="btn btn-primary"
+                  style={{ width: "100%", justifyContent: "center" }}
+                  onClick={() => handleSelectPlan("pro", 124.90)}
+                  disabled={processingPlan === "pro"}
+                >
+                  {processingPlan === "pro" ? "Processando..." : "Assinar agora"}
+                </button>
+              )}
+            </div>
+
+            {/* PLANO INSTITUIÇÃO */}
+            <div style={{
+              background: "var(--paper)",
+              border: "1.5px solid var(--line)",
+              borderRadius: 16,
+              padding: 32,
+              display: "flex",
+              flexDirection: "column",
+              opacity: 0.9
+            }}>
+              <div style={{ marginBottom: 24 }}>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", fontWeight: 400, margin: "0 0 8px", color: "var(--ink)" }}>
+                  Instituição
+                </h2>
+                <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
+                  Para coordenadores e escolas
+                </p>
+              </div>
+
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "var(--ink)", marginBottom: 4 }}>
+                  Customizado
+                </div>
+                <div style={{ fontSize: "0.875rem", color: "var(--muted)" }}>
+                  Preço por volume
+                </div>
+              </div>
+
+              <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 24px", fontSize: "0.875rem" }}>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Tudo do Pro</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Múltiplos grupos</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Painel do coordenador</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Relatórios de turma</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Integração com SIGAA</li>
+                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Suporte dedicado</li>
+              </ul>
+
+              <button
+                className="btn btn-ghost"
+                style={{ width: "100%", justifyContent: "center" }}
+                onClick={() => handleSelectPlan("inst")}
+              >
+                Falar com vendas
               </button>
-              <button className={`btn btn-sm ${billing==="monthly"?"btn-primary":"btn-ghost"}`} style={{border:"none"}} onClick={() => setBilling("monthly")}>Mensal</button>
             </div>
           </div>
 
-          <div className="plan-cards-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, maxWidth:960, margin:"0 auto" }}>
-            {PLANS.map(p => {
-              const isCurrent = currentPlan === p.id;
-              return (
-                <div key={p.id} className={`plan-card ${p.featured?"featured":""} ${isCurrent?"current":""}`} style={{position:"relative"}}>
-                  {isCurrent && <div className="current-badge">✓ Seu plano</div>}
-                  {p.badge && !isCurrent && <div className="popular-badge">{p.badge}</div>}
-                  <div className="plan-name">{p.name}</div>
-                  <div className="plan-sub">{p.sub}</div>
-                  {p.monthly !== null ? (
-                    <>
-                      <div className="plan-price">
-                        {p.monthly === 0 ? "R$ 0" : billing==="yearly"
-                          ? `R$ ${(p.yearly/12).toFixed(0)}`
-                          : `R$ ${p.monthly.toFixed(2).replace(".",",")}`}
-                      </div>
-                      <div className="plan-period">
-                        {p.monthly === 0 ? "para sempre" : billing==="yearly" ? `/mês · R$ ${p.yearly}/ano` : `/mês`}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="plan-price" style={{ fontSize:"2rem" }}>Consulte</div>
-                      <div className="plan-period">preço personalizado</div>
-                    </>
-                  )}
-
-                  <ul className="plan-feats">
-                    {p.feats.map((f,i) => (
-                      <li key={i}>{f}</li>
-                    ))}
-                  </ul>
-
-                  {isCurrent ? (
-                    <button className="btn btn-ghost" disabled style={{ width:"100%", justifyContent:"center", opacity:0.6 }}>Plano atual</button>
-                  ) : p.id === "free" ? (
-                    <a href="dashboard.html" className="btn btn-ghost" style={{ width:"100%", justifyContent:"center" }}>Usar grátis</a>
-                  ) : p.id === "pro" ? (
-                    <button className="btn btn-violet" style={{ width:"100%", justifyContent:"center" }} onClick={handleUpgrade} disabled={upgrading}>
-                      {upgrading ? "Processando..." : "Testar 7 dias grátis"}
-                    </button>
-                  ) : (
-                    <a href="mailto:tccflow.contato@gmail.com" className="btn btn-ghost" style={{ width:"100%", justifyContent:"center" }}>Falar com vendas</a>
-                  )}
-                </div>
-              );
-            })}
+          <div style={{ marginTop: 60, padding: "32px", background: "var(--bg-2)", borderRadius: 16, textAlign: "center" }}>
+            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.3rem", fontWeight: 400, marginBottom: 12, color: "var(--ink)" }}>
+              Dúvidas?
+            </h3>
+            <p style={{ color: "var(--muted)", marginBottom: 16 }}>
+              Não tem cartão de crédito? Sem problema! Testamos com Pix, boleto e cartão de débito.
+            </p>
+            <a href="mailto:tccflow.contato@gmail.com" className="btn btn-ghost">
+              📧 Entre em contato conosco
+            </a>
           </div>
         </div>
       </div>
