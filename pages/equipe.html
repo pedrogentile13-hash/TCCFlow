@@ -1137,18 +1137,25 @@
             if (!projectId) return;
             try {
                 const orientador = await DB.orientador.getProjectOrientador(projectId);
-                if (orientador && orientador.users) {
-                    const user = orientador.users;
-                    document.getElementById('orientadorLinked').classList.remove('hidden');
-                    document.getElementById('orientadorInvite').classList.add('hidden');
-                    document.getElementById('orientadorName').textContent = user.name || 'Orientador';
-                    document.getElementById('orientadorEmail').textContent = user.email || '';
+                if (orientador) {
+                    const user = orientador.users || orientador;
+                    if (user && user.id) {
+                        document.getElementById('orientadorLinked').classList.remove('hidden');
+                        document.getElementById('orientadorInvite').classList.add('hidden');
+                        document.getElementById('orientadorName').textContent = user.name || 'Orientador';
+                        document.getElementById('orientadorEmail').textContent = user.email || '';
+                    } else {
+                        document.getElementById('orientadorLinked').classList.add('hidden');
+                        document.getElementById('orientadorInvite').classList.remove('hidden');
+                    }
                 } else {
                     document.getElementById('orientadorLinked').classList.add('hidden');
                     document.getElementById('orientadorInvite').classList.remove('hidden');
                 }
             } catch(e) {
                 console.warn('Error loading orientador:', e);
+                document.getElementById('orientadorLinked').classList.add('hidden');
+                document.getElementById('orientadorInvite').classList.remove('hidden');
             }
         }
 

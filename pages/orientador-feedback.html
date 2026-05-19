@@ -190,9 +190,15 @@ function OrientadorFeedbackPage() {
   async function loadOrientador() {
     try {
       const relation = await DB.orientador.getProjectOrientador(project.id);
-      if (relation?.users) {
-        setOrientador(relation.users);
-        setOrientadorRelation(relation);
+      if (relation) {
+        const userData = relation.users || relation;
+        if (userData && userData.id) {
+          setOrientador(userData);
+          setOrientadorRelation(relation);
+        } else {
+          setOrientador(null);
+          setOrientadorRelation(null);
+        }
       } else {
         setOrientador(null);
         setOrientadorRelation(null);
