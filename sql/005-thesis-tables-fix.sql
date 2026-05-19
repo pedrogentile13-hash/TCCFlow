@@ -26,9 +26,11 @@ USING (
 -- Orientador pode ler capítulos dos projetos que orienta
 CREATE POLICY "Orientador can read thesis chapters" ON thesis_chapters FOR SELECT
 USING (
-    project_id IN (
-        SELECT op.project_id FROM orientador_projects op
-        WHERE op.orientador_id = auth.uid() AND op.status = 'accepted'
+    EXISTS (
+        SELECT 1 FROM orientador_projects op
+        WHERE op.project_id = thesis_chapters.project_id
+          AND op.orientador_id = auth.uid()
+          AND op.status = 'accepted'
     )
 );
 
@@ -61,9 +63,11 @@ USING (
 -- Orientador pode ler seções dos projetos que orienta
 CREATE POLICY "Orientador can read thesis sections" ON thesis_sections FOR SELECT
 USING (
-    project_id IN (
-        SELECT op.project_id FROM orientador_projects op
-        WHERE op.orientador_id = auth.uid() AND op.status = 'accepted'
+    EXISTS (
+        SELECT 1 FROM orientador_projects op
+        WHERE op.project_id = thesis_sections.project_id
+          AND op.orientador_id = auth.uid()
+          AND op.status = 'accepted'
     )
 );
 
@@ -96,18 +100,22 @@ USING (
 -- Orientador pode ler e inserir feedback nos projetos que orienta
 CREATE POLICY "Orientador can read thesis feedback" ON thesis_feedback FOR SELECT
 USING (
-    project_id IN (
-        SELECT op.project_id FROM orientador_projects op
-        WHERE op.orientador_id = auth.uid() AND op.status = 'accepted'
+    EXISTS (
+        SELECT 1 FROM orientador_projects op
+        WHERE op.project_id = thesis_feedback.project_id
+          AND op.orientador_id = auth.uid()
+          AND op.status = 'accepted'
     )
 );
 
 CREATE POLICY "Orientador can insert thesis feedback" ON thesis_feedback FOR INSERT
 WITH CHECK (
     orientador_id = auth.uid()
-    AND project_id IN (
-        SELECT op.project_id FROM orientador_projects op
-        WHERE op.orientador_id = auth.uid() AND op.status = 'accepted'
+    AND EXISTS (
+        SELECT 1 FROM orientador_projects op
+        WHERE op.project_id = thesis_feedback.project_id
+          AND op.orientador_id = auth.uid()
+          AND op.status = 'accepted'
     )
 );
 
