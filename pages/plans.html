@@ -70,9 +70,43 @@ function PlansPage() {
   const currentPlan = subscription?.plan || "free";
 
   async function handleUpgrade() {
+    if (!user || !userData) {
+      alert("Faça login para continuar");
+      return;
+    }
+
     setUpgrading(true);
-    alert("Funcionalidade de upgrade será integrada com gateway de pagamento (Stripe/PagSeguro)");
-    setUpgrading(false);
+    try {
+      // Chamar Netlify Function para criar assinatura recorrente
+      const response = await fetch('/.netlify/functions/create-preapproval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.uid,
+          userEmail: user.email,
+          userName: userData.name || user.displayName || 'Usuário',
+          seats: 1,
+          planType: 'pro_annual'
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        alert('Erro: ' + data.error);
+        return;
+      }
+
+      if (data.url) {
+        // Redirecionar para Mercado Pago
+        window.location.href = data.url;
+      }
+    } catch(e) {
+      console.error('Erro ao criar assinatura:', e);
+      alert('Erro ao processar pagamento. Tente novamente.');
+    } finally {
+      setUpgrading(false);
+    }
   }
 
   return (
