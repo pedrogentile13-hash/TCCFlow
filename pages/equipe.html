@@ -1137,18 +1137,23 @@
             if (!projectId) return;
             try {
                 const orientador = await DB.orientador.getProjectOrientador(projectId);
+                console.log("Orientador loaded in equipe:", orientador);
                 if (orientador) {
                     const user = orientador.users || orientador;
+                    console.log("Orientador user data:", user);
                     if (user && user.id) {
+                        console.log("Showing orientador linked section");
                         document.getElementById('orientadorLinked').classList.remove('hidden');
                         document.getElementById('orientadorInvite').classList.add('hidden');
                         document.getElementById('orientadorName').textContent = user.name || 'Orientador';
                         document.getElementById('orientadorEmail').textContent = user.email || '';
                     } else {
+                        console.log("No user id in orientador");
                         document.getElementById('orientadorLinked').classList.add('hidden');
                         document.getElementById('orientadorInvite').classList.remove('hidden');
                     }
                 } else {
+                    console.log("No orientador relation found");
                     document.getElementById('orientadorLinked').classList.add('hidden');
                     document.getElementById('orientadorInvite').classList.remove('hidden');
                 }

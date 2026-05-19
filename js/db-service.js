@@ -518,25 +518,33 @@ const DB = {
         },
 
         async getProjectOrientador(projectId) {
-            // Try with photo_url first, fallback without it if column doesn't exist
-            let data, error;
-            ({ data, error } = await _supa
-                .from('orientador_projects')
-                .select('*, users:orientador_id(id, name, email, photo_url)')
-                .eq('project_id', projectId)
-                .eq('status', 'accepted')
-                .maybeSingle());
-            if (error) {
-                // Fallback without photo_url (column may not exist)
-                ({ data, error } = await _supa
+            try {
+                // Get orientador_projects with user data
+                let { data, error } = await _supa
                     .from('orientador_projects')
-                    .select('*, users:orientador_id(id, name, email)')
+                    .select('*, users:orientador_id(id, name, email, photo_url)')
                     .eq('project_id', projectId)
                     .eq('status', 'accepted')
-                    .maybeSingle());
-                if (error) return null;
+                    .not('orientador_id', 'is', null)
+                    .maybeSingle();
+
+                if (error || !data) {
+                    // Try without photo_url
+                    ({ data, error } = await _supa
+                        .from('orientador_projects')
+                        .select('*, users:orientador_id(id, name, email)')
+                        .eq('project_id', projectId)
+                        .eq('status', 'accepted')
+                        .not('orientador_id', 'is', null)
+                        .maybeSingle());
+                }
+
+                if (!data || !data.orientador_id) return null;
+                return data;
+            } catch(e) {
+                console.error('getProjectOrientador error:', e);
+                return null;
             }
-            return data;
         },
 
         async addComment(projectId, orientadorId, comment, section) {

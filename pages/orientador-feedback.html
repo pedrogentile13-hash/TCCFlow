@@ -190,16 +190,20 @@ function OrientadorFeedbackPage() {
   async function loadOrientador() {
     try {
       const relation = await DB.orientador.getProjectOrientador(project.id);
+      console.log("Orientador relation loaded:", relation);
       if (relation) {
         const userData = relation.users || relation;
+        console.log("Orientador userData:", userData);
         if (userData && userData.id) {
           setOrientador(userData);
           setOrientadorRelation(relation);
         } else {
+          console.log("No userData with id found");
           setOrientador(null);
           setOrientadorRelation(null);
         }
       } else {
+        console.log("No relation found");
         setOrientador(null);
         setOrientadorRelation(null);
       }
