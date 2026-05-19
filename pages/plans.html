@@ -204,7 +204,7 @@ function PlansPage() {
           </div>
 
           {/* Grid de 3 colunas */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 40 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 40 }}>
             {plans.map(plan => {
               const price = billing === "annual" ? plan.annualPrice : plan.monthlyPrice;
               const isCurrent = currentPlan === plan.id;
@@ -216,7 +216,7 @@ function PlansPage() {
                     background: "var(--paper)",
                     border: isCurrent ? "2px solid var(--emerald)" : plan.popular ? "2px solid var(--violet)" : "1.5px solid var(--line)",
                     borderRadius: 12,
-                    padding: 16,
+                    padding: 20,
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
@@ -236,47 +236,47 @@ function PlansPage() {
                     </div>
                   )}
 
-                  <div style={{ marginBottom: 12 }}>
-                    <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.25rem", fontWeight: 400, margin: "0 0 2px", color: "var(--ink)" }}>
+                  <div style={{ marginBottom: 16 }}>
+                    <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.4rem", fontWeight: 400, margin: "0 0 4px", color: "var(--ink)" }}>
                       {plan.name}
                     </h2>
-                    <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: 0 }}>
+                    <p style={{ color: "var(--muted)", fontSize: "0.8125rem", margin: 0 }}>
                       {plan.sub}
                     </p>
                   </div>
 
-                  <div style={{ marginBottom: 16 }}>
+                  <div style={{ marginBottom: 20 }}>
                     {price === null ? (
                       <>
-                        <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--ink)" }}>
+                        <div style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--ink)" }}>
                           Customizado
                         </div>
-                        <div style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
+                        <div style={{ fontSize: "0.8125rem", color: "var(--muted)" }}>
                           Preço por volume
                         </div>
                       </>
                     ) : (
                       <>
-                        <div style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--ink)", marginBottom: 2 }}>
+                        <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--ink)", marginBottom: 2 }}>
                           {price === 0 ? "R$ 0" : `R$ ${price.toFixed(2).replace(".", ",")}`}
                         </div>
-                        <div style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
+                        <div style={{ fontSize: "0.8125rem", color: "var(--muted)" }}>
                           {price === 0 ? "para sempre" : billing === "annual" ? "/ano" : "/mês"}
                         </div>
                       </>
                     )}
                   </div>
 
-                  <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 12px", fontSize: "0.75rem" }}>
-                    {plan.features.slice(0, 5).map((feature, i) => (
-                      <li key={i} style={{ padding: "4px 0", color: "var(--ink)", display: "flex", alignItems: "flex-start", gap: 6 }}>
+                  <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 16px", fontSize: "0.8125rem" }}>
+                    {plan.features.slice(0, 6).map((feature, i) => (
+                      <li key={i} style={{ padding: "6px 0", color: "var(--ink)", display: "flex", alignItems: "flex-start", gap: 8 }}>
                         <span style={{ color: "var(--violet)", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
                         <span>{feature}</span>
                       </li>
                     ))}
-                    {plan.features.length > 5 && (
-                      <li style={{ padding: "4px 0", color: "var(--muted)", fontSize: "0.7rem" }}>
-                        + {plan.features.length - 5} recurso{plan.features.length - 5 > 1 ? 's' : ''}
+                    {plan.features.length > 6 && (
+                      <li style={{ padding: "6px 0", color: "var(--muted)", fontSize: "0.8125rem", fontStyle: "italic" }}>
+                        + {plan.features.length - 6} recurso{plan.features.length - 6 > 1 ? 's' : ''}
                       </li>
                     )}
                   </ul>
