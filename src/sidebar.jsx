@@ -251,6 +251,11 @@ function Sidebar({ active, userData, project, subscription }) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09"/></svg>
                 Configurações
               </a>
+              <a href="orientador-painel.html" style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",fontSize:".8125rem",color:"var(--emerald)",textDecoration:"none",transition:"background .15s"}}
+                onMouseEnter={e=>e.currentTarget.style.background="var(--bg-2)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9c0-1 1-2 2-2s2 1 2 2-1 2-2 2-2-1-2-2z"/><path d="M14 9c0-1 1-2 2-2s2 1 2 2-1 2-2 2-2-1-2-2z"/><path d="M4 20h16v-3c0-2-2-4-4-4h-8c-2 0-4 2-4 4v3z"/><path d="M4 3h16M4 7h16"/></svg>
+                Modo Orientador
+              </a>
               <div style={{borderTop:"1px solid var(--line)"}}/>
               <button onClick={(e) => { e.stopPropagation(); if(typeof auth !== 'undefined') auth.signOut().then(() => window.location.href = '../index.html'); }}
                 style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",fontSize:".8125rem",color:"var(--rose)",cursor:"pointer",border:"none",background:"transparent",width:"100%",textAlign:"left",transition:"background .15s"}}
