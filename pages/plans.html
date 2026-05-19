@@ -106,7 +106,7 @@ function PlansPage() {
     try {
       console.log("Iniciando assinatura:", { userId: user.uid, amount, planId, billing });
 
-      const response = await fetch("/.netlify/functions/create-preapproval", {
+      const response = await fetch("/.netlify/functions/create-preference", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -114,8 +114,7 @@ function PlansPage() {
           userEmail: user.email,
           userName: userData?.name || user.displayName || "Usuário",
           seats: 1,
-          planType: billing === "annual" ? "pro_annual" : "pro_monthly",
-          amount: amount
+          totalCents: Math.round(amount * 100)
         })
       });
 
