@@ -48,7 +48,7 @@ exports.handler = async (event) => {
                 user_email: userEmail,
                 user_name: userName || '',
                 status: 'pending',
-                plan: 'pro',
+                plan: 'free',
                 plan_type: planType,
                 seats: 1,
                 payment_method: 'mercadopago'

@@ -188,7 +188,7 @@ function Sidebar({ active, userData, project, subscription }) {
   const userInitials = getInitials(userName);
   const projectName = project?.name || 'Nenhum projeto';
   const projectCode = project?.code ? `Código: ${project.code}` : 'Crie ou entre em um projeto';
-  const planLabel = subscription?.plan === 'pro' ? 'Plano Pro' : 'Plano Gratuito';
+  const planLabel = (subscription?.plan === 'pro' && subscription?.status === 'active') ? 'Plano Pro' : 'Plano Gratuito';
   const isBeta = userData?.beta_tester === true;
 
   useEffect(() => {
