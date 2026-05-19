@@ -1,860 +1,781 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-1WX7MD9CL9');
-    </script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gerador de Referências</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
-    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
-    <link rel="icon" type="image/png" href="../favicon.png">
-    <link rel="apple-touch-icon" href="../favicon.png">
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#7c3aed">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Referências - TCCFlow</title>
-    <script src="../js/darkmode.js"></script>
-    <script src="../js/i18n.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
-        .ref-card { animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+		:root {
+			--bg-1: #ffffff;
+			--bg-2: #f5f5f5;
+			--text-primary: #1a1a1a;
+			--text-secondary: #666666;
+			--border: #e0e0e0;
+			--btn-violet: #7c3aed;
+			--btn-violet-hover: #6d28d9;
+			--success: #10b981;
+			--error: #ef4444;
+			--rose: #f43f5e;
+			--spacing-1: 8px;
+			--spacing-2: 16px;
+			--spacing-3: 24px;
+			--spacing-4: 32px;
+		}
+
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+			background-color: var(--bg-1);
+			color: var(--text-primary);
+			height: 100vh;
+			overflow: hidden;
+		}
+
+		.container {
+			display: flex;
+			height: 100vh;
+			gap: var(--spacing-2);
+			padding: var(--spacing-2);
+		}
+
+		.panel {
+			display: flex;
+			flex-direction: column;
+			gap: var(--spacing-2);
+		}
+
+		.left-panel {
+			width: 260px;
+			background-color: var(--bg-2);
+			padding: var(--spacing-2);
+			border-radius: 8px;
+			overflow-y: auto;
+		}
+
+		.main-area {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.right-panel {
+			width: 280px;
+			background-color: var(--bg-2);
+			padding: var(--spacing-2);
+			border-radius: 8px;
+			overflow-y: auto;
+			transition: width 0.3s ease;
+		}
+
+		.right-panel.collapsed {
+			width: 0;
+			padding: 0;
+			border-radius: 0;
+			overflow: hidden;
+		}
+
+		.form-group {
+			display: flex;
+			flex-direction: column;
+			gap: var(--spacing-1);
+			margin-bottom: var(--spacing-2);
+		}
+
+		label {
+			font-size: 13px;
+			font-weight: 500;
+			color: var(--text-primary);
+		}
+
+		select,
+		input[type="text"],
+		input[type="number"] {
+			padding: var(--spacing-1) var(--spacing-2);
+			border: 1px solid var(--border);
+			border-radius: 6px;
+			font-size: 13px;
+			font-family: inherit;
+			background-color: var(--bg-1);
+			color: var(--text-primary);
+		}
+
+		select:focus,
+		input[type="text"]:focus,
+		input[type="number"]:focus {
+			outline: none;
+			border-color: var(--btn-violet);
+			box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+		}
+
+		.button-group {
+			display: flex;
+			gap: var(--spacing-1);
+		}
+
+		button {
+			padding: var(--spacing-1) var(--spacing-2);
+			border: none;
+			border-radius: 6px;
+			font-size: 13px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			font-family: inherit;
+		}
+
+		.btn-primary {
+			background-color: var(--btn-violet);
+			color: white;
+			flex: 1;
+		}
+
+		.btn-primary:hover {
+			background-color: var(--btn-violet-hover);
+		}
+
+		.btn-secondary {
+			background-color: transparent;
+			color: var(--text-primary);
+			border: 1px solid var(--border);
+			flex: 1;
+		}
+
+		.btn-secondary:hover {
+			background-color: var(--bg-1);
+			border-color: var(--text-primary);
+		}
+
+		.btn-small {
+			padding: 4px 8px;
+			font-size: 12px;
+		}
+
+		.btn-copy {
+			background-color: var(--btn-violet);
+			color: white;
+			padding: var(--spacing-2) var(--spacing-4);
+			font-size: 14px;
+			font-weight: 600;
+			margin-top: var(--spacing-2);
+		}
+
+		.btn-copy:hover {
+			background-color: var(--btn-violet-hover);
+		}
+
+		.preview-card {
+			background-color: var(--bg-1);
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			padding: var(--spacing-3);
+			width: 100%;
+			max-width: 600px;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		}
+
+		.preview-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: var(--spacing-2);
+		}
+
+		.badge {
+			display: inline-block;
+			padding: 4px 12px;
+			background-color: var(--btn-violet);
+			color: white;
+			border-radius: 20px;
+			font-size: 12px;
+			font-weight: 600;
+		}
+
+		.preview-content {
+			font-family: 'Monaco', 'Courier New', monospace;
+			font-size: 12px;
+			line-height: 1.6;
+			color: var(--text-primary);
+			word-break: break-word;
+			white-space: pre-wrap;
+		}
+
+		.empty-state {
+			text-align: center;
+			color: var(--text-secondary);
+			font-size: 14px;
+		}
+
+		.error-message {
+			background-color: rgba(244, 63, 94, 0.1);
+			color: var(--rose);
+			padding: var(--spacing-2);
+			border-radius: 6px;
+			font-size: 13px;
+			border-left: 3px solid var(--rose);
+		}
+
+		.history-item {
+			background-color: var(--bg-1);
+			padding: var(--spacing-2);
+			border-radius: 6px;
+			border: 1px solid var(--border);
+			margin-bottom: var(--spacing-1);
+			font-size: 12px;
+		}
+
+		.history-item-title {
+			font-weight: 500;
+			color: var(--text-primary);
+			margin-bottom: 4px;
+			word-break: break-word;
+		}
+
+		.history-item-meta {
+			color: var(--text-secondary);
+			font-size: 11px;
+			margin-bottom: 8px;
+		}
+
+		.history-item-actions {
+			display: flex;
+			gap: 4px;
+		}
+
+		.btn-delete {
+			background-color: var(--error);
+			color: white;
+			padding: 2px 8px;
+			border-radius: 4px;
+			border: none;
+			cursor: pointer;
+			font-size: 11px;
+		}
+
+		.btn-delete:hover {
+			opacity: 0.9;
+		}
+
+		.history-title {
+			font-weight: 600;
+			margin-bottom: var(--spacing-2);
+			font-size: 13px;
+		}
+
+		.history-counter {
+			display: inline-block;
+			background-color: var(--btn-violet);
+			color: white;
+			padding: 2px 8px;
+			border-radius: 12px;
+			font-size: 11px;
+			margin-left: 4px;
+		}
+
+		.history-empty {
+			text-align: center;
+			color: var(--text-secondary);
+			font-size: 12px;
+			padding: var(--spacing-2);
+		}
+
+		.btn-clear-history {
+			width: 100%;
+			background-color: transparent;
+			color: var(--error);
+			border: 1px solid var(--error);
+			margin-top: var(--spacing-2);
+		}
+
+		.btn-clear-history:hover {
+			background-color: rgba(239, 68, 68, 0.1);
+		}
+
+		.type-icon {
+			display: inline-block;
+			width: 16px;
+			height: 16px;
+			margin-right: 4px;
+		}
+
+		.toggle-history {
+			position: fixed;
+			top: var(--spacing-2);
+			right: var(--spacing-2);
+			z-index: 10;
+		}
+
+		@media (max-width: 1024px) {
+			.right-panel {
+				width: 240px;
+			}
+		}
+
+		@media (max-width: 768px) {
+			.container {
+				flex-direction: column;
+				padding: var(--spacing-1);
+				gap: var(--spacing-1);
+			}
+
+			.left-panel,
+			.right-panel {
+				width: 100%;
+			}
+
+			.main-area {
+				min-height: 300px;
+			}
+		}
+
+		.copy-feedback {
+			position: fixed;
+			bottom: var(--spacing-3);
+			right: var(--spacing-3);
+			background-color: var(--success);
+			color: white;
+			padding: var(--spacing-2) var(--spacing-3);
+			border-radius: 6px;
+			font-size: 13px;
+			animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+			z-index: 20;
+		}
+
+		@keyframes slideIn {
+			from {
+				transform: translateX(400px);
+				opacity: 0;
+			}
+			to {
+				transform: translateX(0);
+				opacity: 1;
+			}
+		}
+
+		@keyframes slideOut {
+			from {
+				transform: translateX(0);
+				opacity: 1;
+			}
+			to {
+				transform: translateX(400px);
+				opacity: 0;
+			}
+		}
+	</style>
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
-
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
-
-    <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
-                    <div class="relative" id="moreDropdown">
-                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
-                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
-                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
-                            <div class="border-t border-slate-100 my-1"></div>
-                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
-                        </div>
-                    </div>
-                </div><div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
-                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
-                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
-                    </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-sm"></i></button>
-                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-bars text-sm"></i></button>
-                </div>
-            </div>
-        </div>
-        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
-        </div>
-    
-    <script>
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('moreDropdown');
-        const menu = document.getElementById('moreMenu');
-        if (dropdown && menu && !dropdown.contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
-    </script>
-    </nav>
-
-    <!-- Import from I.A. Modal -->
-    <div id="importModal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col">
-            <div class="flex items-center justify-between p-6 border-b border-slate-100">
-                <h3 class="text-lg font-bold">Importar da I.A.</h3>
-                <button id="closeImportModal" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div id="importList" class="flex-1 overflow-y-auto p-6 space-y-3">
-                <div class="text-center text-slate-400 py-8">
-                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i>
-                    <p class="text-sm">Carregando artigos salvos...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <main class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16">
-
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center gap-2 bg-violet-50 text-violet-600 text-xs font-bold px-4 py-1.5 rounded-full mb-4">
-                <i class="fa-solid fa-book-bookmark"></i>
-                BETA
-            </div>
-            <h1 class="text-3xl sm:text-4xl font-extrabold mb-3">
-                Gerador de <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Referências</span>
-            </h1>
-            <p class="text-slate-500 text-sm sm:text-base max-w-xl mx-auto">Formate suas referências automaticamente em ABNT, APA ou Vancouver</p>
-        </div>
-
-        <!-- Format Selector -->
-        <div class="flex justify-center mb-8">
-            <div class="inline-flex items-center bg-slate-100 rounded-full p-1">
-                <button data-format="abnt" class="format-tab px-5 py-2 rounded-full text-sm font-semibold bg-white text-violet-600 shadow-sm transition">ABNT</button>
-                <button data-format="apa" class="format-tab px-5 py-2 rounded-full text-sm font-semibold text-slate-500 hover:text-slate-700 transition">APA</button>
-                <button data-format="vancouver" class="format-tab px-5 py-2 rounded-full text-sm font-semibold text-slate-500 hover:text-slate-700 transition">Vancouver</button>
-            </div>
-        </div>
-
-        <!-- Add Reference Form -->
-        <div class="bg-white/70 backdrop-blur-sm rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8 mb-8">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-lg font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-plus-circle text-violet-500"></i>
-                    Nova Referência
-                </h2>
-                <button id="importFromIABtn" class="inline-flex items-center gap-2 text-sm font-semibold text-cyan-600 hover:text-cyan-700 bg-cyan-50 hover:bg-cyan-100 px-4 py-2 rounded-xl transition">
-                    <i class="fa-solid fa-robot"></i>
-                    Importar da I.A.
-                </button>
-            </div>
-
-            <form id="refForm" class="space-y-5">
-                <!-- Row 1: Tipo + Autores -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Tipo</label>
-                        <select id="refTipo" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition">
-                            <option value="livro">Livro</option>
-                            <option value="artigo">Artigo</option>
-                            <option value="site">Site</option>
-                            <option value="tese">Tese/Dissertação</option>
-                        </select>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Autores</label>
-                        <input id="refAutores" type="text" placeholder="Ex: Silva, João; Souza, Maria" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                    </div>
-                </div>
-
-                <!-- Row 2: Título -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Título</label>
-                    <input id="refTitulo" type="text" placeholder="Título da obra" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                </div>
-
-                <!-- Row 3: Ano + Editora/Revista + Cidade -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Ano</label>
-                        <input id="refAno" type="text" placeholder="2024" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Editora / Revista</label>
-                        <input id="refEditora" type="text" placeholder="Nome da editora ou revista" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Cidade</label>
-                        <input id="refCidade" type="text" placeholder="São Paulo" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                    </div>
-                </div>
-
-                <!-- Row 4: Volume + Edição + Páginas -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Volume</label>
-                        <input id="refVolume" type="text" placeholder="v. 1" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Edição</label>
-                        <input id="refEdicao" type="text" placeholder="2. ed." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Páginas</label>
-                        <input id="refPaginas" type="text" placeholder="p. 10-25" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                    </div>
-                </div>
-
-                <!-- Row 5: DOI + URL -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">DOI</label>
-                        <input id="refDOI" type="text" placeholder="10.1000/xyz123" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">URL</label>
-                        <input id="refURL" type="text" placeholder="https://exemplo.com/artigo" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition placeholder:text-slate-300">
-                    </div>
-                </div>
-
-                <div class="flex justify-end">
-                    <button type="submit" class="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-2.5 px-6 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
-                        <i class="fa-solid fa-plus"></i>
-                        Adicionar Referência
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- References List -->
-        <div class="bg-white/70 backdrop-blur-sm rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-lg font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-list-ol text-violet-500"></i>
-                    Bibliografia
-                    <span id="refCount" class="text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">0</span>
-                </h2>
-                <div class="flex items-center gap-2">
-                    <button id="sortAlphaBtn" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-violet-600 bg-slate-100 hover:bg-violet-50 px-3 py-1.5 rounded-lg transition" title="Ordenar A-Z">
-                        <i class="fa-solid fa-arrow-down-a-z"></i>
-                        A-Z
-                    </button>
-                    <button id="copyAllBtn" class="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-cyan-500 px-4 py-2 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
-                        <i class="fa-solid fa-copy"></i>
-                        Copiar Bibliografia
-                    </button>
-                </div>
-            </div>
-
-            <div id="refList" class="space-y-3">
-                <div id="emptyState" class="text-center py-12">
-                    <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-book-open text-slate-300 text-2xl"></i>
-                    </div>
-                    <p class="text-sm text-slate-400 font-medium">Nenhuma referência adicionada</p>
-                    <p class="text-xs text-slate-300 mt-1">Preencha o formulário acima ou importe da I.A.</p>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-init.js"></script>
-    <script src="../js/db-service.js"></script>
-    <script>
-        let currentUser = null;
-
-        document.getElementById('mobileNavBtn').addEventListener('click', () => {
-            document.getElementById('mobileNav').classList.toggle('hidden');
-        });
-
-        auth.onAuthStateChanged(async user => {
-            if (!user) { window.location.href = 'login.html'; return; }
-            currentUser = user;
-            document.getElementById('userName').textContent = user.displayName || 'Usuário';
-
-            // Load navbar avatar
-            if (user.photoURL) {
-                const navAvatar = document.getElementById('navAvatar');
-                const navAvatarIcon = document.getElementById('navAvatarIcon');
-                if (navAvatar && navAvatarIcon) {
-                    navAvatar.src = user.photoURL;
-                    navAvatar.classList.remove('hidden');
-                    navAvatarIcon.classList.add('hidden');
-                }
-            }
-
-            // INIT THE PAGE HERE
-            initPage();
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await auth.signOut();
-            window.location.href = '../index.html';
-        });
-
-        // ========================= PAGE LOGIC =========================
-
-        let currentFormat = 'abnt';
-        let references = [];
-        let projectId = null;
-
-        function getStorageKey() {
-            return projectId ? `tccflow_refs_${projectId}` : 'tccflow_refs_noproject';
-        }
-
-        function loadReferences() {
-            try {
-                const saved = localStorage.getItem(getStorageKey());
-                references = saved ? JSON.parse(saved) : [];
-            } catch(e) {
-                references = [];
-            }
-        }
-
-        function saveReferences() {
-            localStorage.setItem(getStorageKey(), JSON.stringify(references));
-        }
-
-        async function initPage() {
-            try {
-                projectId = await DB.getProjectId();
-            } catch(e) {
-                projectId = null;
-            }
-            // Load from Supabase as primary source
-            if (projectId) {
-                try {
-                    const dbRefs = await DB.references.getAll(projectId);
-                    if (dbRefs && dbRefs.length > 0) {
-                        references = dbRefs.map(dr => ({
-                            id: dr.id,
-                            tipo: dr.type || 'artigo',
-                            titulo: dr.title || '',
-                            autores: dr.authors || '',
-                            ano: dr.year || '',
-                            editora: dr.source || '',
-                            url: dr.url || '',
-                            doi: '',
-                            cidade: '',
-                            volume: '',
-                            edicao: '',
-                            paginas: ''
-                        }));
-                        saveReferences();
-                    } else {
-                        loadReferences();
-                    }
-                } catch(e) {
-                    console.error('Erro ao carregar referências do banco:', e);
-                    loadReferences();
-                }
-            } else {
-                loadReferences();
-            }
-            renderReferences();
-        }
-
-        // ========================= FORMAT TABS =========================
-
-        document.querySelectorAll('.format-tab').forEach(btn => {
-            btn.addEventListener('click', () => {
-                currentFormat = btn.dataset.format;
-                document.querySelectorAll('.format-tab').forEach(b => {
-                    b.classList.remove('bg-white', 'text-violet-600', 'shadow-sm');
-                    b.classList.add('text-slate-500');
-                });
-                btn.classList.add('bg-white', 'text-violet-600', 'shadow-sm');
-                btn.classList.remove('text-slate-500');
-                renderReferences();
-            });
-        });
-
-        // ========================= FORMATTING FUNCTIONS =========================
-
-        function parseAuthors(authorsStr) {
-            if (!authorsStr) return [];
-            // Split by ; or , followed by space and uppercase
-            return authorsStr.split(/;\s*/).map(a => a.trim()).filter(Boolean);
-        }
-
-        function authorToABNT(author) {
-            // Expects "Sobrenome, Nome" or "Nome Sobrenome"
-            const parts = author.split(',');
-            if (parts.length >= 2) {
-                return parts[0].trim().toUpperCase() + ', ' + parts.slice(1).join(',').trim();
-            }
-            // "Nome Sobrenome" format
-            const words = author.trim().split(/\s+/);
-            if (words.length >= 2) {
-                const last = words.pop();
-                return last.toUpperCase() + ', ' + words.join(' ');
-            }
-            return author.toUpperCase();
-        }
-
-        function authorToAPA(author) {
-            const parts = author.split(',');
-            if (parts.length >= 2) {
-                const surname = parts[0].trim();
-                const names = parts.slice(1).join(',').trim();
-                const initials = names.split(/\s+/).map(n => n.charAt(0).toUpperCase() + '.').join(' ');
-                return surname + ', ' + initials;
-            }
-            const words = author.trim().split(/\s+/);
-            if (words.length >= 2) {
-                const last = words.pop();
-                const initials = words.map(n => n.charAt(0).toUpperCase() + '.').join(' ');
-                return last + ', ' + initials;
-            }
-            return author;
-        }
-
-        function authorToVancouver(author) {
-            const parts = author.split(',');
-            if (parts.length >= 2) {
-                const surname = parts[0].trim();
-                const names = parts.slice(1).join(',').trim();
-                const initials = names.split(/\s+/).map(n => n.charAt(0).toUpperCase()).join('');
-                return surname + ' ' + initials;
-            }
-            const words = author.trim().split(/\s+/);
-            if (words.length >= 2) {
-                const last = words.pop();
-                const initials = words.map(n => n.charAt(0).toUpperCase()).join('');
-                return last + ' ' + initials;
-            }
-            return author;
-        }
-
-        function formatABNT(ref) {
-            const authors = parseAuthors(ref.autores);
-            let authStr = authors.map(a => authorToABNT(a)).join('; ');
-            if (!authStr) authStr = '';
-
-            let result = authStr ? authStr + '. ' : '';
-
-            if (ref.tipo === 'livro') {
-                result += '<b>' + escHTML(ref.titulo) + '</b>';
-                if (ref.edicao) result += '. ' + escHTML(ref.edicao);
-                if (ref.cidade) result += '. ' + escHTML(ref.cidade);
-                if (ref.editora) result += ': ' + escHTML(ref.editora);
-                if (ref.ano) result += ', ' + escHTML(ref.ano);
-                result += '.';
-            } else if (ref.tipo === 'artigo') {
-                result += escHTML(ref.titulo) + '. ';
-                if (ref.editora) result += '<b>' + escHTML(ref.editora) + '</b>';
-                if (ref.cidade) result += ', ' + escHTML(ref.cidade);
-                if (ref.volume) result += ', v. ' + escHTML(ref.volume);
-                if (ref.edicao) result += ', n. ' + escHTML(ref.edicao);
-                if (ref.paginas) result += ', p. ' + escHTML(ref.paginas);
-                if (ref.ano) result += ', ' + escHTML(ref.ano);
-                result += '.';
-            } else if (ref.tipo === 'site') {
-                result += escHTML(ref.titulo) + '. ';
-                if (ref.editora) result += escHTML(ref.editora) + ', ';
-                if (ref.ano) result += escHTML(ref.ano);
-                result += '.';
-                if (ref.url) result += ' Disponível em: ' + escHTML(ref.url) + '.';
-            } else if (ref.tipo === 'tese') {
-                result += '<b>' + escHTML(ref.titulo) + '</b>. ';
-                if (ref.ano) result += escHTML(ref.ano) + '. ';
-                result += 'Tese (Doutorado)';
-                if (ref.editora) result += ' - ' + escHTML(ref.editora);
-                if (ref.cidade) result += ', ' + escHTML(ref.cidade);
-                result += '.';
-            }
-
-            if (ref.doi) result += ' DOI: ' + escHTML(ref.doi) + '.';
-            return result;
-        }
-
-        function formatAPA(ref) {
-            const authors = parseAuthors(ref.autores);
-            let authStr = '';
-            if (authors.length === 1) {
-                authStr = authorToAPA(authors[0]);
-            } else if (authors.length === 2) {
-                authStr = authorToAPA(authors[0]) + ' & ' + authorToAPA(authors[1]);
-            } else if (authors.length > 2) {
-                authStr = authors.slice(0, -1).map(a => authorToAPA(a)).join(', ') + ', & ' + authorToAPA(authors[authors.length - 1]);
-            }
-
-            let result = authStr ? authStr + ' ' : '';
-            if (ref.ano) result += '(' + escHTML(ref.ano) + '). ';
-
-            if (ref.tipo === 'livro') {
-                result += '<i>' + escHTML(ref.titulo) + '</i>';
-                if (ref.edicao) result += ' (' + escHTML(ref.edicao) + ')';
-                result += '. ';
-                if (ref.editora) result += escHTML(ref.editora) + '.';
-            } else if (ref.tipo === 'artigo') {
-                result += escHTML(ref.titulo) + '. ';
-                if (ref.editora) result += '<i>' + escHTML(ref.editora) + '</i>';
-                if (ref.volume) result += ', <i>' + escHTML(ref.volume) + '</i>';
-                if (ref.edicao) result += '(' + escHTML(ref.edicao) + ')';
-                if (ref.paginas) result += ', ' + escHTML(ref.paginas);
-                result += '.';
-            } else if (ref.tipo === 'site') {
-                result += escHTML(ref.titulo) + '. ';
-                if (ref.editora) result += escHTML(ref.editora) + '. ';
-                if (ref.url) result += escHTML(ref.url);
-            } else if (ref.tipo === 'tese') {
-                result += '<i>' + escHTML(ref.titulo) + '</i> [Tese de doutorado';
-                if (ref.editora) result += ', ' + escHTML(ref.editora);
-                result += '].';
-            }
-
-            if (ref.doi) result += ' https://doi.org/' + escHTML(ref.doi);
-            return result;
-        }
-
-        function formatVancouver(ref) {
-            const authors = parseAuthors(ref.autores);
-            let authStr = '';
-            if (authors.length <= 6) {
-                authStr = authors.map(a => authorToVancouver(a)).join(', ');
-            } else {
-                authStr = authors.slice(0, 6).map(a => authorToVancouver(a)).join(', ') + ', et al';
-            }
-
-            let result = authStr ? authStr + '. ' : '';
-
-            if (ref.tipo === 'livro') {
-                result += escHTML(ref.titulo) + '. ';
-                if (ref.edicao) result += escHTML(ref.edicao) + '. ';
-                if (ref.cidade) result += escHTML(ref.cidade) + ': ';
-                if (ref.editora) result += escHTML(ref.editora) + '; ';
-                if (ref.ano) result += escHTML(ref.ano) + '.';
-            } else if (ref.tipo === 'artigo') {
-                result += escHTML(ref.titulo) + '. ';
-                if (ref.editora) result += escHTML(ref.editora) + '. ';
-                if (ref.ano) result += escHTML(ref.ano);
-                if (ref.volume) result += ';' + escHTML(ref.volume);
-                if (ref.edicao) result += '(' + escHTML(ref.edicao) + ')';
-                if (ref.paginas) result += ':' + escHTML(ref.paginas);
-                result += '.';
-            } else if (ref.tipo === 'site') {
-                result += escHTML(ref.titulo) + ' [Internet]. ';
-                if (ref.editora) result += escHTML(ref.editora) + '; ';
-                if (ref.ano) result += escHTML(ref.ano) + '. ';
-                if (ref.url) result += 'Available from: ' + escHTML(ref.url);
-            } else if (ref.tipo === 'tese') {
-                result += escHTML(ref.titulo) + ' [dissertation]. ';
-                if (ref.cidade) result += escHTML(ref.cidade) + ': ';
-                if (ref.editora) result += escHTML(ref.editora) + '; ';
-                if (ref.ano) result += escHTML(ref.ano) + '.';
-            }
-
-            if (ref.doi) result += ' DOI: ' + escHTML(ref.doi);
-            return result;
-        }
-
-        function formatReference(ref) {
-            if (currentFormat === 'abnt') return formatABNT(ref);
-            if (currentFormat === 'apa') return formatAPA(ref);
-            return formatVancouver(ref);
-        }
-
-        function formatReferencePlain(ref, fmt) {
-            // Return plain text version (strip HTML tags)
-            const oldFormat = currentFormat;
-            currentFormat = fmt || currentFormat;
-            const html = formatReference(ref);
-            currentFormat = oldFormat;
-            const tmp = document.createElement('div');
-            tmp.innerHTML = html;
-            return tmp.textContent || tmp.innerText || '';
-        }
-
-        function escHTML(str) {
-            if (!str) return '';
-            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        }
-
-        // ========================= RENDER =========================
-
-        function renderReferences() {
-            const list = document.getElementById('refList');
-            const empty = document.getElementById('emptyState');
-            const count = document.getElementById('refCount');
-
-            count.textContent = references.length;
-
-            if (references.length === 0) {
-                list.innerHTML = '';
-                list.appendChild(empty.cloneNode ? createEmptyState() : empty);
-                return;
-            }
-
-            list.innerHTML = '';
-            references.forEach((ref, idx) => {
-                const card = document.createElement('div');
-                card.className = 'ref-card bg-white rounded-xl border border-slate-200/80 p-4 flex items-start gap-3 group hover:border-violet-200 transition';
-                card.innerHTML = `
-                    <span class="flex-shrink-0 w-7 h-7 rounded-lg bg-violet-50 text-violet-500 flex items-center justify-center text-xs font-bold mt-0.5">${idx + 1}</span>
-                    <div class="flex-1 min-w-0">
-                        <div class="text-sm text-slate-700 leading-relaxed">${formatReference(ref)}</div>
-                        <div class="mt-1.5 flex items-center gap-2">
-                            <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-400">${escHTML(ref.tipo)}</span>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                        <button onclick="editReference(${idx})" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition" title="Editar">
-                            <i class="fa-solid fa-pen text-xs"></i>
-                        </button>
-                        <button onclick="copyReference(${idx})" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 transition" title="Copiar">
-                            <i class="fa-solid fa-copy text-xs"></i>
-                        </button>
-                        <button onclick="removeReference(${idx})" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition" title="Remover">
-                            <i class="fa-solid fa-trash text-xs"></i>
-                        </button>
-                    </div>
-                `;
-                list.appendChild(card);
-            });
-        }
-
-        function createEmptyState() {
-            const div = document.createElement('div');
-            div.id = 'emptyState';
-            div.className = 'text-center py-12';
-            div.innerHTML = `
-                <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-book-open text-slate-300 text-2xl"></i>
-                </div>
-                <p class="text-sm text-slate-400 font-medium">Nenhuma referência adicionada</p>
-                <p class="text-xs text-slate-300 mt-1">Preencha o formulário acima ou importe da I.A.</p>
-            `;
-            return div;
-        }
-
-        // ========================= FORM SUBMIT =========================
-
-        document.getElementById('refForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const ref = getFormData();
-            if (!ref.titulo && !ref.autores) {
-                alert('Preencha pelo menos o título ou autores.');
-                return;
-            }
-            ref.id = Date.now().toString();
-            if (projectId) {
-                try {
-                    const result = await DB.references.add(projectId, {
-                        type: ref.tipo, title: ref.titulo, authors: ref.autores,
-                        year: ref.ano, source: ref.editora, url: ref.url, formatted: ''
-                    });
-                    if (result && result.id) ref.id = result.id;
-                } catch(e) { console.error('Erro ao salvar referência no banco:', e); }
-            }
-            references.push(ref);
-            saveReferences();
-            renderReferences();
-            document.getElementById('refForm').reset();
-        });
-
-        function getFormData() {
-            return {
-                tipo: document.getElementById('refTipo').value,
-                autores: document.getElementById('refAutores').value.trim(),
-                titulo: document.getElementById('refTitulo').value.trim(),
-                ano: document.getElementById('refAno').value.trim(),
-                editora: document.getElementById('refEditora').value.trim(),
-                cidade: document.getElementById('refCidade').value.trim(),
-                volume: document.getElementById('refVolume').value.trim(),
-                edicao: document.getElementById('refEdicao').value.trim(),
-                paginas: document.getElementById('refPaginas').value.trim(),
-                doi: document.getElementById('refDOI').value.trim(),
-                url: document.getElementById('refURL').value.trim()
-            };
-        }
-
-        function fillForm(ref) {
-            document.getElementById('refTipo').value = ref.tipo || 'livro';
-            document.getElementById('refAutores').value = ref.autores || '';
-            document.getElementById('refTitulo').value = ref.titulo || '';
-            document.getElementById('refAno').value = ref.ano || '';
-            document.getElementById('refEditora').value = ref.editora || '';
-            document.getElementById('refCidade').value = ref.cidade || '';
-            document.getElementById('refVolume').value = ref.volume || '';
-            document.getElementById('refEdicao').value = ref.edicao || '';
-            document.getElementById('refPaginas').value = ref.paginas || '';
-            document.getElementById('refDOI').value = ref.doi || '';
-            document.getElementById('refURL').value = ref.url || '';
-        }
-
-        // ========================= ACTIONS =========================
-
-        function removeReference(idx) {
-            if (!confirm('Remover esta referência?')) return;
-            const removed = references[idx];
-            // Remove from Supabase
-            if (projectId && removed && removed.id) {
-                DB.references.remove(removed.id).catch(e => console.error('Erro ao excluir referência do banco:', e));
-            }
-            references.splice(idx, 1);
-            saveReferences();
-            renderReferences();
-        }
-
-        function editReference(idx) {
-            const ref = references[idx];
-            fillForm(ref);
-            // Remove old from Supabase (will be re-added on form submit)
-            if (projectId && ref && ref.id) {
-                DB.references.remove(ref.id).catch(e => console.error('Erro ao excluir referência editada do banco:', e));
-            }
-            references.splice(idx, 1);
-            saveReferences();
-            renderReferences();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function copyReference(idx) {
-            const text = formatReferencePlain(references[idx], currentFormat);
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Referência copiada!');
-            });
-        }
-
-        // Sort alphabetically
-        document.getElementById('sortAlphaBtn').addEventListener('click', () => {
-            references.sort((a, b) => {
-                const aKey = (a.autores || a.titulo || '').toLowerCase();
-                const bKey = (b.autores || b.titulo || '').toLowerCase();
-                return aKey.localeCompare(bKey, 'pt-BR');
-            });
-            saveReferences();
-            renderReferences();
-        });
-
-        // Copy all
-        document.getElementById('copyAllBtn').addEventListener('click', () => {
-            if (references.length === 0) {
-                alert('Nenhuma referência para copiar.');
-                return;
-            }
-            const lines = references.map(ref => formatReferencePlain(ref, currentFormat));
-            navigator.clipboard.writeText(lines.join('\n\n')).then(() => {
-                showToast('Bibliografia copiada para a área de transferência!');
-            });
-        });
-
-        // ========================= IMPORT FROM I.A. =========================
-
-        document.getElementById('importFromIABtn').addEventListener('click', async () => {
-            document.getElementById('importModal').classList.remove('hidden');
-            const listEl = document.getElementById('importList');
-            listEl.innerHTML = '<div class="text-center text-slate-400 py-8"><i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i><p class="text-sm">Carregando artigos salvos...</p></div>';
-
-            if (!projectId) {
-                listEl.innerHTML = '<div class="text-center text-slate-400 py-8"><i class="fa-solid fa-circle-exclamation text-2xl mb-3"></i><p class="text-sm">Você precisa estar em um projeto para importar.</p></div>';
-                return;
-            }
-
-            try {
-                const papers = await DB.savedPapers.getAll(projectId);
-                if (!papers || papers.length === 0) {
-                    listEl.innerHTML = '<div class="text-center text-slate-400 py-8"><i class="fa-solid fa-inbox text-2xl mb-3"></i><p class="text-sm">Nenhum artigo salvo encontrado.</p><p class="text-xs text-slate-300 mt-1">Salve artigos na página de I.A. primeiro.</p></div>';
-                    return;
-                }
-
-                listEl.innerHTML = '';
-                papers.forEach(paper => {
-                    const card = document.createElement('div');
-                    card.className = 'flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-violet-200 hover:bg-violet-50/30 transition cursor-pointer group';
-                    card.innerHTML = `
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-slate-700 truncate">${escHTML(paper.title)}</p>
-                            <p class="text-xs text-slate-400 mt-0.5">${escHTML(paper.authors || '')}${paper.year ? ' (' + escHTML(paper.year) + ')' : ''}</p>
-                        </div>
-                        <button class="flex-shrink-0 text-xs font-semibold text-violet-600 bg-violet-100 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition">
-                            <i class="fa-solid fa-plus mr-1"></i>Importar
-                        </button>
-                    `;
-                    card.addEventListener('click', () => {
-                        importPaper(paper);
-                        card.classList.add('bg-green-50', 'border-green-200');
-                        card.querySelector('button').innerHTML = '<i class="fa-solid fa-check mr-1"></i>Importado';
-                        card.querySelector('button').classList.remove('text-violet-600', 'bg-violet-100');
-                        card.querySelector('button').classList.add('text-green-600', 'bg-green-100', 'opacity-100');
-                    });
-                    listEl.appendChild(card);
-                });
-            } catch(e) {
-                listEl.innerHTML = '<div class="text-center text-red-400 py-8"><i class="fa-solid fa-circle-exclamation text-2xl mb-3"></i><p class="text-sm">Erro ao carregar artigos.</p></div>';
-            }
-        });
-
-        async function importPaper(paper) {
-            const ref = {
-                id: Date.now().toString(),
-                tipo: 'artigo',
-                autores: paper.authors || '',
-                titulo: paper.title || '',
-                ano: paper.year || '',
-                editora: '',
-                cidade: '',
-                volume: '',
-                edicao: '',
-                paginas: '',
-                doi: paper.doi || '',
-                url: paper.url || ''
-            };
-            if (projectId) {
-                try {
-                    const result = await DB.references.add(projectId, {
-                        type: ref.tipo, title: ref.titulo, authors: ref.autores,
-                        year: ref.ano, url: ref.url, formatted: ''
-                    });
-                    if (result && result.id) ref.id = result.id;
-                } catch(e) { console.error('Erro ao salvar referência importada no banco:', e); }
-            }
-            references.push(ref);
-            saveReferences();
-            renderReferences();
-        }
-
-        document.getElementById('closeImportModal').addEventListener('click', () => {
-            document.getElementById('importModal').classList.add('hidden');
-        });
-
-        document.getElementById('importModal').addEventListener('click', e => {
-            if (e.target === document.getElementById('importModal')) {
-                document.getElementById('importModal').classList.add('hidden');
-            }
-        });
-
-        // ========================= TOAST =========================
-
-        function showToast(msg) {
-            const existing = document.getElementById('toast');
-            if (existing) existing.remove();
-
-            const toast = document.createElement('div');
-            toast.id = 'toast';
-            toast.className = 'fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-sm font-medium px-5 py-3 rounded-xl shadow-xl flex items-center gap-2';
-            toast.style.animation = 'slideUp 0.3s ease-out';
-            toast.innerHTML = '<i class="fa-solid fa-check-circle text-green-400"></i>' + escHTML(msg);
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 2500);
-        }
-    </script>
-    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+<body>
+	<button class="toggle-history" id="toggleHistory" style="display: none;">Menu</button>
+
+	<div class="container">
+		<div class="left-panel panel">
+			<form id="referenceForm">
+				<div class="form-group">
+					<label for="format">Formato</label>
+					<select id="format" required>
+						<option value="ABNT">ABNT</option>
+						<option value="APA">APA</option>
+						<option value="Chicago">Chicago</option>
+						<option value="Harvard">Harvard</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="type">Tipo de obra</label>
+					<select id="type" required>
+						<option value="livro">Livro</option>
+						<option value="artigo">Artigo</option>
+						<option value="site">Site</option>
+						<option value="tese">Tese</option>
+						<option value="dissertacao">Dissertação</option>
+						<option value="periodico">Periódico</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="urlDoi">URL ou DOI</label>
+					<input type="text" id="urlDoi" placeholder="https://... ou 10.1234/...">
+				</div>
+
+				<div class="form-group">
+					<label for="title">Título</label>
+					<input type="text" id="title" placeholder="Digite o título" required>
+				</div>
+
+				<div class="form-group">
+					<label for="author">Autor(es)</label>
+					<input type="text" id="author" placeholder="Nome do autor">
+				</div>
+
+				<div class="form-group">
+					<label for="year">Ano</label>
+					<input type="number" id="year" placeholder="2024" min="1900" max="2100">
+				</div>
+
+				<div class="button-group">
+					<button type="submit" class="btn-primary">Gerar</button>
+					<button type="reset" class="btn-secondary">Limpar</button>
+				</div>
+			</form>
+		</div>
+
+		<div class="main-area">
+			<div id="previewContainer"></div>
+		</div>
+
+		<div class="right-panel panel" id="rightPanel">
+			<div>
+				<div class="history-title">
+					Referências Geradas
+					<span class="history-counter" id="historyCounter">0</span>
+				</div>
+				<div id="historyList"></div>
+			</div>
+			<button class="btn-clear-history" id="clearHistoryBtn">Limpar histórico</button>
+		</div>
+	</div>
+
+	<script>
+		const API_BASE = '/api';
+		let history = [];
+		let currentReference = null;
+
+		const form = document.getElementById('referenceForm');
+		const formatSelect = document.getElementById('format');
+		const typeSelect = document.getElementById('type');
+		const urlDoiInput = document.getElementById('urlDoi');
+		const titleInput = document.getElementById('title');
+		const authorInput = document.getElementById('author');
+		const yearInput = document.getElementById('year');
+		const previewContainer = document.getElementById('previewContainer');
+		const historyList = document.getElementById('historyList');
+		const historyCounter = document.getElementById('historyCounter');
+		const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+		const rightPanel = document.getElementById('rightPanel');
+		const toggleHistoryBtn = document.getElementById('toggleHistory');
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			await generateReference();
+		});
+
+		clearHistoryBtn.addEventListener('click', clearHistory);
+
+		async function generateReference() {
+			const format = formatSelect.value;
+			const type = typeSelect.value;
+			const urlDoi = urlDoiInput.value.trim();
+			const title = titleInput.value.trim();
+			const author = authorInput.value.trim();
+			const year = yearInput.value;
+
+			if (!title && !urlDoi) {
+				showError('Digite uma URL, DOI ou título para gerar a referência.');
+				return;
+			}
+
+			try {
+				let metadata = { title, author, year, type, urlDoi };
+
+				if (urlDoi) {
+					try {
+						const fetchedData = await fetchMetadata(urlDoi);
+						metadata = { ...metadata, ...fetchedData };
+					} catch (e) {
+						console.log('Usando dados manualmente inseridos');
+					}
+				}
+
+				const referenceContent = formatReference(metadata, format);
+				currentReference = { ...metadata, format, content: referenceContent };
+
+				displayPreview(referenceContent, format);
+				await saveToHistory(currentReference);
+			} catch (error) {
+				showError('Erro ao gerar referência: ' + error.message);
+			}
+		}
+
+		async function fetchMetadata(urlOrDoi) {
+			if (urlOrDoi.startsWith('10.')) {
+				return await fetchDOI(urlOrDoi);
+			} else if (urlOrDoi.startsWith('http://') || urlOrDoi.startsWith('https://')) {
+				return await fetchOpenGraph(urlOrDoi);
+			}
+			return {};
+		}
+
+		async function fetchDOI(doi) {
+			const response = await fetch(`https://doi.org/${doi}`, {
+				headers: { 'Accept': 'application/json' }
+			});
+			if (!response.ok) throw new Error('DOI não encontrado');
+			const data = await response.json();
+			return {
+				title: data.title || '',
+				author: data.author?.[0]?.family || '',
+				year: data.published?.[0] || new Date().getFullYear()
+			};
+		}
+
+		async function fetchOpenGraph(url) {
+			try {
+				const response = await fetch(url);
+				const html = await response.text();
+
+				const titleMatch = html.match(/<meta\s+property=['"]og:title['"]\s+content=['"]([^'"]+)['"]/i);
+				const authorMatch = html.match(/<meta\s+name=['"]author['"]\s+content=['"]([^'"]+)['"]/i);
+
+				return {
+					title: titleMatch ? titleMatch[1] : '',
+					author: authorMatch ? authorMatch[1] : '',
+					year: new Date().getFullYear()
+				};
+			} catch (e) {
+				return {};
+			}
+		}
+
+		function formatReference(metadata, format) {
+			const { title, author, year, type, urlDoi } = metadata;
+
+			const authorStr = author || 'Autor desconhecido';
+			const yearStr = year || new Date().getFullYear();
+			const titleStr = title || 'Sem título';
+
+			switch (format) {
+				case 'ABNT':
+					return formatABNT(authorStr, titleStr, yearStr, type, urlDoi);
+				case 'APA':
+					return formatAPA(authorStr, titleStr, yearStr, type, urlDoi);
+				case 'Chicago':
+					return formatChicago(authorStr, titleStr, yearStr, type, urlDoi);
+				case 'Harvard':
+					return formatHarvard(authorStr, titleStr, yearStr, type, urlDoi);
+				default:
+					return formatABNT(authorStr, titleStr, yearStr, type, urlDoi);
+			}
+		}
+
+		function formatABNT(author, title, year, type, urlDoi) {
+			let reference = '';
+
+			if (type === 'livro') {
+				reference = `${author.toUpperCase()}. ${title}. ${year}.`;
+			} else if (type === 'artigo') {
+				reference = `${author}. ${title}. 2024.`;
+			} else if (type === 'site') {
+				reference = `${author}. ${title}. Disponível em: ${urlDoi || 'URL'}. Acesso em: ${new Date().toLocaleDateString('pt-BR')}.`;
+			} else if (type === 'tese') {
+				reference = `${author}. ${title}. Tese de doutorado, ${year}.`;
+			} else if (type === 'dissertacao') {
+				reference = `${author}. ${title}. Dissertação de mestrado, ${year}.`;
+			} else if (type === 'periodico') {
+				reference = `${author}. ${title}. Periódico, ${year}.`;
+			}
+
+			return reference;
+		}
+
+		function formatAPA(author, title, year, type, urlDoi) {
+			let reference = '';
+
+			if (type === 'livro') {
+				reference = `${author} (${year}). ${title}.`;
+			} else if (type === 'artigo') {
+				reference = `${author} (${year}). ${title}.`;
+			} else if (type === 'site') {
+				reference = `${author} (${year}). ${title}. Retrieved from ${urlDoi || 'URL'}`;
+			} else if (type === 'tese') {
+				reference = `${author} (${year}). ${title}. (Doctoral dissertation).`;
+			} else if (type === 'dissertacao') {
+				reference = `${author} (${year}). ${title}. (Master's thesis).`;
+			} else if (type === 'periodico') {
+				reference = `${author} (${year}). ${title}.`;
+			}
+
+			return reference;
+		}
+
+		function formatChicago(author, title, year, type, urlDoi) {
+			let reference = '';
+
+			if (type === 'livro') {
+				reference = `${author}. ${title}. Chicago: Publisher, ${year}.`;
+			} else if (type === 'artigo') {
+				reference = `${author}. "${title}." Journal Name (${year}).`;
+			} else if (type === 'site') {
+				reference = `${author}. "${title}." Accessed ${new Date().toLocaleDateString('pt-BR')}. ${urlDoi || 'URL'}.`;
+			} else if (type === 'tese') {
+				reference = `${author}. "${title}." Doctoral dissertation, University, ${year}.`;
+			} else if (type === 'dissertacao') {
+				reference = `${author}. "${title}." Master's thesis, University, ${year}.`;
+			} else if (type === 'periodico') {
+				reference = `${author}. "${title}." Periodical, ${year}.`;
+			}
+
+			return reference;
+		}
+
+		function formatHarvard(author, title, year, type, urlDoi) {
+			let reference = '';
+
+			if (type === 'livro') {
+				reference = `${author}, ${year}. ${title}.`;
+			} else if (type === 'artigo') {
+				reference = `${author}, ${year}. ${title}.`;
+			} else if (type === 'site') {
+				reference = `${author}, ${year}. ${title}. Available at: ${urlDoi || 'URL'} (Accessed: ${new Date().toLocaleDateString('pt-BR')}).`;
+			} else if (type === 'tese') {
+				reference = `${author}, ${year}. ${title}. Doctoral thesis.`;
+			} else if (type === 'dissertacao') {
+				reference = `${author}, ${year}. ${title}. Master's thesis.`;
+			} else if (type === 'periodico') {
+				reference = `${author}, ${year}. ${title}.`;
+			}
+
+			return reference;
+		}
+
+		function displayPreview(content, format) {
+			if (!content) {
+				previewContainer.innerHTML = `
+					<div class="preview-card">
+						<div class="empty-state">
+							Digite uma URL, DOI ou título para gerar
+						</div>
+					</div>
+				`;
+				return;
+			}
+
+			previewContainer.innerHTML = `
+				<div class="preview-card">
+					<div class="preview-header">
+						<span class="badge">${format}</span>
+					</div>
+					<div class="preview-content">${escapeHtml(content)}</div>
+					<button class="btn-copy" id="copyBtn">Copiar para clipboard</button>
+				</div>
+			`;
+
+			document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
+		}
+
+		function showError(message) {
+			previewContainer.innerHTML = `
+				<div class="preview-card">
+					<div class="error-message">${message}</div>
+				</div>
+			`;
+		}
+
+		async function saveToHistory(reference) {
+			try {
+				const response = await fetch(`${API_BASE}/references`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(reference)
+				});
+
+				if (response.ok) {
+					const saved = await response.json();
+					history.unshift(saved);
+					if (history.length > 10) history.pop();
+					updateHistoryDisplay();
+				}
+			} catch (e) {
+				history.unshift(reference);
+				if (history.length > 10) history.pop();
+				updateHistoryDisplay();
+			}
+		}
+
+		function updateHistoryDisplay() {
+			historyCounter.textContent = history.length;
+
+			if (history.length === 0) {
+				historyList.innerHTML = '<div class="history-empty">Nenhuma referência gerada</div>';
+				return;
+			}
+
+			historyList.innerHTML = history.map((ref, index) => `
+				<div class="history-item">
+					<div class="history-item-title">${escapeHtml(ref.title || 'Sem título')}</div>
+					<div class="history-item-meta">${ref.format} • ${ref.type} • ${new Date().toLocaleDateString('pt-BR')}</div>
+					<div class="history-item-actions">
+						<button class="btn-small btn-primary" onclick="copyHistoryItem(${index})">Copiar</button>
+						<button class="btn-delete" onclick="deleteHistoryItem(${index})">Excluir</button>
+					</div>
+				</div>
+			`).join('');
+		}
+
+		function copyToClipboard() {
+			if (!currentReference) return;
+
+			navigator.clipboard.writeText(currentReference.content).then(() => {
+				showCopyFeedback('Referência copiada!');
+			}).catch(() => {
+				showCopyFeedback('Erro ao copiar', true);
+			});
+		}
+
+		function copyHistoryItem(index) {
+			if (history[index]) {
+				navigator.clipboard.writeText(history[index].content).then(() => {
+					showCopyFeedback('Referência copiada!');
+				});
+			}
+		}
+
+		function deleteHistoryItem(index) {
+			history.splice(index, 1);
+			updateHistoryDisplay();
+		}
+
+		function clearHistory() {
+			if (confirm('Tem certeza que deseja limpar o histórico?')) {
+				history = [];
+				updateHistoryDisplay();
+			}
+		}
+
+		function showCopyFeedback(message, isError = false) {
+			const feedback = document.createElement('div');
+			feedback.className = 'copy-feedback';
+			feedback.textContent = message;
+			if (isError) feedback.style.backgroundColor = 'var(--error)';
+			document.body.appendChild(feedback);
+			setTimeout(() => feedback.remove(), 3000);
+		}
+
+		function escapeHtml(text) {
+			const map = {
+				'&': '&amp;',
+				'<': '&lt;',
+				'>': '&gt;',
+				'"': '&quot;',
+				"'": '&#039;'
+			};
+			return text.replace(/[&<>"']/g, m => map[m]);
+		}
+
+		updateHistoryDisplay();
+
+		if (window.innerWidth < 768) {
+			rightPanel.classList.add('collapsed');
+			toggleHistoryBtn.style.display = 'block';
+			toggleHistoryBtn.addEventListener('click', () => {
+				rightPanel.classList.toggle('collapsed');
+			});
+		}
+	</script>
 </body>
 </html>
