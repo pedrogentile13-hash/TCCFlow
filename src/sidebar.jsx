@@ -32,11 +32,17 @@ function useTCCData() {
           setProject(proj);
 
           // Fetch members by project_id directly — more reliable than reading proj.members array
-          let memberRes = await _supa.from('users').select('id, name, email, role').eq('project_id', ud.project_id);
+          let memberRes = await _supa.from('users').select('id, name, email, role, project_id').eq('project_id', ud.project_id).order('name', { ascending: true });
           if (memberRes.error) {
-            memberRes = await _supa.from('users').select('id, name, email').eq('project_id', ud.project_id);
+            memberRes = await _supa.from('users').select('id, name, email, project_id').eq('project_id', ud.project_id).order('name', { ascending: true });
           }
-          setTeam(memberRes.data || []);
+          // Ensure current user is included even if missing from users table
+          const members = memberRes.data || [];
+          const currentUserExists = members.some(m => m.id === u.uid);
+          if (!currentUserExists && ud) {
+            members.unshift({ id: u.uid, name: ud.name, email: u.email, role: 'student', project_id: ud.project_id });
+          }
+          setTeam(members);
         }
         const sub = await DB.subscriptions.get(u.uid);
         setSub(sub);
