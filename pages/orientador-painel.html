@@ -8,8 +8,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
   <script src="../js/darkmode.js"></script>
   <style>
-    .ori-layout{display:grid;grid-template-columns:240px 1fr;height:100vh;overflow:hidden}
-    .ori-sidebar{background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:0;overflow:hidden}
+    body,html,#root{width:100%;height:100%;margin:0;padding:0}
+    .ori-layout{display:grid;grid-template-columns:240px 1fr;height:100vh;overflow:hidden;width:100%}
+    .ori-sidebar{background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:0;overflow:hidden;height:100vh;width:240px}
     .ori-sidebar-header{padding:20px 16px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
     .ori-sidebar-logo{width:36px;height:36px;border-radius:10px}
     .ori-sidebar-brand{font-family:var(--font-display);font-size:1.15rem;color:var(--ink)}
@@ -90,10 +91,8 @@
     .tab.active{color:var(--emerald);border-bottom-color:var(--emerald);font-weight:600}
     @media(max-width:768px){
       .ori-layout{grid-template-columns:1fr}
-      .ori-sidebar{position:fixed;left:-260px;top:0;bottom:0;width:260px;z-index:200;transition:left .3s}
+      .ori-sidebar{position:fixed;left:-260px;top:0;width:260px;z-index:200;transition:left .3s;height:100vh}
       .ori-sidebar.open{left:0}
-      .ori-sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;display:none}
-      .ori-sidebar-overlay.show{display:block}
       .mobile-menu-btn{display:flex!important}
       .section-grid{grid-template-columns:1fr;height:auto}
       .section-left,.section-right{display:none}
@@ -156,7 +155,7 @@
     function OrientadorSidebar({ activeView, onNavigate, user, mobileOpen, onCloseMobile }) {
       return (
         <>
-          <div className={`ori-sidebar-overlay ${mobileOpen ? 'show' : ''}`} onClick={onCloseMobile}/>
+          {mobileOpen && <div onClick={onCloseMobile} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.4)',zIndex:150}}/>}
           <aside className={`ori-sidebar ${mobileOpen ? 'open' : ''}`}>
             <div className="ori-sidebar-header">
               <img src="../assets/logo.png" className="ori-sidebar-logo" alt=""/>
