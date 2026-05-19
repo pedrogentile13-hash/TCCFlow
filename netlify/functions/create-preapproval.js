@@ -4,58 +4,35 @@
 const { MercadoPagoConfig, PreApproval } = require('mercadopago');
 const { createClient } = require('@supabase/supabase-js');
 
+// IDs dos planos criados no Mercado Pago
+const PLAN_IDS = {
+    'pro_annual': '31264e2dd96b4c71b3658272d76f4d6d',
+    'pro_monthly': '5f5af10e145c4c9d8686bb1856cd3311'
+};
+
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
     }
 
     try {
-        const { userId, userEmail, userName, seats, planType, amount } = JSON.parse(event.body);
+        const { userId, userEmail, userName, planType } = JSON.parse(event.body);
 
         if (!userId || !userEmail) {
             return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields: userId, userEmail' }) };
         }
 
-        // Validar amount e definir frequência
-        const finalAmount = amount || 97.90;
-        const frequency = planType === 'pro_monthly' ? 1 : 12;
-        const frequencyType = planType === 'pro_monthly' ? 'months' : 'months';
-
-        const client = new MercadoPagoConfig({
-            accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN
-        });
+        const planId = PLAN_IDS[planType];
+        if (!planId) {
+            return { statusCode: 400, body: JSON.stringify({ error: 'Invalid planType' }) };
+        }
 
         const siteUrl = process.env.URL || 'https://tccflow.com.br';
 
-        // Criar PreApproval (assinatura recorrente)
-        const preapprovalClient = new PreApproval(client);
+        // Gerar URL de checkout direto com o plano
+        const checkoutUrl = `https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=${planId}&payer_email=${encodeURIComponent(userEmail)}`;
 
-        // Calcular data de início (amanhã, no mínimo)
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() + 1);
-        const startDateStr = startDate.toISOString().split('T')[0] + 'T00:00:00Z';
-
-        const result = await preapprovalClient.create({
-            body: {
-                reason: planType === 'pro_monthly' ? 'TCCFlow - Assinatura Mensal PRO' : 'TCCFlow - Assinatura Anual PRO',
-                reference_id: userId,
-                external_reference: userId,
-                payer_email: userEmail,
-                back_url: `${siteUrl}/pages/pagamento-sucesso.html`,
-                auto_recurring: {
-                    frequency: frequency,
-                    frequency_type: frequencyType,
-                    transaction_amount: finalAmount,
-                    currency_id: 'BRL',
-                    start_date: startDateStr,
-                    end_date: null // sem data de término
-                },
-                notification_url: `${siteUrl}/.netlify/functions/mp-webhook`,
-                payment_method_id: 'pix'
-            }
-        });
-
-        console.log('PreApproval criado:', result.id);
+        console.log('PreApproval checkout URL:', checkoutUrl);
 
         // Salvar no Supabase com status 'pending' até confirmação
         const supabase = createClient(
@@ -72,9 +49,8 @@ exports.handler = async (event) => {
                 user_name: userName || '',
                 status: 'pending',
                 plan: 'pro',
-                plan_type: planType || 'pro_annual',
-                seats: seats || 1,
-                mercadopago_preapproval_id: result.id,
+                plan_type: planType,
+                seats: 1,
                 payment_method: 'mercadopago'
             }, { onConflict: 'id' });
 
@@ -87,14 +63,13 @@ exports.handler = async (event) => {
             statusCode: 200,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                url: result.init_point,
-                preapprovalId: result.id,
-                message: 'PreApproval criado com sucesso'
+                url: checkoutUrl,
+                message: 'Redirecionando para Mercado Pago'
             })
         };
 
     } catch (err) {
-        console.error('Mercado Pago PreApproval error:', err);
+        console.error('PreApproval error:', err);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: err.message || 'Internal server error' })
