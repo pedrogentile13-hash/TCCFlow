@@ -20,6 +20,7 @@ const { useState, useEffect } = React;
 
 function PlansPage() {
   const { user, userData, subscription, loading } = useTCCData();
+  const [billing, setBilling] = useState("annual");
   const [processingPlan, setProcessingPlan] = useState(null);
 
   if (loading) {
@@ -27,6 +28,62 @@ function PlansPage() {
   }
 
   const currentPlan = subscription?.plan || "free";
+
+  const plans = [
+    {
+      id: "free",
+      name: "Gratuito",
+      sub: "Para começar",
+      monthlyPrice: 0,
+      annualPrice: 0,
+      features: [
+        "Dashboard e Projeto",
+        "Até 5 tarefas",
+        "Calendário básico",
+        "20 buscas I.A./mês",
+        "Equipe: 1 integrante"
+      ],
+      inactive: [
+        "Suporte prioritário",
+        "Integração Google",
+        "Ferramentas PRO"
+      ]
+    },
+    {
+      id: "pro",
+      name: "Pro",
+      sub: "Para equipes sérias",
+      monthlyPrice: 14.90,
+      annualPrice: 124.90,
+      features: [
+        "Tudo do Gratuito",
+        "Até 8 membros",
+        "Tarefas ilimitadas",
+        "1.000 buscas I.A./mês",
+        "Integração Google",
+        "Todas as ferramentas PRO",
+        "Suporte prioritário"
+      ],
+      inactive: [],
+      popular: true
+    },
+    {
+      id: "inst",
+      name: "Instituição",
+      sub: "Para coordenadores",
+      monthlyPrice: null,
+      annualPrice: null,
+      features: [
+        "Tudo do Pro",
+        "Múltiplos grupos",
+        "Painel do coordenador",
+        "Relatórios de turma",
+        "Integração com SIGAA",
+        "Suporte dedicado"
+      ],
+      inactive: []
+    }
+  ];
 
   async function handleSelectPlan(planId, amount) {
     if (!user) {
@@ -47,7 +104,7 @@ function PlansPage() {
     setProcessingPlan(planId);
 
     try {
-      console.log("Iniciando assinatura:", { userId: user.uid, amount, planId });
+      console.log("Iniciando assinatura:", { userId: user.uid, amount, planId, billing });
 
       const response = await fetch("/.netlify/functions/create-preapproval", {
         method: "POST",
@@ -57,7 +114,7 @@ function PlansPage() {
           userEmail: user.email,
           userName: userData?.name || user.displayName || "Usuário",
           seats: 1,
-          planType: planId === "pro" ? "pro_annual" : "pro_monthly",
+          planType: billing === "annual" ? "pro_annual" : "pro_monthly",
           amount: amount
         })
       });
@@ -90,189 +147,176 @@ function PlansPage() {
       <Sidebar active="plans" userData={userData} subscription={subscription} />
       <div className="main-area">
         <Topbar page="Planos" user={user} />
-        <div className="page-content" style={{ maxWidth: "1000px", margin: "0 auto" }}>
+        <div className="page-content" style={{ maxWidth: "1400px", margin: "0 auto", paddingTop: 20 }}>
 
-          <div style={{ textAlign: "center", marginBottom: 60, paddingTop: 20 }}>
-            <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 400, letterSpacing: "-0.03em", marginBottom: 16, color: "var(--ink)" }}>
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2rem", fontWeight: 400, letterSpacing: "-0.02em", marginBottom: 16, color: "var(--ink)" }}>
               Escolha seu plano
             </h1>
-            <p style={{ fontSize: "1rem", color: "var(--muted)", marginBottom: 8 }}>
+            <p style={{ fontSize: "0.9375rem", color: "var(--muted)", marginBottom: 24 }}>
               Comece grátis. Atualize quando precisar.
             </p>
+
+            {/* Toggle Mensal/Anual */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 24, marginBottom: 32 }}>
+              <button
+                onClick={() => setBilling("monthly")}
+                style={{
+                  padding: "8px 24px",
+                  border: billing === "monthly" ? "2px solid var(--violet)" : "1px solid var(--line)",
+                  background: billing === "monthly" ? "rgba(124, 58, 237, 0.08)" : "transparent",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontSize: "0.9375rem",
+                  fontWeight: billing === "monthly" ? 600 : 400,
+                  color: billing === "monthly" ? "var(--violet)" : "var(--muted)",
+                  transition: "all 0.2s"
+                }}
+              >
+                Mensal
+              </button>
+              <button
+                onClick={() => setBilling("annual")}
+                style={{
+                  padding: "8px 24px",
+                  border: billing === "annual" ? "2px solid var(--violet)" : "1px solid var(--line)",
+                  background: billing === "annual" ? "rgba(124, 58, 237, 0.08)" : "transparent",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontSize: "0.9375rem",
+                  fontWeight: billing === "annual" ? 600 : 400,
+                  color: billing === "annual" ? "var(--violet)" : "var(--muted)",
+                  transition: "all 0.2s"
+                }}
+              >
+                Anual
+                <span style={{ marginLeft: 8, background: "var(--emerald)", color: "white", padding: "2px 8px", borderRadius: 4, fontSize: "0.75rem", fontWeight: 600 }}>
+                  −30%
+                </span>
+              </button>
+            </div>
+
             {currentPlan !== "free" && (
-              <div style={{ background: "rgba(16, 185, 129, 0.1)", color: "var(--emerald)", padding: "8px 16px", borderRadius: 8, display: "inline-block", fontSize: "0.875rem", fontWeight: 600, marginTop: 12 }}>
+              <div style={{ background: "rgba(16, 185, 129, 0.1)", color: "var(--emerald)", padding: "8px 16px", borderRadius: 8, display: "inline-block", fontSize: "0.875rem", fontWeight: 600 }}>
                 ✓ Você está no plano <strong>{currentPlan === "pro" ? "Pro" : "Instituição"}</strong>
               </div>
             )}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
+          {/* Grid de 3 colunas */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 40 }}>
+            {plans.map(plan => {
+              const price = billing === "annual" ? plan.annualPrice : plan.monthlyPrice;
+              const isCurrent = currentPlan === plan.id;
 
-            {/* PLANO GRATUITO */}
-            <div style={{
-              background: "var(--paper)",
-              border: "1.5px solid var(--line)",
-              borderRadius: 16,
-              padding: 32,
-              display: "flex",
-              flexDirection: "column",
-              opacity: currentPlan === "free" ? 1 : 0.9
-            }}>
-              <div style={{ marginBottom: 24 }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", fontWeight: 400, margin: "0 0 8px", color: "var(--ink)" }}>
-                  Gratuito
-                </h2>
-                <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
-                  Para começar com o pé direito
-                </p>
-              </div>
-
-              <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "var(--ink)", marginBottom: 4 }}>
-                  R$ 0
-                </div>
-                <div style={{ fontSize: "0.875rem", color: "var(--muted)" }}>
-                  para sempre
-                </div>
-              </div>
-
-              <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 24px", fontSize: "0.875rem" }}>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Dashboard e Projeto</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Até 5 tarefas</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Calendário básico</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ 20 buscas I.A./mês</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Equipe: 1 integrante</li>
-                <li style={{ padding: "8px 0", color: "var(--muted)", textDecoration: "line-through" }}>Suporte prioritário</li>
-              </ul>
-
-              {currentPlan === "free" ? (
-                <button className="btn" style={{ width: "100%", justifyContent: "center", opacity: 0.6, cursor: "default" }}>
-                  Seu plano atual
-                </button>
-              ) : (
-                <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center" }} onClick={() => handleSelectPlan("free")}>
-                  Usar grátis
-                </button>
-              )}
-            </div>
-
-            {/* PLANO PRO */}
-            <div style={{
-              background: "var(--paper)",
-              border: "2px solid var(--violet)",
-              borderRadius: 16,
-              padding: 32,
-              display: "flex",
-              flexDirection: "column",
-              position: "relative",
-              transform: "scale(1.02)",
-              boxShadow: "0 10px 40px rgba(124, 58, 237, 0.15)"
-            }}>
-              <div style={{ position: "absolute", top: 16, right: 16, background: "var(--violet)", color: "white", padding: "4px 12px", borderRadius: 999, fontSize: "0.6875rem", fontWeight: 600, textTransform: "uppercase" }}>
-                Popular
-              </div>
-
-              <div style={{ marginBottom: 24 }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", fontWeight: 400, margin: "0 0 8px", color: "var(--ink)" }}>
-                  Pro
-                </h2>
-                <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
-                  Para equipes que levam a sério
-                </p>
-              </div>
-
-              <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "var(--ink)", marginBottom: 4 }}>
-                  R$ 124,90
-                </div>
-                <div style={{ fontSize: "0.875rem", color: "var(--muted)" }}>
-                  por ano (R$ 10,41/mês)
-                </div>
-              </div>
-
-              <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 24px", fontSize: "0.875rem" }}>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Tudo do Gratuito</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Até 8 membros</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Tarefas ilimitadas</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ 1.000 buscas I.A./mês</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Integração Google</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Todas as ferramentas PRO</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Suporte prioritário</li>
-              </ul>
-
-              {currentPlan === "pro" ? (
-                <button className="btn" style={{ width: "100%", justifyContent: "center", opacity: 0.6, cursor: "default" }}>
-                  Seu plano atual
-                </button>
-              ) : (
-                <button
-                  className="btn btn-primary"
-                  style={{ width: "100%", justifyContent: "center" }}
-                  onClick={() => handleSelectPlan("pro", 124.90)}
-                  disabled={processingPlan === "pro"}
+              return (
+                <div
+                  key={plan.id}
+                  style={{
+                    background: "var(--paper)",
+                    border: isCurrent ? "2px solid var(--emerald)" : plan.popular ? "2px solid var(--violet)" : "1.5px solid var(--line)",
+                    borderRadius: 12,
+                    padding: 24,
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                    transform: plan.popular && !isCurrent ? "scale(1.02)" : "scale(1)",
+                    boxShadow: plan.popular && !isCurrent ? "0 10px 40px rgba(124, 58, 237, 0.15)" : "none",
+                    transition: "all 0.2s"
+                  }}
                 >
-                  {processingPlan === "pro" ? "Processando..." : "Assinar agora"}
-                </button>
-              )}
-            </div>
+                  {isCurrent && (
+                    <div style={{ position: "absolute", top: 12, right: 12, background: "var(--emerald)", color: "white", padding: "3px 10px", borderRadius: 999, fontSize: "0.625rem", fontWeight: 600, textTransform: "uppercase" }}>
+                      ✓ Seu plano
+                    </div>
+                  )}
+                  {plan.popular && !isCurrent && (
+                    <div style={{ position: "absolute", top: 12, right: 12, background: "var(--violet)", color: "white", padding: "3px 10px", borderRadius: 999, fontSize: "0.625rem", fontWeight: 600, textTransform: "uppercase" }}>
+                      Popular
+                    </div>
+                  )}
 
-            {/* PLANO INSTITUIÇÃO */}
-            <div style={{
-              background: "var(--paper)",
-              border: "1.5px solid var(--line)",
-              borderRadius: 16,
-              padding: 32,
-              display: "flex",
-              flexDirection: "column",
-              opacity: 0.9
-            }}>
-              <div style={{ marginBottom: 24 }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", fontWeight: 400, margin: "0 0 8px", color: "var(--ink)" }}>
-                  Instituição
-                </h2>
-                <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
-                  Para coordenadores e escolas
-                </p>
-              </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.4rem", fontWeight: 400, margin: "0 0 4px", color: "var(--ink)" }}>
+                      {plan.name}
+                    </h2>
+                    <p style={{ color: "var(--muted)", fontSize: "0.8125rem", margin: 0 }}>
+                      {plan.sub}
+                    </p>
+                  </div>
 
-              <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "var(--ink)", marginBottom: 4 }}>
-                  Customizado
+                  <div style={{ marginBottom: 20 }}>
+                    {price === null ? (
+                      <>
+                        <div style={{ fontSize: "1.8rem", fontWeight: 700, color: "var(--ink)" }}>
+                          Customizado
+                        </div>
+                        <div style={{ fontSize: "0.8125rem", color: "var(--muted)" }}>
+                          Preço por volume
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--ink)", marginBottom: 2 }}>
+                          {price === 0 ? "R$ 0" : `R$ ${price.toFixed(2).replace(".", ",")}`}
+                        </div>
+                        <div style={{ fontSize: "0.8125rem", color: "var(--muted)" }}>
+                          {price === 0 ? "para sempre" : billing === "annual" ? "/ano" : "/mês"}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 20px", fontSize: "0.8125rem" }}>
+                    {plan.features.map((feature, i) => (
+                      <li key={i} style={{ padding: "6px 0", color: "var(--ink)", display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ color: "var(--violet)", fontWeight: 700 }}>✓</span>
+                        {feature}
+                      </li>
+                    ))}
+                    {plan.inactive.map((feature, i) => (
+                      <li key={`inactive-${i}`} style={{ padding: "6px 0", color: "var(--muted)", textDecoration: "line-through", opacity: 0.5, display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ color: "var(--muted)" }}>–</span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {isCurrent ? (
+                    <button className="btn" style={{ width: "100%", justifyContent: "center", opacity: 0.6, cursor: "default" }}>
+                      Seu plano atual
+                    </button>
+                  ) : plan.id === "free" ? (
+                    <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center" }} onClick={() => handleSelectPlan("free")}>
+                      Usar grátis
+                    </button>
+                  ) : plan.id === "pro" ? (
+                    <button
+                      className="btn btn-primary"
+                      style={{ width: "100%", justifyContent: "center" }}
+                      onClick={() => handleSelectPlan("pro", price)}
+                      disabled={processingPlan === "pro"}
+                    >
+                      {processingPlan === "pro" ? "Processando..." : "Assinar agora"}
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-ghost"
+                      style={{ width: "100%", justifyContent: "center" }}
+                      onClick={() => handleSelectPlan("inst")}
+                    >
+                      Falar com vendas
+                    </button>
+                  )}
                 </div>
-                <div style={{ fontSize: "0.875rem", color: "var(--muted)" }}>
-                  Preço por volume
-                </div>
-              </div>
-
-              <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 24px", fontSize: "0.875rem" }}>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Tudo do Pro</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Múltiplos grupos</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Painel do coordenador</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Relatórios de turma</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Integração com SIGAA</li>
-                <li style={{ padding: "8px 0", color: "var(--ink)" }}>✓ Suporte dedicado</li>
-              </ul>
-
-              <button
-                className="btn btn-ghost"
-                style={{ width: "100%", justifyContent: "center" }}
-                onClick={() => handleSelectPlan("inst")}
-              >
-                Falar com vendas
-              </button>
-            </div>
+              );
+            })}
           </div>
 
-          <div style={{ marginTop: 60, padding: "32px", background: "var(--bg-2)", borderRadius: 16, textAlign: "center" }}>
-            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.3rem", fontWeight: 400, marginBottom: 12, color: "var(--ink)" }}>
-              Dúvidas?
-            </h3>
-            <p style={{ color: "var(--muted)", marginBottom: 16 }}>
-              Não tem cartão de crédito? Sem problema! Testamos com Pix, boleto e cartão de débito.
+          <div style={{ padding: "24px", background: "var(--bg-2)", borderRadius: 12, textAlign: "center" }}>
+            <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
+              💳 Aceita Pix, boleto e cartão de crédito/débito
             </p>
-            <a href="mailto:tccflow.contato@gmail.com" className="btn btn-ghost">
-              📧 Entre em contato conosco
-            </a>
           </div>
         </div>
       </div>
