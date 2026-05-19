@@ -1,715 +1,1036 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-1WX7MD9CL9');
-    </script>
-
-    <link rel="icon" type="image/png" href="../favicon.png">
-    <link rel="apple-touch-icon" href="../favicon.png">
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#7c3aed">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Orientador - TCCFlow</title>
-    <script src="../js/darkmode.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(16,185,129,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(139,92,246,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(6,182,212,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
-    </style>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Painel do Orientador — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .ori-layout{display:grid;grid-template-columns:240px 1fr;height:100vh;overflow:hidden}
+    .ori-sidebar{background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:0;overflow:hidden}
+    .ori-sidebar-header{padding:20px 16px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+    .ori-sidebar-logo{width:36px;height:36px;border-radius:10px}
+    .ori-sidebar-brand{font-family:var(--font-display);font-size:1.15rem;color:var(--ink)}
+    .ori-sidebar-brand span{color:var(--emerald)}
+    .ori-sidebar-badge{font-family:var(--font-mono);font-size:.55rem;background:var(--emerald);color:#fff;padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:.08em}
+    .ori-nav{flex:1;overflow-y:auto;padding:12px 8px;display:flex;flex-direction:column;gap:2px}
+    .ori-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85rem;color:var(--muted);transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:var(--font-body)}
+    .ori-nav-item:hover{background:var(--line);color:var(--ink)}
+    .ori-nav-item.active{background:var(--emerald);color:#fff;font-weight:600}
+    .ori-nav-item i{width:18px;text-align:center;font-size:.8rem}
+    .ori-nav-divider{height:1px;background:var(--line);margin:8px 4px}
+    .ori-sidebar-footer{padding:12px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+    .ori-sidebar-footer .avatar{width:32px;height:32px;border-radius:50%;background:var(--emerald);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+    .ori-sidebar-footer .user-info{flex:1;min-width:0}
+    .ori-sidebar-footer .user-name{font-size:.8rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ori-sidebar-footer .user-role{font-size:.65rem;color:var(--muted);font-family:var(--font-mono)}
+    .ori-main{overflow-y:auto;padding:0;background:var(--paper)}
+    .ori-topbar{padding:16px 28px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:var(--paper);position:sticky;top:0;z-index:10}
+    .ori-topbar h1{font-family:var(--font-display);font-size:1.4rem;color:var(--ink)}
+    .ori-topbar-actions{display:flex;align-items:center;gap:8px}
+    .ori-content{padding:28px}
+    .ori-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+    .ori-stat-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:8px}
+    .ori-stat-card .stat-label{font-family:var(--font-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+    .ori-stat-card .stat-value{font-size:1.8rem;font-weight:700;color:var(--ink)}
+    .ori-stat-card .stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .card-title{font-family:var(--font-display);font-size:1.1rem;color:var(--ink)}
+    .tag{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:.65rem;padding:3px 8px;border-radius:6px;font-weight:600}
+    .tag-emerald{background:color-mix(in srgb,var(--emerald) 15%,transparent);color:var(--emerald)}
+    .tag-violet{background:color-mix(in srgb,var(--violet) 15%,transparent);color:var(--violet)}
+    .tag-amber{background:color-mix(in srgb,var(--amber) 15%,transparent);color:var(--amber)}
+    .tag-rose{background:color-mix(in srgb,var(--rose) 15%,transparent);color:var(--rose)}
+    .tag-cyan{background:color-mix(in srgb,var(--cyan) 15%,transparent);color:var(--cyan)}
+    .tag-blue{background:color-mix(in srgb,var(--blue) 15%,transparent);color:var(--blue)}
+    .tag-muted{background:var(--bg-2);color:var(--muted)}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);transition:all .15s;font-family:var(--font-body)}
+    .btn:hover{border-color:var(--muted)}
+    .btn-emerald{background:var(--emerald);color:#fff;border-color:var(--emerald)}
+    .btn-emerald:hover{opacity:.9;border-color:var(--emerald)}
+    .btn-sm{padding:5px 10px;font-size:.72rem}
+    .btn-ghost{background:transparent;border-color:transparent}
+    .btn-ghost:hover{background:var(--bg-2)}
+    .field{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius);font-size:.85rem;background:var(--paper);color:var(--ink);font-family:var(--font-body);outline:none;transition:border .15s}
+    .field:focus{border-color:var(--emerald)}
+    .field-label{font-family:var(--font-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px;display:block}
+    .progress-bar{height:6px;background:var(--bg-2);border-radius:99px;overflow:hidden}
+    .progress-bar-fill{height:100%;border-radius:99px;transition:width .4s}
+    .project-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+    .project-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .15s}
+    .project-card:hover{border-color:var(--emerald);box-shadow:var(--shadow-sm)}
+    .empty-state{text-align:center;padding:48px 20px;color:var(--muted)}
+    .empty-state i{font-size:2rem;margin-bottom:12px;opacity:.4}
+    .empty-state p{font-size:.85rem}
+    .timeline-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+    .timeline-item:last-child{border-bottom:none}
+    .timeline-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+    .comment-bubble{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+    .section-grid{display:grid;grid-template-columns:260px 1fr 280px;height:calc(100vh - 120px);overflow:hidden}
+    .section-left{background:var(--bg-2);border-right:1px solid var(--line);padding:16px;overflow-y:auto}
+    .section-main{padding:24px;overflow-y:auto;display:flex;flex-direction:column}
+    .section-right{background:var(--bg-2);border-left:1px solid var(--line);padding:16px;overflow-y:auto}
+    .chapter-item{padding:8px 12px;border-radius:var(--radius);cursor:pointer;font-size:.82rem;color:var(--muted);transition:all .15s;margin-bottom:2px}
+    .chapter-item:hover{background:var(--line);color:var(--ink)}
+    .chapter-item.active{background:var(--emerald);color:#fff;font-weight:600}
+    .grade-input{width:60px;padding:6px 8px;border:1px solid var(--line);border-radius:var(--radius);font-size:.85rem;text-align:center;background:var(--paper);color:var(--ink);font-family:var(--font-mono)}
+    .grade-input:focus{border-color:var(--emerald);outline:none}
+    .task-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--line);border-radius:var(--radius);margin-bottom:8px;transition:all .15s}
+    .task-row:hover{border-color:var(--emerald)}
+    .bar-chart{display:flex;align-items:flex-end;gap:8px;height:160px;padding-top:8px}
+    .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+    .bar-col .bar{width:100%;border-radius:4px 4px 0 0;transition:height .4s;min-height:4px}
+    .bar-col .bar-label{font-size:.6rem;color:var(--muted);font-family:var(--font-mono);text-align:center;word-break:break-all}
+    .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:20px}
+    .tab{padding:10px 16px;font-size:.82rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font-body)}
+    .tab:hover{color:var(--ink)}
+    .tab.active{color:var(--emerald);border-bottom-color:var(--emerald);font-weight:600}
+    @media(max-width:768px){
+      .ori-layout{grid-template-columns:1fr}
+      .ori-sidebar{position:fixed;left:-260px;top:0;bottom:0;width:260px;z-index:200;transition:left .3s}
+      .ori-sidebar.open{left:0}
+      .ori-sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;display:none}
+      .ori-sidebar-overlay.show{display:block}
+      .mobile-menu-btn{display:flex!important}
+      .section-grid{grid-template-columns:1fr;height:auto}
+      .section-left,.section-right{display:none}
+      .ori-stats{grid-template-columns:1fr 1fr}
+      .project-grid{grid-template-columns:1fr}
+    }
+    @media(min-width:769px){.mobile-menu-btn{display:none!important}}
+  </style>
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
+<body>
+  <div id="root"></div>
 
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-init.js"></script>
+  <script src="../js/db-service.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Navbar Orientador -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-emerald-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="orientador-painel.html" class="flex items-center gap-2.5">
-                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-cyan-500">Flow</span></span>
-                    <span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">ORIENTADOR</span>
-                    <span class="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">BETA</span>
-                </a>
-                <div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="orientador-stats.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50 transition" title="Dashboard"><i class="fa-solid fa-chart-line text-sm"></i></a>
-                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
-                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
-                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
-                    </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
-                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                    </button>
-                </div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    /* ──── Auth Hook ──── */
+    function useOrientadorAuth() {
+      const [user, setUser] = useState(null);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        auth.onAuthStateChanged(async u => {
+          if (!u) { window.location.href = 'login.html?redirect=orientador-painel.html'; return; }
+          try {
+            const { data: ud } = await _supa.from('users').select('beta_tester, role').eq('id', u.uid).maybeSingle();
+            if (!ud || ud.beta_tester !== true) {
+              document.getElementById('root').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px"><p style="font-size:2rem;margin-bottom:12px;opacity:.4">🎓</p><h2 style="font-size:1.3rem;font-weight:700;margin-bottom:8px">Painel em Beta</h2><p style="color:#888;max-width:35ch">Disponível apenas para beta testers.</p><a href="dashboard.html" style="margin-top:16px;color:var(--emerald)">Voltar ao Dashboard</a></div>';
+              return;
+            }
+            if (ud.role !== 'orientador') {
+              await DB.orientador.setUserRole(u.uid, 'orientador');
+            }
+          } catch(e) { console.warn(e); }
+          setUser(u);
+          setLoading(false);
+        });
+      }, []);
+
+      return { user, loading };
+    }
+
+    /* ──── Sidebar ──── */
+    const NAV_ITEMS = [
+      { id: 'dashboard', icon: 'fa-house', label: 'Visão Geral' },
+      { id: 'projetos', icon: 'fa-folder-open', label: 'Meus Projetos' },
+      { id: 'trabalho', icon: 'fa-book', label: 'Trabalho Escrito' },
+      { id: 'tarefas', icon: 'fa-list-check', label: 'Tarefas' },
+      { id: 'feedback', icon: 'fa-comments', label: 'Feedback' },
+      { id: 'relatorios', icon: 'fa-file-lines', label: 'Relatórios' },
+      { id: 'estatisticas', icon: 'fa-chart-bar', label: 'Estatísticas' },
+    ];
+
+    function OrientadorSidebar({ activeView, onNavigate, user, mobileOpen, onCloseMobile }) {
+      return (
+        <>
+          <div className={`ori-sidebar-overlay ${mobileOpen ? 'show' : ''}`} onClick={onCloseMobile}/>
+          <aside className={`ori-sidebar ${mobileOpen ? 'open' : ''}`}>
+            <div className="ori-sidebar-header">
+              <img src="../assets/logo.png" className="ori-sidebar-logo" alt=""/>
+              <span className="ori-sidebar-brand">TCC<span>Flow</span></span>
+              <span className="ori-sidebar-badge">Orientador</span>
             </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="relative z-10 pt-16 min-h-screen pb-12">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-            <!-- Header -->
-            <div class="mb-8">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-bold mb-1">
-                            <i class="fa-solid fa-graduation-cap text-emerald-600 mr-2"></i>Painel do Orientador
-                        </h1>
-                        <p class="text-sm text-slate-500">Acompanhe e avalie os projetos dos seus orientandos</p>
-                    </div>
-                    <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1.5 rounded-full">
-                        <i class="fa-solid fa-flask"></i> Funcionalidade BETA
-                    </span>
-                </div>
-            </div>
-
-            <!-- Notifications Bell (Phase 3) -->
-            <div style="position:fixed;top:20px;right:20px;z-index:100">
-                <button onclick="toggleNotifications()" id="notifBell" style="width:44px;height:44px;background:white;border:1px solid #e2e8f0;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.1)">
-                    <i class="fa-solid fa-bell text-emerald-600"></i>
-                    <span id="notifBadge" style="position:absolute;top:-4px;right:-4px;background:#f43f5e;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;display:none">0</span>
+            <nav className="ori-nav">
+              {NAV_ITEMS.map(item => (
+                <button key={item.id}
+                  className={`ori-nav-item ${activeView === item.id ? 'active' : ''}`}
+                  onClick={() => { onNavigate(item.id); onCloseMobile(); }}>
+                  <i className={`fa-solid ${item.icon}`}/>
+                  {item.label}
                 </button>
-                <div id="notificationPanel" style="display:none;position:absolute;top:56px;right:0;width:320px;background:white;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.1);max-height:400px;overflow-y:auto;z-index:101">
-                    <div style="padding:12px;border-bottom:1px solid #f1f5f9;font-weight:600;font-size:14px">Notificações</div>
-                    <div id="notificationList" style="padding:8px"></div>
-                </div>
+              ))}
+              <div className="ori-nav-divider"/>
+              <button className="ori-nav-item" onClick={() => window.location.href='admin.html'}>
+                <i className="fa-solid fa-gear"/> Configurações
+              </button>
+              <button className="ori-nav-item" onClick={() => window.location.href='dashboard.html'}>
+                <i className="fa-solid fa-arrow-left"/> Voltar ao Aluno
+              </button>
+            </nav>
+            <div className="ori-sidebar-footer">
+              <div className="avatar">{(user?.displayName || 'O')[0].toUpperCase()}</div>
+              <div className="user-info">
+                <div className="user-name">{user?.displayName || 'Orientador'}</div>
+                <div className="user-role">orientador</div>
+              </div>
+              <button className="btn-ghost" style={{padding:6,borderRadius:8,border:'none',background:'none',cursor:'pointer',color:'var(--muted)'}}
+                onClick={async () => { await auth.signOut(); window.location.href='../index.html'; }}>
+                <i className="fa-solid fa-right-from-bracket" style={{fontSize:'.8rem'}}/>
+              </button>
             </div>
+          </aside>
+        </>
+      );
+    }
 
-            <!-- Stats -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs sm:text-sm text-slate-500">Projetos</span>
-                        <i class="fa-solid fa-folder-open text-emerald-600"></i>
-                    </div>
-                    <div class="text-2xl sm:text-3xl font-bold" id="projectCount">0</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs sm:text-sm text-slate-500">Alunos</span>
-                        <i class="fa-solid fa-users text-violet-600"></i>
-                    </div>
-                    <div class="text-2xl sm:text-3xl font-bold" id="studentCount">0</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm col-span-2 sm:col-span-1">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs sm:text-sm text-slate-500">Comentários</span>
-                        <i class="fa-solid fa-comments text-cyan-600"></i>
-                    </div>
-                    <div class="text-2xl sm:text-3xl font-bold" id="commentCount">0</div>
-                </div>
+    /* ──── Dashboard View ──── */
+    function DashboardView({ user, projects, onNavigate, onSelectProject }) {
+      const [activity, setActivity] = useState([]);
+
+      const totalStudents = projects.reduce((sum, p) => sum + (p._memberCount || 0), 0);
+      const totalComments = projects.reduce((sum, p) => sum + (p._commentCount || 0), 0);
+      const avgProgress = projects.length > 0
+        ? Math.round(projects.reduce((sum, p) => sum + (p._progress || 0), 0) / projects.length)
+        : 0;
+
+      useEffect(() => {
+        (async () => {
+          try {
+            const notifs = await DB.orientador.getNotifications(user.uid, 10);
+            setActivity(notifs);
+          } catch(e) {}
+        })();
+      }, [user]);
+
+      return (
+        <div className="ori-content">
+          <div className="ori-stats">
+            <div className="ori-stat-card">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div className="stat-label">Projetos</div>
+                <div className="stat-icon" style={{background:'color-mix(in srgb,var(--emerald) 12%,transparent)',color:'var(--emerald)'}}><i className="fa-solid fa-folder-open"/></div>
+              </div>
+              <div className="stat-value">{projects.length}</div>
             </div>
-
-            <!-- Join Project -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
-                <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-link text-emerald-600 mr-2"></i>Entrar em Projeto</h2>
-                <p class="text-xs text-slate-500 mb-4">Insira o código de convite que o aluno compartilhou com você.</p>
-                <div class="flex gap-3">
-                    <input type="text" id="inviteCodeInput" placeholder="Ex: ORI-A3KR5N"
-                        class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    <button onclick="acceptInvite()" id="acceptInviteBtn"
-                        class="bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:shadow-lg transition whitespace-nowrap">
-                        <i class="fa-solid fa-check mr-1"></i>Aceitar
-                    </button>
-                </div>
-                <div id="inviteMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
+            <div className="ori-stat-card">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div className="stat-label">Alunos</div>
+                <div className="stat-icon" style={{background:'color-mix(in srgb,var(--violet) 12%,transparent)',color:'var(--violet)'}}><i className="fa-solid fa-users"/></div>
+              </div>
+              <div className="stat-value">{totalStudents}</div>
             </div>
-
-            <!-- My Projects List -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
-                <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-folder-open text-emerald-600 mr-2"></i>Projetos que Oriento</h2>
-                <div id="projectsList" class="space-y-4">
-                    <div class="text-center py-8 text-slate-400">
-                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i>
-                        <p class="text-sm">Carregando projetos...</p>
-                    </div>
-                </div>
+            <div className="ori-stat-card">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div className="stat-label">Comentários</div>
+                <div className="stat-icon" style={{background:'color-mix(in srgb,var(--cyan) 12%,transparent)',color:'var(--cyan)'}}><i className="fa-solid fa-comments"/></div>
+              </div>
+              <div className="stat-value">{totalComments}</div>
             </div>
-
-            <!-- Selected Project Detail -->
-            <div id="projectDetail" class="hidden">
-                <div class="bg-white border border-emerald-200 rounded-2xl p-6 mb-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold"><i class="fa-solid fa-eye text-emerald-600 mr-2"></i>Detalhes do Projeto</h2>
-                        <button onclick="closeProjectDetail()" class="text-slate-400 hover:text-slate-600 transition">
-                            <i class="fa-solid fa-xmark text-lg"></i>
-                        </button>
-                    </div>
-                    <div id="projectDetailContent">
-                        <!-- Filled by JS -->
-                    </div>
-                </div>
-
-                <!-- Project Tasks -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
-                    <h3 class="font-bold mb-4"><i class="fa-solid fa-list-check text-violet-600 mr-2"></i>Tarefas do Projeto</h3>
-                    <div id="projectTasks" class="space-y-2">
-                        <p class="text-sm text-slate-400 text-center py-4">Carregando...</p>
-                    </div>
-                </div>
-
-                <!-- Orientador Comments -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
-                    <h3 class="font-bold mb-4"><i class="fa-solid fa-pen text-emerald-600 mr-2"></i>Meus Comentários / Correções</h3>
-                    <form id="commentForm" class="mb-4">
-                        <div class="mb-3">
-                            <select id="commentSection" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                                <option value="geral">Comentário Geral</option>
-                                <option value="introducao">Introdução</option>
-                                <option value="metodologia">Metodologia</option>
-                                <option value="resultados">Resultados</option>
-                                <option value="conclusao">Conclusão</option>
-                                <option value="referencias">Referências</option>
-                                <option value="formatacao">Formatação</option>
-                            </select>
-                        </div>
-                        <div class="flex gap-3">
-                            <textarea id="commentText" rows="3" placeholder="Escreva seu comentário ou correção aqui..."
-                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"></textarea>
-                            <button type="submit" class="bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold px-5 py-3 rounded-xl text-sm hover:shadow-lg transition self-end">
-                                <i class="fa-solid fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </form>
-                    <div id="commentsList" class="space-y-3">
-                        <p class="text-sm text-slate-400 text-center py-4">Nenhum comentário ainda</p>
-                    </div>
-                </div>
-
-                <!-- Phase 5: Reports & Export -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold"><i class="fa-solid fa-file-pdf text-emerald-600 mr-2"></i>Relatórios</h3>
-                        <button onclick="generateReport()" id="generateReportBtn" class="bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold px-4 py-2 rounded-xl text-sm hover:shadow-lg transition">
-                            <i class="fa-solid fa-plus mr-1"></i>Gerar Relatório
-                        </button>
-                    </div>
-                    <div id="reportsList" class="space-y-3">
-                        <p class="text-sm text-slate-400 text-center py-4">Nenhum relatório gerado</p>
-                    </div>
-                </div>
+            <div className="ori-stat-card">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div className="stat-label">Progresso Médio</div>
+                <div className="stat-icon" style={{background:'color-mix(in srgb,var(--amber) 12%,transparent)',color:'var(--amber)'}}><i className="fa-solid fa-chart-pie"/></div>
+              </div>
+              <div className="stat-value">{avgProgress}%</div>
             </div>
+          </div>
 
-            <!-- Help Tip -->
-            <div class="bg-gradient-to-r from-emerald-50 to-cyan-50 border border-emerald-200 rounded-2xl p-6">
-                <h3 class="font-bold mb-2"><i class="fa-solid fa-lightbulb mr-2 text-amber-600"></i>Como funciona?</h3>
-                <ul class="text-sm text-slate-600 space-y-2">
-                    <li><i class="fa-solid fa-1 text-emerald-600 mr-2 text-xs"></i>Seu aluno gera um <strong>código de convite</strong> na página de Equipe do projeto.</li>
-                    <li><i class="fa-solid fa-2 text-emerald-600 mr-2 text-xs"></i>Você insere o código acima para vincular-se ao projeto.</li>
-                    <li><i class="fa-solid fa-3 text-emerald-600 mr-2 text-xs"></i>Visualize tarefas, progresso e deixe <strong>comentários e correções</strong> diretamente.</li>
-                </ul>
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Projetos Recentes</div>
+              <button className="btn btn-sm" onClick={() => onNavigate('projetos')}>Ver todos <i className="fa-solid fa-arrow-right" style={{fontSize:'.65rem'}}/></button>
             </div>
+            {projects.length === 0 ? (
+              <div className="empty-state">
+                <i className="fa-solid fa-folder-open" style={{display:'block'}}/><p>Nenhum projeto vinculado.</p>
+                <p style={{fontSize:'.75rem',marginTop:4}}>Peça o código de convite ao orientando.</p>
+              </div>
+            ) : (
+              <div className="project-grid">
+                {projects.slice(0, 4).map(p => (
+                  <div key={p.id} className="project-card" onClick={() => { onSelectProject(p); onNavigate('projetos'); }}>
+                    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:12}}>
+                      <div style={{width:36,height:36,borderRadius:10,background:'var(--emerald)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.8rem'}}>
+                        <i className="fa-solid fa-folder"/>
+                      </div>
+                      <div>
+                        <div style={{fontWeight:600,fontSize:'.9rem',color:'var(--ink)'}}>{p.name}</div>
+                        <div style={{fontFamily:'var(--font-mono)',fontSize:'.65rem',color:'var(--muted)'}}>{p.code}</div>
+                      </div>
+                    </div>
+                    <div className="progress-bar">
+                      <div className="progress-bar-fill" style={{width:`${p._progress||0}%`,background:'var(--emerald)'}}/>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'space-between',marginTop:8,fontSize:'.7rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>
+                      <span>{p._memberCount || 0} alunos</span>
+                      <span>{p._progress || 0}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
+          {activity.length > 0 && (
+            <div className="card">
+              <div className="card-title" style={{marginBottom:16}}>Atividade Recente</div>
+              {activity.slice(0, 8).map(a => (
+                <div key={a.id} className="timeline-item">
+                  <div className="timeline-dot" style={{background: a.type === 'new_comment' ? 'var(--cyan)' : 'var(--violet)'}}/>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:'.82rem',color:'var(--ink)'}}>
+                      {a.type === 'new_comment' ? 'Novo comentário' : a.type === 'invite_accepted' ? 'Convite aceito' : a.type}
+                      {a.section && <span className="tag tag-muted" style={{marginLeft:6}}>{a.section}</span>}
+                    </div>
+                    <div style={{fontSize:'.7rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>
+                      {new Date(a.created_at).toLocaleDateString('pt-BR')}
+                    </div>
+                  </div>
+                  {!a.read && <div style={{width:8,height:8,borderRadius:'50%',background:'var(--emerald)',flexShrink:0}}/>}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-    </main>
+      );
+    }
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-init.js"></script>
-    <script src="../js/db-service.js"></script>
-    <script>
-        let currentUser = null;
-        let selectedProjectId = null;
-        let totalComments = 0;
+    /* ──── Projetos View ──── */
+    function ProjetosView({ user, projects, selectedProject, onSelectProject, onRefresh }) {
+      const [inviteCode, setInviteCode] = useState('');
+      const [inviteMsg, setInviteMsg] = useState(null);
+      const [detail, setDetail] = useState(null);
+      const [members, setMembers] = useState([]);
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await auth.signOut();
-            window.location.href = '../index.html';
-        });
+      useEffect(() => {
+        if (selectedProject) loadDetail(selectedProject);
+      }, [selectedProject]);
 
-        auth.onAuthStateChanged(async user => {
-            if (!user) { window.location.href = 'login.html?redirect=orientador-painel.html'; return; }
+      async function loadDetail(proj) {
+        setDetail(proj);
+        try {
+          const { data } = await _supa.from('users').select('id, name, email').eq('project_id', proj.id);
+          setMembers(data || []);
+        } catch(e) {}
+      }
 
-            // Beta-only gate
-            try {
-                const { data: ud } = await _supa.from('users').select('beta_tester').eq('id', user.uid).maybeSingle();
-                if (!ud || ud.beta_tester !== true) {
-                    document.querySelector('main').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px"><div style="font-size:3rem;margin-bottom:16px;opacity:.4">🎓</div><h2 style="font-size:1.5rem;font-weight:700;margin-bottom:8px">Painel do Orientador em Beta</h2><p style="color:#64748b;max-width:40ch;margin-bottom:20px">Esta funcionalidade está disponível apenas para beta testers. Em breve será liberada para todos os orientadores.</p><a href="dashboard.html" style="color:#7c3aed;font-weight:600;text-decoration:underline">Voltar ao Dashboard</a></div>';
-                    return;
-                }
-            } catch(e) { console.warn('Beta check failed:', e); }
-
-            currentUser = user;
-            document.getElementById('userName').textContent = user.displayName || 'Orientador';
-
-            if (user.photoURL) {
-                const navAvatar = document.getElementById('navAvatar');
-                const navAvatarIcon = document.getElementById('navAvatarIcon');
-                if (navAvatar && navAvatarIcon) {
-                    navAvatar.src = user.photoURL;
-                    navAvatar.classList.remove('hidden');
-                    navAvatarIcon.classList.add('hidden');
-                }
-            }
-
-            // Ensure user role is orientador
-            try {
-                const role = await DB.orientador.getUserRole(user.uid);
-                if (role !== 'orientador') {
-                    await DB.orientador.setUserRole(user.uid, 'orientador');
-                }
-            } catch(e) { console.warn('Could not set role:', e); }
-
-            await loadProjects();
-        });
-
-        // ========== Accept Invite ==========
-        window.acceptInvite = async function() {
-            const code = document.getElementById('inviteCodeInput').value.trim().toUpperCase();
-            const msgEl = document.getElementById('inviteMsg');
-            const btn = document.getElementById('acceptInviteBtn');
-
-            if (!code) {
-                showMsg(msgEl, 'Digite o código de convite.', 'error');
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Entrando...';
-
-            try {
-                await DB.orientador.acceptInvite(currentUser.uid, code);
-                showMsg(msgEl, 'Convite aceito com sucesso! Projeto adicionado.', 'success');
-                document.getElementById('inviteCodeInput').value = '';
-                await loadProjects();
-            } catch(err) {
-                showMsg(msgEl, err.message || 'Erro ao aceitar convite.', 'error');
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Aceitar';
-        };
-
-        function showMsg(el, text, type) {
-            el.className = `mt-3 text-sm rounded-lg px-3 py-2 ${type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-red-50 text-red-600 border border-red-200'}`;
-            el.textContent = text;
-            el.classList.remove('hidden');
+      async function handleAcceptInvite() {
+        if (!inviteCode.trim()) return;
+        try {
+          await DB.orientador.acceptInvite(user.uid, inviteCode.trim());
+          setInviteMsg({ type: 'success', text: 'Convite aceito com sucesso!' });
+          setInviteCode('');
+          onRefresh();
+        } catch(e) {
+          setInviteMsg({ type: 'error', text: e.message || 'Erro ao aceitar convite.' });
         }
+        setTimeout(() => setInviteMsg(null), 4000);
+      }
 
-        // ========== Load Projects ==========
-        async function loadProjects() {
-            const listEl = document.getElementById('projectsList');
-            try {
-                const projects = await DB.orientador.getMyProjects(currentUser.uid);
-                document.getElementById('projectCount').textContent = projects.length;
+      return (
+        <div className="ori-content">
+          <div className="card">
+            <div className="card-title" style={{marginBottom:12}}>Entrar em Projeto</div>
+            <p style={{fontSize:'.78rem',color:'var(--muted)',marginBottom:12}}>Insira o código de convite compartilhado pelo aluno.</p>
+            <div style={{display:'flex',gap:10}}>
+              <input className="field" style={{flex:1,textTransform:'uppercase'}} placeholder="Ex: ORI-A3KR5N"
+                value={inviteCode} onChange={e => setInviteCode(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAcceptInvite()}/>
+              <button className="btn btn-emerald" onClick={handleAcceptInvite}>
+                <i className="fa-solid fa-check"/> Aceitar
+              </button>
+            </div>
+            {inviteMsg && (
+              <div style={{marginTop:10,fontSize:'.78rem',padding:'8px 12px',borderRadius:'var(--radius)',
+                background: inviteMsg.type === 'success' ? 'color-mix(in srgb,var(--emerald) 10%,transparent)' : 'color-mix(in srgb,var(--rose) 10%,transparent)',
+                color: inviteMsg.type === 'success' ? 'var(--emerald)' : 'var(--rose)'}}>
+                {inviteMsg.text}
+              </div>
+            )}
+          </div>
 
-                let totalStudents = 0;
-                totalComments = 0;
-
-                if (projects.length === 0) {
-                    listEl.innerHTML = `
-                        <div class="text-center py-8">
-                            <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                                <i class="fa-solid fa-folder-open text-emerald-400 text-2xl"></i>
-                            </div>
-                            <p class="text-sm text-slate-400">Nenhum projeto vinculado ainda.</p>
-                            <p class="text-xs text-slate-400 mt-1">Peça o código de convite ao seu orientando.</p>
-                        </div>`;
-                } else {
-                    listEl.innerHTML = '';
-                    for (const item of projects) {
-                        const proj = item.projects;
-                        if (!proj) continue;
-
-                        // Count members
-                        const { data: members } = await _supa.from('users').select('id, name').eq('project_id', proj.id);
-                        const memberCount = (members || []).length;
-                        totalStudents += memberCount;
-
-                        // Count comments
-                        const { data: comments } = await _supa.from('orientador_comments').select('id').eq('project_id', proj.id).eq('orientador_id', currentUser.uid);
-                        totalComments += (comments || []).length;
-
-                        // Get tasks stats
-                        const { data: tasks } = await _supa.from('tasks').select('status').eq('project_id', proj.id);
-                        const taskCount = (tasks || []).length;
-                        const doneCount = (tasks || []).filter(t => t.status === 'done').length;
-                        const progress = taskCount > 0 ? Math.round((doneCount / taskCount) * 100) : 0;
-
-                        const memberNames = (members || []).map(m => m.name || 'Sem nome').join(', ');
-
-                        listEl.innerHTML += `
-                            <div class="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 transition cursor-pointer" onclick="openProject('${proj.id}', '${proj.name.replace(/'/g, "\\'")}')">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center text-white">
-                                            <i class="fa-solid fa-folder text-sm"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-sm">${proj.name}</p>
-                                            <p class="text-xs text-slate-400">Código: <code class="font-mono text-emerald-600">${proj.code}</code></p>
-                                        </div>
-                                    </div>
-                                    <i class="fa-solid fa-chevron-right text-slate-300"></i>
-                                </div>
-                                <div class="flex items-center gap-4 text-xs text-slate-500">
-                                    <span><i class="fa-solid fa-users mr-1 text-violet-500"></i>${memberCount} aluno${memberCount !== 1 ? 's' : ''}</span>
-                                    <span><i class="fa-solid fa-list-check mr-1 text-cyan-500"></i>${taskCount} tarefa${taskCount !== 1 ? 's' : ''}</span>
-                                    <span><i class="fa-solid fa-chart-pie mr-1 text-amber-500"></i>${progress}% concluído</span>
-                                </div>
-                                <p class="text-xs text-slate-400 mt-2 truncate"><i class="fa-solid fa-user-group mr-1"></i>${memberNames}</p>
-                            </div>`;
-                    }
-                }
-
-                document.getElementById('studentCount').textContent = totalStudents;
-                document.getElementById('commentCount').textContent = totalComments;
-            } catch(err) {
-                console.error('Error loading projects:', err);
-                listEl.innerHTML = '<p class="text-center text-sm text-red-400 py-4">Erro ao carregar projetos</p>';
-            }
-        }
-
-        // ========== Open Project Detail ==========
-        window.openProject = async function(projId, projName) {
-            selectedProjectId = projId;
-            document.getElementById('projectDetail').classList.remove('hidden');
-            document.getElementById('projectDetail').scrollIntoView({ behavior: 'smooth' });
-
-            // Load project info
-            const detailContent = document.getElementById('projectDetailContent');
-            try {
-                const { data: proj } = await _supa.from('projects').select('*').eq('id', projId).maybeSingle();
-                // Try with photo_url first, fallback without
-                let members;
-                let membersRes = await _supa.from('users').select('id, name, email, photo_url').eq('project_id', projId);
-                if (membersRes.error) {
-                    membersRes = await _supa.from('users').select('id, name, email').eq('project_id', projId);
-                }
-                members = membersRes.data;
-
-                let info = proj?.project_info || {};
-                detailContent.innerHTML = `
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <p class="text-xs text-slate-400 mb-1">Nome do Projeto</p>
-                            <p class="font-bold">${proj?.name || 'Sem nome'}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-400 mb-1">Código</p>
-                            <p class="font-mono text-emerald-600 font-bold">${proj?.code || '-'}</p>
-                        </div>
-                        ${info.tema ? `<div class="sm:col-span-2"><p class="text-xs text-slate-400 mb-1">Tema</p><p class="text-sm">${info.tema}</p></div>` : ''}
-                        ${info.orientador ? `<div><p class="text-xs text-slate-400 mb-1">Orientador (registrado)</p><p class="text-sm">${info.orientador}</p></div>` : ''}
-                        ${info.instituicao ? `<div><p class="text-xs text-slate-400 mb-1">Instituição</p><p class="text-sm">${info.instituicao}</p></div>` : ''}
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Projetos que Oriento</div>
+              <span className="tag tag-emerald">{projects.length}</span>
+            </div>
+            {projects.length === 0 ? (
+              <div className="empty-state">
+                <i className="fa-solid fa-folder-open" style={{display:'block'}}/><p>Nenhum projeto vinculado.</p>
+              </div>
+            ) : (
+              <div className="project-grid">
+                {projects.map(p => (
+                  <div key={p.id} className="project-card" onClick={() => loadDetail(p)}
+                    style={{borderColor: detail?.id === p.id ? 'var(--emerald)' : undefined}}>
+                    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+                      <div style={{width:36,height:36,borderRadius:10,background:'var(--emerald)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        <i className="fa-solid fa-folder" style={{fontSize:'.8rem'}}/>
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontWeight:600,fontSize:'.88rem',color:'var(--ink)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{p.name}</div>
+                        <div style={{fontFamily:'var(--font-mono)',fontSize:'.62rem',color:'var(--muted)'}}>{p.code}</div>
+                      </div>
                     </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-2">Membros da Equipe</p>
-                        <div class="flex flex-wrap gap-2">
-                            ${(members || []).map(m => `
-                                <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5">
-                                    ${m.photo_url
-                                        ? `<img src="${m.photo_url}" class="w-6 h-6 rounded-full object-cover">`
-                                        : `<div class="w-6 h-6 bg-violet-500 rounded-full flex items-center justify-center text-white text-xs font-bold">${(m.name || '?')[0].toUpperCase()}</div>`
-                                    }
-                                    <span class="text-sm">${m.name || 'Sem nome'}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>`;
-            } catch(err) {
-                detailContent.innerHTML = '<p class="text-red-400 text-sm">Erro ao carregar detalhes</p>';
-            }
+                    <div className="progress-bar">
+                      <div className="progress-bar-fill" style={{width:`${p._progress||0}%`,background:'var(--emerald)'}}/>
+                    </div>
+                    <div style={{display:'flex',gap:8,marginTop:8,fontSize:'.68rem',color:'var(--muted)'}}>
+                      <span><i className="fa-solid fa-users" style={{marginRight:3}}/>{p._memberCount||0}</span>
+                      <span><i className="fa-solid fa-list-check" style={{marginRight:3}}/>{p._taskCount||0}</span>
+                      <span>{p._progress||0}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-            // Load tasks
-            await loadProjectTasks(projId);
-            // Load comments
-            await loadProjectComments(projId);
-        };
+          {detail && (
+            <div className="card" style={{borderColor:'var(--emerald)'}}>
+              <div className="card-header">
+                <div className="card-title">{detail.name}</div>
+                <button className="btn btn-sm btn-ghost" onClick={() => setDetail(null)}>
+                  <i className="fa-solid fa-xmark"/>
+                </button>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
+                <div><span className="field-label">Código</span><div style={{fontFamily:'var(--font-mono)',color:'var(--emerald)',fontWeight:600}}>{detail.code}</div></div>
+                <div><span className="field-label">Progresso</span><div style={{fontWeight:600}}>{detail._progress || 0}%</div></div>
+              </div>
+              <span className="field-label">Membros da Equipe</span>
+              <div style={{display:'flex',flexWrap:'wrap',gap:8,marginTop:6}}>
+                {members.map(m => (
+                  <div key={m.id} style={{display:'flex',alignItems:'center',gap:6,background:'var(--bg-2)',border:'1px solid var(--line)',borderRadius:'var(--radius)',padding:'6px 10px'}}>
+                    <div style={{width:24,height:24,borderRadius:'50%',background:'var(--violet)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.65rem',fontWeight:700}}>
+                      {(m.name || '?')[0].toUpperCase()}
+                    </div>
+                    <span style={{fontSize:'.8rem'}}>{m.name || 'Sem nome'}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
 
-        window.closeProjectDetail = function() {
-            document.getElementById('projectDetail').classList.add('hidden');
-            selectedProjectId = null;
-        };
+    /* ──── Trabalho Escrito View ──── */
+    function TrabalhoView({ user, projects }) {
+      const [selProject, setSelProject] = useState(null);
+      const [chapters, setChapters] = useState([]);
+      const [selSection, setSelSection] = useState(null);
+      const [grade, setGrade] = useState('');
+      const [feedbackText, setFeedbackText] = useState('');
+      const [existingFeedback, setExistingFeedback] = useState([]);
 
-        // ========== Project Tasks ==========
-        async function loadProjectTasks(projId) {
-            const el = document.getElementById('projectTasks');
-            try {
-                const { data: tasks } = await _supa.from('tasks').select('*').eq('project_id', projId).order('due_date', { ascending: true });
+      useEffect(() => {
+        if (projects.length > 0 && !selProject) setSelProject(projects[0]);
+      }, [projects]);
 
-                if (!tasks || tasks.length === 0) {
-                    el.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Nenhuma tarefa criada</p>';
-                    return;
-                }
+      useEffect(() => {
+        if (selProject) loadChapters();
+      }, [selProject]);
 
-                // Get member names
-                const { data: members } = await _supa.from('users').select('id, name').eq('project_id', projId);
-                const nameMap = {};
-                (members || []).forEach(m => nameMap[m.id] = m.name || 'Sem nome');
+      async function loadChapters() {
+        try {
+          const { data } = await _supa.from('thesis_chapters').select('*, thesis_sections(*)').eq('project_id', selProject.id).order('position');
+          if (data) {
+            data.forEach(ch => ch.thesis_sections?.sort((a,b) => a.position - b.position));
+            setChapters(data);
+          }
+        } catch(e) { console.error(e); }
+      }
 
-                el.innerHTML = '';
-                for (const task of tasks) {
-                    const statusColors = {
-                        'todo': 'bg-slate-100 text-slate-600',
-                        'progress': 'bg-amber-100 text-amber-700',
-                        'done': 'bg-emerald-100 text-emerald-700'
-                    };
-                    const statusLabels = {
-                        'todo': 'A Fazer',
-                        'progress': 'Em Andamento',
-                        'done': 'Concluída'
-                    };
-                    const dueDate = task.due_date ? new Date(task.due_date + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
-                    const isOverdue = task.due_date && task.status !== 'done' && new Date(task.due_date) < new Date();
+      async function selectSection(sec) {
+        setSelSection(sec);
+        setGrade('');
+        setFeedbackText('');
+        try {
+          const { data } = await _supa.from('thesis_feedback').select('*')
+            .eq('section_id', sec.id).eq('orientador_id', user.uid)
+            .order('created_at', { ascending: false });
+          setExistingFeedback(data || []);
+          if (data && data.length > 0) setGrade(data[0].grade?.toString() || '');
+        } catch(e) {}
+      }
 
-                    el.innerHTML += `
-                        <div class="flex items-center justify-between p-3 rounded-lg border ${task.status === 'done' ? 'border-emerald-200 bg-emerald-50/50' : isOverdue ? 'border-red-200 bg-red-50/50' : 'border-slate-200'}">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium ${task.status === 'done' ? 'line-through text-slate-400' : ''}">${task.title}</p>
-                                <p class="text-xs text-slate-400 mt-0.5">
-                                    ${nameMap[task.assigned_to] || 'Não atribuída'} &bull; ${dueDate}
-                                    ${isOverdue ? '<span class="text-red-500 font-bold ml-1">ATRASADA</span>' : ''}
-                                </p>
-                            </div>
-                            <span class="text-[10px] font-bold px-2 py-1 rounded-full ${statusColors[task.status] || statusColors.todo} whitespace-nowrap ml-2">
-                                ${statusLabels[task.status] || task.status}
-                            </span>
-                        </div>`;
-                }
-            } catch(err) {
-                el.innerHTML = '<p class="text-sm text-red-400 text-center py-4">Erro ao carregar tarefas</p>';
-            }
-        }
+      async function submitFeedback() {
+        if (!selSection || !feedbackText.trim()) return;
+        try {
+          await _supa.from('thesis_feedback').insert({
+            section_id: selSection.id,
+            project_id: selProject.id,
+            orientador_id: user.uid,
+            comment: feedbackText.trim(),
+            grade: grade ? parseFloat(grade) : null,
+            status: grade && parseFloat(grade) >= 6 ? 'approved' : 'revision'
+          });
+          setFeedbackText('');
+          await selectSection(selSection);
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
 
-        // ========== Comments ==========
-        document.getElementById('commentForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const text = document.getElementById('commentText').value.trim();
-            const section = document.getElementById('commentSection').value;
-            if (!text || !selectedProjectId) return;
+      return (
+        <div className="ori-content" style={{padding:0}}>
+          <div style={{padding:'16px 28px',borderBottom:'1px solid var(--line)',display:'flex',alignItems:'center',gap:12}}>
+            <span className="field-label" style={{margin:0}}>Projeto:</span>
+            <select className="field" style={{width:'auto',maxWidth:300}} value={selProject?.id || ''}
+              onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
+              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
 
-            try {
-                await DB.orientador.addComment(selectedProjectId, currentUser.uid, text, section);
-                document.getElementById('commentText').value = '';
-                await loadProjectComments(selectedProjectId);
-            } catch(err) {
-                alert('Erro ao salvar comentário: ' + err.message);
-            }
-        });
+          {chapters.length === 0 ? (
+            <div className="empty-state" style={{marginTop:40}}>
+              <i className="fa-solid fa-book" style={{display:'block'}}/><p>Nenhum capítulo encontrado neste projeto.</p>
+              <p style={{fontSize:'.72rem',marginTop:4}}>O aluno precisa criar capítulos na página Trabalho Escrito.</p>
+            </div>
+          ) : (
+            <div className="section-grid">
+              <div className="section-left">
+                <div style={{fontFamily:'var(--font-mono)',fontSize:'.62rem',textTransform:'uppercase',letterSpacing:'.1em',color:'var(--muted)',marginBottom:10}}>Capítulos</div>
+                {chapters.map(ch => (
+                  <div key={ch.id}>
+                    <div style={{fontSize:'.72rem',fontWeight:600,color:'var(--ink)',padding:'6px 8px',marginTop:4}}>{ch.title}</div>
+                    {(ch.thesis_sections || []).map(sec => (
+                      <div key={sec.id}
+                        className={`chapter-item ${selSection?.id === sec.id ? 'active' : ''}`}
+                        onClick={() => selectSection(sec)}
+                        style={{paddingLeft:20}}>
+                        {sec.title}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
 
-        async function loadProjectComments(projId) {
-            const el = document.getElementById('commentsList');
-            try {
-                const comments = await DB.orientador.getComments(projId);
+              <div className="section-main">
+                {selSection ? (
+                  <>
+                    <h2 style={{fontFamily:'var(--font-display)',fontSize:'1.2rem',marginBottom:16}}>{selSection.title}</h2>
+                    <div style={{background:'var(--bg-2)',border:'1px solid var(--line)',borderRadius:'var(--radius)',padding:20,marginBottom:20,
+                      fontFamily:'var(--font-body)',fontSize:'.88rem',lineHeight:1.7,whiteSpace:'pre-wrap',maxHeight:300,overflowY:'auto',color:'var(--ink)'}}>
+                      {selSection.content || 'Seção ainda sem conteúdo.'}
+                    </div>
 
-                if (comments.length === 0) {
-                    el.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Nenhum comentário ainda. Escreva sua primeira correção!</p>';
-                    return;
-                }
+                    <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
+                      <span className="field-label" style={{margin:0}}>Nota:</span>
+                      <input type="number" min="0" max="10" step="0.5" className="grade-input" value={grade} onChange={e => setGrade(e.target.value)} placeholder="0-10"/>
+                      {grade && <span className="tag" style={{background: parseFloat(grade) >= 6 ? 'color-mix(in srgb,var(--emerald) 15%,transparent)' : 'color-mix(in srgb,var(--rose) 15%,transparent)',
+                        color: parseFloat(grade) >= 6 ? 'var(--emerald)' : 'var(--rose)'}}>
+                        {parseFloat(grade) >= 6 ? 'Aprovado' : 'Revisão necessária'}
+                      </span>}
+                    </div>
 
-                const sectionLabels = {
-                    'geral': 'Geral', 'introducao': 'Introdução', 'metodologia': 'Metodologia',
-                    'resultados': 'Resultados', 'conclusao': 'Conclusão', 'referencias': 'Referências',
-                    'formatacao': 'Formatação'
-                };
-                const sectionColors = {
-                    'geral': 'bg-slate-100 text-slate-600', 'introducao': 'bg-violet-100 text-violet-700',
-                    'metodologia': 'bg-cyan-100 text-cyan-700', 'resultados': 'bg-emerald-100 text-emerald-700',
-                    'conclusao': 'bg-amber-100 text-amber-700', 'referencias': 'bg-pink-100 text-pink-700',
-                    'formatacao': 'bg-indigo-100 text-indigo-700'
-                };
+                    <textarea className="field" rows={4} placeholder="Escreva seu feedback para esta seção..."
+                      value={feedbackText} onChange={e => setFeedbackText(e.target.value)}
+                      style={{marginBottom:12,resize:'vertical'}}/>
+                    <button className="btn btn-emerald" onClick={submitFeedback} disabled={!feedbackText.trim()}>
+                      <i className="fa-solid fa-paper-plane"/> Enviar Feedback
+                    </button>
+                  </>
+                ) : (
+                  <div className="empty-state">
+                    <i className="fa-solid fa-arrow-left" style={{display:'block'}}/><p>Selecione uma seção para avaliar.</p>
+                  </div>
+                )}
+              </div>
 
-                el.innerHTML = '';
-                for (const c of comments) {
-                    const date = new Date(c.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
-                    const isOwn = c.orientador_id === currentUser.uid;
-                    el.innerHTML += `
-                        <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${sectionColors[c.section] || sectionColors.geral}">
-                                    ${sectionLabels[c.section] || c.section}
-                                </span>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[10px] text-slate-400">${date}</span>
-                                    ${isOwn ? `<button onclick="deleteComment('${c.id}')" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-trash text-[10px]"></i></button>` : ''}
-                                </div>
-                            </div>
-                            <p class="text-sm text-slate-700">${c.comment.replace(/\n/g, '<br>')}</p>
-                        </div>`;
-                }
-            } catch(err) {
-                el.innerHTML = '<p class="text-sm text-red-400 text-center py-4">Erro ao carregar comentários</p>';
-            }
-        }
+              <div className="section-right">
+                <div style={{fontFamily:'var(--font-mono)',fontSize:'.62rem',textTransform:'uppercase',letterSpacing:'.1em',color:'var(--muted)',marginBottom:10}}>Feedback Anterior</div>
+                {existingFeedback.length === 0 ? (
+                  <p style={{fontSize:'.78rem',color:'var(--muted)',textAlign:'center',marginTop:20}}>Nenhum feedback nesta seção.</p>
+                ) : existingFeedback.map(fb => (
+                  <div key={fb.id} className="comment-bubble">
+                    <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                      {fb.grade != null && <span className="tag" style={{background: fb.grade >= 6 ? 'color-mix(in srgb,var(--emerald) 15%,transparent)' : 'color-mix(in srgb,var(--rose) 15%,transparent)',
+                        color: fb.grade >= 6 ? 'var(--emerald)' : 'var(--rose)'}}>{fb.grade}/10</span>}
+                      <span style={{fontSize:'.62rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>
+                        {new Date(fb.created_at).toLocaleDateString('pt-BR')}
+                      </span>
+                    </div>
+                    <p style={{fontSize:'.8rem',color:'var(--ink)',lineHeight:1.5}}>{fb.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
 
-        window.deleteComment = async function(commentId) {
-            if (!confirm('Excluir este comentário?')) return;
-            try {
-                await DB.orientador.deleteComment(commentId);
-                await loadProjectComments(selectedProjectId);
-            } catch(err) {
-                alert('Erro: ' + err.message);
-            }
-        };
+    /* ──── Tarefas View ──── */
+    function TarefasView({ user, projects }) {
+      const [selProject, setSelProject] = useState(null);
+      const [tasks, setTasks] = useState([]);
 
-        // ========== Phase 4: Update Stats ==========
-        async function updateProjectStats() {
-            if (!selectedProjectId) return;
-            try {
-                await DB.orientador.updateProjectStats(currentUser.uid, selectedProjectId);
-            } catch(err) {
-                console.warn('Error updating stats:', err);
-            }
-        }
+      useEffect(() => {
+        if (projects.length > 0 && !selProject) setSelProject(projects[0]);
+      }, [projects]);
 
-        // ========== Phase 5: Reports & Export ==========
-        window.generateReport = async function() {
-            if (!selectedProjectId) { alert('Selecione um projeto primeiro'); return; }
-            const btn = document.getElementById('generateReportBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Gerando...';
+      useEffect(() => {
+        if (selProject) loadTasks();
+      }, [selProject]);
 
-            try {
-                const result = await DB.orientador.generateReport(currentUser.uid, selectedProjectId);
-                alert('Relatório gerado com sucesso!');
-                await loadReports();
-                await updateProjectStats();
-            } catch(err) {
-                alert('Erro ao gerar relatório: ' + err.message);
-            }
+      async function loadTasks() {
+        try {
+          const { data } = await _supa.from('tasks').select('*').eq('project_id', selProject.id).order('due_date', { ascending: true });
+          setTasks(data || []);
+        } catch(e) {}
+      }
 
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-plus mr-1"></i>Gerar Relatório';
-        };
+      const done = tasks.filter(t => t.status === 'done').length;
+      const progress = tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0;
+      const statusMap = { todo: { label: 'A Fazer', cls: 'tag-muted' }, progress: { label: 'Em Andamento', cls: 'tag-amber' }, done: { label: 'Concluída', cls: 'tag-emerald' } };
 
-        async function loadReports() {
-            const el = document.getElementById('reportsList');
-            try {
-                const reports = await DB.orientador.getReports(currentUser.uid);
+      return (
+        <div className="ori-content">
+          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+            <span className="field-label" style={{margin:0}}>Projeto:</span>
+            <select className="field" style={{width:'auto',maxWidth:300}} value={selProject?.id || ''}
+              onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
+              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
 
-                if (reports.length === 0) {
-                    el.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Nenhum relatório gerado</p>';
-                    return;
-                }
+          <div className="ori-stats" style={{gridTemplateColumns:'repeat(3,1fr)'}}>
+            <div className="ori-stat-card">
+              <div className="stat-label">Total</div>
+              <div className="stat-value">{tasks.length}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Concluídas</div>
+              <div className="stat-value" style={{color:'var(--emerald)'}}>{done}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Progresso</div>
+              <div className="stat-value">{progress}%</div>
+            </div>
+          </div>
 
-                el.innerHTML = '';
-                for (const r of reports) {
-                    const date = new Date(r.generated_at).toLocaleDateString('pt-BR');
-                    el.innerHTML += `
-                        <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium">${r.title}</p>
-                                <p class="text-xs text-slate-400 mt-1">${date} • ${r.download_count || 0} downloads</p>
-                            </div>
-                            <button onclick="downloadReport('${r.id}')" class="text-emerald-600 hover:text-emerald-700 transition">
-                                <i class="fa-solid fa-download text-lg"></i>
-                            </button>
-                        </div>`;
-                }
-            } catch(err) {
-                el.innerHTML = '<p class="text-sm text-red-400 text-center py-4">Erro ao carregar relatórios</p>';
-            }
-        }
+          {tasks.length === 0 ? (
+            <div className="empty-state"><i className="fa-solid fa-list-check" style={{display:'block'}}/><p>Nenhuma tarefa encontrada.</p></div>
+          ) : tasks.map(t => {
+            const st = statusMap[t.status] || statusMap.todo;
+            const isOverdue = t.due_date && t.status !== 'done' && new Date(t.due_date + 'T00:00:00') < new Date();
+            return (
+              <div key={t.id} className="task-row" style={{borderColor: isOverdue ? 'var(--rose)' : undefined}}>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'.88rem',fontWeight:500,color: t.status === 'done' ? 'var(--muted)' : 'var(--ink)',
+                    textDecoration: t.status === 'done' ? 'line-through' : 'none'}}>{t.title}</div>
+                  <div style={{fontSize:'.7rem',color:'var(--muted)',marginTop:2,fontFamily:'var(--font-mono)'}}>
+                    {t.due_date ? new Date(t.due_date + 'T00:00:00').toLocaleDateString('pt-BR') : 'Sem prazo'}
+                    {isOverdue && <span style={{color:'var(--rose)',fontWeight:700,marginLeft:6}}>ATRASADA</span>}
+                  </div>
+                </div>
+                <span className={`tag ${st.cls}`}>{st.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
 
-        window.downloadReport = async function(reportId) {
-            try {
-                const content = await DB.orientador.exportReportAsPDF(reportId);
-                const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `relatorio-${new Date().getTime()}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-            } catch(err) {
-                alert('Erro ao baixar: ' + err.message);
-            }
-        };
+    /* ──── Feedback View ──── */
+    function FeedbackView({ user, projects }) {
+      const [selProject, setSelProject] = useState(null);
+      const [comments, setComments] = useState([]);
+      const [newComment, setNewComment] = useState('');
+      const [section, setSection] = useState('geral');
+      const [filter, setFilter] = useState('all');
 
-        // Load reports on project change
-        const originalOpenProject = window.openProject;
-        window.openProject = async function(projId, projName) {
-            await originalOpenProject(projId, projName);
-            await loadReports();
-            await updateProjectStats();
-        };
+      const sections = [
+        { value: 'geral', label: 'Geral' },
+        { value: 'introducao', label: 'Introdução' },
+        { value: 'metodologia', label: 'Metodologia' },
+        { value: 'resultados', label: 'Resultados' },
+        { value: 'conclusao', label: 'Conclusão' },
+        { value: 'referencias', label: 'Referências' },
+        { value: 'formatacao', label: 'Formatação' },
+      ];
 
-        // ========== Phase 3: Notifications ==========
-        async function loadNotifications() {
-            try {
-                const notifications = await DB.orientador.getNotifications(currentUser.uid, 10);
-                const unreadCount = notifications.filter(n => !n.read).length;
+      const sectionColors = {
+        geral: 'tag-muted', introducao: 'tag-violet', metodologia: 'tag-cyan',
+        resultados: 'tag-emerald', conclusao: 'tag-amber', referencias: 'tag-rose', formatacao: 'tag-blue'
+      };
 
-                const badge = document.getElementById('notifBadge');
-                if (unreadCount > 0) {
-                    badge.textContent = unreadCount;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
+      useEffect(() => {
+        if (projects.length > 0 && !selProject) setSelProject(projects[0]);
+      }, [projects]);
 
-                const notifList = document.getElementById('notificationList');
-                if (notifications.length === 0) {
-                    notifList.innerHTML = '<div style="padding:12px;text-align:center;color:#94a3b8;font-size:13px">Nenhuma notificação</div>';
-                    return;
-                }
+      useEffect(() => {
+        if (selProject) loadComments();
+      }, [selProject]);
 
-                notifList.innerHTML = '';
-                for (const n of notifications) {
-                    const date = new Date(n.created_at).toLocaleDateString('pt-BR');
-                    const typeLabel = n.type === 'new_comment' ? '💬 Novo Comentário' : '👥 Orientador Vinculado';
-                    notifList.innerHTML += `
-                        <div style="padding:10px 8px;border-bottom:1px solid #f1f5f9;cursor:pointer;opacity:${n.read?0.6:1};transition:background .2s" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
-                            <div style="font-size:12px;font-weight:600;margin-bottom:2px">${typeLabel}</div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:4px">${n.section ? 'Seção: ' + n.section : 'Projeto: ' + n.project_id.substring(0, 8)}</div>
-                            <div style="font-size:11px;color:#cbd5e1">${date}</div>
-                            ${!n.read ? `<button onclick="markAsRead('${n.id}')" style="margin-top:6px;font-size:11px;background:#e0f2fe;color:#0369a1;border:none;padding:3px 8px;border-radius:4px;cursor:pointer">Marcar como lido</button>` : ''}
-                        </div>`;
-                }
-            } catch(err) {
-                console.error('Error loading notifications:', err);
-            }
-        }
+      async function loadComments() {
+        try {
+          const data = await DB.orientador.getComments(selProject.id);
+          setComments(data);
+        } catch(e) {}
+      }
 
-        window.toggleNotifications = function() {
-            const panel = document.getElementById('notificationPanel');
-            if (panel.style.display === 'none') {
-                panel.style.display = 'block';
-                loadNotifications();
-            } else {
-                panel.style.display = 'none';
-            }
-        };
+      async function submitComment() {
+        if (!newComment.trim() || !selProject) return;
+        try {
+          await DB.orientador.addComment(selProject.id, user.uid, newComment.trim(), section);
+          setNewComment('');
+          await loadComments();
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
 
-        window.markAsRead = async function(notifId) {
-            try {
-                await DB.orientador.markNotificationAsRead(notifId);
-                await loadNotifications();
-            } catch(err) {
-                console.error('Error marking as read:', err);
-            }
-        };
+      async function handleDelete(id) {
+        if (!confirm('Excluir este comentário?')) return;
+        await DB.orientador.deleteComment(id);
+        await loadComments();
+      }
 
-        // Refresh notifications every 30 seconds
-        setInterval(() => {
-            if (currentUser) loadNotifications();
-        }, 30000);
-    </script>
-    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+      const filtered = filter === 'all' ? comments : comments.filter(c => c.section === filter);
+
+      return (
+        <div className="ori-content">
+          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20,flexWrap:'wrap'}}>
+            <span className="field-label" style={{margin:0}}>Projeto:</span>
+            <select className="field" style={{width:'auto',maxWidth:300}} value={selProject?.id || ''}
+              onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
+              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
+
+          <div className="card">
+            <div className="card-title" style={{marginBottom:12}}>Novo Comentário</div>
+            <div style={{display:'flex',gap:10,marginBottom:10}}>
+              <select className="field" style={{width:'auto'}} value={section} onChange={e => setSection(e.target.value)}>
+                {sections.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+            </div>
+            <div style={{display:'flex',gap:10}}>
+              <textarea className="field" rows={3} placeholder="Escreva seu comentário ou correção..."
+                value={newComment} onChange={e => setNewComment(e.target.value)} style={{flex:1,resize:'vertical'}}/>
+              <button className="btn btn-emerald" style={{alignSelf:'flex-end'}} onClick={submitComment}>
+                <i className="fa-solid fa-paper-plane"/>
+              </button>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Comentários ({filtered.length})</div>
+              <select className="field" style={{width:'auto',fontSize:'.75rem',padding:'5px 8px'}} value={filter} onChange={e => setFilter(e.target.value)}>
+                <option value="all">Todas seções</option>
+                {sections.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+            </div>
+
+            {filtered.length === 0 ? (
+              <div className="empty-state"><i className="fa-solid fa-comments" style={{display:'block'}}/><p>Nenhum comentário encontrado.</p></div>
+            ) : filtered.map(c => (
+              <div key={c.id} className="comment-bubble">
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                  <span className={`tag ${sectionColors[c.section] || 'tag-muted'}`}>
+                    {sections.find(s => s.value === c.section)?.label || c.section}
+                  </span>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <span style={{fontSize:'.62rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>
+                      {new Date(c.created_at).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}
+                    </span>
+                    {c.orientador_id === user.uid && (
+                      <button className="btn-ghost" style={{padding:4,border:'none',background:'none',cursor:'pointer',color:'var(--muted)',fontSize:'.7rem'}}
+                        onClick={() => handleDelete(c.id)}>
+                        <i className="fa-solid fa-trash"/>
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p style={{fontSize:'.82rem',color:'var(--ink)',lineHeight:1.5,whiteSpace:'pre-wrap'}}>{c.comment}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    /* ──── Relatórios View ──── */
+    function RelatoriosView({ user, projects }) {
+      const [selProject, setSelProject] = useState(null);
+      const [reports, setReports] = useState([]);
+      const [generating, setGenerating] = useState(false);
+
+      useEffect(() => {
+        loadReports();
+      }, [user]);
+
+      useEffect(() => {
+        if (projects.length > 0 && !selProject) setSelProject(projects[0]);
+      }, [projects]);
+
+      async function loadReports() {
+        try {
+          const data = await DB.orientador.getReports(user.uid);
+          setReports(data);
+        } catch(e) {}
+      }
+
+      async function handleGenerate() {
+        if (!selProject) { alert('Selecione um projeto.'); return; }
+        setGenerating(true);
+        try {
+          await DB.orientador.generateReport(user.uid, selProject.id);
+          await loadReports();
+        } catch(e) { alert('Erro: ' + e.message); }
+        setGenerating(false);
+      }
+
+      async function handleDownload(reportId) {
+        try {
+          const content = await DB.orientador.exportReportAsPDF(reportId);
+          const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `relatorio-${Date.now()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
+
+      return (
+        <div className="ori-content">
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Gerar Novo Relatório</div>
+            </div>
+            <div style={{display:'flex',gap:10,alignItems:'center'}}>
+              <select className="field" style={{width:'auto',flex:1}} value={selProject?.id || ''}
+                onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
+                {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+              <button className="btn btn-emerald" onClick={handleGenerate} disabled={generating}>
+                {generating ? <><i className="fa-solid fa-spinner fa-spin"/> Gerando...</> : <><i className="fa-solid fa-plus"/> Gerar</>}
+              </button>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Relatórios Gerados</div>
+              <span className="tag tag-emerald">{reports.length}</span>
+            </div>
+            {reports.length === 0 ? (
+              <div className="empty-state"><i className="fa-solid fa-file-lines" style={{display:'block'}}/><p>Nenhum relatório gerado ainda.</p></div>
+            ) : reports.map(r => (
+              <div key={r.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 16px',border:'1px solid var(--line)',borderRadius:'var(--radius)',marginBottom:8}}>
+                <div>
+                  <div style={{fontSize:'.88rem',fontWeight:600,color:'var(--ink)'}}>{r.title}</div>
+                  <div style={{fontSize:'.68rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>
+                    {new Date(r.generated_at).toLocaleDateString('pt-BR')} &bull; {r.download_count || 0} downloads
+                  </div>
+                </div>
+                <button className="btn btn-sm" onClick={() => handleDownload(r.id)}>
+                  <i className="fa-solid fa-download"/> Baixar
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    /* ──── Estatísticas View ──── */
+    function EstatisticasView({ user, projects }) {
+      const [stats, setStats] = useState([]);
+
+      useEffect(() => {
+        (async () => {
+          try {
+            const data = await DB.orientador.getOrientadorStats(user.uid);
+            setStats(data);
+          } catch(e) {}
+        })();
+      }, [user]);
+
+      const totalComments = stats.reduce((s, st) => s + (st.total_comments || 0), 0);
+      const totalTasks = stats.reduce((s, st) => s + (st.tasks_count || 0), 0);
+      const totalDone = stats.reduce((s, st) => s + (st.tasks_completed || 0), 0);
+      const maxComments = Math.max(...stats.map(s => s.total_comments || 0), 1);
+
+      return (
+        <div className="ori-content">
+          <div className="ori-stats">
+            <div className="ori-stat-card">
+              <div className="stat-label">Total Comentários</div>
+              <div className="stat-value">{totalComments}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Total Tarefas</div>
+              <div className="stat-value">{totalTasks}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Tarefas Concluídas</div>
+              <div className="stat-value" style={{color:'var(--emerald)'}}>{totalDone}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Projetos Ativos</div>
+              <div className="stat-value">{stats.length}</div>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-title" style={{marginBottom:20}}>Comentários por Projeto</div>
+            {stats.length === 0 ? (
+              <div className="empty-state"><i className="fa-solid fa-chart-bar" style={{display:'block'}}/><p>Sem dados ainda. Interaja com projetos para gerar estatísticas.</p></div>
+            ) : (
+              <div className="bar-chart">
+                {stats.map((s, i) => {
+                  const proj = projects.find(p => p.id === s.project_id);
+                  const height = Math.max(((s.total_comments || 0) / maxComments) * 100, 4);
+                  return (
+                    <div key={s.id || i} className="bar-col">
+                      <div style={{fontSize:'.65rem',color:'var(--ink)',fontWeight:600,fontFamily:'var(--font-mono)'}}>{s.total_comments || 0}</div>
+                      <div className="bar" style={{height:`${height}%`,background:'var(--emerald)'}}/>
+                      <div className="bar-label">{proj?.name?.substring(0, 10) || 'Projeto'}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="card">
+            <div className="card-title" style={{marginBottom:16}}>Desempenho por Projeto</div>
+            {stats.map((s, i) => {
+              const proj = projects.find(p => p.id === s.project_id);
+              const prog = s.tasks_count > 0 ? Math.round((s.tasks_completed / s.tasks_count) * 100) : 0;
+              return (
+                <div key={s.id || i} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 0',borderBottom:'1px solid var(--line)'}}>
+                  <div style={{width:32,height:32,borderRadius:8,background:'var(--emerald)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.7rem',flexShrink:0}}>
+                    <i className="fa-solid fa-folder"/>
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:'.85rem',fontWeight:600,color:'var(--ink)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{proj?.name || 'Projeto'}</div>
+                    <div style={{display:'flex',gap:10,fontSize:'.65rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>
+                      <span>{s.students_count || 0} alunos</span>
+                      <span>{s.total_comments || 0} coment.</span>
+                      <span>{s.tasks_completed || 0}/{s.tasks_count || 0} tarefas</span>
+                    </div>
+                  </div>
+                  <div style={{width:80}}>
+                    <div className="progress-bar">
+                      <div className="progress-bar-fill" style={{width:`${prog}%`,background: prog >= 70 ? 'var(--emerald)' : prog >= 40 ? 'var(--amber)' : 'var(--rose)'}}/>
+                    </div>
+                    <div style={{textAlign:'center',fontSize:'.62rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>{prog}%</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ──── Main App ──── */
+    function OrientadorApp() {
+      const { user, loading } = useOrientadorAuth();
+      const [view, setView] = useState('dashboard');
+      const [projects, setProjects] = useState([]);
+      const [selectedProject, setSelectedProject] = useState(null);
+      const [mobileOpen, setMobileOpen] = useState(false);
+
+      const viewTitles = {
+        dashboard: 'Visão Geral',
+        projetos: 'Meus Projetos',
+        trabalho: 'Trabalho Escrito',
+        tarefas: 'Tarefas',
+        feedback: 'Feedback',
+        relatorios: 'Relatórios',
+        estatisticas: 'Estatísticas',
+      };
+
+      useEffect(() => {
+        if (user) loadProjects();
+      }, [user]);
+
+      async function loadProjects() {
+        try {
+          const raw = await DB.orientador.getMyProjects(user.uid);
+          const enriched = [];
+          for (const item of raw) {
+            const proj = item.projects;
+            if (!proj) continue;
+
+            const { data: members } = await _supa.from('users').select('id').eq('project_id', proj.id);
+            const { data: comments } = await _supa.from('orientador_comments').select('id').eq('project_id', proj.id).eq('orientador_id', user.uid);
+            const { data: tasks } = await _supa.from('tasks').select('status').eq('project_id', proj.id);
+
+            const taskCount = (tasks || []).length;
+            const doneCount = (tasks || []).filter(t => t.status === 'done').length;
+
+            enriched.push({
+              ...proj,
+              _memberCount: (members || []).length,
+              _commentCount: (comments || []).length,
+              _taskCount: taskCount,
+              _progress: taskCount > 0 ? Math.round((doneCount / taskCount) * 100) : 0,
+            });
+          }
+          setProjects(enriched);
+        } catch(e) { console.error(e); }
+      }
+
+      if (loading || !user) return (
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',gap:10,color:'var(--muted)'}}>
+          <i className="fa-solid fa-spinner fa-spin"/> Carregando...
+        </div>
+      );
+
+      return (
+        <div className="ori-layout">
+          <OrientadorSidebar activeView={view} onNavigate={setView} user={user}
+            mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)}/>
+
+          <div className="ori-main">
+            <div className="ori-topbar">
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <button className="mobile-menu-btn btn btn-sm btn-ghost" onClick={() => setMobileOpen(true)}>
+                  <i className="fa-solid fa-bars"/>
+                </button>
+                <h1>{viewTitles[view]}</h1>
+                <span className="tag tag-amber" style={{fontSize:'.55rem'}}>BETA</span>
+              </div>
+              <div className="ori-topbar-actions">
+                <button className="btn btn-sm btn-ghost" onClick={loadProjects} title="Atualizar">
+                  <i className="fa-solid fa-arrows-rotate"/>
+                </button>
+              </div>
+            </div>
+
+            {view === 'dashboard' && <DashboardView user={user} projects={projects} onNavigate={setView} onSelectProject={setSelectedProject}/>}
+            {view === 'projetos' && <ProjetosView user={user} projects={projects} selectedProject={selectedProject} onSelectProject={setSelectedProject} onRefresh={loadProjects}/>}
+            {view === 'trabalho' && <TrabalhoView user={user} projects={projects}/>}
+            {view === 'tarefas' && <TarefasView user={user} projects={projects}/>}
+            {view === 'feedback' && <FeedbackView user={user} projects={projects}/>}
+            {view === 'relatorios' && <RelatoriosView user={user} projects={projects}/>}
+            {view === 'estatisticas' && <EstatisticasView user={user} projects={projects}/>}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<OrientadorApp/>);
+  </script>
+  <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>
