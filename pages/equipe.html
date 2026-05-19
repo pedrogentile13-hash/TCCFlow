@@ -1141,7 +1141,7 @@
                 if (orientador) {
                     const user = orientador.users || orientador;
                     console.log("Orientador user data:", user);
-                    if (user && user.id) {
+                    if (user && (user.email || user.name)) {
                         console.log("Showing orientador linked section");
                         document.getElementById('orientadorLinked').classList.remove('hidden');
                         document.getElementById('orientadorInvite').classList.add('hidden');
