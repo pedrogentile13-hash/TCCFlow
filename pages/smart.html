@@ -1,504 +1,388 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-1WX7MD9CL9');
-    </script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
-    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
-    <link rel="icon" type="image/png" href="../favicon.png">
-    <link rel="apple-touch-icon" href="../favicon.png">
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#7c3aed">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validação SMART - TCCFlow</title>
-    <script src="../js/darkmode.js"></script>
-    <script src="../js/i18n.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
-        .score-ring { transition: stroke-dashoffset 1s ease-in-out; }
-        .smart-card { animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Validação SMART — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .smart-grid{display:grid;grid-template-columns:260px 1fr 280px;height:calc(100vh - 60px);overflow:hidden;}
+    .smart-left{background:var(--bg-2);border-right:1px solid var(--line);overflow-y:auto;padding:20px 16px;}
+    .smart-left::-webkit-scrollbar{display:none;}
+    .smart-left{scrollbar-width:none;}
+    .smart-main{overflow-y:auto;padding:28px 32px;}
+    .smart-main::-webkit-scrollbar{width:6px;}
+    .smart-main::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px;}
+    .smart-right{background:var(--bg-2);border-left:1px solid var(--line);overflow-y:auto;padding:20px 16px;}
+    .smart-right::-webkit-scrollbar{display:none;}
+    .smart-right{scrollbar-width:none;}
+    .smart-header{font-family:var(--font-mono);font-size:.6875rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:14px;}
+    .letter-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.875rem;color:#fff;flex-shrink:0;}
+    .smart-item{background:var(--paper);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:box-shadow .2s;}
+    .smart-item:hover{box-shadow:var(--shadow-sm);}
+    .smart-item-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none;}
+    .smart-item-head .title{font-size:.8125rem;font-weight:600;color:var(--ink);}
+    .smart-item-head .arrow{margin-left:auto;color:var(--muted);font-size:.75rem;transition:transform .2s;}
+    .smart-item-head .arrow.open{transform:rotate(180deg);}
+    .smart-item-body{padding:0 14px 14px;font-size:.8125rem;color:var(--muted);line-height:1.55;}
+    .smart-item-body .example-label{font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.1em;margin-top:10px;margin-bottom:4px;}
+    .smart-item-body .example-good{background:rgba(16,185,129,.08);color:var(--emerald);padding:6px 10px;border-radius:8px;font-size:.75rem;margin-bottom:4px;}
+    .smart-item-body .example-bad{background:rgba(244,63,94,.08);color:var(--rose);padding:6px 10px;border-radius:8px;font-size:.75rem;}
+    .smart-item-check{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.75rem;color:var(--ink-2);cursor:pointer;}
+    .smart-item-check input[type="checkbox"]{width:16px;height:16px;accent-color:var(--violet);}
+    .progress-label{font-family:var(--font-mono);font-size:.6875rem;color:var(--muted);margin-top:16px;margin-bottom:6px;}
+    .progress-track{height:6px;background:var(--line);border-radius:99px;overflow:hidden;}
+    .progress-track-fill{height:100%;background:var(--grad);border-radius:99px;transition:width .4s ease;}
+    .theme-input{width:100%;font-family:var(--font-display);font-size:1.25rem;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s;}
+    .theme-input:focus{border-color:var(--violet);}
+    .theme-input::placeholder{color:var(--muted);opacity:.5;}
+    .analysis-card{display:flex;gap:14px;padding:16px;background:var(--paper);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;transition:box-shadow .2s;}
+    .analysis-card:hover{box-shadow:var(--shadow-sm);}
+    .analysis-card .status-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:.75rem;font-weight:600;}
+    .status-atende{background:rgba(16,185,129,.1);color:var(--emerald);}
+    .status-parcial{background:rgba(245,158,11,.1);color:var(--amber);}
+    .status-nao{background:rgba(244,63,94,.1);color:var(--rose);}
+    .analysis-card .suggestion{font-size:.75rem;color:var(--muted);margin-top:6px;padding:8px 10px;background:var(--bg-2);border-radius:8px;line-height:1.5;}
+    .score-ring{position:relative;width:140px;height:140px;margin:0 auto 16px;}
+    .score-ring svg{transform:rotate(-90deg);}
+    .score-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .score-num{font-family:var(--font-display);font-size:2rem;line-height:1;}
+    .score-label-text{font-family:var(--font-mono);font-size:.625rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.08em;}
+    .score-quality{font-size:.9375rem;font-weight:600;text-align:center;margin-bottom:16px;}
+    .rec-list{list-style:none;padding:0;margin:0 0 20px;}
+    .rec-list li{display:flex;align-items:flex-start;gap:8px;padding:8px 0;font-size:.8125rem;color:var(--ink-2);line-height:1.5;border-bottom:1px solid var(--line);}
+    .rec-list li:last-child{border-bottom:none;}
+    .rec-dot{width:6px;height:6px;border-radius:50%;background:var(--violet);flex-shrink:0;margin-top:6px;}
+    .approved-section{margin-top:20px;}
+    .approved-section .section-title{font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;}
+    .approved-example{padding:10px 12px;background:var(--paper);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;font-size:.75rem;color:var(--ink-2);line-height:1.5;}
+    .approved-example .ex-tag{font-family:var(--font-mono);font-size:.5625rem;color:var(--emerald);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+    @media(max-width:1024px){.smart-grid{grid-template-columns:1fr;height:auto;overflow:visible;}.smart-left,.smart-right{border:none;padding:16px;}}
+  </style>
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
+<body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
 
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
+const SMART_DATA = [
+  {
+    key:"S", label:"Específico", color:"var(--violet)",
+    desc:"O tema deve ser claro, direto e bem delimitado, evitando generalidades.",
+    good:"Impacto das redes sociais na autoestima de adolescentes de 15-18 anos em escolas públicas de São Paulo",
+    bad:"Redes sociais e jovens"
+  },
+  {
+    key:"M", label:"Mensurável", color:"var(--cyan)",
+    desc:"Deve ser possível medir os resultados da pesquisa com dados concretos.",
+    good:"Análise quantitativa da correlação entre tempo de tela e desempenho escolar",
+    bad:"Estudo sobre tecnologia na educação"
+  },
+  {
+    key:"A", label:"Alcançável", color:"var(--emerald)",
+    desc:"O escopo deve ser viável dentro dos recursos e prazos de um TCC.",
+    good:"Pesquisa com 50 alunos de uma escola municipal usando questionário online",
+    bad:"Pesquisa com todos os estudantes do Brasil"
+  },
+  {
+    key:"R", label:"Relevante", color:"var(--amber)",
+    desc:"O tema deve contribuir para a área de estudo e ter aplicação prática.",
+    good:"Efeitos da gamificação no ensino de matemática: uma proposta para o ensino fundamental",
+    bad:"Estudo sobre um assunto já muito pesquisado sem nova perspectiva"
+  },
+  {
+    key:"T", label:"Temporal", color:"var(--rose)",
+    desc:"A pesquisa deve ter um recorte temporal claro e ser realizável no prazo.",
+    good:"Adoção de inteligência artificial em PMEs brasileiras no período 2023-2025",
+    bad:"História completa da computação desde o início"
+  }
+];
 
-    <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
-                    <div class="relative" id="moreDropdown">
-                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
-                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
-                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
-                            <div class="border-t border-slate-100 my-1"></div>
-                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
-                        </div>
-                    </div>
-                </div><div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
-                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
-                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
-                    </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-sm"></i></button>
-                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-bars text-sm"></i></button>
-                </div>
-            </div>
-        </div>
-        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
-        </div>
-    
-    <script>
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('moreDropdown');
-        const menu = document.getElementById('moreMenu');
-        if (dropdown && menu && !dropdown.contains(e.target)) {
-            menu.classList.add('hidden');
-        }
+const SUGGESTIONS_MAP = {
+  specific: [
+    "Delimite o público-alvo (ex: faixa etária, profissão)",
+    "Defina o contexto geográfico (ex: cidade, região)",
+    "Adicione um subtítulo com recorte mais preciso"
+  ],
+  measurable: [
+    "Mencione a metodologia (ex: pesquisa quantitativa, estudo de caso)",
+    "Inclua termos como análise, avaliação, comparação ou impacto",
+    "Indique que tipo de dados serão coletados"
+  ],
+  achievable: [
+    "Reduza o escopo para algo realizável em um semestre",
+    "Evite termos absolutos como toda, sempre, universal",
+    "Foque em uma amostra acessível"
+  ],
+  relevant: [
+    "Conecte o tema a uma área de conhecimento (saúde, educação, tecnologia)",
+    "Justifique a relevância social ou acadêmica",
+    "Relacione com problemas ou desafios atuais"
+  ],
+  temporal: [
+    "Adicione um recorte temporal (ex: 2020-2025)",
+    "Use termos como atual, contemporâneo, recente",
+    "Especifique o período de coleta de dados"
+  ]
+};
+
+const APPROVED_EXAMPLES = [
+  "Impacto da gamificação no engajamento de alunos do ensino médio em escolas públicas de Belo Horizonte (2024-2025)",
+  "Análise da influência do marketing digital na decisão de compra de consumidores de 18-30 anos no e-commerce brasileiro",
+  "Efeitos do trabalho remoto na saúde mental de profissionais de tecnologia durante o período pós-pandêmico"
+];
+
+function analyzeTheme(text) {
+  const words = text.trim().split(/\s+/);
+  const lower = text.toLowerCase();
+  const results = {};
+
+  results.specific = words.length >= 5 && !/geral|tudo|vários/.test(lower);
+  results.measurable = /impacto|efeito|relação|correlação|influência|análise|comparação|avaliação/.test(lower);
+  results.achievable = !/toda|sempre|nunca|impossível|universal|mundo inteiro/.test(lower) && words.length < 30;
+  results.relevant = /saúde|educação|tecnologia|social|ambiental|econômic|psicolog|comunicação|direito|engenhar/.test(lower);
+  results.temporal = /\d{4}|atual|contemporâne|século|década|pandemic|pós-|recente|últimos anos|período/.test(lower);
+
+  const score = Object.values(results).filter(Boolean).length * 20;
+  return { results, score };
+}
+
+function getScoreColor(score) {
+  if (score >= 80) return "var(--emerald)";
+  if (score >= 60) return "var(--cyan)";
+  if (score >= 40) return "var(--amber)";
+  return "var(--rose)";
+}
+
+function getScoreLabel(score) {
+  if (score >= 80) return "Excelente";
+  if (score >= 60) return "Bom";
+  if (score >= 40) return "Regular";
+  return "Fraco";
+}
+
+function LeftPanel({ checks, onToggle, expanded, onExpand }) {
+  const checkedCount = Object.values(checks).filter(Boolean).length;
+
+  return (
+    React.createElement("div", {className:"smart-left"},
+      React.createElement("div", {className:"smart-header"}, "Critérios SMART"),
+      SMART_DATA.map(function(item) {
+        const isOpen = expanded === item.key;
+        return React.createElement("div", {className:"smart-item", key:item.key},
+          React.createElement("div", {className:"smart-item-head", onClick:function(){onExpand(isOpen ? null : item.key);}},
+            React.createElement("div", {className:"letter-circle", style:{background:item.color}}, item.key),
+            React.createElement("span", {className:"title"}, item.label),
+            React.createElement("span", {className:"arrow" + (isOpen ? " open" : "")}, "▼")
+          ),
+          isOpen && React.createElement("div", {className:"smart-item-body"},
+            React.createElement("p", null, item.desc),
+            React.createElement("div", {className:"example-label"}, "Bom exemplo"),
+            React.createElement("div", {className:"example-good"}, "✓ " + item.good),
+            React.createElement("div", {className:"example-label"}, "Exemplo fraco"),
+            React.createElement("div", {className:"example-bad"}, "✗ " + item.bad),
+            React.createElement("label", {className:"smart-item-check"},
+              React.createElement("input", {type:"checkbox", checked:!!checks[item.key], onChange:function(){onToggle(item.key);}}),
+              "Atende este critério?"
+            )
+          )
+        );
+      }),
+      React.createElement("div", {className:"progress-label"}, checkedCount + "/5 critérios"),
+      React.createElement("div", {className:"progress-track"},
+        React.createElement("div", {className:"progress-track-fill", style:{width:(checkedCount * 20) + "%"}})
+      )
+    )
+  );
+}
+
+function MainArea({ theme, setTheme, analysis }) {
+  const keys = ["specific","measurable","achievable","relevant","temporal"];
+  const labels = ["Específico","Mensurável","Alcançável","Relevante","Temporal"];
+  const letters = ["S","M","A","R","T"];
+  const colors = ["var(--violet)","var(--cyan)","var(--emerald)","var(--amber)","var(--rose)"];
+  const explanations = {
+    specific: {yes:"O tema é claro e bem delimitado.", partial:"O tema poderia ser mais específico.", no:"O tema é muito genérico e precisa de delimitação."},
+    measurable: {yes:"Contém termos que indicam mensurabilidade.", partial:"Faltam indicadores claros de mensuração.", no:"Não indica como os resultados serão medidos."},
+    achievable: {yes:"O escopo é viável para um TCC.", partial:"O escopo pode ser um pouco amplo.", no:"O escopo parece inviável ou muito amplo."},
+    relevant: {yes:"O tema está conectado a uma área relevante.", partial:"A relevância poderia ser mais explícita.", no:"Não indica conexão com uma área de conhecimento."},
+    temporal: {yes:"Possui recorte temporal definido.", partial:"O recorte temporal poderia ser mais claro.", no:"Não possui referência temporal."}
+  };
+  const suggestions = {
+    specific:"Tente adicionar público-alvo, contexto geográfico ou subtítulo delimitador.",
+    measurable:"Inclua termos como análise, impacto, avaliação ou comparação.",
+    achievable:"Reduza o escopo e evite termos absolutos como toda, sempre, nunca.",
+    relevant:"Conecte o tema a uma área como saúde, educação, tecnologia ou direito.",
+    temporal:"Adicione um período, ano ou termo como atual, recente ou pós-pandêmico."
+  };
+
+  return (
+    React.createElement("div", {className:"smart-main"},
+      React.createElement("div", {className:"smart-header"}, "Analise seu tema"),
+      React.createElement("input", {
+        className:"theme-input",
+        type:"text",
+        placeholder:"Digite seu tema de TCC...",
+        value:theme,
+        onChange:function(e){setTheme(e.target.value);}
+      }),
+      React.createElement("div", {style:{marginTop:24}},
+        !analysis
+          ? React.createElement("div", {className:"empty-state"},
+              React.createElement("div", {className:"es-icon"}, "🎯"),
+              React.createElement("h3", null, "Aguardando tema"),
+              React.createElement("p", null, "Digite um tema acima para iniciar a análise")
+            )
+          : keys.map(function(k, i) {
+              var passed = analysis.results[k];
+              var status = passed ? "atende" : "nao";
+              var statusLabel = passed ? "✓ Atende" : "✗ Não atende";
+              var statusClass = passed ? "status-atende" : "status-nao";
+              var explain = passed ? explanations[k].yes : explanations[k].no;
+
+              return React.createElement("div", {className:"analysis-card", key:k},
+                React.createElement("div", {className:"letter-circle", style:{background:colors[i], width:36, height:36, fontSize:".875rem"}}, letters[i]),
+                React.createElement("div", {style:{flex:1, minWidth:0}},
+                  React.createElement("div", {style:{display:"flex", alignItems:"center", gap:10, marginBottom:4}},
+                    React.createElement("span", {style:{fontWeight:600, fontSize:".875rem", color:"var(--ink)"}}, labels[i]),
+                    React.createElement("span", {className:"status-badge " + statusClass}, statusLabel)
+                  ),
+                  React.createElement("p", {style:{fontSize:".8125rem", color:"var(--ink-2)", lineHeight:1.5}}, explain),
+                  !passed && React.createElement("div", {className:"suggestion"}, "💡 " + suggestions[k])
+                )
+              );
+            })
+      )
+    )
+  );
+}
+
+function RightPanel({ analysis, onSave }) {
+  var score = analysis ? analysis.score : 0;
+  var circumference = 2 * Math.PI * 58;
+  var offset = circumference - (score / 100) * circumference;
+  var color = getScoreColor(score);
+  var label = getScoreLabel(score);
+
+  var recs = [];
+  if (analysis) {
+    if (!analysis.results.specific) recs = recs.concat(SUGGESTIONS_MAP.specific);
+    if (!analysis.results.measurable) recs = recs.concat(SUGGESTIONS_MAP.measurable);
+    if (!analysis.results.achievable) recs = recs.concat(SUGGESTIONS_MAP.achievable);
+    if (!analysis.results.relevant) recs = recs.concat(SUGGESTIONS_MAP.relevant);
+    if (!analysis.results.temporal) recs = recs.concat(SUGGESTIONS_MAP.temporal);
+  }
+
+  return (
+    React.createElement("div", {className:"smart-right"},
+      React.createElement("div", {className:"score-ring"},
+        React.createElement("svg", {width:140, height:140, viewBox:"0 0 140 140"},
+          React.createElement("circle", {cx:70, cy:70, r:58, fill:"none", stroke:"var(--line)", strokeWidth:8}),
+          React.createElement("circle", {cx:70, cy:70, r:58, fill:"none", stroke:color, strokeWidth:8, strokeLinecap:"round",
+            strokeDasharray:circumference, strokeDashoffset:offset,
+            style:{transition:"stroke-dashoffset .8s ease, stroke .4s ease"}})
+        ),
+        React.createElement("div", {className:"score-val"},
+          React.createElement("span", {className:"score-num", style:{color:color}}, score + "%"),
+          React.createElement("span", {className:"score-label-text"}, "pontuação")
+        )
+      ),
+      React.createElement("div", {className:"score-quality", style:{color:color}}, label),
+      recs.length > 0 && React.createElement("div", null,
+        React.createElement("div", {className:"smart-header"}, "Recomendações"),
+        React.createElement("ul", {className:"rec-list"},
+          recs.map(function(r, i) {
+            return React.createElement("li", {key:i},
+              React.createElement("span", {className:"rec-dot"}),
+              r
+            );
+          })
+        )
+      ),
+      React.createElement("div", {className:"approved-section"},
+        React.createElement("div", {className:"section-title"}, "Exemplos de temas aprovados"),
+        APPROVED_EXAMPLES.map(function(ex, i) {
+          return React.createElement("div", {className:"approved-example", key:i},
+            React.createElement("div", {className:"ex-tag"}, "Exemplo " + (i + 1)),
+            ex
+          );
+        })
+      ),
+      React.createElement("button", {
+        className:"btn btn-violet",
+        style:{width:"100%", marginTop:16, justifyContent:"center"},
+        onClick:onSave,
+        disabled:!analysis
+      }, "Salvar análise")
+    )
+  );
+}
+
+function SmartPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [theme, setTheme] = useState("");
+  const [analysis, setAnalysis] = useState(null);
+  const [checks, setChecks] = useState({});
+  const [expanded, setExpanded] = useState("S");
+  const debounceRef = useRef(null);
+
+  useEffect(function() {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (theme.trim().length < 5) { setAnalysis(null); return; }
+    debounceRef.current = setTimeout(function() {
+      setAnalysis(analyzeTheme(theme));
+    }, 500);
+    return function() { clearTimeout(debounceRef.current); };
+  }, [theme]);
+
+  useEffect(function() {
+    if (!analysis) return;
+    var newChecks = {};
+    var keys = ["S","M","A","R","T"];
+    var fields = ["specific","measurable","achievable","relevant","temporal"];
+    fields.forEach(function(f, i) { newChecks[keys[i]] = analysis.results[f]; });
+    setChecks(newChecks);
+  }, [analysis]);
+
+  function handleToggleCheck(key) {
+    setChecks(function(prev) {
+      var next = Object.assign({}, prev);
+      next[key] = !next[key];
+      return next;
     });
-    </script>
-    </nav>
+  }
 
-    <!-- Main Content -->
-    <main class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+  function handleSave() {
+    if (!analysis || !user) return;
+    var data = {theme:theme, score:analysis.score, results:analysis.results, date:new Date().toISOString()};
+    localStorage.setItem("tccflow_smart_" + user.uid, JSON.stringify(data));
+    alert("Análise salva com sucesso!");
+  }
 
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <div class="w-16 h-16 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-500/25">
-                <i class="fa-solid fa-bullseye text-white text-2xl"></i>
-            </div>
-            <h1 class="text-3xl sm:text-4xl font-extrabold mb-3">
-                Validação <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-emerald-500">SMART</span>
-            </h1>
-            <p class="text-slate-500 text-sm sm:text-base max-w-xl mx-auto">Avalie se o tema do seu TCC atende aos critérios da metodologia SMART</p>
-        </div>
+  if (loading) return React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",fontFamily:"var(--font-body)",color:"var(--muted)"}}, "Carregando...");
 
-        <!-- SMART Legend -->
-        <div class="flex flex-wrap justify-center gap-3 mb-8">
-            <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-teal-50 text-teal-700 px-3 py-1.5 rounded-full"><span class="w-5 h-5 bg-teal-500 text-white rounded-full flex items-center justify-center text-[10px]">S</span>Específico</span>
-            <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full"><span class="w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center text-[10px]">M</span>Mensurável</span>
-            <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-violet-50 text-violet-700 px-3 py-1.5 rounded-full"><span class="w-5 h-5 bg-violet-500 text-white rounded-full flex items-center justify-center text-[10px]">A</span>Alcançável</span>
-            <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full"><span class="w-5 h-5 bg-amber-500 text-white rounded-full flex items-center justify-center text-[10px]">R</span>Relevante</span>
-            <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-rose-50 text-rose-700 px-3 py-1.5 rounded-full"><span class="w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px]">T</span>Temporal</span>
-        </div>
+  return (
+    React.createElement("div", {className:"app-layout"},
+      React.createElement(Sidebar, {active:"tools", userData:userData, project:project, subscription:subscription}),
+      React.createElement("div", {className:"main-area"},
+        React.createElement(Topbar, {page:"Validação SMART", user:user}),
+        React.createElement("div", {className:"smart-grid"},
+          React.createElement(LeftPanel, {checks:checks, onToggle:handleToggleCheck, expanded:expanded, onExpand:setExpanded}),
+          React.createElement(MainArea, {theme:theme, setTheme:setTheme, analysis:analysis}),
+          React.createElement(RightPanel, {analysis:analysis, onSave:handleSave})
+        )
+      )
+    )
+  );
+}
 
-        <!-- Input Form -->
-        <div class="bg-white/70 backdrop-blur-sm rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8 mb-8">
-            <div class="space-y-5">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Tema do TCC</label>
-                    <input id="themeInput" type="text" placeholder="Ex: Impacto das redes sociais na saúde mental de adolescentes em escolas públicas de São Paulo" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition placeholder:text-slate-300">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Descrição da pesquisa</label>
-                    <textarea id="descInput" rows="4" placeholder="Descreva brevemente: objetivo, metodologia, público-alvo, prazo previsto..." class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition resize-none placeholder:text-slate-300"></textarea>
-                    <p class="text-right text-[11px] text-slate-400 mt-1"><span id="charCount">0</span> caracteres</p>
-                </div>
-                <div class="flex justify-end">
-                    <button id="validateBtn" class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-teal-500/25 transition text-sm">
-                        <i class="fa-solid fa-bullseye"></i>
-                        Validar Tema
-                        <i id="validateSpinner" class="fa-solid fa-spinner fa-spin hidden ml-1"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Results Area (hidden initially) -->
-        <div id="resultsArea" class="hidden space-y-6">
-
-            <!-- Overall Score -->
-            <div class="bg-white/70 backdrop-blur-sm rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8 text-center">
-                <div class="relative inline-block mb-4">
-                    <svg width="140" height="140" viewBox="0 0 140 140">
-                        <circle cx="70" cy="70" r="60" fill="none" stroke="#e2e8f0" stroke-width="10"/>
-                        <circle id="scoreRing" cx="70" cy="70" r="60" fill="none" stroke-width="10" stroke-linecap="round"
-                            class="score-ring" style="stroke-dasharray: 377; stroke-dashoffset: 377; transform: rotate(-90deg); transform-origin: center;"
-                            stroke="#14b8a6"/>
-                    </svg>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span id="scoreValue" class="text-3xl font-extrabold">0%</span>
-                    </div>
-                </div>
-                <h2 id="scoreLabel" class="text-lg font-bold mb-1"></h2>
-                <p id="scoreDesc" class="text-sm text-slate-500"></p>
-            </div>
-
-            <!-- SMART Criteria Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="criteriaGrid"></div>
-
-            <!-- Suggestions -->
-            <div id="suggestionsArea" class="hidden bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 rounded-2xl p-6 sm:p-8">
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-lightbulb text-amber-500"></i>
-                    Dicas de Melhoria
-                </h3>
-                <ul id="suggestionsList" class="space-y-3"></ul>
-            </div>
-        </div>
-
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-init.js"></script>
-    <script src="../js/db-service.js"></script>
-    <script>
-        let currentUser = null;
-
-        document.getElementById('mobileNavBtn').addEventListener('click', () => {
-            document.getElementById('mobileNav').classList.toggle('hidden');
-        });
-
-        auth.onAuthStateChanged(async user => {
-            if (!user) { window.location.href = 'login.html'; return; }
-            currentUser = user;
-            document.getElementById('userName').textContent = user.displayName || 'Usuário';
-
-            if (user.photoURL) {
-                const navAvatar = document.getElementById('navAvatar');
-                const navAvatarIcon = document.getElementById('navAvatarIcon');
-                if (navAvatar && navAvatarIcon) {
-                    navAvatar.src = user.photoURL;
-                    navAvatar.classList.remove('hidden');
-                    navAvatarIcon.classList.add('hidden');
-                }
-            }
-
-            initPage();
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await auth.signOut();
-            window.location.href = '../index.html';
-        });
-
-        // ========================= SMART VALIDATION LOGIC =========================
-
-        const SMART = [
-            {
-                key: 'S', name: 'Específico', color: 'teal',
-                desc: 'O tema é claro e bem definido?',
-                positive: ['impacto', 'efeito', 'influência', 'relação entre', 'comparação', 'análise de', 'avaliação', 'desenvolvimento de', 'implementação', 'proposta'],
-                context: ['escola', 'universidade', 'empresa', 'hospital', 'cidade', 'município', 'região', 'bairro', 'comunidade', 'instituição', 'setor', 'indústria'],
-                population: ['adolescentes', 'jovens', 'idosos', 'crianças', 'estudantes', 'professores', 'pacientes', 'funcionários', 'moradores', 'usuários', 'profissionais', 'mulheres', 'homens'],
-                negative: ['estudo geral', 'tudo sobre', 'vários aspectos', 'diversas questões'],
-                tips: [
-                    'Defina um público-alvo específico (ex: "adolescentes de 15-18 anos")',
-                    'Delimite geograficamente (ex: "em escolas públicas de São Paulo")',
-                    'Especifique o objeto de estudo com clareza',
-                    'Evite termos vagos como "vários", "diversos", "alguns"'
-                ]
-            },
-            {
-                key: 'M', name: 'Mensurável', color: 'blue',
-                desc: 'Os resultados podem ser medidos?',
-                positive: ['questionário', 'entrevista', 'experimento', 'análise quantitativa', 'análise qualitativa', 'pesquisa de campo', 'survey', 'coleta de dados', 'amostra', 'indicadores', 'métricas', 'estatística', 'percentual', 'escala', 'instrumento', 'teste', 'medição', 'levantamento', 'dados', 'variáveis'],
-                methodology: ['estudo de caso', 'revisão bibliográfica', 'revisão sistemática', 'pesquisa exploratória', 'pesquisa descritiva', 'método', 'metodologia', 'abordagem', 'técnica'],
-                negative: ['sem método', 'qualquer forma', 'de algum modo'],
-                tips: [
-                    'Mencione a metodologia de pesquisa (ex: "pesquisa quantitativa com questionário")',
-                    'Defina indicadores ou métricas que serão analisados',
-                    'Especifique o tipo de coleta de dados',
-                    'Inclua o tamanho da amostra ou escopo do levantamento'
-                ]
-            },
-            {
-                key: 'A', name: 'Alcançável', color: 'violet',
-                desc: 'É viável com os recursos disponíveis?',
-                positive: ['ferramenta', 'software', 'plataforma', 'acesso', 'disponível', 'biblioteca', 'dados públicos', 'questionário online', 'google forms', 'entrevista', 'revisão', 'bibliográfica', 'artigos', 'bases de dados', 'scielo', 'google acadêmico', 'orientador'],
-                scope: ['delimitado', 'recorte', 'amostra de', 'período de', 'limitado a', 'focado em', 'restrito a', 'específico'],
-                negative: ['revolucionar', 'resolver todos', 'completa transformação', 'nível mundial', 'todos os países'],
-                tips: [
-                    'Descreva as ferramentas e recursos que pretende utilizar',
-                    'Delimite o escopo para algo realizável em um TCC',
-                    'Mencione se tem acesso aos dados/população necessária',
-                    'Considere se a metodologia é viável com os recursos disponíveis'
-                ]
-            },
-            {
-                key: 'R', name: 'Relevante', color: 'amber',
-                desc: 'Contribui para a área de estudo?',
-                positive: ['lacuna', 'contribuição', 'necessidade', 'problema', 'desafio', 'importância', 'relevância', 'impacto social', 'demanda', 'carência', 'ausência de estudos', 'pouco explorado', 'inovação', 'melhoria', 'solução', 'benefício', 'aplicação prática'],
-                academic: ['literatura', 'pesquisas anteriores', 'autores', 'teoria', 'conceito', 'fundamentação', 'referencial teórico', 'estado da arte', 'revisão de literatura'],
-                negative: ['já muito estudado', 'óbvio', 'sem aplicação'],
-                tips: [
-                    'Justifique a importância do tema para a sociedade ou área acadêmica',
-                    'Mencione lacunas na literatura existente',
-                    'Indique a aplicação prática dos resultados esperados',
-                    'Relacione o tema com problemas reais e atuais'
-                ]
-            },
-            {
-                key: 'T', name: 'Temporal', color: 'rose',
-                desc: 'Pode ser concluído no prazo?',
-                positive: ['prazo', 'semestre', 'meses', 'cronograma', 'período', 'trimestre', 'ano letivo', 'bimestre', 'semanas', 'data limite', 'deadline', 'etapas', 'fases', 'planejamento', 'calendário'],
-                timeframes: ['2024', '2025', '2026', 'primeiro semestre', 'segundo semestre', 'até dezembro', 'até junho', 'em 6 meses', 'em 3 meses'],
-                negative: ['sem prazo', 'indefinidamente', 'quando possível', 'longo prazo indefinido'],
-                tips: [
-                    'Defina um cronograma com fases e prazos para cada etapa',
-                    'Mencione o período previsto para conclusão (ex: "em 6 meses")',
-                    'Indique datas ou semestres para entregas parciais',
-                    'Planeje etapas: revisão bibliográfica, coleta, análise e escrita'
-                ]
-            }
-        ];
-
-        function initPage() {
-            const descInput = document.getElementById('descInput');
-            descInput.addEventListener('input', () => {
-                document.getElementById('charCount').textContent = descInput.value.length;
-            });
-
-            document.getElementById('validateBtn').addEventListener('click', runValidation);
-
-            // Load last result
-            const saved = localStorage.getItem('tccflow_smart_' + currentUser.uid);
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    document.getElementById('themeInput').value = data.theme || '';
-                    document.getElementById('descInput').value = data.desc || '';
-                    document.getElementById('charCount').textContent = (data.desc || '').length;
-                    if (data.scores) showResults(data.scores, data.overall);
-                } catch(e) {}
-            }
-        }
-
-        function runValidation() {
-            const theme = document.getElementById('themeInput').value.trim();
-            const desc = document.getElementById('descInput').value.trim();
-
-            if (!theme) {
-                alert('Digite o tema do seu TCC.');
-                document.getElementById('themeInput').focus();
-                return;
-            }
-
-            const btn = document.getElementById('validateBtn');
-            const spinner = document.getElementById('validateSpinner');
-            btn.disabled = true;
-            spinner.classList.remove('hidden');
-
-            setTimeout(() => {
-                const combined = (theme + ' ' + desc).toLowerCase();
-                const scores = {};
-
-                SMART.forEach(criterion => {
-                    scores[criterion.key] = scoreCriterion(criterion, theme, desc, combined);
-                });
-
-                const overall = Math.round(
-                    (scores.S * 0.25 + scores.M * 0.2 + scores.A * 0.2 + scores.R * 0.2 + scores.T * 0.15)
-                );
-
-                // Save result
-                localStorage.setItem('tccflow_smart_' + currentUser.uid, JSON.stringify({
-                    theme, desc, scores, overall, date: new Date().toISOString()
-                }));
-
-                showResults(scores, overall);
-                btn.disabled = false;
-                spinner.classList.add('hidden');
-            }, 1500);
-        }
-
-        function scoreCriterion(criterion, theme, desc, combined) {
-            let score = 30; // base
-            const themeLen = theme.length;
-            const descLen = desc.length;
-            const wordCount = combined.split(/\s+/).length;
-
-            // Check positive keywords
-            const allPositive = [...(criterion.positive || []), ...(criterion.context || []), ...(criterion.population || []), ...(criterion.methodology || []), ...(criterion.scope || []), ...(criterion.academic || []), ...(criterion.timeframes || [])];
-            let matches = 0;
-            allPositive.forEach(kw => {
-                if (combined.includes(kw.toLowerCase())) matches++;
-            });
-
-            // More matches = higher score, with diminishing returns
-            score += Math.min(matches * 12, 50);
-
-            // Check negative keywords (penalty)
-            (criterion.negative || []).forEach(kw => {
-                if (combined.includes(kw.toLowerCase())) score -= 15;
-            });
-
-            // Bonus for theme length (specific themes tend to be longer)
-            if (criterion.key === 'S') {
-                if (themeLen > 60) score += 10;
-                if (themeLen > 100) score += 5;
-                if (themeLen < 20) score -= 15;
-                // Bonus for having colons/hyphens (subtitles = more specific)
-                if (theme.includes(':') || theme.includes(' - ')) score += 8;
-            }
-
-            // Bonus for description detail
-            if (criterion.key === 'M' || criterion.key === 'A') {
-                if (descLen > 100) score += 8;
-                if (descLen > 200) score += 7;
-                if (descLen < 30) score -= 10;
-            }
-
-            // Bonus for relevance signals
-            if (criterion.key === 'R') {
-                if (descLen > 80) score += 5;
-                if (wordCount > 30) score += 5;
-            }
-
-            // Temporal: bonus if desc mentions any time-related info
-            if (criterion.key === 'T') {
-                if (descLen > 50) score += 5;
-                // Check for numbers that could be months/years
-                if (/\d{4}/.test(combined)) score += 10;
-                if (/\d+\s*(meses?|semanas?|semestres?)/.test(combined)) score += 12;
-            }
-
-            return Math.max(0, Math.min(100, score));
-        }
-
-        function showResults(scores, overall) {
-            const resultsArea = document.getElementById('resultsArea');
-            resultsArea.classList.remove('hidden');
-
-            // Animate score ring
-            const ring = document.getElementById('scoreRing');
-            const circumference = 2 * Math.PI * 60; // 377
-            const offset = circumference - (overall / 100) * circumference;
-            const color = overall >= 70 ? '#14b8a6' : overall >= 40 ? '#f59e0b' : '#ef4444';
-            ring.style.stroke = color;
-            requestAnimationFrame(() => {
-                ring.style.strokeDashoffset = offset;
-            });
-
-            document.getElementById('scoreValue').textContent = overall + '%';
-            document.getElementById('scoreValue').style.color = color;
-
-            const scoreLabel = document.getElementById('scoreLabel');
-            const scoreDesc = document.getElementById('scoreDesc');
-            if (overall >= 80) {
-                scoreLabel.textContent = 'Excelente! Tema bem definido.';
-                scoreDesc.textContent = 'Seu tema atende a maioria dos critérios SMART. Parabéns pela definição clara!';
-            } else if (overall >= 60) {
-                scoreLabel.textContent = 'Bom, mas pode melhorar.';
-                scoreDesc.textContent = 'Seu tema tem uma boa base, mas alguns critérios precisam de atenção.';
-            } else if (overall >= 40) {
-                scoreLabel.textContent = 'Precisa de ajustes.';
-                scoreDesc.textContent = 'Revise seu tema e descrição para atender melhor aos critérios SMART.';
-            } else {
-                scoreLabel.textContent = 'Tema precisa ser reformulado.';
-                scoreDesc.textContent = 'Considere reescrever o tema com mais especificidade e detalhamento.';
-            }
-
-            // Render criteria cards
-            const grid = document.getElementById('criteriaGrid');
-            grid.innerHTML = '';
-            const colorMap = { teal: ['bg-teal-500', 'bg-teal-50', 'text-teal-700'], blue: ['bg-blue-500', 'bg-blue-50', 'text-blue-700'], violet: ['bg-violet-500', 'bg-violet-50', 'text-violet-700'], amber: ['bg-amber-500', 'bg-amber-50', 'text-amber-700'], rose: ['bg-rose-500', 'bg-rose-50', 'text-rose-700'] };
-
-            SMART.forEach((c, i) => {
-                const s = scores[c.key];
-                const statusColor = s >= 70 ? 'emerald' : s >= 40 ? 'amber' : 'red';
-                const statusText = s >= 70 ? 'Bom' : s >= 40 ? 'Regular' : 'Fraco';
-                const colors = colorMap[c.color];
-                const card = document.createElement('div');
-                card.className = 'smart-card bg-white/70 backdrop-blur-sm rounded-2xl border border-slate-200/80 shadow-sm p-5';
-                card.style.animationDelay = (i * 0.1) + 's';
-                card.innerHTML = `
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-8 h-8 ${colors[0]} text-white rounded-lg flex items-center justify-center text-sm font-bold">${c.key}</span>
-                            <div>
-                                <h4 class="text-sm font-bold">${c.name}</h4>
-                                <p class="text-[11px] text-slate-400">${c.desc}</p>
-                            </div>
-                        </div>
-                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-${statusColor}-100 text-${statusColor}-700">${statusText}</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full rounded-full bg-${statusColor}-500 transition-all duration-1000" style="width: ${s}%"></div>
-                        </div>
-                        <span class="text-sm font-bold text-slate-700">${s}%</span>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-
-            // Suggestions for weak criteria
-            const weakCriteria = SMART.filter(c => scores[c.key] < 70);
-            const suggestionsArea = document.getElementById('suggestionsArea');
-            const suggestionsList = document.getElementById('suggestionsList');
-
-            if (weakCriteria.length > 0) {
-                suggestionsArea.classList.remove('hidden');
-                suggestionsList.innerHTML = '';
-                weakCriteria.forEach(c => {
-                    c.tips.forEach(tip => {
-                        const li = document.createElement('li');
-                        li.className = 'flex items-start gap-3 text-sm text-slate-700';
-                        li.innerHTML = `
-                            <span class="flex-shrink-0 w-6 h-6 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5">${c.key}</span>
-                            <span>${tip}</span>
-                        `;
-                        suggestionsList.appendChild(li);
-                    });
-                });
-            } else {
-                suggestionsArea.classList.add('hidden');
-            }
-
-            // Scroll to results
-            resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    </script>
-    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
-</body>
-</html>
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(SmartPage));
+</script>
+</body></html>
