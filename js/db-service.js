@@ -519,27 +519,33 @@ const DB = {
 
         async getProjectOrientador(projectId) {
             try {
-                // Get orientador_projects with user data
-                let { data, error } = await _supa
+                const { data, error } = await _supa
                     .from('orientador_projects')
-                    .select('*, users:orientador_id(id, name, email, photo_url)')
+                    .select('id, project_id, orientador_id, status, invite_code')
                     .eq('project_id', projectId)
                     .eq('status', 'accepted')
                     .not('orientador_id', 'is', null)
                     .maybeSingle();
 
                 if (error || !data) {
-                    // Try without photo_url
-                    ({ data, error } = await _supa
-                        .from('orientador_projects')
-                        .select('*, users:orientador_id(id, name, email)')
-                        .eq('project_id', projectId)
-                        .eq('status', 'accepted')
-                        .not('orientador_id', 'is', null)
-                        .maybeSingle());
+                    return null;
                 }
 
-                if (!data || !data.orientador_id) return null;
+                // Tenta pegar dados do usuário na tabela users (se existir)
+                const { data: userFromTable } = await _supa
+                    .from('users')
+                    .select('id, email, name, photo_url')
+                    .eq('id', data.orientador_id)
+                    .maybeSingle();
+
+                if (userFromTable) {
+                    return {
+                        ...data,
+                        users: userFromTable
+                    };
+                }
+
+                // Se não encontrou na tabela users, retorna só com orientador_id
                 return data;
             } catch(e) {
                 console.error('getProjectOrientador error:', e);
