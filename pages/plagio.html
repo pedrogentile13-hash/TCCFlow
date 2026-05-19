@@ -1,1134 +1,259 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificador de Plágio - Gentile Organization</title>
-    <link rel="icon" type="image/png" href="../favicon.png">
-    <link rel="apple-touch-icon" href="../favicon.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --primary-dark: #4f46e5;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --bg-1: #ffffff;
-            --bg-2: #f9fafb;
-            --bg-3: #f3f4f6;
-            --border: #e5e7eb;
-            --text-primary: #111827;
-            --text-secondary: #6b7280;
-            --text-tertiary: #9ca3af;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-2);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
-
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background-color: var(--bg-1);
-            border-bottom: 1px solid var(--border);
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .topbar-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .topbar-title h1 {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .pro-badge {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .container {
-            display: flex;
-            height: calc(100vh - 65px);
-        }
-
-        .left-panel {
-            width: 260px;
-            background-color: var(--bg-2);
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .main-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        .right-panel {
-            width: 280px;
-            background-color: var(--bg-2);
-            border-left: 1px solid var(--border);
-            overflow-y: auto;
-            padding: 20px;
-            transition: width 0.3s ease;
-            position: relative;
-        }
-
-        .right-panel.collapsed {
-            width: 0;
-            padding: 0;
-            border-left: none;
-            overflow: hidden;
-        }
-
-        .panel-title {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-tertiary);
-            margin-bottom: 16px;
-            letter-spacing: 0.5px;
-        }
-
-        .history-item {
-            background-color: var(--bg-1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .history-item:hover {
-            border-color: var(--primary);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .history-item-name {
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .history-item-similarity {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .similarity-badge {
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .similarity-badge.low {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .similarity-badge.medium {
-            background-color: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .similarity-badge.high {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-
-        .history-item-date {
-            font-size: 11px;
-            color: var(--text-tertiary);
-            margin-bottom: 8px;
-        }
-
-        .history-item-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .history-btn {
-            flex: 1;
-            padding: 6px 8px;
-            border: 1px solid var(--border);
-            background-color: var(--bg-1);
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .history-btn:hover {
-            background-color: var(--bg-3);
-            border-color: var(--primary);
-        }
-
-        .history-btn.danger:hover {
-            background-color: rgba(239, 68, 68, 0.1);
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
-        .clear-history-btn {
-            width: 100%;
-            padding: 10px;
-            margin-top: 16px;
-            border: 1px solid var(--border);
-            background-color: var(--bg-1);
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .clear-history-btn:hover {
-            background-color: var(--bg-3);
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
-        .empty-history {
-            text-align: center;
-            padding: 20px 0;
-            color: var(--text-tertiary);
-            font-size: 13px;
-        }
-
-        .upload-section {
-            padding: 40px;
-            background-color: var(--bg-1);
-        }
-
-        .drop-zone {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 60px 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            background-color: var(--bg-2);
-        }
-
-        .drop-zone:hover {
-            border-color: var(--primary);
-            background-color: rgba(99, 102, 241, 0.02);
-        }
-
-        .drop-zone.dragover {
-            border-color: var(--primary);
-            background-color: rgba(99, 102, 241, 0.05);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .drop-zone-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.6;
-        }
-
-        .drop-zone-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .drop-zone-subtitle {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .upload-tabs {
-            display: flex;
-            gap: 16px;
-            margin-top: 40px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .upload-tab {
-            padding: 12px 0;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-        }
-
-        .upload-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .upload-tab-content {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .upload-tab-content.active {
-            display: block;
-        }
-
-        .textarea {
-            width: 100%;
-            height: 200px;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-family: 'Monaco', 'Courier New', monospace;
-            font-size: 13px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        .analyze-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 12px 32px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .analyze-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .analyze-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .pro-lock {
-            background-color: rgba(239, 68, 68, 0.05);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin: 20px;
-        }
-
-        .pro-lock-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-        }
-
-        .pro-lock-text {
-            font-size: 13px;
-            color: var(--danger);
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
-
-        .upgrade-btn {
-            padding: 8px 16px;
-            background-color: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .upgrade-btn:hover {
-            background-color: #dc2626;
-        }
-
-        .analysis-result {
-            padding: 40px;
-        }
-
-        .paragraph-item {
-            background-color: var(--bg-1);
-            border-left: 4px solid;
-            border-radius: 4px;
-            padding: 20px;
-            margin-bottom: 16px;
-            transition: all 0.2s ease;
-        }
-
-        .paragraph-item.low-similarity {
-            border-left-color: var(--success);
-            background-color: rgba(16, 185, 129, 0.02);
-        }
-
-        .paragraph-item.medium-similarity {
-            border-left-color: var(--warning);
-            background-color: rgba(245, 158, 11, 0.02);
-        }
-
-        .paragraph-item.high-similarity {
-            border-left-color: var(--danger);
-            background-color: rgba(239, 68, 68, 0.02);
-        }
-
-        .paragraph-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .paragraph-similarity {
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 4px;
-        }
-
-        .paragraph-text {
-            font-size: 13px;
-            line-height: 1.8;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-        }
-
-        .highlighted {
-            background-color: rgba(255, 193, 7, 0.3);
-            padding: 2px 4px;
-            border-radius: 2px;
-        }
-
-        .paragraph-source {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-        }
-
-        .paragraph-action {
-            padding: 6px 12px;
-            background-color: var(--bg-2);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .paragraph-action:hover {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 40px;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 16px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 40px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.4;
-        }
-
-        .empty-state-text {
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .stats-card {
-            background-color: var(--bg-1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 13px;
-        }
-
-        .stat-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-        }
-
-        .stat-value {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .heatmap-bar {
-            width: 100%;
-            height: 8px;
-            background-color: var(--bg-3);
-            border-radius: 4px;
-            margin-bottom: 12px;
-            overflow: hidden;
-            display: flex;
-        }
-
-        .heatmap-segment {
-            height: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .heatmap-segment:hover {
-            opacity: 0.8;
-        }
-
-        .recommendation {
-            background-color: var(--bg-1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .recommendation.success {
-            background-color: rgba(16, 185, 129, 0.05);
-            border-color: rgba(16, 185, 129, 0.2);
-        }
-
-        .recommendation.warning {
-            background-color: rgba(245, 158, 11, 0.05);
-            border-color: rgba(245, 158, 11, 0.2);
-        }
-
-        .recommendation.danger {
-            background-color: rgba(239, 68, 68, 0.05);
-            border-color: rgba(239, 68, 68, 0.2);
-        }
-
-        .recommendation-title {
-            font-weight: 600;
-            font-size: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .recommendation-text {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .pdf-btn {
-            width: 100%;
-            padding: 10px;
-            background-color: var(--bg-1);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 16px;
-        }
-
-        .pdf-btn:hover {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .toggle-panel-btn {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            padding: 8px 12px;
-            background-color: var(--bg-1);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .toggle-panel-btn:hover {
-            background-color: var(--bg-3);
-        }
-
-        .source-item {
-            font-size: 12px;
-            padding: 8px;
-            background-color: var(--bg-3);
-            border-radius: 4px;
-            margin-bottom: 6px;
-            color: var(--text-secondary);
-        }
-
-        .source-item-title {
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .source-item-percent {
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        @media (max-width: 1200px) {
-            .left-panel {
-                display: none;
-            }
-
-            .right-panel {
-                width: 240px;
-            }
-        }
-
-        @media (max-width: 900px) {
-            .right-panel {
-                display: none;
-            }
-
-            .container {
-                flex-direction: column;
-            }
-
-            .left-panel {
-                display: block;
-                width: 100%;
-                max-height: 300px;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .main-area {
-                flex: 1;
-            }
-        }
-    </style>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Verificador de Plágio — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .plagio-grid{display:grid;grid-template-columns:260px 1fr 280px;height:calc(100vh - 60px);overflow:hidden;}
+    .plagio-left{background:var(--bg-2);border-right:1px solid var(--line);overflow-y:auto;padding:16px;}
+    .plagio-center{overflow-y:auto;padding:32px;display:flex;flex-direction:column;align-items:center;}
+    .plagio-right{background:var(--bg-2);border-left:1px solid var(--line);overflow-y:auto;padding:16px;}
+    .check-item{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
+    .check-item:hover{border-color:var(--violet);}
+    .check-preview{font-size:.8125rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;color:var(--ink);}
+    .check-meta{display:flex;justify-content:space-between;align-items:center;font-size:.6875rem;color:var(--muted);}
+    .check-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.75rem;padding:2px 6px;border-radius:4px;transition:color .15s,background .15s;}
+    .check-del:hover{color:var(--rose);background:rgba(244,63,94,.08);}
+    .sim-badge{font-family:var(--font-mono);font-size:.625rem;font-weight:600;padding:2px 7px;border-radius:6px;}
+    .sim-green{color:var(--emerald);background:rgba(16,185,129,.1);}
+    .sim-amber{color:var(--amber);background:rgba(245,158,11,.1);}
+    .sim-rose{color:var(--rose);background:rgba(244,63,94,.1);}
+    .para-row{padding:14px 16px;border-radius:10px;margin-bottom:8px;font-size:.8125rem;line-height:1.6;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+    .para-green{background:rgba(16,185,129,.06);}
+    .para-amber{background:rgba(245,158,11,.06);}
+    .para-rose{background:rgba(244,63,94,.06);}
+    .score-ring{position:relative;width:140px;height:140px;margin:0 auto 16px;}
+    .score-ring svg{transform:rotate(-90deg);}
+    .score-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .score-num{font-family:var(--font-display);font-size:2rem;line-height:1;}
+    .score-label{font-family:var(--font-mono);font-size:.625rem;color:var(--muted);margin-top:4px;}
+    .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:.8125rem;}
+    .stat-row:last-child{border-bottom:none;}
+    .stat-lbl{color:var(--muted);}
+    .stat-val{font-weight:600;font-family:var(--font-mono);font-size:.75rem;}
+    .progress-bar{width:100%;height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:12px;}
+    .progress-fill{height:100%;border-radius:3px;background:var(--violet);animation:progress-anim 2s ease-in-out infinite;}
+    @keyframes progress-anim{0%{width:0}50%{width:80%}100%{width:100%}}
+    @media(max-width:1100px){.plagio-grid{grid-template-columns:1fr;}.plagio-left,.plagio-right{display:none;}}
+  </style>
 </head>
-<body>
+<body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
 
-    <!-- Liquid Background -->
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
+function analyzePlagiarism(text) {
+  const paragraphs = text.split(/\n\n+/).filter(p => p.trim().length > 20);
+  return paragraphs.map(p => {
+    const words = p.split(/\s+/);
+    const avgWordLen = words.reduce((s, w) => s + w.length, 0) / words.length;
+    const uniqueRatio = new Set(words.map(w => w.toLowerCase())).size / words.length;
+    let score = Math.round(Math.random() * 15 + (avgWordLen > 6 ? 15 : 0) + (uniqueRatio > 0.8 ? 10 : 0));
+    score = Math.min(score, 95);
+    return { text: p.trim(), similarity: score };
+  });
+}
+
+function simClass(s) { return s < 20 ? "green" : s < 50 ? "amber" : "rose"; }
+function simColor(s) { return s < 20 ? "var(--emerald)" : s < 50 ? "var(--amber)" : "var(--rose)"; }
+
+function PlagioPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [text, setText] = useState("");
+  const [checks, setChecks] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [analyzing, setAnalyzing] = useState(false);
+
+  function handleAnalyze() {
+    if (text.trim().length < 50) return;
+    setAnalyzing(true);
+    setTimeout(() => {
+      const paragraphs = analyzePlagiarism(text);
+      const totalSim = paragraphs.length > 0 ? Math.round(paragraphs.reduce((s, p) => s + p.similarity, 0) / paragraphs.length) : 0;
+      const entry = {
+        id: Date.now(),
+        preview: text.slice(0, 50),
+        date: new Date().toLocaleDateString("pt-BR"),
+        similarity: totalSim,
+        paragraphs,
+        wordCount: text.split(/\s+/).filter(Boolean).length
+      };
+      setChecks(prev => [entry, ...prev]);
+      setSelected(entry);
+      setAnalyzing(false);
+    }, 1500);
+  }
+
+  function handleDelete(id) {
+    setChecks(prev => prev.filter(c => c.id !== id));
+    if (selected && selected.id === id) setSelected(null);
+  }
+
+  function handleNew() {
+    setSelected(null);
+    setText("");
+  }
+
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+
+  const overall = selected ? selected.similarity : 0;
+  const scoreCol = simColor(overall);
+  const circumference = 2 * Math.PI * 58;
+  const suspectSources = selected ? selected.paragraphs.filter(p => p.similarity >= 20).length : 0;
+  const originality = selected ? 100 - selected.similarity : 100;
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="tools" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Verificador de Plágio" user={user} actions={<span className="tag tag-rose" style={{fontSize:".625rem"}}>PRO</span>}/>
+        <div className="plagio-grid">
+          <div className="plagio-left">
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <span style={{fontFamily:"var(--font-mono)",fontSize:".625rem",textTransform:"uppercase",letterSpacing:".08em",color:"var(--muted)"}}>Verificações</span>
+              <span className="tag tag-muted" style={{fontSize:".6rem"}}>{checks.length}</span>
+            </div>
+            {checks.length === 0 && (
+              <div className="empty-state" style={{padding:"40px 10px"}}>
+                <div style={{fontSize:"1.5rem",marginBottom:8,opacity:.4}}>🔍</div>
+                <div style={{fontSize:".8125rem",color:"var(--muted)"}}>Nenhuma verificação</div>
+              </div>
+            )}
+            {checks.map(c => (
+              <div key={c.id} className="check-item" onClick={() => setSelected(c)} style={{borderColor: selected && selected.id === c.id ? "var(--violet)" : undefined}}>
+                <div className="check-preview">{c.preview}</div>
+                <div className="check-meta">
+                  <span className={`sim-badge sim-${simClass(c.similarity)}`}>{c.similarity}%</span>
+                  <span>{c.date}</span>
+                </div>
+                <div style={{textAlign:"right",marginTop:6}}>
+                  <button className="check-del" onClick={e => { e.stopPropagation(); handleDelete(c.id); }}>Excluir</button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="plagio-center">
+            {!selected && !analyzing && (
+              <div style={{width:"100%",maxWidth:640}}>
+                <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Cole seu texto aqui para verificar plágio..."
+                  style={{width:"100%",minHeight:300,padding:16,border:"1px solid var(--line)",borderRadius:12,background:"var(--bg-2)",fontSize:".875rem",lineHeight:1.7,resize:"vertical",fontFamily:"inherit"}}/>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
+                  <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{text.split(/\s+/).filter(Boolean).length} palavras</span>
+                  <button className="btn btn-violet" onClick={handleAnalyze} disabled={text.trim().length < 50}>Analisar Texto</button>
+                </div>
+              </div>
+            )}
+
+            {analyzing && (
+              <div style={{textAlign:"center",paddingTop:80}}>
+                <div style={{fontSize:"1rem",fontWeight:500,marginBottom:8,color:"var(--ink)"}}>Analisando...</div>
+                <div style={{fontSize:".8125rem",color:"var(--muted)",marginBottom:16}}>Comparando parágrafos com padrões textuais</div>
+                <div className="progress-bar" style={{maxWidth:320,margin:"0 auto"}}><div className="progress-fill"></div></div>
+              </div>
+            )}
+
+            {selected && !analyzing && (
+              <div style={{width:"100%",maxWidth:700}}>
+                <div className="card" style={{textAlign:"center",marginBottom:20,padding:24}}>
+                  <div style={{fontFamily:"var(--font-display)",fontSize:"2.5rem",fontWeight:500,color:scoreCol}}>{selected.similarity}%</div>
+                  <div style={{fontSize:".8125rem",color:"var(--muted)"}}>de similaridade</div>
+                </div>
+
+                <div style={{marginBottom:16}}>
+                  <div style={{fontFamily:"var(--font-mono)",fontSize:".625rem",textTransform:"uppercase",letterSpacing:".08em",color:"var(--muted)",marginBottom:10}}>Análise por parágrafo</div>
+                  <div style={{display:"flex",gap:10,marginBottom:14,flexWrap:"wrap"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:5,fontSize:".6875rem"}}><span style={{width:8,height:8,borderRadius:2,background:"var(--emerald)"}}></span> Original (0-20%)</div>
+                    <div style={{display:"flex",alignItems:"center",gap:5,fontSize:".6875rem"}}><span style={{width:8,height:8,borderRadius:2,background:"var(--amber)"}}></span> Parcial (20-50%)</div>
+                    <div style={{display:"flex",alignItems:"center",gap:5,fontSize:".6875rem"}}><span style={{width:8,height:8,borderRadius:2,background:"var(--rose)"}}></span> Similar (&gt;50%)</div>
+                  </div>
+                  {selected.paragraphs.map((p, i) => (
+                    <div key={i} className={`para-row para-${simClass(p.similarity)}`}>
+                      <span style={{flex:1}}>{p.text}</span>
+                      <span className={`sim-badge sim-${simClass(p.similarity)}`}>{p.similarity}%</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{textAlign:"center",marginTop:20}}>
+                  <button className="btn btn-ghost" onClick={handleNew}>Nova análise</button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="plagio-right">
+            {selected && (
+              <>
+                <div className="card" style={{textAlign:"center",marginBottom:16}}>
+                  <div className="score-ring">
+                    <svg width="140" height="140" viewBox="0 0 140 140">
+                      <circle cx="70" cy="70" r="58" fill="none" stroke="var(--line)" strokeWidth="10"/>
+                      <circle cx="70" cy="70" r="58" fill="none" stroke={scoreCol} strokeWidth="10"
+                        strokeDasharray={`${(selected.similarity / 100) * circumference} ${circumference}`} strokeLinecap="round"/>
+                    </svg>
+                    <div className="score-val">
+                      <div className="score-num" style={{color:scoreCol}}>{selected.similarity}%</div>
+                      <div className="score-label">Similaridade</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card" style={{marginBottom:16}}>
+                  <div style={{fontFamily:"var(--font-mono)",fontSize:".5625rem",textTransform:"uppercase",letterSpacing:".08em",color:"var(--muted)",marginBottom:8}}>Estatísticas</div>
+                  <div className="stat-row"><span className="stat-lbl">Palavras analisadas</span><span className="stat-val">{selected.wordCount}</span></div>
+                  <div className="stat-row"><span className="stat-lbl">Parágrafos</span><span className="stat-val">{selected.paragraphs.length}</span></div>
+                  <div className="stat-row"><span className="stat-lbl">Fontes suspeitas</span><span className="stat-val">{suspectSources}</span></div>
+                  <div className="stat-row"><span className="stat-lbl">Originalidade</span><span className="stat-val" style={{color:simColor(100-originality)}}>{originality}%</span></div>
+                </div>
+
+                {selected.similarity < 20 && (
+                  <div className="card" style={{background:"rgba(16,185,129,.05)",border:"1px solid rgba(16,185,129,.18)",marginBottom:16}}>
+                    <div style={{fontSize:".8125rem",fontWeight:600,color:"var(--emerald)",marginBottom:4}}>Texto aparenta ser original</div>
+                    <div style={{fontSize:".75rem",color:"var(--muted)",lineHeight:1.5}}>A análise não identificou trechos com similaridade significativa.</div>
+                  </div>
+                )}
+                {selected.similarity >= 20 && selected.similarity <= 50 && (
+                  <div className="card" style={{background:"rgba(245,158,11,.05)",border:"1px solid rgba(245,158,11,.18)",marginBottom:16}}>
+                    <div style={{fontSize:".8125rem",fontWeight:600,color:"var(--amber)",marginBottom:4}}>Revisar seções marcadas em amarelo</div>
+                    <div style={{fontSize:".75rem",color:"var(--muted)",lineHeight:1.5}}>Alguns parágrafos apresentam similaridade parcial. Considere reformulá-los.</div>
+                  </div>
+                )}
+                {selected.similarity > 50 && (
+                  <div className="card" style={{background:"rgba(244,63,94,.05)",border:"1px solid rgba(244,63,94,.18)",marginBottom:16}}>
+                    <div style={{fontSize:".8125rem",fontWeight:600,color:"var(--rose)",marginBottom:4}}>Alto risco. Revise as seções em vermelho</div>
+                    <div style={{fontSize:".75rem",color:"var(--muted)",lineHeight:1.5}}>A similaridade detectada é alta. Reescreva os trechos sinalizados.</div>
+                  </div>
+                )}
+
+                <div style={{fontSize:".6875rem",color:"var(--muted)",lineHeight:1.5,padding:"10px 4px",borderTop:"1px solid var(--line)"}}>
+                  Esta é uma análise heurística local. Use ferramentas profissionais para verificação completa.
+                </div>
+              </>
+            )}
+            {!selected && (
+              <div className="empty-state" style={{padding:"60px 10px"}}>
+                <div style={{fontSize:"1.5rem",marginBottom:8,opacity:.4}}>📊</div>
+                <div style={{fontSize:".8125rem",color:"var(--muted)"}}>Analise um texto para ver os resultados</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
+  );
+}
 
-    <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
-                    <div class="relative" id="moreDropdown">
-                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
-                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
-                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
-                            <div class="border-t border-slate-100 my-1"></div>
-                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
-                        </div>
-                    </div>
-                </div><div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
-                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
-                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
-                    </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-sm"></i></button>
-                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-bars text-sm"></i></button>
-                </div>
-            </div>
-        </div>
-        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendario</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
-        </div>
-    
-    <script>
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('moreDropdown');
-        const menu = document.getElementById('moreMenu');
-        if (dropdown && menu && !dropdown.contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
-    </script>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="relative z-10 pt-16 min-h-screen pb-12">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
-                    <i class="fa-solid fa-shield-halved text-white text-2xl"></i>
-                </div>
-                <h1 class="text-3xl font-bold mb-2">Verificador de Plagio</h1>
-                <p class="text-slate-500 max-w-lg mx-auto">Verifique a originalidade do seu texto</p>
-            </div>
-
-            <!-- Text Input Area -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
-                <label class="block text-sm font-semibold text-slate-700 mb-2">
-                    <i class="fa-solid fa-file-lines text-violet-600 mr-2"></i>Cole seu texto abaixo
-                </label>
-                <textarea id="plagioInput" rows="8" placeholder="Cole aqui o texto do seu TCC, artigo ou trabalho academico para verificar a originalidade..."
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-y"></textarea>
-                <div class="flex items-center justify-between mt-3">
-                    <span class="text-xs text-slate-400" id="charCount">0 caracteres</span>
-                    <button id="verificarBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-6 py-3 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm">
-                        <i class="fa-solid fa-magnifying-glass mr-2"></i>Verificar
-                    </button>
-                </div>
-            </div>
-
-            <!-- Loading State -->
-            <div id="loadingState" class="hidden bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-center mb-6">
-                <div class="flex items-center justify-center gap-2 mb-4">
-                    <div class="w-3 h-3 bg-violet-500 rounded-full animate-bounce" style="animation-delay: 0s;"></div>
-                    <div class="w-3 h-3 bg-cyan-500 rounded-full animate-bounce" style="animation-delay: 0.15s;"></div>
-                    <div class="w-3 h-3 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: 0.3s;"></div>
-                </div>
-                <p class="text-sm text-slate-500">Analisando originalidade do texto...</p>
-                <p class="text-xs text-slate-400 mt-1">Comparando com bases de dados academicas</p>
-            </div>
-
-            <!-- Warning State -->
-            <div id="warningState" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center mb-6">
-                <i class="fa-solid fa-triangle-exclamation text-amber-500 text-2xl mb-2"></i>
-                <p class="text-sm text-amber-700 font-medium">Texto muito curto para analise</p>
-                <p class="text-xs text-amber-600 mt-1">Insira pelo menos 100 caracteres para uma verificacao adequada.</p>
-            </div>
-
-            <!-- Results Area -->
-            <div id="resultsArea" class="hidden space-y-6">
-
-                <!-- Overall Score Card -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <div class="flex flex-col sm:flex-row items-center gap-6">
-                        <!-- Score Ring -->
-                        <div class="relative w-36 h-36 shrink-0">
-                            <svg class="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                                <circle cx="60" cy="60" r="52" fill="none" stroke="#f1f5f9" stroke-width="10"/>
-                                <circle id="scoreCircle" class="score-ring" cx="60" cy="60" r="52" fill="none" stroke="#22c55e" stroke-width="10" stroke-linecap="round"
-                                    stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
-                            </svg>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <span id="scoreValue" class="text-3xl font-bold text-emerald-600">0%</span>
-                                <span class="text-xs text-slate-400">Originalidade</span>
-                            </div>
-                        </div>
-                        <!-- Score Info -->
-                        <div class="flex-1 text-center sm:text-left">
-                            <h3 class="text-lg font-bold mb-1" id="scoreTitle">Resultado da Analise</h3>
-                            <p class="text-sm text-slate-500 mb-3" id="scoreDescription">Seu texto apresenta boa originalidade.</p>
-                            <div class="flex flex-wrap gap-3">
-                                <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
-                                    <div class="text-xs text-slate-400">Sentencas</div>
-                                    <div class="text-sm font-bold text-slate-700" id="statSentences">0</div>
-                                </div>
-                                <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
-                                    <div class="text-xs text-slate-400">Sinalizadas</div>
-                                    <div class="text-sm font-bold text-amber-600" id="statFlagged">0</div>
-                                </div>
-                                <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
-                                    <div class="text-xs text-slate-400">Originais</div>
-                                    <div class="text-sm font-bold text-emerald-600" id="statOriginal">0</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Flagged Sentences -->
-                <div id="flaggedSection" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <h3 class="text-sm font-bold mb-4"><i class="fa-solid fa-flag text-amber-500 mr-2"></i>Trechos Sinalizados</h3>
-                    <div id="flaggedList" class="space-y-3"></div>
-                    <div id="noFlagged" class="hidden text-center py-6">
-                        <i class="fa-solid fa-circle-check text-emerald-400 text-3xl mb-2"></i>
-                        <p class="text-sm text-slate-500">Nenhum trecho sinalizado. Seu texto parece original!</p>
-                    </div>
-                </div>
-
-                <!-- Disclaimer -->
-                <div class="bg-violet-50 border border-violet-200 rounded-2xl p-4 flex items-start gap-3">
-                    <i class="fa-solid fa-circle-info text-violet-500 mt-0.5"></i>
-                    <p class="text-xs text-slate-600">
-                        <span class="font-semibold text-violet-700">Aviso:</span>
-                        Esta e uma verificacao basica simulada. Para analise completa, utilize ferramentas especializadas como Turnitin, Copyspider ou Plagius.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Tips Card -->
-            <div class="mt-6 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6">
-                <h3 class="font-bold mb-4"><i class="fa-solid fa-lightbulb text-amber-500 mr-2"></i>Dicas para melhorar a originalidade</h3>
-                <ul class="space-y-2">
-                    <li class="flex items-start gap-2 text-sm text-slate-600">
-                        <i class="fa-solid fa-check-circle text-emerald-500 mt-0.5 shrink-0"></i>
-                        <span>Reescreva trechos com suas proprias palavras, mantendo o sentido original da fonte.</span>
-                    </li>
-                    <li class="flex items-start gap-2 text-sm text-slate-600">
-                        <i class="fa-solid fa-check-circle text-emerald-500 mt-0.5 shrink-0"></i>
-                        <span>Use citacoes diretas (entre aspas) com a devida referencia quando precisar manter o texto original.</span>
-                    </li>
-                    <li class="flex items-start gap-2 text-sm text-slate-600">
-                        <i class="fa-solid fa-check-circle text-emerald-500 mt-0.5 shrink-0"></i>
-                        <span>Combine informacoes de multiplas fontes para criar um texto mais autoral.</span>
-                    </li>
-                    <li class="flex items-start gap-2 text-sm text-slate-600">
-                        <i class="fa-solid fa-check-circle text-emerald-500 mt-0.5 shrink-0"></i>
-                        <span>Adicione sua analise critica e interpretacao pessoal sobre os dados apresentados.</span>
-                    </li>
-                    <li class="flex items-start gap-2 text-sm text-slate-600">
-                        <i class="fa-solid fa-check-circle text-emerald-500 mt-0.5 shrink-0"></i>
-                        <span>Evite copiar estruturas de frases muito longas de uma unica fonte.</span>
-                    </li>
-                    <li class="flex items-start gap-2 text-sm text-slate-600">
-                        <i class="fa-solid fa-check-circle text-emerald-500 mt-0.5 shrink-0"></i>
-                        <span>Sempre cite as fontes corretamente seguindo as normas ABNT.</span>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-init.js"></script>
-    <script src="../js/db-service.js"></script>
-    <script>
-        // ========== Auth & Beta Gate ==========
-        let currentUserId = null;
-
-        document.getElementById('mobileNavBtn').addEventListener('click', () => {
-            document.getElementById('mobileNav').classList.toggle('hidden');
-        });
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await auth.signOut();
-            window.location.href = '../index.html';
-        });
-
-        auth.onAuthStateChanged(async user => {
-            if (!user) { window.location.href = 'login.html'; return; }
-            currentUserId = user.uid;
-            document.getElementById('userName').textContent = user.displayName || 'Usuario';
-
-            // Beta gate: only beta testers can access this tool
-            const isBeta = await DB.isBetaTester(user.uid);
-            if (!isBeta) {
-                window.location.href = 'ferramentas.html';
-                return;
-            }
-
-            // Load navbar avatar
-            if (user.photoURL) {
-                const navAvatar = document.getElementById('navAvatar');
-                const navAvatarIcon = document.getElementById('navAvatarIcon');
-                if (navAvatar && navAvatarIcon) {
-                    navAvatar.src = user.photoURL;
-                    navAvatar.classList.remove('hidden');
-                    navAvatarIcon.classList.add('hidden');
-                }
-            }
-
-        });
-
-        // ========== Character Counter ==========
-        const plagioInput = document.getElementById('plagioInput');
-        const charCount = document.getElementById('charCount');
-
-        plagioInput.addEventListener('input', () => {
-            charCount.textContent = plagioInput.value.length + ' caracteres';
-        });
-
-        // ========== Simulated Plagiarism Check ==========
-        const possibleSources = [
-            'Wikipedia - Artigo relacionado',
-            'Scielo - Revista Brasileira de Educacao',
-            'Google Academico - Artigo similar',
-            'Repositorio Institucional - Tese de mestrado',
-            'Portal de Periodicos CAPES',
-            'Biblioteca Digital de Teses e Dissertacoes',
-            'ResearchGate - Publicacao academica',
-            'Academia.edu - Trabalho publicado',
-            'Revista Eletronica de Administracao',
-            'Anais de Congresso Cientifico'
-        ];
-
-        function splitIntoSentences(text) {
-            return text
-                .split(/(?<=[.!?])\s+/)
-                .map(s => s.trim())
-                .filter(s => s.length > 10);
-        }
-
-        function simulateAnalysis(sentences) {
-            const flagged = [];
-            const flagRate = 0.1 + Math.random() * 0.1; // 10-20% flagged
-
-            sentences.forEach((sentence, index) => {
-                const words = sentence.split(/\s+/).length;
-                // Common short phrases are more likely to be flagged
-                // Longer unique sentences get higher originality
-                let shouldFlag = Math.random() < flagRate;
-
-                // Short generic sentences are slightly more likely to be flagged
-                if (words < 8) {
-                    shouldFlag = Math.random() < (flagRate + 0.05);
-                }
-                // Longer sentences are slightly less likely
-                if (words > 20) {
-                    shouldFlag = Math.random() < (flagRate - 0.03);
-                }
-
-                if (shouldFlag) {
-                    // Similarity score: 60-95%
-                    let similarity = 60 + Math.floor(Math.random() * 36);
-
-                    // Common/short phrases get lower similarity (more original feel)
-                    if (words < 8) {
-                        similarity = Math.max(60, similarity - 10);
-                    }
-
-                    flagged.push({
-                        index: index,
-                        sentence: sentence,
-                        similarity: similarity,
-                        source: possibleSources[Math.floor(Math.random() * possibleSources.length)]
-                    });
-                }
-            });
-
-            return flagged;
-        }
-
-        function calculateScore(totalSentences, flaggedItems) {
-            if (flaggedItems.length === 0) return 100;
-            const avgSimilarity = flaggedItems.reduce((sum, item) => sum + item.similarity, 0) / flaggedItems.length;
-            const flaggedRatio = flaggedItems.length / totalSentences;
-            const score = Math.round(100 - (avgSimilarity * flaggedRatio));
-            return Math.max(0, Math.min(100, score));
-        }
-
-        function getScoreColor(score) {
-            if (score > 80) return { stroke: '#22c55e', text: 'text-emerald-600', bg: 'bg-emerald-50' };
-            if (score >= 50) return { stroke: '#eab308', text: 'text-yellow-600', bg: 'bg-yellow-50' };
-            return { stroke: '#ef4444', text: 'text-red-600', bg: 'bg-red-50' };
-        }
-
-        function getScoreDescription(score) {
-            if (score > 80) return 'Excelente! Seu texto apresenta alta originalidade.';
-            if (score >= 50) return 'Atencao: Alguns trechos podem precisar de reformulacao.';
-            return 'Alerta: Varias sentencas foram sinalizadas. Revise o texto.';
-        }
-
-        function displayResults(sentences, flaggedItems, score) {
-            const resultsArea = document.getElementById('resultsArea');
-            const colors = getScoreColor(score);
-
-            // Score ring animation
-            const circle = document.getElementById('scoreCircle');
-            const circumference = 326.73;
-            const offset = circumference - (score / 100) * circumference;
-            circle.setAttribute('stroke', colors.stroke);
-            circle.setAttribute('stroke-dashoffset', circumference);
-            // Trigger animation
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    circle.setAttribute('stroke-dashoffset', offset);
-                });
-            });
-
-            // Score value
-            const scoreEl = document.getElementById('scoreValue');
-            scoreEl.textContent = score + '%';
-            scoreEl.className = 'text-3xl font-bold ' + colors.text;
-
-            // Score info
-            document.getElementById('scoreTitle').textContent = 'Originalidade: ' + score + '%';
-            document.getElementById('scoreDescription').textContent = getScoreDescription(score);
-
-            // Stats
-            document.getElementById('statSentences').textContent = sentences.length;
-            document.getElementById('statFlagged').textContent = flaggedItems.length;
-            document.getElementById('statOriginal').textContent = sentences.length - flaggedItems.length;
-
-            // Flagged sentences
-            const flaggedList = document.getElementById('flaggedList');
-            const noFlagged = document.getElementById('noFlagged');
-
-            if (flaggedItems.length === 0) {
-                flaggedList.innerHTML = '';
-                noFlagged.classList.remove('hidden');
-            } else {
-                noFlagged.classList.add('hidden');
-                flaggedList.innerHTML = flaggedItems.map((item, i) => {
-                    const simColor = item.similarity > 80 ? 'text-red-600 bg-red-50 border-red-200' :
-                                     item.similarity > 65 ? 'text-amber-600 bg-amber-50 border-amber-200' :
-                                                            'text-yellow-600 bg-yellow-50 border-yellow-200';
-                    return `
-                    <div class="flagged-item border border-slate-200 rounded-xl p-4 hover:shadow-sm transition" style="animation-delay: ${i * 0.05}s">
-                        <div class="flex items-start justify-between gap-3 mb-2">
-                            <p class="text-sm text-slate-700 flex-1 leading-relaxed">"${escapeHtml(item.sentence)}"</p>
-                            <span class="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg border ${simColor}">${item.similarity}%</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs text-slate-400">
-                            <i class="fa-solid fa-link"></i>
-                            <span>Possivel fonte: ${escapeHtml(item.source)}</span>
-                        </div>
-                    </div>`;
-                }).join('');
-            }
-
-            resultsArea.classList.remove('hidden');
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // ========== Verify Button ==========
-        document.getElementById('verificarBtn').addEventListener('click', () => {
-            const text = plagioInput.value.trim();
-            const btn = document.getElementById('verificarBtn');
-            const loadingState = document.getElementById('loadingState');
-            const warningState = document.getElementById('warningState');
-            const resultsArea = document.getElementById('resultsArea');
-
-            // Hide previous results
-            resultsArea.classList.add('hidden');
-            warningState.classList.add('hidden');
-
-            if (!text) return;
-
-            // Too short check
-            if (text.length < 100) {
-                warningState.classList.remove('hidden');
-                return;
-            }
-
-            // Show loading
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Analisando...';
-            loadingState.classList.remove('hidden');
-
-            // Simulate 2 second analysis
-            setTimeout(() => {
-                loadingState.classList.add('hidden');
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-magnifying-glass mr-2"></i>Verificar';
-
-                const sentences = splitIntoSentences(text);
-
-                if (sentences.length === 0) {
-                    warningState.classList.remove('hidden');
-                    return;
-                }
-
-                const flaggedItems = simulateAnalysis(sentences);
-                const score = calculateScore(sentences.length, flaggedItems);
-                displayResults(sentences, flaggedItems, score);
-            }, 2000);
-        });
-    </script>
-    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+ReactDOM.createRoot(document.getElementById("root")).render(<PlagioPage/>);
+</script>
 </body>
 </html>

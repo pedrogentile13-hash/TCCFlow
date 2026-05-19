@@ -1,565 +1,372 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-1WX7MD9CL9');
-    </script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
-    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
-    <link rel="icon" type="image/png" href="../favicon.png">
-    <link rel="apple-touch-icon" href="../favicon.png">
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#7c3aed">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anotações - TCCFlow</title>
-    <script src="../js/darkmode.js"></script>
-    <script src="../js/i18n.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
-        .note-item { transition: all 0.15s ease; }
-        .note-item:hover { transform: translateX(2px); }
-        .note-item.active { border-left: 3px solid #8b5cf6; background: rgba(139,92,246,0.05); }
-        .tag-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
-    </style>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Anotações e Fichamentos — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .notes-grid{display:grid;grid-template-columns:260px 1fr 280px;height:calc(100vh - 60px);overflow:hidden;}
+    .notes-left{background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
+    .notes-left-header{padding:16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
+    .notes-search{width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:.8125rem;outline:none;font-family:var(--font-body);}
+    .notes-search:focus{border-color:var(--violet);}
+    .notes-filters{display:flex;gap:6px;}
+    .filter-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:.6875rem;font-weight:500;cursor:pointer;transition:all .15s;font-family:var(--font-body);}
+    .filter-btn.active{background:var(--violet);color:#fff;border-color:var(--violet);}
+    .filter-btn:hover:not(.active){background:var(--bg-2);color:var(--ink);}
+    .cat-select{width:100%;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);font-size:.75rem;font-family:var(--font-body);cursor:pointer;outline:none;}
+    .notes-list{flex:1;overflow-y:auto;padding:0;}
+    .note-item{padding:14px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s;position:relative;}
+    .note-item:hover{background:rgba(124,58,237,.04);}
+    .note-item.active{border-left:3px solid var(--violet);background:rgba(124,58,237,.06);}
+    .note-item-star{position:absolute;top:14px;right:12px;background:none;border:none;cursor:pointer;font-size:.875rem;color:var(--muted);transition:color .15s;}
+    .note-item-star.fav{color:var(--amber);}
+    .note-item-title{font-weight:600;font-size:.8125rem;color:var(--ink);margin-bottom:2px;padding-right:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .note-item-preview{font-size:.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+    .note-item-date{font-family:var(--font-mono);font-size:.625rem;color:var(--muted);}
+    .notes-left-footer{padding:12px 16px;border-top:1px solid var(--line);}
+    .notes-main{display:flex;flex-direction:column;overflow:hidden;background:var(--paper);}
+    .notes-main-title{width:100%;border:none;outline:none;padding:20px 24px 0;font-family:var(--font-display);font-size:1.5rem;background:transparent;color:var(--ink);}
+    .notes-main-textarea{flex:1;width:100%;border:none;outline:none;padding:16px 24px;font-size:.9375rem;line-height:1.8;resize:none;min-height:400px;background:transparent;color:var(--ink);font-family:var(--font-body);}
+    .notes-main-footer{padding:10px 24px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;font-size:.6875rem;color:var(--muted);font-family:var(--font-mono);}
+    .save-indicator{font-size:.75rem;color:var(--emerald);font-weight:500;font-family:var(--font-body);}
+    .save-indicator.saving{color:var(--amber);}
+    .notes-right{border-left:1px solid var(--line);background:var(--paper);padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;}
+    .meta-label{font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;}
+    .meta-value{font-size:.8125rem;color:var(--ink);}
+    .meta-select{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:.8125rem;font-family:var(--font-body);outline:none;cursor:pointer;}
+    .meta-select:focus{border-color:var(--violet);}
+    .tags-input-wrap{display:flex;flex-wrap:wrap;gap:4px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);min-height:36px;align-items:center;cursor:text;}
+    .tags-input-wrap:focus-within{border-color:var(--violet);}
+    .tags-input{border:none;outline:none;font-size:.75rem;flex:1;min-width:60px;background:transparent;color:var(--ink);font-family:var(--font-body);}
+    .tag-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:.6875rem;font-weight:500;background:rgba(124,58,237,.1);color:var(--violet);}
+    .tag-chip button{background:none;border:none;cursor:pointer;color:inherit;font-size:.75rem;line-height:1;padding:0;margin-left:2px;}
+    .meta-dates{font-size:.75rem;color:var(--muted);line-height:1.8;}
+    @media(max-width:900px){.notes-grid{grid-template-columns:1fr;}.notes-left,.notes-right{display:none;}}
+  </style>
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
+<body><div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
 
-    <!-- Liquid Grass Background -->
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
+function AnotacoesPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [notes, setNotes] = useState([]);
+  const [activeId, setActiveId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("todas");
+  const [catFilter, setCatFilter] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("Leitura");
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
+  const [status, setStatus] = useState("Rascunho");
+  const [saveState, setSaveState] = useState("");
+  const debounceRef = useRef(null);
+  const [meta, setMeta] = useState({ created_at: null, updated_at: null });
+
+  const projectId = project?.id;
+
+  async function loadNotes() {
+    if (!projectId) return;
+    try {
+      const { data, error } = await _supa.from("notes").select("*").eq("project_id", projectId).order("updated_at", { ascending: false });
+      if (error) throw error;
+      setNotes(data || []);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    if (projectId) loadNotes();
+  }, [projectId]);
+
+  const activeNote = notes.find(n => n.id === activeId);
+
+  function selectNote(note) {
+    setActiveId(note.id);
+    setTitle(note.title || "");
+    setContent(note.content || "");
+    setCategory(note.category || "Leitura");
+    setTags(Array.isArray(note.tags) ? note.tags : []);
+    setStatus(note.status || "Rascunho");
+    setMeta({ created_at: note.created_at, updated_at: note.updated_at });
+    setSaveState("");
+  }
+
+  async function createNote() {
+    if (!projectId) return;
+    try {
+      const { data, error } = await _supa.from("notes").insert({
+        project_id: projectId,
+        user_id: user.uid,
+        title: "",
+        content: "",
+        category: "Leitura",
+        status: "Rascunho",
+        tags: [],
+        is_favorite: false,
+        word_count: 0,
+        created_by: user.uid
+      }).select().maybeSingle();
+      if (error) throw error;
+      if (data) {
+        setNotes(prev => [data, ...prev]);
+        selectNote(data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const saveNote = useCallback(async (fields) => {
+    if (!activeId) return;
+    setSaveState("saving");
+    const wordCount = (fields.content || content).trim().split(/\s+/).filter(Boolean).length;
+    try {
+      const updateData = {
+        title: fields.title !== undefined ? fields.title : title,
+        content: fields.content !== undefined ? fields.content : content,
+        category: fields.category !== undefined ? fields.category : category,
+        status: fields.status !== undefined ? fields.status : status,
+        tags: fields.tags !== undefined ? fields.tags : tags,
+        word_count: wordCount,
+        updated_at: new Date().toISOString()
+      };
+      const { error } = await _supa.from("notes").update(updateData).eq("id", activeId);
+      if (error) throw error;
+      setNotes(prev => prev.map(n => n.id === activeId ? { ...n, ...updateData } : n));
+      setMeta(prev => ({ ...prev, updated_at: updateData.updated_at }));
+      setSaveState("saved");
+    } catch (e) {
+      console.error(e);
+      setSaveState("");
+    }
+  }, [activeId, title, content, category, status, tags]);
+
+  function scheduleSave(fields) {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => saveNote(fields), 2000);
+  }
+
+  function handleTitleChange(val) {
+    setTitle(val);
+    scheduleSave({ title: val });
+  }
+
+  function handleContentChange(val) {
+    setContent(val);
+    scheduleSave({ content: val });
+  }
+
+  async function toggleFavorite(e, note) {
+    e.stopPropagation();
+    try {
+      const { error } = await _supa.from("notes").update({ is_favorite: !note.is_favorite }).eq("id", note.id);
+      if (error) throw error;
+      setNotes(prev => prev.map(n => n.id === note.id ? { ...n, is_favorite: !n.is_favorite } : n));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function archiveNote() {
+    if (!activeId) return;
+    setStatus("Arquivada");
+    await saveNote({ status: "Arquivada" });
+  }
+
+  async function deleteNote() {
+    if (!activeId || !confirm("Excluir esta anotação permanentemente?")) return;
+    try {
+      const { error } = await _supa.from("notes").delete().eq("id", activeId);
+      if (error) throw error;
+      setNotes(prev => prev.filter(n => n.id !== activeId));
+      setActiveId(null);
+      setTitle("");
+      setContent("");
+      setSaveState("");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function handleTagKeyDown(e) {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const raw = tagInput.split(",").map(t => t.trim()).filter(Boolean);
+      if (raw.length) {
+        const next = [...new Set([...tags, ...raw])];
+        setTags(next);
+        setTagInput("");
+        scheduleSave({ tags: next });
+      }
+    }
+  }
+
+  function removeTag(idx) {
+    const next = tags.filter((_, i) => i !== idx);
+    setTags(next);
+    scheduleSave({ tags: next });
+  }
+
+  function handleCategoryChange(val) {
+    setCategory(val);
+    scheduleSave({ category: val });
+  }
+
+  function handleStatusChange(val) {
+    setStatus(val);
+    scheduleSave({ status: val });
+  }
+
+  let filtered = notes;
+  if (filter === "favoritas") filtered = filtered.filter(n => n.is_favorite);
+  if (catFilter) filtered = filtered.filter(n => n.category === catFilter);
+  if (search) {
+    const q = search.toLowerCase();
+    filtered = filtered.filter(n => (n.title || "").toLowerCase().includes(q) || (n.content || "").toLowerCase().includes(q));
+  }
+
+  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
+  const charCount = content.length;
+
+  function fmtDate(d) {
+    if (!d) return "-";
+    return new Date(d).toLocaleDateString("pt-BR", { day:"2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" });
+  }
+
+  if (loading) return <div className="app-layout" style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="tools" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Anotações e Fichamentos" user={user}/>
+        <div className="notes-grid">
+
+          <div className="notes-left">
+            <div className="notes-left-header">
+              <input className="notes-search" placeholder="Buscar anotações..." value={search} onChange={e => setSearch(e.target.value)}/>
+              <div className="notes-filters">
+                <button className={"filter-btn" + (filter === "todas" ? " active" : "")} onClick={() => setFilter("todas")}>Todas</button>
+                <button className={"filter-btn" + (filter === "favoritas" ? " active" : "")} onClick={() => setFilter("favoritas")}>Favoritas</button>
+              </div>
+              <select className="cat-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
+                <option value="">Todas categorias</option>
+                <option value="Leitura">Leitura</option>
+                <option value="Análise">Análise</option>
+                <option value="Pesquisa">Pesquisa</option>
+                <option value="Pessoal">Pessoal</option>
+              </select>
+            </div>
+            <div className="notes-list">
+              {filtered.length === 0 && (
+                <div className="empty-state" style={{padding:"40px 16px",textAlign:"center"}}>
+                  <div style={{fontSize:"1.5rem",marginBottom:8,opacity:.4}}>📝</div>
+                  <div style={{fontSize:".8125rem",color:"var(--muted)"}}>Nenhuma anotação encontrada</div>
+                </div>
+              )}
+              {filtered.map(note => (
+                <div key={note.id} className={"note-item" + (note.id === activeId ? " active" : "")} onClick={() => selectNote(note)}>
+                  <button className={"note-item-star" + (note.is_favorite ? " fav" : "")} onClick={e => toggleFavorite(e, note)}>{note.is_favorite ? "★" : "☆"}</button>
+                  <div className="note-item-title">{note.title || "Sem título"}</div>
+                  <div className="note-item-preview">{(note.content || "").split("\n")[0].substring(0, 60) || "Sem conteúdo"}</div>
+                  <div className="note-item-date">{fmtDate(note.updated_at)}</div>
+                </div>
+              ))}
+            </div>
+            <div className="notes-left-footer">
+              <button className="btn btn-violet" style={{width:"100%"}} onClick={createNote}>+ Nova anotação</button>
+            </div>
+          </div>
+
+          <div className="notes-main">
+            {!activeId ? (
+              <div className="empty-state" style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:8}}>
+                <div style={{fontSize:"2rem",opacity:.3}}>📝</div>
+                <div style={{fontSize:".9375rem",color:"var(--muted)",fontWeight:500}}>Selecione ou crie uma anotação</div>
+                <div style={{fontSize:".75rem",color:"var(--muted)"}}>Use o botão "+ Nova anotação" para começar</div>
+              </div>
+            ) : (
+              <>
+                <input className="notes-main-title" placeholder="Título da anotação..." value={title} onChange={e => handleTitleChange(e.target.value)}/>
+                <textarea className="notes-main-textarea" placeholder="Escreva suas anotações, fichamentos, citações e reflexões aqui..." value={content} onChange={e => handleContentChange(e.target.value)}/>
+                <div className="notes-main-footer">
+                  <span>{wordCount} palavras &middot; {charCount} caracteres</span>
+                  <span className={"save-indicator" + (saveState === "saving" ? " saving" : "")}>{saveState === "saving" ? "Salvando..." : saveState === "saved" ? "Salvo" : ""}</span>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="notes-right">
+            {activeId ? (
+              <>
+                <div>
+                  <div className="meta-label">Categoria</div>
+                  <select className="meta-select" value={category} onChange={e => handleCategoryChange(e.target.value)}>
+                    <option value="Leitura">Leitura</option>
+                    <option value="Análise">Análise</option>
+                    <option value="Pesquisa">Pesquisa</option>
+                    <option value="Pessoal">Pessoal</option>
+                  </select>
+                </div>
+                <div>
+                  <div className="meta-label">Tags</div>
+                  <div className="tags-input-wrap" onClick={() => document.getElementById("tag-input-field")?.focus()}>
+                    {tags.map((t, i) => (
+                      <span key={i} className="tag-chip">{t}<button onClick={() => removeTag(i)}>&times;</button></span>
+                    ))}
+                    <input id="tag-input-field" className="tags-input" placeholder="Adicionar tag..." value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={handleTagKeyDown}/>
+                  </div>
+                  <div style={{fontSize:".6875rem",color:"var(--muted)",marginTop:4}}>Separadas por vírgula</div>
+                </div>
+                <div>
+                  <div className="meta-label">Status</div>
+                  <select className="meta-select" value={status} onChange={e => handleStatusChange(e.target.value)}>
+                    <option value="Rascunho">Rascunho</option>
+                    <option value="Publicada">Publicada</option>
+                    <option value="Arquivada">Arquivada</option>
+                  </select>
+                </div>
+                <div>
+                  <div className="meta-label">Criado em</div>
+                  <div className="meta-dates">{fmtDate(meta.created_at)}</div>
+                </div>
+                <div>
+                  <div className="meta-label">Atualizado em</div>
+                  <div className="meta-dates">{fmtDate(meta.updated_at)}</div>
+                </div>
+                <div style={{marginTop:"auto",display:"flex",flexDirection:"column",gap:8}}>
+                  <button className="btn btn-ghost" onClick={archiveNote}>Arquivar</button>
+                  <button className="btn" style={{color:"var(--rose)",background:"transparent",border:"1px solid var(--line)"}} onClick={deleteNote}>Excluir</button>
+                </div>
+              </>
+            ) : (
+              <div className="empty-state" style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <div style={{fontSize:".8125rem",color:"var(--muted)",textAlign:"center"}}>Selecione uma anotação para ver os detalhes</div>
+              </div>
+            )}
+          </div>
+
+        </div>
+      </div>
     </div>
+  );
+}
 
-    <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.dashboard">Dashboard</a>
-                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.project">Projeto</a>
-                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.ia">I.A.</a>
-                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.calendar">Calendário</a>
-                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm" data-i18n="nav.tools"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
-                    <div class="relative" id="moreDropdown">
-                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1" data-i18n="nav.more">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
-                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
-                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.tasks">Tarefas</a>
-                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.team">Equipe</a>
-                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
-                            <div class="border-t border-slate-100 my-1"></div>
-                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.plans"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
-                        </div>
-                    </div>
-                </div><div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
-                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
-                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
-                    </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
-                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                    </button>
-                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-bars text-sm"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.dashboard">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.project">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tasks">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.ia">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.calendar">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.team">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
-            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50" data-i18n="nav.tools">Ferramentas</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.plans">Planos</a>
-        </div>
-    
-    <script>
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('moreDropdown');
-        const menu = document.getElementById('moreMenu');
-        if (dropdown && menu && !dropdown.contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
-    </script>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="relative z-10 pt-16 min-h-screen pb-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold" data-i18n="notes.title">Anotações & Fichamentos</h1>
-                <p class="text-slate-500 mt-1" data-i18n="notes.subtitle">Organize suas leituras e fichamentos por artigo</p>
-            </div>
-
-            <!-- Two-column layout -->
-            <div class="flex flex-col lg:flex-row gap-6">
-
-                <!-- Left Sidebar - Notes List -->
-                <div class="w-full lg:w-80 lg:flex-shrink-0">
-                    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-                        <!-- Search + New -->
-                        <div class="p-4 border-b border-slate-100">
-                            <button id="newNoteBtn" class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition mb-3" data-i18n="notes.newNote">
-                                <i class="fa-solid fa-plus mr-2"></i>Nova Anotação
-                            </button>
-                            <div class="relative">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                <input id="searchNotes" type="text" placeholder="Buscar anotações..." data-i18n-placeholder="notes.searchPlaceholder" class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition">
-                            </div>
-                        </div>
-                        <!-- Notes list -->
-                        <div id="notesList" class="max-h-[calc(100vh-320px)] overflow-y-auto divide-y divide-slate-100">
-                            <div class="text-center py-12 text-slate-400 text-sm">
-                                <i class="fa-solid fa-book-open text-2xl mb-3 block"></i>
-                                <span data-i18n="notes.noNotes">Nenhuma anotação ainda</span>
-                            </div>
-                        </div>
-                        <div class="p-3 border-t border-slate-100 bg-slate-50">
-                            <p class="text-[11px] text-slate-400 text-center"><span id="notesCount">0</span> <span data-i18n="notes.count">anotações</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Editor Area -->
-                <div class="flex-1 min-w-0">
-                    <div id="editorPanel" class="bg-white border border-slate-200 rounded-2xl shadow-sm">
-                        <!-- Empty state -->
-                        <div id="editorEmpty" class="flex flex-col items-center justify-center py-20 text-slate-400">
-                            <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
-                                <i class="fa-solid fa-pen-to-square text-2xl"></i>
-                            </div>
-                            <p class="text-sm font-medium mb-1" data-i18n="notes.selectOrCreate">Selecione ou crie uma anotação</p>
-                            <p class="text-xs" data-i18n="notes.emptyHint">Use o botão "Nova Anotação" para começar</p>
-                        </div>
-
-                        <!-- Editor form (hidden initially) -->
-                        <div id="editorForm" class="hidden">
-                            <!-- Header -->
-                            <div class="p-5 border-b border-slate-100">
-                                <input id="noteTitle" type="text" placeholder="Título da anotação..." class="w-full text-xl font-bold text-slate-900 placeholder-slate-300 focus:outline-none bg-transparent">
-                            </div>
-
-                            <!-- Tags -->
-                            <div class="px-5 py-3 border-b border-slate-100">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <i class="fa-solid fa-tags text-slate-400 text-xs"></i>
-                                    <div id="tagsContainer" class="flex flex-wrap gap-1.5"></div>
-                                    <input id="tagInput" type="text" placeholder="Adicionar tag (Enter para confirmar)" class="flex-1 min-w-[160px] text-sm text-slate-700 placeholder-slate-300 focus:outline-none bg-transparent py-1">
-                                </div>
-                            </div>
-
-                            <!-- Linked Reference -->
-                            <div class="px-5 py-3 border-b border-slate-100">
-                                <div class="flex items-center gap-2">
-                                    <i class="fa-solid fa-link text-slate-400 text-xs"></i>
-                                    <select id="linkedPaper" class="flex-1 text-sm text-slate-600 bg-transparent focus:outline-none cursor-pointer">
-                                        <option value="">Vincular a uma referência (opcional)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Textarea Editor -->
-                            <div class="p-5">
-                                <textarea id="noteContent" rows="16" placeholder="Escreva suas anotações, fichamentos, citações e reflexões aqui..." class="w-full text-sm text-slate-700 leading-relaxed placeholder-slate-300 focus:outline-none bg-transparent resize-none"></textarea>
-                            </div>
-
-                            <!-- Footer Actions -->
-                            <div class="px-5 py-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex items-center justify-between">
-                                <div class="text-[11px] text-slate-400">
-                                    <span id="editorMeta"></span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <button id="deleteNoteBtn" class="hidden px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl transition">
-                                        <i class="fa-solid fa-trash mr-1.5"></i>Excluir
-                                    </button>
-                                    <button id="saveNoteBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:shadow-violet-500/25 text-white text-sm font-semibold px-5 py-2 rounded-xl transition">
-                                        <i class="fa-solid fa-check mr-1.5"></i>Salvar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-init.js"></script>
-    <script src="../js/db-service.js"></script>
-    <script>
-        let currentUser = null;
-        let projectId = null;
-
-        document.getElementById('mobileNavBtn').addEventListener('click', () => {
-            document.getElementById('mobileNav').classList.toggle('hidden');
-        });
-
-        auth.onAuthStateChanged(async user => {
-            if (!user) { window.location.href = 'login.html'; return; }
-            currentUser = user;
-            document.getElementById('userName').textContent = user.displayName || 'Usuário';
-            if (user.photoURL) {
-                const navAvatar = document.getElementById('navAvatar');
-                const navAvatarIcon = document.getElementById('navAvatarIcon');
-                if (navAvatar && navAvatarIcon) {
-                    navAvatar.src = user.photoURL;
-                    navAvatar.classList.remove('hidden');
-                    navAvatarIcon.classList.add('hidden');
-                }
-            }
-            try { projectId = await DB.getProjectId(); } catch(e) { console.log(e); }
-            initPage();
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await auth.signOut();
-            window.location.href = '../index.html';
-        });
-    </script>
-
-    <script>
-        // ========== State ==========
-        let notes = [];
-        let activeNoteId = null;
-        let currentTags = [];
-        const tagColors = [
-            'bg-violet-100 text-violet-700',
-            'bg-cyan-100 text-cyan-700',
-            'bg-emerald-100 text-emerald-700',
-            'bg-amber-100 text-amber-700',
-            'bg-rose-100 text-rose-700',
-            'bg-blue-100 text-blue-700',
-            'bg-pink-100 text-pink-700',
-            'bg-teal-100 text-teal-700',
-            'bg-orange-100 text-orange-700',
-            'bg-indigo-100 text-indigo-700'
-        ];
-
-        function getStorageKey() {
-            return `notes_${currentUser.uid}`;
-        }
-
-        async function loadNotes() {
-            // If has project, load from Supabase as primary source
-            if (projectId) {
-                try {
-                    const dbNotes = await DB.notes.getAll(projectId);
-                    if (dbNotes && dbNotes.length > 0) {
-                        notes = dbNotes.map(dn => ({
-                            id: dn.id,
-                            title: dn.title || '',
-                            content: dn.content || '',
-                            tags: [],
-                            linkedPaper: null,
-                            createdAt: dn.createdAt,
-                            updatedAt: dn.updatedAt
-                        }));
-                        saveNotes();
-                        return;
-                    }
-                } catch(e) { console.error('Erro ao carregar notas do banco:', e); }
-            }
-            // Fallback: load from localStorage
-            try {
-                const raw = localStorage.getItem(getStorageKey());
-                notes = raw ? JSON.parse(raw) : [];
-            } catch(e) {
-                notes = [];
-            }
-        }
-
-        function saveNotes() {
-            localStorage.setItem(getStorageKey(), JSON.stringify(notes));
-        }
-
-        function loadSavedPapers() {
-            const select = document.getElementById('linkedPaper');
-            select.innerHTML = '<option value="">Vincular a uma referência (opcional)</option>';
-            try {
-                const papersKey = `saved_papers_${currentUser.uid}`;
-                const raw = localStorage.getItem(papersKey);
-                const papers = raw ? JSON.parse(raw) : [];
-                papers.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id || p.title;
-                    opt.textContent = p.title ? (p.title.length > 60 ? p.title.substring(0, 60) + '...' : p.title) : 'Sem título';
-                    select.appendChild(opt);
-                });
-            } catch(e) {}
-        }
-
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        function getTagColor(tag) {
-            let hash = 0;
-            for (let i = 0; i < tag.length; i++) hash = tag.charCodeAt(i) + ((hash << 5) - hash);
-            return tagColors[Math.abs(hash) % tagColors.length];
-        }
-
-        // ========== Sidebar Rendering ==========
-        function renderNotesList(filter = '') {
-            const container = document.getElementById('notesList');
-            const filtered = filter
-                ? notes.filter(n =>
-                    n.title.toLowerCase().includes(filter) ||
-                    n.content.toLowerCase().includes(filter) ||
-                    n.tags.some(t => t.toLowerCase().includes(filter))
-                )
-                : [...notes];
-
-            filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-
-            document.getElementById('notesCount').textContent = notes.length;
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-slate-400 text-sm">
-                    <i class="fa-solid fa-book-open text-2xl mb-3 block"></i>
-                    ${filter ? 'Nenhum resultado encontrado' : 'Nenhuma anotação ainda'}
-                </div>`;
-                return;
-            }
-
-            container.innerHTML = filtered.map(note => {
-                const preview = note.content ? note.content.split('\n')[0].substring(0, 60) : 'Sem conteúdo';
-                const isActive = note.id === activeNoteId;
-                const date = new Date(note.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-                const tagsHtml = note.tags.slice(0, 2).map(t =>
-                    `<span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold ${getTagColor(t)}">${escapeHtml(t)}</span>`
-                ).join('');
-                const extraTags = note.tags.length > 2 ? `<span class="text-[9px] text-slate-400">+${note.tags.length - 2}</span>` : '';
-
-                return `<div class="note-item p-4 cursor-pointer hover:bg-slate-50 ${isActive ? 'active' : ''}" data-id="${note.id}">
-                    <div class="flex items-start justify-between gap-2 mb-1">
-                        <h4 class="text-sm font-semibold text-slate-800 truncate">${escapeHtml(note.title || 'Sem título')}</h4>
-                        <span class="text-[10px] text-slate-400 flex-shrink-0">${date}</span>
-                    </div>
-                    <p class="text-xs text-slate-400 truncate mb-2">${escapeHtml(preview)}</p>
-                    <div class="flex items-center gap-1">${tagsHtml}${extraTags}</div>
-                </div>`;
-            }).join('');
-
-            container.querySelectorAll('.note-item').forEach(el => {
-                el.addEventListener('click', () => openNote(el.dataset.id));
-            });
-        }
-
-        // ========== Editor ==========
-        function openNote(id) {
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-
-            activeNoteId = id;
-            currentTags = [...note.tags];
-
-            document.getElementById('editorEmpty').classList.add('hidden');
-            document.getElementById('editorForm').classList.remove('hidden');
-            document.getElementById('deleteNoteBtn').classList.remove('hidden');
-
-            document.getElementById('noteTitle').value = note.title;
-            document.getElementById('noteContent').value = note.content;
-            document.getElementById('linkedPaper').value = note.linkedPaper || '';
-
-            renderTags();
-            updateEditorMeta(note);
-            renderNotesList(document.getElementById('searchNotes').value.toLowerCase().trim());
-        }
-
-        async function createNewNote() {
-            const note = {
-                id: Date.now().toString(),
-                title: '',
-                content: '',
-                tags: [],
-                linkedPaper: null,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            if (projectId) {
-                try {
-                    const result = await DB.notes.add(projectId, { title: '', content: '', color: 'yellow' });
-                    if (result && result.id) note.id = result.id;
-                } catch(e) { console.error('Erro ao criar nota no banco:', e); }
-            }
-            notes.unshift(note);
-            saveNotes();
-            openNote(note.id);
-            renderNotesList();
-            document.getElementById('noteTitle').focus();
-        }
-
-        async function saveCurrentNote() {
-            if (!activeNoteId) return;
-            const note = notes.find(n => n.id === activeNoteId);
-            if (!note) return;
-
-            const title = document.getElementById('noteTitle').value.trim();
-            if (!title) {
-                alert('Dê um título para a anotação.');
-                document.getElementById('noteTitle').focus();
-                return;
-            }
-
-            note.title = title;
-            note.content = document.getElementById('noteContent').value;
-            note.tags = [...currentTags];
-            note.linkedPaper = document.getElementById('linkedPaper').value || null;
-            note.updatedAt = new Date().toISOString();
-
-            saveNotes();
-
-            // Persist to Supabase
-            if (projectId) {
-                try {
-                    await DB.notes.update(activeNoteId, { title: note.title, content: note.content });
-                } catch(e) { console.error('Erro ao atualizar nota no banco:', e); }
-            }
-
-            updateEditorMeta(note);
-            renderNotesList(document.getElementById('searchNotes').value.toLowerCase().trim());
-
-            // Flash save confirmation
-            const btn = document.getElementById('saveNoteBtn');
-            const origHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check mr-1.5"></i>Salvo!';
-            setTimeout(() => { btn.innerHTML = origHtml; }, 1200);
-        }
-
-        async function deleteCurrentNote() {
-            if (!activeNoteId) return;
-            if (!confirm('Tem certeza que deseja excluir esta anotação?')) return;
-
-            // Remove from Supabase
-            if (projectId) {
-                try { await DB.notes.remove(activeNoteId); } catch(e) { console.error('Erro ao excluir nota do banco:', e); }
-            }
-
-            notes = notes.filter(n => n.id !== activeNoteId);
-            saveNotes();
-            activeNoteId = null;
-
-            document.getElementById('editorForm').classList.add('hidden');
-            document.getElementById('editorEmpty').classList.remove('hidden');
-            renderNotesList(document.getElementById('searchNotes').value.toLowerCase().trim());
-        }
-
-        function updateEditorMeta(note) {
-            const created = new Date(note.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-            const updated = new Date(note.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-            document.getElementById('editorMeta').innerHTML = `Criado: ${created} &middot; Atualizado: ${updated}`;
-        }
-
-        // ========== Tags ==========
-        function renderTags() {
-            const container = document.getElementById('tagsContainer');
-            container.innerHTML = currentTags.map((tag, i) => {
-                const color = getTagColor(tag);
-                return `<span class="tag-pill ${color}">
-                    ${escapeHtml(tag)}
-                    <button class="ml-0.5 hover:opacity-70 transition" data-idx="${i}">&times;</button>
-                </span>`;
-            }).join('');
-
-            container.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    currentTags.splice(parseInt(btn.dataset.idx), 1);
-                    renderTags();
-                });
-            });
-        }
-
-        function addTag(value) {
-            const tags = value.split(',').map(t => t.trim().toLowerCase()).filter(t => t && !currentTags.includes(t));
-            if (tags.length) {
-                currentTags.push(...tags);
-                renderTags();
-            }
-        }
-
-        // ========== Init ==========
-        async function initPage() {
-            await loadNotes();
-            loadSavedPapers();
-            renderNotesList();
-
-            // New note
-            document.getElementById('newNoteBtn').addEventListener('click', createNewNote);
-
-            // Save
-            document.getElementById('saveNoteBtn').addEventListener('click', saveCurrentNote);
-
-            // Delete
-            document.getElementById('deleteNoteBtn').addEventListener('click', deleteCurrentNote);
-
-            // Search
-            document.getElementById('searchNotes').addEventListener('input', (e) => {
-                renderNotesList(e.target.value.toLowerCase().trim());
-            });
-
-            // Tag input
-            const tagInput = document.getElementById('tagInput');
-            tagInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ',') {
-                    e.preventDefault();
-                    const val = tagInput.value.trim();
-                    if (val) {
-                        addTag(val);
-                        tagInput.value = '';
-                    }
-                }
-                if (e.key === 'Backspace' && !tagInput.value && currentTags.length) {
-                    currentTags.pop();
-                    renderTags();
-                }
-            });
-
-            // Keyboard shortcut: Ctrl+S to save
-            document.addEventListener('keydown', (e) => {
-                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                    e.preventDefault();
-                    if (activeNoteId) saveCurrentNote();
-                }
-            });
-        }
-    </script>
-    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
-</body>
-</html>
+ReactDOM.createRoot(document.getElementById("root")).render(<AnotacoesPage/>);
+</script>
+</body></html>
