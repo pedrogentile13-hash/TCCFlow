@@ -204,7 +204,7 @@ function PlansPage() {
           </div>
 
           {/* Grid de 3 colunas */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 40 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 40 }}>
             {plans.map(plan => {
               const price = billing === "annual" ? plan.annualPrice : plan.monthlyPrice;
               const isCurrent = currentPlan === plan.id;
@@ -216,96 +216,95 @@ function PlansPage() {
                     background: "var(--paper)",
                     border: isCurrent ? "2px solid var(--emerald)" : plan.popular ? "2px solid var(--violet)" : "1.5px solid var(--line)",
                     borderRadius: 12,
-                    padding: 24,
+                    padding: 16,
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
-                    transform: plan.popular && !isCurrent ? "scale(1.02)" : "scale(1)",
-                    boxShadow: plan.popular && !isCurrent ? "0 10px 40px rgba(124, 58, 237, 0.15)" : "none",
+                    minHeight: 0,
+                    boxShadow: plan.popular && !isCurrent ? "0 8px 24px rgba(124, 58, 237, 0.15)" : "none",
                     transition: "all 0.2s"
                   }}
                 >
                   {isCurrent && (
-                    <div style={{ position: "absolute", top: 12, right: 12, background: "var(--emerald)", color: "white", padding: "3px 10px", borderRadius: 999, fontSize: "0.625rem", fontWeight: 600, textTransform: "uppercase" }}>
+                    <div style={{ position: "absolute", top: 10, right: 10, background: "var(--emerald)", color: "white", padding: "2px 8px", borderRadius: 999, fontSize: "0.6rem", fontWeight: 600, textTransform: "uppercase" }}>
                       ✓ Seu plano
                     </div>
                   )}
                   {plan.popular && !isCurrent && (
-                    <div style={{ position: "absolute", top: 12, right: 12, background: "var(--violet)", color: "white", padding: "3px 10px", borderRadius: 999, fontSize: "0.625rem", fontWeight: 600, textTransform: "uppercase" }}>
+                    <div style={{ position: "absolute", top: 10, right: 10, background: "var(--violet)", color: "white", padding: "2px 8px", borderRadius: 999, fontSize: "0.6rem", fontWeight: 600, textTransform: "uppercase" }}>
                       Popular
                     </div>
                   )}
 
-                  <div style={{ marginBottom: 16 }}>
-                    <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.4rem", fontWeight: 400, margin: "0 0 4px", color: "var(--ink)" }}>
+                  <div style={{ marginBottom: 12 }}>
+                    <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.25rem", fontWeight: 400, margin: "0 0 2px", color: "var(--ink)" }}>
                       {plan.name}
                     </h2>
-                    <p style={{ color: "var(--muted)", fontSize: "0.8125rem", margin: 0 }}>
+                    <p style={{ color: "var(--muted)", fontSize: "0.75rem", margin: 0 }}>
                       {plan.sub}
                     </p>
                   </div>
 
-                  <div style={{ marginBottom: 20 }}>
+                  <div style={{ marginBottom: 16 }}>
                     {price === null ? (
                       <>
-                        <div style={{ fontSize: "1.8rem", fontWeight: 700, color: "var(--ink)" }}>
+                        <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--ink)" }}>
                           Customizado
                         </div>
-                        <div style={{ fontSize: "0.8125rem", color: "var(--muted)" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
                           Preço por volume
                         </div>
                       </>
                     ) : (
                       <>
-                        <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--ink)", marginBottom: 2 }}>
+                        <div style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--ink)", marginBottom: 2 }}>
                           {price === 0 ? "R$ 0" : `R$ ${price.toFixed(2).replace(".", ",")}`}
                         </div>
-                        <div style={{ fontSize: "0.8125rem", color: "var(--muted)" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
                           {price === 0 ? "para sempre" : billing === "annual" ? "/ano" : "/mês"}
                         </div>
                       </>
                     )}
                   </div>
 
-                  <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 20px", fontSize: "0.8125rem" }}>
-                    {plan.features.map((feature, i) => (
-                      <li key={i} style={{ padding: "6px 0", color: "var(--ink)", display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ color: "var(--violet)", fontWeight: 700 }}>✓</span>
-                        {feature}
+                  <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 12px", fontSize: "0.75rem" }}>
+                    {plan.features.slice(0, 5).map((feature, i) => (
+                      <li key={i} style={{ padding: "4px 0", color: "var(--ink)", display: "flex", alignItems: "flex-start", gap: 6 }}>
+                        <span style={{ color: "var(--violet)", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
+                        <span>{feature}</span>
                       </li>
                     ))}
-                    {plan.inactive.map((feature, i) => (
-                      <li key={`inactive-${i}`} style={{ padding: "6px 0", color: "var(--muted)", textDecoration: "line-through", opacity: 0.5, display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ color: "var(--muted)" }}>–</span>
-                        {feature}
+                    {plan.features.length > 5 && (
+                      <li style={{ padding: "4px 0", color: "var(--muted)", fontSize: "0.7rem" }}>
+                        + {plan.features.length - 5} recurso{plan.features.length - 5 > 1 ? 's' : ''}
                       </li>
-                    ))}
+                    )}
                   </ul>
 
                   {isCurrent ? (
-                    <button className="btn" style={{ width: "100%", justifyContent: "center", opacity: 0.6, cursor: "default" }}>
-                      Seu plano atual
+                    <button className="btn btn-sm" style={{ width: "100%", justifyContent: "center", opacity: 0.6, cursor: "default" }}>
+                      Seu plano
                     </button>
                   ) : plan.id === "free" ? (
-                    <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center" }} onClick={() => handleSelectPlan("free")}>
+                    <button className="btn btn-ghost btn-sm" style={{ width: "100%", justifyContent: "center" }} onClick={() => handleSelectPlan("free")}>
                       Usar grátis
                     </button>
                   ) : plan.id === "pro" ? (
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-primary btn-sm"
                       style={{ width: "100%", justifyContent: "center" }}
                       onClick={() => handleSelectPlan("pro", price)}
                       disabled={processingPlan === "pro"}
                     >
-                      {processingPlan === "pro" ? "Processando..." : "Assinar agora"}
+                      {processingPlan === "pro" ? "..." : "Assinar"}
                     </button>
                   ) : (
                     <button
-                      className="btn btn-ghost"
+                      className="btn btn-ghost btn-sm"
                       style={{ width: "100%", justifyContent: "center" }}
                       onClick={() => handleSelectPlan("inst")}
                     >
-                      Falar com vendas
+                      Contato
                     </button>
                   )}
                 </div>

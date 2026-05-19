@@ -30,6 +30,11 @@ exports.handler = async (event) => {
         // Criar PreApproval (assinatura recorrente)
         const preapprovalClient = new PreApproval(client);
 
+        // Calcular data de início (amanhã, no mínimo)
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() + 1);
+        const startDateStr = startDate.toISOString().split('T')[0] + 'T00:00:00Z';
+
         const result = await preapprovalClient.create({
             body: {
                 reason: planType === 'pro_monthly' ? 'TCCFlow - Assinatura Mensal PRO' : 'TCCFlow - Assinatura Anual PRO',
@@ -42,7 +47,7 @@ exports.handler = async (event) => {
                     frequency_type: frequencyType,
                     transaction_amount: finalAmount,
                     currency_id: 'BRL',
-                    start_date: new Date().toISOString(),
+                    start_date: startDateStr,
                     end_date: null // sem data de término
                 },
                 notification_url: `${siteUrl}/.netlify/functions/mp-webhook`,
