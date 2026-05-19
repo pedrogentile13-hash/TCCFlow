@@ -57,39 +57,13 @@ function ToolCard({ t, isPro }) {
   );
 }
 
-function BetaGate({ userData, subscription }) {
-  return (
-    <div className="app-layout">
-      <Sidebar active="tools" userData={userData} subscription={subscription}/>
-      <div className="main-area">
-        <Topbar page="Ferramentas"/>
-        <div className="page-content">
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"80px 20px"}}>
-            <div style={{fontSize:"3rem",marginBottom:16,opacity:.4}}>🔬</div>
-            <h2 style={{fontFamily:"var(--font-display)",fontSize:"1.75rem",fontWeight:400,letterSpacing:"-.02em",marginBottom:8}}>
-              Ferramentas em <em style={{fontStyle:"italic",color:"var(--violet)"}}>Beta</em>
-            </h2>
-            <p style={{color:"var(--muted)",fontSize:".9375rem",maxWidth:"42ch",marginBottom:24,lineHeight:1.6}}>
-              As ferramentas estão disponíveis apenas para beta testers neste momento. Em breve estarão liberadas para todos.
-            </p>
-            <span className="tag tag-amber" style={{fontSize:".75rem",padding:"6px 14px"}}>Acesso restrito a Beta Testers</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function ToolsPage() {
   const { user, userData, project, subscription, loading } = useTCCData();
   const [filter, setFilter] = useState("todas");
   const isPro = subscription?.plan === "pro";
-  const isBeta = userData?.beta_tester === true;
   const filtered = filter === "pro" ? TOOLS.filter(t => t.pro) : filter === "gratis" ? TOOLS.filter(t => !t.pro) : TOOLS;
 
   if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
-
-  if (!isBeta) return <BetaGate userData={userData} subscription={subscription}/>;
 
   return (
     <div className="app-layout">
@@ -102,7 +76,6 @@ function ToolsPage() {
               <h1 style={{ fontFamily:"var(--font-display)", fontSize:"1.875rem", fontWeight:400, letterSpacing:"-.02em", marginBottom:4 }}>
                 Suas <em style={{ fontStyle:"italic", color:"var(--violet)" }}>ferramentas</em>
               </h1>
-              <span className="tag tag-amber" style={{fontSize:".625rem"}}>BETA</span>
             </div>
             <div style={{ display:"flex", gap:6 }}>
               {[["todas","Todas"],["gratis","Gratuitas"],["pro","PRO"]].map(([v,l]) => (
