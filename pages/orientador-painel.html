@@ -334,10 +334,11 @@
             .eq('orientador_id', user.uid)
             .eq('project_id', projectId);
           if (error) throw error;
-          setDetail(null);
-          await onRefresh();
           alert('Você saiu do projeto. Voltando ao dashboard...');
-          window.location.href = 'dashboard.html';
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+            setTimeout(() => window.location.reload(), 100);
+          }, 500);
         } catch(e) {
           alert('Erro ao sair: ' + (e.message || e));
         }
