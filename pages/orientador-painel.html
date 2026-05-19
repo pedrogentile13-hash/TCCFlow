@@ -124,12 +124,8 @@
         auth.onAuthStateChanged(async u => {
           if (!u) { window.location.href = 'login.html?redirect=orientador-painel.html'; return; }
           try {
-            const { data: ud } = await _supa.from('users').select('beta_tester, role').eq('id', u.uid).maybeSingle();
-            if (!ud || ud.beta_tester !== true) {
-              document.getElementById('root').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px"><p style="font-size:2rem;margin-bottom:12px;opacity:.4">🎓</p><h2 style="font-size:1.3rem;font-weight:700;margin-bottom:8px">Painel em Beta</h2><p style="color:#888;max-width:35ch">Disponível apenas para beta testers.</p><a href="dashboard.html" style="margin-top:16px;color:var(--emerald)">Voltar ao Dashboard</a></div>';
-              return;
-            }
-            if (ud.role !== 'orientador') {
+            const { data: ud } = await _supa.from('users').select('role').eq('id', u.uid).maybeSingle();
+            if (ud && ud.role !== 'orientador') {
               await DB.orientador.setUserRole(u.uid, 'orientador');
             }
           } catch(e) { console.warn(e); }
@@ -1330,7 +1326,6 @@
                   <i className="fa-solid fa-bars"/>
                 </button>
                 <h1>{viewTitles[view]}</h1>
-                <span className="tag tag-amber" style={{fontSize:'.55rem'}}>BETA</span>
               </div>
               <div className="ori-topbar-actions">
                 <button className="btn btn-sm btn-ghost" onClick={loadProjects} title="Atualizar">
