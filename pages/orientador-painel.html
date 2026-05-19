@@ -326,6 +326,21 @@
         } catch(e) {}
       }
 
+      async function handleLeaveProject(projectId) {
+        if (!confirm('Tem certeza que deseja sair deste projeto? Seus comentários serão mantidos, mas você perderá o acesso.')) return;
+        try {
+          const { error } = await _supa.from('orientador_projects')
+            .delete()
+            .eq('orientador_id', user.uid)
+            .eq('project_id', projectId);
+          if (error) throw error;
+          setDetail(null);
+          onRefresh();
+        } catch(e) {
+          alert('Erro ao sair: ' + (e.message || e));
+        }
+      }
+
       async function handleAcceptInvite() {
         if (!inviteCode.trim()) return;
         try {
@@ -421,6 +436,12 @@
                   </div>
                 ))}
               </div>
+              <div style={{marginTop:20,paddingTop:16,borderTop:'1px solid var(--line)',display:'flex',justifyContent:'flex-end'}}>
+                <button className="btn btn-sm" onClick={() => handleLeaveProject(detail.id)}
+                  style={{color:'var(--rose)',borderColor:'rgba(244,63,94,.3)'}}>
+                  <i className="fa-solid fa-right-from-bracket"/> Sair deste Projeto
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -431,10 +452,12 @@
     function TrabalhoView({ user, projects }) {
       const [selProject, setSelProject] = useState(null);
       const [chapters, setChapters] = useState([]);
+      const [sections, setSections] = useState([]);
       const [selSection, setSelSection] = useState(null);
       const [grade, setGrade] = useState('');
       const [feedbackText, setFeedbackText] = useState('');
       const [existingFeedback, setExistingFeedback] = useState([]);
+      const [loadingData, setLoadingData] = useState(false);
 
       useEffect(() => {
         if (projects.length > 0 && !selProject) setSelProject(projects[0]);
@@ -445,13 +468,28 @@
       }, [selProject]);
 
       async function loadChapters() {
+        setLoadingData(true);
+        setChapters([]);
+        setSections([]);
+        setSelSection(null);
         try {
-          const { data } = await _supa.from('thesis_chapters').select('*, thesis_sections(*)').eq('project_id', selProject.id).order('position');
-          if (data) {
-            data.forEach(ch => ch.thesis_sections?.sort((a,b) => a.position - b.position));
-            setChapters(data);
-          }
+          const { data: ch, error: chErr } = await _supa.from('thesis_chapters')
+            .select('*').eq('project_id', selProject.id)
+            .order('sort_order', { ascending: true });
+          if (chErr) { console.error('chapters error:', chErr); setLoadingData(false); return; }
+          setChapters(ch || []);
+
+          const { data: sec, error: secErr } = await _supa.from('thesis_sections')
+            .select('*').eq('project_id', selProject.id)
+            .order('sort_order', { ascending: true });
+          if (secErr) console.error('sections error:', secErr);
+          setSections(sec || []);
         } catch(e) { console.error(e); }
+        setLoadingData(false);
+      }
+
+      function getSectionsForChapter(chId) {
+        return sections.filter(s => s.chapter_id === chId);
       }
 
       async function selectSection(sec) {
@@ -464,7 +502,7 @@
             .order('created_at', { ascending: false });
           setExistingFeedback(data || []);
           if (data && data.length > 0) setGrade(data[0].grade?.toString() || '');
-        } catch(e) {}
+        } catch(e) { setExistingFeedback([]); }
       }
 
       async function submitFeedback() {
@@ -483,17 +521,31 @@
         } catch(e) { alert('Erro: ' + e.message); }
       }
 
+      const totalSections = sections.length;
+      const hasContent = sections.filter(s => s.content && s.content.trim()).length;
+
       return (
         <div className="ori-content" style={{padding:0}}>
-          <div style={{padding:'16px 28px',borderBottom:'1px solid var(--line)',display:'flex',alignItems:'center',gap:12}}>
+          <div style={{padding:'16px 28px',borderBottom:'1px solid var(--line)',display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
             <span className="field-label" style={{margin:0}}>Projeto:</span>
             <select className="field" style={{width:'auto',maxWidth:300}} value={selProject?.id || ''}
-              onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
+              onChange={e => { setSelProject(projects.find(p => p.id === e.target.value)); }}>
               {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
+            {!loadingData && chapters.length > 0 && (
+              <div style={{display:'flex',gap:12,marginLeft:'auto',fontSize:'.7rem',fontFamily:'var(--font-mono)',color:'var(--muted)'}}>
+                <span>{chapters.length} capítulos</span>
+                <span>{totalSections} seções</span>
+                <span>{hasContent} com conteúdo</span>
+              </div>
+            )}
           </div>
 
-          {chapters.length === 0 ? (
+          {loadingData ? (
+            <div className="empty-state" style={{marginTop:40}}>
+              <i className="fa-solid fa-spinner fa-spin" style={{display:'block'}}/><p>Carregando trabalho...</p>
+            </div>
+          ) : chapters.length === 0 ? (
             <div className="empty-state" style={{marginTop:40}}>
               <i className="fa-solid fa-book" style={{display:'block'}}/><p>Nenhum capítulo encontrado neste projeto.</p>
               <p style={{fontSize:'.72rem',marginTop:4}}>O aluno precisa criar capítulos na página Trabalho Escrito.</p>
@@ -502,19 +554,29 @@
             <div className="section-grid">
               <div className="section-left">
                 <div style={{fontFamily:'var(--font-mono)',fontSize:'.62rem',textTransform:'uppercase',letterSpacing:'.1em',color:'var(--muted)',marginBottom:10}}>Capítulos</div>
-                {chapters.map(ch => (
-                  <div key={ch.id}>
-                    <div style={{fontSize:'.72rem',fontWeight:600,color:'var(--ink)',padding:'6px 8px',marginTop:4}}>{ch.title}</div>
-                    {(ch.thesis_sections || []).map(sec => (
-                      <div key={sec.id}
-                        className={`chapter-item ${selSection?.id === sec.id ? 'active' : ''}`}
-                        onClick={() => selectSection(sec)}
-                        style={{paddingLeft:20}}>
-                        {sec.title}
+                {chapters.map(ch => {
+                  const chSections = getSectionsForChapter(ch.id);
+                  return (
+                    <div key={ch.id}>
+                      <div style={{fontSize:'.72rem',fontWeight:600,color:'var(--ink)',padding:'6px 8px',marginTop:4,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                        {ch.title}
+                        <span style={{fontSize:'.6rem',color:'var(--muted)',fontWeight:400}}>{chSections.length}</span>
                       </div>
-                    ))}
-                  </div>
-                ))}
+                      {chSections.map(sec => (
+                        <div key={sec.id}
+                          className={`chapter-item ${selSection?.id === sec.id ? 'active' : ''}`}
+                          onClick={() => selectSection(sec)}
+                          style={{paddingLeft:20,display:'flex',alignItems:'center',gap:6}}>
+                          <span style={{flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{sec.title}</span>
+                          {sec.content && sec.content.trim() && <span style={{width:6,height:6,borderRadius:'50%',background:'var(--emerald)',flexShrink:0}}/>}
+                        </div>
+                      ))}
+                      {chSections.length === 0 && (
+                        <div style={{paddingLeft:20,fontSize:'.7rem',color:'var(--muted)',fontStyle:'italic',padding:'4px 20px'}}>Sem seções</div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="section-main">
@@ -522,9 +584,16 @@
                   <>
                     <h2 style={{fontFamily:'var(--font-display)',fontSize:'1.2rem',marginBottom:16}}>{selSection.title}</h2>
                     <div style={{background:'var(--bg-2)',border:'1px solid var(--line)',borderRadius:'var(--radius)',padding:20,marginBottom:20,
-                      fontFamily:'var(--font-body)',fontSize:'.88rem',lineHeight:1.7,whiteSpace:'pre-wrap',maxHeight:300,overflowY:'auto',color:'var(--ink)'}}>
-                      {selSection.content || 'Seção ainda sem conteúdo.'}
+                      fontFamily:'var(--font-body)',fontSize:'.88rem',lineHeight:1.7,whiteSpace:'pre-wrap',maxHeight:400,overflowY:'auto',color:'var(--ink)'}}>
+                      {selSection.content && selSection.content.trim() ? selSection.content : (
+                        <span style={{color:'var(--muted)',fontStyle:'italic'}}>Seção ainda sem conteúdo.</span>
+                      )}
                     </div>
+                    {selSection.content && selSection.content.trim() && (
+                      <div style={{fontSize:'.68rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginBottom:16}}>
+                        {selSection.content.trim().split(/\s+/).length} palavras
+                      </div>
+                    )}
 
                     <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
                       <span className="field-label" style={{margin:0}}>Nota:</span>
@@ -552,7 +621,9 @@
               <div className="section-right">
                 <div style={{fontFamily:'var(--font-mono)',fontSize:'.62rem',textTransform:'uppercase',letterSpacing:'.1em',color:'var(--muted)',marginBottom:10}}>Feedback Anterior</div>
                 {existingFeedback.length === 0 ? (
-                  <p style={{fontSize:'.78rem',color:'var(--muted)',textAlign:'center',marginTop:20}}>Nenhum feedback nesta seção.</p>
+                  <p style={{fontSize:'.78rem',color:'var(--muted)',textAlign:'center',marginTop:20}}>
+                    {selSection ? 'Nenhum feedback nesta seção.' : 'Selecione uma seção.'}
+                  </p>
                 ) : existingFeedback.map(fb => (
                   <div key={fb.id} className="comment-bubble">
                     <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
@@ -576,13 +647,21 @@
     function TarefasView({ user, projects }) {
       const [selProject, setSelProject] = useState(null);
       const [tasks, setTasks] = useState([]);
+      const [showForm, setShowForm] = useState(false);
+      const [newTitle, setNewTitle] = useState('');
+      const [newDesc, setNewDesc] = useState('');
+      const [newDue, setNewDue] = useState('');
+      const [newPriority, setNewPriority] = useState('medium');
+      const [creating, setCreating] = useState(false);
+      const [members, setMembers] = useState([]);
+      const [newAssigned, setNewAssigned] = useState('');
 
       useEffect(() => {
         if (projects.length > 0 && !selProject) setSelProject(projects[0]);
       }, [projects]);
 
       useEffect(() => {
-        if (selProject) loadTasks();
+        if (selProject) { loadTasks(); loadMembers(); }
       }, [selProject]);
 
       async function loadTasks() {
@@ -592,21 +671,95 @@
         } catch(e) {}
       }
 
+      async function loadMembers() {
+        try {
+          const { data } = await _supa.from('users').select('id, name, email').eq('project_id', selProject.id);
+          setMembers(data || []);
+        } catch(e) {}
+      }
+
+      async function createTask() {
+        if (!newTitle.trim() || !selProject) return;
+        setCreating(true);
+        try {
+          await _supa.from('tasks').insert({
+            project_id: selProject.id,
+            title: newTitle.trim(),
+            description: newDesc.trim() || null,
+            due_date: newDue || null,
+            priority: newPriority,
+            status: 'todo',
+            assigned_to: newAssigned || null,
+            created_by: user.uid
+          });
+          setNewTitle(''); setNewDesc(''); setNewDue(''); setNewPriority('medium'); setNewAssigned('');
+          setShowForm(false);
+          await loadTasks();
+        } catch(e) { alert('Erro: ' + e.message); }
+        setCreating(false);
+      }
+
       const done = tasks.filter(t => t.status === 'done').length;
       const progress = tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0;
+      const overdue = tasks.filter(t => t.due_date && t.status !== 'done' && new Date(t.due_date + 'T00:00:00') < new Date()).length;
       const statusMap = { todo: { label: 'A Fazer', cls: 'tag-muted' }, progress: { label: 'Em Andamento', cls: 'tag-amber' }, done: { label: 'Concluída', cls: 'tag-emerald' } };
+      const nameMap = {};
+      members.forEach(m => nameMap[m.id] = m.name || m.email);
 
       return (
         <div className="ori-content">
-          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20,flexWrap:'wrap'}}>
             <span className="field-label" style={{margin:0}}>Projeto:</span>
             <select className="field" style={{width:'auto',maxWidth:300}} value={selProject?.id || ''}
               onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
               {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
+            <button className="btn btn-emerald" style={{marginLeft:'auto'}} onClick={() => setShowForm(!showForm)}>
+              <i className={`fa-solid ${showForm ? 'fa-xmark' : 'fa-plus'}`}/> {showForm ? 'Cancelar' : 'Nova Tarefa'}
+            </button>
           </div>
 
-          <div className="ori-stats" style={{gridTemplateColumns:'repeat(3,1fr)'}}>
+          {showForm && (
+            <div className="card" style={{borderColor:'var(--emerald)'}}>
+              <div className="card-title" style={{marginBottom:12}}>Criar Tarefa para o Grupo</div>
+              <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                <div>
+                  <label className="field-label">Título *</label>
+                  <input className="field" placeholder="Ex: Revisar capítulo de metodologia" value={newTitle} onChange={e => setNewTitle(e.target.value)}/>
+                </div>
+                <div>
+                  <label className="field-label">Descrição</label>
+                  <textarea className="field" rows={2} placeholder="Detalhes da tarefa..." value={newDesc} onChange={e => setNewDesc(e.target.value)} style={{resize:'vertical'}}/>
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}>
+                  <div>
+                    <label className="field-label">Prazo</label>
+                    <input type="date" className="field" value={newDue} onChange={e => setNewDue(e.target.value)}/>
+                  </div>
+                  <div>
+                    <label className="field-label">Prioridade</label>
+                    <select className="field" value={newPriority} onChange={e => setNewPriority(e.target.value)}>
+                      <option value="low">Baixa</option>
+                      <option value="medium">Média</option>
+                      <option value="high">Alta</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="field-label">Atribuir a</label>
+                    <select className="field" value={newAssigned} onChange={e => setNewAssigned(e.target.value)}>
+                      <option value="">Ninguém</option>
+                      {members.map(m => <option key={m.id} value={m.id}>{m.name || m.email}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <button className="btn btn-emerald" onClick={createTask} disabled={creating || !newTitle.trim()} style={{alignSelf:'flex-start'}}>
+                  {creating ? <><i className="fa-solid fa-spinner fa-spin"/> Criando...</> : <><i className="fa-solid fa-check"/> Criar Tarefa</>}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="ori-stats" style={{gridTemplateColumns:'repeat(4,1fr)'}}>
             <div className="ori-stat-card">
               <div className="stat-label">Total</div>
               <div className="stat-value">{tasks.length}</div>
@@ -614,6 +767,10 @@
             <div className="ori-stat-card">
               <div className="stat-label">Concluídas</div>
               <div className="stat-value" style={{color:'var(--emerald)'}}>{done}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Atrasadas</div>
+              <div className="stat-value" style={{color: overdue > 0 ? 'var(--rose)' : 'var(--ink)'}}>{overdue}</div>
             </div>
             <div className="ori-stat-card">
               <div className="stat-label">Progresso</div>
@@ -626,14 +783,18 @@
           ) : tasks.map(t => {
             const st = statusMap[t.status] || statusMap.todo;
             const isOverdue = t.due_date && t.status !== 'done' && new Date(t.due_date + 'T00:00:00') < new Date();
+            const priorityColors = { high: 'var(--rose)', medium: 'var(--amber)', low: 'var(--cyan)' };
             return (
               <div key={t.id} className="task-row" style={{borderColor: isOverdue ? 'var(--rose)' : undefined}}>
+                <div style={{width:4,height:28,borderRadius:2,background:priorityColors[t.priority] || 'var(--line)',flexShrink:0}}/>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontSize:'.88rem',fontWeight:500,color: t.status === 'done' ? 'var(--muted)' : 'var(--ink)',
                     textDecoration: t.status === 'done' ? 'line-through' : 'none'}}>{t.title}</div>
-                  <div style={{fontSize:'.7rem',color:'var(--muted)',marginTop:2,fontFamily:'var(--font-mono)'}}>
-                    {t.due_date ? new Date(t.due_date + 'T00:00:00').toLocaleDateString('pt-BR') : 'Sem prazo'}
-                    {isOverdue && <span style={{color:'var(--rose)',fontWeight:700,marginLeft:6}}>ATRASADA</span>}
+                  <div style={{fontSize:'.7rem',color:'var(--muted)',marginTop:2,fontFamily:'var(--font-mono)',display:'flex',gap:8,flexWrap:'wrap'}}>
+                    <span>{t.due_date ? new Date(t.due_date + 'T00:00:00').toLocaleDateString('pt-BR') : 'Sem prazo'}</span>
+                    {nameMap[t.assigned_to] && <span>• {nameMap[t.assigned_to]}</span>}
+                    {t.created_by === user.uid && <span style={{color:'var(--emerald)'}}>• Criada por você</span>}
+                    {isOverdue && <span style={{color:'var(--rose)',fontWeight:700}}>ATRASADA</span>}
                   </div>
                 </div>
                 <span className={`tag ${st.cls}`}>{st.label}</span>
@@ -767,11 +928,9 @@
       const [selProject, setSelProject] = useState(null);
       const [reports, setReports] = useState([]);
       const [generating, setGenerating] = useState(false);
+      const [preview, setPreview] = useState(null);
 
-      useEffect(() => {
-        loadReports();
-      }, [user]);
-
+      useEffect(() => { loadReports(); }, [user]);
       useEffect(() => {
         if (projects.length > 0 && !selProject) setSelProject(projects[0]);
       }, [projects]);
@@ -793,18 +952,121 @@
         setGenerating(false);
       }
 
-      async function handleDownload(reportId) {
+      async function getReportContent(reportId) {
+        const content = await DB.orientador.exportReportAsPDF(reportId);
+        return content;
+      }
+
+      function buildReportHTML(content) {
+        const sectionLabels = { geral:'Geral', introducao:'Introdução', metodologia:'Metodologia', resultados:'Resultados', conclusao:'Conclusão', referencias:'Referências', formatacao:'Formatação' };
+        let html = `
+          <html><head><meta charset="utf-8"><style>
+            body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:40px;color:#1a1a2e;line-height:1.6}
+            h1{font-size:1.8rem;color:#10b981;border-bottom:3px solid #10b981;padding-bottom:8px;margin-bottom:24px}
+            h2{font-size:1.2rem;color:#333;margin-top:28px;border-left:4px solid #10b981;padding-left:12px}
+            .meta{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:24px}
+            .meta p{margin:4px 0;font-size:.9rem;color:#555}
+            .meta strong{color:#1a1a2e}
+            .comment{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:8px}
+            .comment .date{font-size:.75rem;color:#888;margin-bottom:4px}
+            .comment .text{font-size:.9rem}
+            .empty{color:#999;font-style:italic;font-size:.85rem}
+            .footer{margin-top:40px;border-top:1px solid #e2e8f0;padding-top:16px;font-size:.75rem;color:#999;text-align:center}
+            .stats{display:flex;gap:16px;margin:16px 0}
+            .stat-box{flex:1;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;text-align:center}
+            .stat-box .val{font-size:1.5rem;font-weight:700;color:#10b981}
+            .stat-box .lbl{font-size:.7rem;color:#888;text-transform:uppercase;letter-spacing:.05em}
+          </style></head><body>
+          <h1>Relatório de Orientação</h1>
+          <div class="meta">
+            <p><strong>Projeto:</strong> ${content.project || 'N/A'}</p>
+            <p><strong>Código:</strong> ${content.code || 'N/A'}</p>
+            <p><strong>Gerado em:</strong> ${new Date(content.generatedAt).toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})}</p>
+            <p><strong>Alunos:</strong> ${(content.students||[]).map(s=>s.name||s.email).join(', ') || 'N/A'}</p>
+          </div>`;
+
+        const allComments = Object.values(content.sections || {}).flat();
+        const sectionCount = Object.keys(content.sections || {}).length;
+        html += `<div class="stats">
+          <div class="stat-box"><div class="val">${allComments.length}</div><div class="lbl">Comentários</div></div>
+          <div class="stat-box"><div class="val">${sectionCount}</div><div class="lbl">Seções</div></div>
+          <div class="stat-box"><div class="val">${(content.students||[]).length}</div><div class="lbl">Alunos</div></div>
+        </div>`;
+
+        const secs = content.sections || {};
+        if (Object.keys(secs).length === 0) {
+          html += '<p class="empty">Nenhum comentário registrado.</p>';
+        } else {
+          for (const [key, comments] of Object.entries(secs)) {
+            html += `<h2>${sectionLabels[key] || key}</h2>`;
+            for (const c of comments) {
+              html += `<div class="comment">
+                <div class="date">${new Date(c.date).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+                <div class="text">${(c.comment||'').replace(/\n/g,'<br>')}</div>
+              </div>`;
+            }
+          }
+        }
+
+        html += `<div class="footer">Gerado por TCCFlow — Painel do Orientador</div></body></html>`;
+        return html;
+      }
+
+      async function handleDownloadPDF(reportId) {
         try {
-          const content = await DB.orientador.exportReportAsPDF(reportId);
-          const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
+          const content = await getReportContent(reportId);
+          const html = buildReportHTML(content);
+          const printWin = window.open('', '_blank');
+          printWin.document.write(html);
+          printWin.document.close();
+          setTimeout(() => { printWin.print(); }, 500);
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
+
+      async function handleDownloadDOCX(reportId) {
+        try {
+          const content = await getReportContent(reportId);
+          const sectionLabels = { geral:'Geral', introducao:'Introdução', metodologia:'Metodologia', resultados:'Resultados', conclusao:'Conclusão', referencias:'Referências', formatacao:'Formatação' };
+
+          let docContent = `RELATÓRIO DE ORIENTAÇÃO\n${'='.repeat(40)}\n\n`;
+          docContent += `Projeto: ${content.project || 'N/A'}\n`;
+          docContent += `Código: ${content.code || 'N/A'}\n`;
+          docContent += `Gerado em: ${new Date(content.generatedAt).toLocaleDateString('pt-BR')}\n`;
+          docContent += `Alunos: ${(content.students||[]).map(s=>s.name||s.email).join(', ') || 'N/A'}\n\n`;
+          docContent += `${'─'.repeat(40)}\n\n`;
+
+          const secs = content.sections || {};
+          for (const [key, comments] of Object.entries(secs)) {
+            docContent += `${(sectionLabels[key] || key).toUpperCase()}\n${'-'.repeat(20)}\n\n`;
+            for (const c of comments) {
+              const d = new Date(c.date).toLocaleDateString('pt-BR');
+              docContent += `[${d}]\n${c.comment}\n\n`;
+            }
+          }
+          if (Object.keys(secs).length === 0) {
+            docContent += 'Nenhum comentário registrado.\n';
+          }
+
+          docContent += `\n${'─'.repeat(40)}\nGerado por TCCFlow — Painel do Orientador\n`;
+
+          const blob = new Blob(['﻿' + docContent], { type: 'application/msword;charset=utf-8' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `relatorio-${Date.now()}.json`;
+          a.download = `relatorio-${content.project || 'projeto'}-${new Date().toISOString().split('T')[0]}.doc`;
           a.click();
           URL.revokeObjectURL(url);
         } catch(e) { alert('Erro: ' + e.message); }
       }
+
+      async function handlePreview(reportId) {
+        try {
+          const content = await getReportContent(reportId);
+          setPreview(content);
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
+
+      const sectionLabels = { geral:'Geral', introducao:'Introdução', metodologia:'Metodologia', resultados:'Resultados', conclusao:'Conclusão', referencias:'Referências', formatacao:'Formatação' };
 
       return (
         <div className="ori-content">
@@ -812,6 +1074,7 @@
             <div className="card-header">
               <div className="card-title">Gerar Novo Relatório</div>
             </div>
+            <p style={{fontSize:'.78rem',color:'var(--muted)',marginBottom:12}}>Gera um relatório completo com todos os comentários e correções do projeto selecionado.</p>
             <div style={{display:'flex',gap:10,alignItems:'center'}}>
               <select className="field" style={{width:'auto',flex:1}} value={selProject?.id || ''}
                 onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
@@ -831,19 +1094,76 @@
             {reports.length === 0 ? (
               <div className="empty-state"><i className="fa-solid fa-file-lines" style={{display:'block'}}/><p>Nenhum relatório gerado ainda.</p></div>
             ) : reports.map(r => (
-              <div key={r.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 16px',border:'1px solid var(--line)',borderRadius:'var(--radius)',marginBottom:8}}>
-                <div>
-                  <div style={{fontSize:'.88rem',fontWeight:600,color:'var(--ink)'}}>{r.title}</div>
-                  <div style={{fontSize:'.68rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>
-                    {new Date(r.generated_at).toLocaleDateString('pt-BR')} &bull; {r.download_count || 0} downloads
+              <div key={r.id} style={{border:'1px solid var(--line)',borderRadius:'var(--radius)',marginBottom:10,overflow:'hidden'}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px'}}>
+                  <div>
+                    <div style={{fontSize:'.88rem',fontWeight:600,color:'var(--ink)'}}>{r.title}</div>
+                    <div style={{fontSize:'.68rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>
+                      {new Date(r.generated_at).toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})} &bull; {r.download_count || 0} downloads
+                    </div>
+                  </div>
+                  <div style={{display:'flex',gap:6}}>
+                    <button className="btn btn-sm btn-ghost" onClick={() => handlePreview(r.id)} title="Visualizar">
+                      <i className="fa-solid fa-eye"/>
+                    </button>
+                    <button className="btn btn-sm" onClick={() => handleDownloadPDF(r.id)} title="Exportar como PDF">
+                      <i className="fa-solid fa-file-pdf" style={{color:'var(--rose)'}}/> PDF
+                    </button>
+                    <button className="btn btn-sm" onClick={() => handleDownloadDOCX(r.id)} title="Exportar como DOC">
+                      <i className="fa-solid fa-file-word" style={{color:'var(--blue)'}}/> DOC
+                    </button>
                   </div>
                 </div>
-                <button className="btn btn-sm" onClick={() => handleDownload(r.id)}>
-                  <i className="fa-solid fa-download"/> Baixar
-                </button>
               </div>
             ))}
           </div>
+
+          {preview && (
+            <div className="card" style={{borderColor:'var(--emerald)'}}>
+              <div className="card-header">
+                <div className="card-title">Pré-visualização: {preview.project}</div>
+                <button className="btn btn-sm btn-ghost" onClick={() => setPreview(null)}><i className="fa-solid fa-xmark"/></button>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12,marginBottom:20}}>
+                <div style={{background:'var(--bg-2)',borderRadius:'var(--radius)',padding:12,textAlign:'center'}}>
+                  <div style={{fontSize:'1.3rem',fontWeight:700,color:'var(--emerald)'}}>{Object.values(preview.sections||{}).flat().length}</div>
+                  <div style={{fontSize:'.65rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>COMENTÁRIOS</div>
+                </div>
+                <div style={{background:'var(--bg-2)',borderRadius:'var(--radius)',padding:12,textAlign:'center'}}>
+                  <div style={{fontSize:'1.3rem',fontWeight:700,color:'var(--violet)'}}>{Object.keys(preview.sections||{}).length}</div>
+                  <div style={{fontSize:'.65rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>SEÇÕES</div>
+                </div>
+                <div style={{background:'var(--bg-2)',borderRadius:'var(--radius)',padding:12,textAlign:'center'}}>
+                  <div style={{fontSize:'1.3rem',fontWeight:700,color:'var(--cyan)'}}>{(preview.students||[]).length}</div>
+                  <div style={{fontSize:'.65rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>ALUNOS</div>
+                </div>
+              </div>
+
+              <div style={{marginBottom:12}}>
+                <span className="field-label">Alunos</span>
+                <div style={{fontSize:'.85rem',color:'var(--ink)'}}>{(preview.students||[]).map(s=>s.name||s.email).join(', ') || 'N/A'}</div>
+              </div>
+
+              {Object.entries(preview.sections || {}).map(([key, comments]) => (
+                <div key={key} style={{marginBottom:16}}>
+                  <div style={{fontSize:'.85rem',fontWeight:600,color:'var(--ink)',marginBottom:8,paddingBottom:4,borderBottom:'1px solid var(--line)'}}>
+                    {sectionLabels[key] || key} <span style={{color:'var(--muted)',fontWeight:400}}>({comments.length})</span>
+                  </div>
+                  {comments.map((c, i) => (
+                    <div key={i} className="comment-bubble" style={{marginBottom:6}}>
+                      <div style={{fontSize:'.62rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginBottom:4}}>
+                        {new Date(c.date).toLocaleDateString('pt-BR')}
+                      </div>
+                      <div style={{fontSize:'.82rem',color:'var(--ink)',whiteSpace:'pre-wrap'}}>{c.comment}</div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+              {Object.keys(preview.sections || {}).length === 0 && (
+                <p style={{color:'var(--muted)',fontSize:'.85rem',fontStyle:'italic'}}>Nenhum comentário registrado.</p>
+              )}
+            </div>
+          )}
         </div>
       );
     }
