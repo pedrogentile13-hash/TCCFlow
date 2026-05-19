@@ -70,6 +70,8 @@ function PlansPage() {
   const currentPlan = subscription?.plan || "free";
 
   async function handleUpgrade() {
+    console.log('handleUpgrade called', { user: !!user, userData: !!userData, billing });
+
     if (!user || !userData) {
       alert("Faça login para continuar");
       return;
@@ -81,6 +83,8 @@ function PlansPage() {
       const isYearly = billing === "yearly";
       const amount = isYearly ? 124.90 : 14.90;
       const planType = isYearly ? 'pro_annual' : 'pro_monthly';
+
+      console.log('Calling create-preapproval with:', { userId: user.uid, amount, planType });
 
       // Chamar Netlify Function para criar assinatura recorrente
       const response = await fetch('/.netlify/functions/create-preapproval', {
@@ -97,6 +101,7 @@ function PlansPage() {
       });
 
       const data = await response.json();
+      console.log('Response from create-preapproval:', data);
 
       if (data.error) {
         alert('Erro: ' + data.error);
@@ -104,12 +109,16 @@ function PlansPage() {
       }
 
       if (data.url) {
+        console.log('Redirecting to:', data.url);
         // Redirecionar para Mercado Pago
         window.location.href = data.url;
+      } else {
+        console.warn('No URL returned from API');
+        alert('Erro: Não foi possível redirecionar para Mercado Pago');
       }
     } catch(e) {
       console.error('Erro ao criar assinatura:', e);
-      alert('Erro ao processar pagamento. Tente novamente.');
+      alert('Erro ao processar pagamento. Tente novamente: ' + e.message);
     } finally {
       setUpgrading(false);
     }
