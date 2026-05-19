@@ -23,9 +23,9 @@ exports.handler = async (event) => {
         const siteUrl = process.env.URL || 'https://tccflow.com.br';
 
         // Criar PreApproval (assinatura recorrente)
-        const preapproval = new PreApproval(client);
+        const preapprovalClient = new PreApproval(client);
 
-        const result = await preapproval.create({
+        const result = await preapprovalClient.create({
             body: {
                 reason: 'TCCFlow - Assinatura Anual PRO',
                 reference_id: userId,
