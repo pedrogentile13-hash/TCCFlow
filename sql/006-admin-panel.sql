@@ -1,6 +1,26 @@
 -- ============================================
 -- TCCFlow - Admin Panel Tables
 -- ============================================
+-- IMPORTANTE: Este SQL deve ser executado DEPOIS
+-- que auth.users estiver configurado em Supabase
+-- ============================================
+
+-- ============================================
+-- 0. ADMIN EMAILS (Deve ser criada PRIMEIRO)
+-- ============================================
+CREATE TABLE IF NOT EXISTS admin_emails (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id),
+    email TEXT UNIQUE NOT NULL,
+    role TEXT DEFAULT 'admin',
+    active BOOLEAN DEFAULT true,
+    added_by UUID REFERENCES auth.users(id),
+    added_at TIMESTAMPTZ DEFAULT now(),
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_emails_user_id ON admin_emails(user_id);
+CREATE INDEX IF NOT EXISTS idx_admin_emails_active ON admin_emails(active);
 
 -- ============================================
 -- 1. ADMIN LOGS (Rastreamento de atividades)
@@ -202,21 +222,15 @@ CREATE POLICY "Admins can manage features"
     USING (auth.uid() IN (SELECT user_id FROM admin_emails WHERE active = true));
 
 -- ============================================
--- 8. ADMIN EMAILS (Controle de acesso)
+-- 8. ADMIN EMAILS RLS & DEFAULT DATA
 -- ============================================
-CREATE TABLE IF NOT EXISTS admin_emails (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID NOT NULL REFERENCES auth.users(id),
-    email TEXT UNIQUE NOT NULL,
-    role TEXT DEFAULT 'admin', -- admin, super_admin, moderator
-    active BOOLEAN DEFAULT true,
-    added_by UUID REFERENCES auth.users(id),
-    added_at TIMESTAMPTZ DEFAULT now(),
-    created_at TIMESTAMPTZ DEFAULT now()
-);
 
-CREATE INDEX IF NOT EXISTS idx_admin_emails_user_id ON admin_emails(user_id);
-CREATE INDEX IF NOT EXISTS idx_admin_emails_active ON admin_emails(active);
+-- Enable RLS on admin_emails (created earlier)
+ALTER TABLE admin_emails ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY IF NOT EXISTS "Admins can view other admins"
+    ON admin_emails FOR SELECT
+    USING (auth.uid() IN (SELECT user_id FROM admin_emails WHERE active = true));
 
 -- Insert default admin if not exists
 INSERT INTO admin_emails (user_id, email, role, active)
@@ -224,12 +238,6 @@ SELECT id, email, 'super_admin', true
 FROM auth.users
 WHERE email IN ('pedro@tccflow.com.br', 'admin@tccflow.com.br')
 ON CONFLICT (email) DO NOTHING;
-
-ALTER TABLE admin_emails ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Admins can view other admins"
-    ON admin_emails FOR SELECT
-    USING (auth.uid() IN (SELECT user_id FROM admin_emails WHERE active = true));
 
 -- ============================================
 -- HELPER VIEWS
