@@ -9,7 +9,7 @@ function Features() {
             <h2 className="display">Tudo que seu grupo precisa, <em>nada</em> que não precisa.</h2>
           </div>
           <p className="desc">
-            Seis ferramentas que costumavam ser seis abas diferentes. Agora conversam entre si — e com o Google.
+            Nove ferramentas que costumavam ser nove abas diferentes. Agora conversam entre si — e com o Google.
           </p>
         </Reveal>
 
@@ -89,10 +89,18 @@ function Features() {
             <p>Tags, links entre notas e busca fulltext.</p>
           </Reveal>
 
-          <Reveal delay={4} className="feat feat-sm">
+          <Reveal delay={4} className="feat feat-sm" style={{position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:8,right:8,background:"linear-gradient(135deg,#7c3aed,#a855f7)",color:"white",padding:"2px 8px",borderRadius:999,fontSize:".6rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".05em",zIndex:2}}>PRO</div>
             <div className="feat-label">08 · Orientador</div>
             <h3>Feedback em contexto.</h3>
-            <p>Comentários vinculam ao parágrafo, à tarefa e à versão.</p>
+            <p>Seu orientador avalia cada seção, deixa notas e acompanha o progresso do grupo em tempo real.</p>
+          </Reveal>
+
+          <Reveal delay={5} className="feat feat-sm" style={{position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:8,right:8,background:"linear-gradient(135deg,#7c3aed,#a855f7)",color:"white",padding:"2px 8px",borderRadius:999,fontSize:".6rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".05em",zIndex:2}}>PRO</div>
+            <div className="feat-label">09 · Trabalho Escrito</div>
+            <h3>Escreva e envie para revisão.</h3>
+            <p>Editor de capítulos com status, contagem de palavras e envio direto para revisão do orientador.</p>
           </Reveal>
         </div>
       </div>

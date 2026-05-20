@@ -1,35 +1,94 @@
-const { useState: useStateP } = React;
+const { useState: useStateP, useEffect: useEffectP } = React;
+
+function useCountdown() {
+  const OFFER_KEY = "tccflow_offer_start";
+  const OFFER_DAYS = 7;
+  function getEnd() {
+    let start = localStorage.getItem(OFFER_KEY);
+    if (!start) { start = Date.now().toString(); localStorage.setItem(OFFER_KEY, start); }
+    return parseInt(start) + OFFER_DAYS * 86400000;
+  }
+  const [timeLeft, setTimeLeft] = useStateP(() => Math.max(0, getEnd() - Date.now()));
+  useEffectP(() => {
+    const id = setInterval(() => setTimeLeft(Math.max(0, getEnd() - Date.now())), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const d = Math.floor(timeLeft / 86400000);
+  const h = Math.floor((timeLeft % 86400000) / 3600000);
+  const m = Math.floor((timeLeft % 3600000) / 60000);
+  const s = Math.floor((timeLeft % 60000) / 1000);
+  return { d, h, m, s, expired: timeLeft <= 0 };
+}
+
+function CountdownTimer({ compact }) {
+  const { d, h, m, s, expired } = useCountdown();
+  if (expired) return null;
+  const boxStyle = compact
+    ? { display:"inline-flex",alignItems:"center",gap:6,background:"rgba(244,63,94,.1)",padding:"4px 10px",borderRadius:8,fontSize:".75rem",fontWeight:600,color:"var(--rose,#f43f5e)" }
+    : { display:"flex",justifyContent:"center",gap:10,margin:"12px 0" };
+  const unitStyle = compact ? { fontVariantNumeric:"tabular-nums" } : {
+    display:"flex",flexDirection:"column",alignItems:"center",background:"rgba(244,63,94,.08)",borderRadius:10,padding:"8px 14px",minWidth:56
+  };
+  const numStyle = compact ? {} : { fontSize:"1.5rem",fontWeight:700,color:"#f43f5e",fontVariantNumeric:"tabular-nums" };
+  const lblStyle = { fontSize:".6rem",textTransform:"uppercase",letterSpacing:".08em",color:"#f43f5e",opacity:.7 };
+  if (compact) return (
+    <span style={boxStyle}>
+      <span>{"⏱"}</span>
+      <span style={unitStyle}>{d}d {String(h).padStart(2,"0")}:{String(m).padStart(2,"0")}:{String(s).padStart(2,"0")}</span>
+    </span>
+  );
+  return (
+    <div style={boxStyle}>
+      {[[d,"dias"],[h,"horas"],[m,"min"],[s,"seg"]].map(([v,l],i) => (
+        <div key={i} style={unitStyle}><span style={numStyle}>{String(v).padStart(2,"0")}</span><span style={lblStyle}>{l}</span></div>
+      ))}
+    </div>
+  );
+}
 
 function Pricing() {
   const [annual, setAnnual] = useStateP(true);
+  const { expired } = useCountdown();
+  const ORIGINAL_M = 39.90;
+  const OFFER_M = 14.90;
+  const ORIGINAL_Y = 334.90;
+  const OFFER_Y = 124.90;
+
   const plans = [
     {
       name: "Solo",
       sub: "Para quem está começando a organizar o próprio TCC.",
       priceM: 0, priceY: 0,
+      originalM: 0, originalY: 0,
       cta: "Começar grátis",
       feats: [
         "1 grupo · até 2 pessoas",
         "Tarefas, calendário e anotações",
         "Integração Google Drive",
         { t: "IA com limite mensal", off: false },
-        { t: "Orientador externo", off: true },
+        { t: "Painel do Orientador", off: true },
+        { t: "Trabalho Escrito com revisão", off: true },
         { t: "Exportação ABNT", off: true },
       ],
     },
     {
       name: "Grupo",
       sub: "O plano mais usado por grupos de TCC.",
-      priceM: 14.90, priceY: 10.41,
+      priceM: expired ? ORIGINAL_M : OFFER_M,
+      priceY: expired ? (ORIGINAL_Y / 12) : (OFFER_Y / 12),
+      originalM: expired ? null : ORIGINAL_M,
+      originalY: expired ? null : (ORIGINAL_Y / 12),
       cta: "Escolher Grupo",
       popular: true,
       highlight: true,
       feats: [
-        "Grupos ilimitados · até 6 pessoas",
+        "Até 5 projetos · até 8 pessoas",
         "Tudo do Solo +",
-        "Orientador com acesso total",
+        "Painel do Orientador completo",
+        "Trabalho Escrito com revisão",
         "IA ilimitada · assistente dedicado",
         "Exportação ABNT / APA",
+        "1.000 buscas I.A./mês",
         "Histórico de versões",
       ],
     },
@@ -37,6 +96,7 @@ function Pricing() {
       name: "Instituição",
       sub: "Para cursos e universidades que querem rodar em escala.",
       priceM: null, priceY: null,
+      originalM: null, originalY: null,
       cta: "Falar com vendas",
       feats: [
         "Tudo do Grupo +",
@@ -62,6 +122,25 @@ function Pricing() {
           </p>
         </Reveal>
 
+        {!expired && (
+          <Reveal>
+            <div style={{
+              background:"linear-gradient(135deg,#f43f5e 0%,#e11d48 100%)",
+              borderRadius:16,padding:"20px 28px",marginBottom:28,textAlign:"center",color:"white",
+              boxShadow:"0 8px 32px rgba(244,63,94,.3)"
+            }}>
+              <div style={{fontSize:".75rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".12em",marginBottom:6,opacity:.9}}>
+                {"🔥"} Oferta Limitada {"🔥"}
+              </div>
+              <div style={{fontSize:"1.25rem",fontWeight:600,marginBottom:4}}>
+                De <span style={{textDecoration:"line-through",opacity:.7}}>R$ {ORIGINAL_M.toFixed(2).replace(".",",")}/mês</span> por apenas <span style={{fontSize:"1.5rem"}}>R$ {OFFER_M.toFixed(2).replace(".",",")}/mês</span>
+              </div>
+              <div style={{fontSize:".875rem",opacity:.85,marginBottom:12}}>Economize mais de 60%! A oferta acaba em:</div>
+              <CountdownTimer />
+            </div>
+          </Reveal>
+        )}
+
         <Reveal>
           <div className="price-toggle">
             <div className="slider" style={{
@@ -78,7 +157,8 @@ function Pricing() {
         <div className="price-grid">
           {plans.map((p, i) => (
             <Reveal key={i} delay={i+1} className={`price-card ${p.highlight ? "highlight" : ""}`}>
-              {p.popular && <div className="popular">Mais popular</div>}
+              {p.popular && !expired && <div className="popular" style={{background:"linear-gradient(135deg,#f43f5e,#e11d48)"}}>Oferta Limitada</div>}
+              {p.popular && expired && <div className="popular">Mais popular</div>}
               <div className="price-name">{p.name}</div>
               <div className="price-sub">{p.sub}</div>
               <div className="price-value">
@@ -88,9 +168,15 @@ function Pricing() {
                   <><span className="amount">R$0</span><span className="period">/ para sempre</span></>
                 ) : (
                   <>
+                    {(annual ? p.originalY : p.originalM) && (
+                      <div style={{fontSize:".875rem",color:"#f43f5e",textDecoration:"line-through",opacity:.7,marginBottom:2}}>
+                        R$ {(annual ? p.originalY : p.originalM).toFixed(2).replace(".",",")}
+                      </div>
+                    )}
                     <span className="currency">R$</span>
-                    <span className="amount">{annual ? p.priceY : p.priceM}</span>
+                    <span className="amount">{(annual ? p.priceY : p.priceM).toFixed(2).replace(".",",")}</span>
                     <span className="period">/ mês por grupo</span>
+                    {!expired && p.popular && <CountdownTimer compact />}
                   </>
                 )}
               </div>
@@ -109,4 +195,4 @@ function Pricing() {
   );
 }
 
-Object.assign(window, { Pricing });
+Object.assign(window, { Pricing, CountdownTimer, useCountdown });

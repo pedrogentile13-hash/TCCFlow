@@ -302,7 +302,15 @@ function TrabalhoPage() {
     }
   }
 
+  const isPro = subscription?.plan === 'pro' && subscription?.status === 'active';
+
   function handleSendToReview() {
+    if (!isPro) {
+      if (confirm("Enviar para revisão é um recurso exclusivo do Plano Pro.\n\nDeseja ver os planos disponíveis?")) {
+        window.location.href = "plans.html";
+      }
+      return;
+    }
     handleStatusChange("review");
   }
 
@@ -585,10 +593,16 @@ function TrabalhoPage() {
                   <select
                     className="status-select"
                     value={editStatus}
-                    onChange={e => handleStatusChange(e.target.value)}
+                    onChange={e => {
+                      if (e.target.value === "review" && !isPro) {
+                        handleSendToReview();
+                        return;
+                      }
+                      handleStatusChange(e.target.value);
+                    }}
                   >
                     <option value="draft">Rascunho</option>
-                    <option value="review">Em revisão</option>
+                    <option value="review">{isPro ? "Em revisão" : "Em revisão (PRO)"}</option>
                     <option value="approved">Aprovado</option>
                     <option value="revision">Revisão necessária</option>
                   </select>
@@ -596,8 +610,8 @@ function TrabalhoPage() {
                     {(STATUS_MAP[editStatus] || STATUS_MAP.draft).label}
                   </span>
                   {editStatus !== "review" && (
-                    <button className="btn btn-ghost btn-sm" onClick={handleSendToReview}>
-                      Enviar para revisão
+                    <button className="btn btn-ghost btn-sm" onClick={handleSendToReview} style={!isPro ? { opacity:.7,border:"1px solid rgba(124,58,237,.2)" } : {}}>
+                      {isPro ? "Enviar para revisão" : "Enviar para revisão (PRO)"}
                     </button>
                   )}
                   <button className="btn btn-ghost btn-sm" style={{ color: "var(--rose)" }} onClick={() => deleteSection(selectedSectionId)}>

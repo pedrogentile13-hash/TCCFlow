@@ -481,9 +481,11 @@ function PlanSection({ user, userData, subscription }) {
           </div>
         )}
         {!isPro && !isCancelled && (
-          <div style={{background:"var(--bg-2)",borderRadius:12,padding:"16px 18px",marginBottom:20}}>
-            <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:4}}>Desbloqueie o Pro</div>
-            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>Tarefas ilimitadas, IA completa, integração Google, suporte prioritário e mais.</div>
+          <div style={{background:"linear-gradient(135deg,rgba(244,63,94,.08),rgba(124,58,237,.08))",borderRadius:12,padding:"16px 18px",marginBottom:20,border:"1px solid rgba(244,63,94,.15)"}}>
+            <div style={{fontWeight:600,fontSize:".9375rem",marginBottom:4,color:"var(--rose)"}}>{"🔥"} Oferta Limitada — Desbloqueie o Pro</div>
+            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>
+              De <span style={{textDecoration:"line-through"}}>R$ 39,90/mês</span> por apenas <strong style={{color:"var(--rose)"}}>R$ 14,90/mês</strong>. Painel do Orientador, revisão do trabalho, IA ilimitada e muito mais.
+            </div>
           </div>
         )}
         {isCancelled && (
@@ -507,8 +509,8 @@ function PlanSection({ user, userData, subscription }) {
       <div className="card" style={{marginTop:20}}>
         <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:8}}>Recursos do seu plano</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-          {(isPro ? ["Grupos ilimitados","Até 8 membros","Tarefas ilimitadas","1.000 buscas I.A./mês","Integração Google completa","Suporte prioritário"]
-            : ["1 grupo","Até 2 pessoas","Até 5 tarefas","20 buscas I.A./mês","Calendário básico","Dashboard"]
+          {(isPro ? ["Até 5 projetos · 8 membros","Tarefas ilimitadas","1.000 buscas I.A./mês","Painel do Orientador","Trabalho Escrito com revisão","Integração Google completa","Suporte prioritário"]
+            : ["1 projeto","Até 2 pessoas","Até 5 tarefas","20 buscas I.A./mês","Calendário básico","Dashboard"]
           ).map((f,i) => (
             <div key={i} style={{display:"flex",alignItems:"center",gap:8,fontSize:".8125rem",color:"var(--ink-2)",padding:"6px 0"}}>
               <span style={{color:isPro?"var(--violet)":"var(--emerald)",fontWeight:700,fontSize:".75rem"}}>&#10003;</span> {f}
