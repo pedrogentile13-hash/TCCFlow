@@ -240,7 +240,7 @@ function IdeiasPage() {
     return idea.connected_to.map(cid => ideas.find(i => i.id === cid)).filter(Boolean);
   }
 
-  if (loading) return React.createElement("div", { style: { display:"flex", alignItems:"center", justifyContent:"center", height:"100vh", color:"var(--muted)" } }, "Carregando...");
+  if (loading) return React.createElement(AppSplash);
 
   return (
     <div className="app-layout">

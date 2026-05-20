@@ -103,7 +103,7 @@ function IADetectorPage() {
     }, 800);
   }
 
-  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+  if (loading) return <AppSplash />;
 
   const scoreColor = result ? (result.overall > 65 ? 'var(--rose)' : result.overall < 35 ? 'var(--emerald)' : 'var(--amber)') : 'var(--muted)';
   const scoreText = result ? (result.overall > 65 ? 'Provavelmente IA' : result.overall < 35 ? 'Provavelmente Humano' : 'Inconclusivo') : '';

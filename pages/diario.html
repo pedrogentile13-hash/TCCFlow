@@ -269,7 +269,7 @@ function DiarioPage() {
 
   const entryDates = useMemo(() => new Set(monthEntries.map(e => e.date)), [monthEntries]);
 
-  if (loading) return React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}, "Carregando...");
+  if (loading) return React.createElement(AppSplash);
 
   const isFormOpen = creating || editing;
 

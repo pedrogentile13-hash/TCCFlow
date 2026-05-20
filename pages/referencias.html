@@ -415,11 +415,7 @@ function ReferenciasPage() {
 
   const visibleFields = TYPE_FIELDS[type] || [];
 
-  if (loading) return (
-    <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",fontFamily:"var(--font-body)",color:"var(--muted)"}}>
-      Carregando...
-    </div>
-  );
+  if (loading) return <AppSplash />;
 
   return (
     <div className="app-layout">

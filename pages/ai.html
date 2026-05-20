@@ -318,7 +318,7 @@ function PesquisaMode({ project, user }) {
 function AIPage() {
   const { user, userData, project, subscription, loading } = useTCCData();
 
-  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+  if (loading) return <AppSplash />;
 
   return (
     <div className="app-layout">

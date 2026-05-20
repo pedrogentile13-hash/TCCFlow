@@ -1,6 +1,16 @@
 // Shared Sidebar + AppShell component
 const { useState, useEffect, useRef } = React;
 
+function AppSplash() {
+  return (
+    <div className="app-splash">
+      <div className="splash-logo"><img src="../assets/logo.png" alt="" /></div>
+      <div className="splash-name">TCC<em>Flow</em></div>
+      <div className="splash-dots"><span/><span/><span/></div>
+    </div>
+  );
+}
+
 // Inject font-switch.js once
 (function() {
   if (!document.getElementById("tcc-font-switcher-script")) {
@@ -514,4 +524,4 @@ function Topbar({ page, actions, user }) {
   );
 }
 
-Object.assign(window, { Sidebar, Topbar, useTCCData, getInitials });
+Object.assign(window, { Sidebar, Topbar, useTCCData, getInitials, AppSplash });

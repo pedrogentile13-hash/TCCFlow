@@ -366,7 +366,7 @@ function SmartPage() {
     alert("Análise salva com sucesso!");
   }
 
-  if (loading) return React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",fontFamily:"var(--font-body)",color:"var(--muted)"}}, "Carregando...");
+  if (loading) return React.createElement(AppSplash);
 
   return (
     React.createElement("div", {className:"app-layout"},

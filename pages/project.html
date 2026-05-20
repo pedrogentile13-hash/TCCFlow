@@ -89,7 +89,7 @@ function ProjectPage() {
     setEditInfo(prev => ({ ...prev, [key]: val }));
   }
 
-  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+  if (loading) return <AppSplash />;
   if (!project) return (
     <div className="app-layout">
       <Sidebar active="project" userData={userData} project={project} subscription={subscription}/>

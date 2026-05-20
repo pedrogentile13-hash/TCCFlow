@@ -434,13 +434,7 @@ function TrabalhoPage() {
     setExpandedChapters(prev => ({ ...prev, [chId]: !prev[chId] }));
   }
 
-  if (loading) {
-    return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", color: "var(--muted)" }}>
-        Carregando...
-      </div>
-    );
-  }
+  if (loading) return <AppSplash />;
 
   const sortedChapters = [...chapters].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
   const selectedSection = sections.find(s => s.id === selectedSectionId);

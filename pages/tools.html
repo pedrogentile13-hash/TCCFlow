@@ -63,7 +63,7 @@ function ToolsPage() {
   const isPro = subscription?.plan === "pro";
   const filtered = filter === "pro" ? TOOLS.filter(t => t.pro) : filter === "gratis" ? TOOLS.filter(t => !t.pro) : TOOLS;
 
-  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+  if (loading) return <AppSplash />;
 
   return (
     <div className="app-layout">

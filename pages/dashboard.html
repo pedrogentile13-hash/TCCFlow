@@ -52,7 +52,7 @@ function Dashboard() {
 
   useEffect(() => { if (!loading) setTimeout(() => setShown(true), 50); }, [loading]);
 
-  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+  if (loading) return <AppSplash />;
 
   const userName = userData?.name || user?.displayName || 'Usuário';
   const firstName = userName.split(' ')[0];

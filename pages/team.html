@@ -208,7 +208,7 @@ function TeamPage() {
     } catch(e) { alert("Erro ao apagar projeto: " + e.message); }
   }
 
-  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
+  if (loading) return <AppSplash />;
 
   const slots = subscription?.seats || 1;
   const used = teamMembers.length;
