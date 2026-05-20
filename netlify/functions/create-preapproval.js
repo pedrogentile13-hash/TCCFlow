@@ -16,7 +16,7 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { userId, userEmail, userName, planType } = JSON.parse(event.body);
+        const { userId, userEmail, userName, planType, couponCode, discountPercent, originalAmount, paidAmount } = JSON.parse(event.body);
 
         if (!userId || !userEmail) {
             return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields: userId, userEmail' }) };
@@ -51,7 +51,11 @@ exports.handler = async (event) => {
                 plan: 'free',
                 plan_type: planType,
                 seats: 1,
-                payment_method: 'mercadopago'
+                payment_method: 'mercadopago',
+                coupon_code: couponCode || null,
+                discount_percent: discountPercent || 0,
+                original_amount: originalAmount || null,
+                paid_amount: paidAmount || null
             }, { onConflict: 'id' });
 
         if (upsertError) {
