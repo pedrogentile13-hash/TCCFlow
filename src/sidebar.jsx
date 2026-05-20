@@ -224,13 +224,17 @@ function Sidebar({ active, userData, project, subscription }) {
         ))}
 
         <div className="nav-section-label" style={{marginTop: 8}}>Conta</div>
-        {BOTTOM_ITEMS.map(item => (
-          <a key={item.id} href={item.href}
-            className={`nav-item ${active === item.id ? "active" : ""}`}>
-            <span className="icon">{item.icon}</span>
-            {item.label}
-          </a>
-        ))}
+        {BOTTOM_ITEMS.map(item => {
+          const isProActive = subscription?.plan === 'pro' && subscription?.status === 'active';
+          if (item.id === 'plans' && isProActive) return null;
+          return (
+            <a key={item.id} href={item.href}
+              className={`nav-item ${active === item.id ? "active" : ""}`}>
+              <span className="icon">{item.icon}</span>
+              {item.label}
+            </a>
+          );
+        })}
         {typeof ADMIN_EMAILS !== 'undefined' && typeof auth !== 'undefined' && auth.currentUser && ADMIN_EMAILS.includes(auth.currentUser.email) && (
           <a href={ADMIN_ITEM.href} className={`nav-item ${active === "admin" ? "active" : ""}`} style={{color:"var(--amber)"}}>
             <span className="icon">{ADMIN_ITEM.icon}</span>
