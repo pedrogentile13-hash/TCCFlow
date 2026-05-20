@@ -165,7 +165,7 @@ function TeamPage() {
     if (!name || !name.trim()) return;
     const canCreate = await DB.projects.canCreateProject(user.uid);
     if (!canCreate.allowed) {
-      alert("Você atingiu o limite de " + canCreate.max + " projeto(s). Faça upgrade para criar mais.");
+      alert("Você atingiu o limite de " + canCreate.max + " projeto(s). Apague um projeto existente ou faça upgrade.");
       return;
     }
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -178,6 +178,34 @@ function TeamPage() {
     if (!newProj) { alert("Erro: projeto não foi retornado"); return; }
     await _supa.from('users').update({ project_id: newProj.id }).eq('id', user.uid);
     window.location.reload();
+  }
+
+  async function leaveProject(projId) {
+    if (!confirm("Tem certeza que deseja sair deste projeto? Você perderá acesso a todas as tarefas e dados do projeto.")) return;
+    try {
+      await _supa.from('users').update({ project_id: null }).eq('id', user.uid);
+      const { data: proj } = await _supa.from('projects').select('members').eq('id', projId).maybeSingle();
+      if (proj?.members) {
+        const updated = (proj.members || []).filter(m => m !== user.uid);
+        await _supa.from('projects').update({ members: updated }).eq('id', projId);
+      }
+      window.location.reload();
+    } catch(e) { alert("Erro ao sair do projeto: " + e.message); }
+  }
+
+  async function deleteProject(projId) {
+    if (!confirm("ATENÇÃO: Isso vai APAGAR o projeto permanentemente, incluindo todas as tarefas, anotações e dados. Deseja continuar?")) return;
+    if (!confirm("Tem certeza absoluta? Esta ação não pode ser desfeita.")) return;
+    try {
+      const { data: members } = await _supa.from('users').select('id').eq('project_id', projId);
+      if (members?.length) {
+        for (const m of members) {
+          await _supa.from('users').update({ project_id: null }).eq('id', m.id);
+        }
+      }
+      await _supa.from('projects').delete().eq('id', projId);
+      window.location.reload();
+    } catch(e) { alert("Erro ao apagar projeto: " + e.message); }
   }
 
   if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--muted)"}}>Carregando...</div>;
@@ -279,15 +307,26 @@ function TeamPage() {
                   <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                     {allUserProjects.length === 0 && <div style={{color:"var(--muted)",padding:12}}>Nenhum projeto encontrado</div>}
                     {allUserProjects.map(p => (
-                      <div key={p.id} className={`proj-card ${p.id===project?.id?"active":""}`} onClick={() => switchProject(p.id)}>
-                        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
+                      <div key={p.id} style={{ background: p.id===project?.id ? "rgba(124,58,237,.06)" : "var(--bg-2)", border: p.id===project?.id ? "1.5px solid var(--violet)" : "1px solid var(--line)", borderRadius:12, padding:14 }}>
+                        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6, cursor:"pointer" }} onClick={() => switchProject(p.id)}>
                           <div style={{ fontWeight:600, fontSize:"0.9375rem" }}>{p.name}</div>
                           {p.id === project?.id && <span className="tag tag-violet">Ativo</span>}
                         </div>
-                        <div style={{ display:"flex", gap:12, alignItems:"center" }}>
+                        <div style={{ display:"flex", gap:12, alignItems:"center", marginBottom:10 }}>
                           <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--violet)", background:"rgba(124,58,237,.08)", padding:"2px 8px", borderRadius:6 }}>{p.code}</span>
                           {p.ownerId === user?.uid && <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", color:"var(--muted)" }}>Criador</span>}
                           {p.members && <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", color:"var(--muted)" }}>{p.members.length} membro(s)</span>}
+                        </div>
+                        <div style={{ display:"flex", gap:8 }}>
+                          {p.ownerId === user?.uid ? (
+                            <button className="btn btn-ghost btn-sm" style={{ color:"var(--rose)", flex:1 }} onClick={(e) => { e.stopPropagation(); deleteProject(p.id); }}>
+                              Apagar projeto
+                            </button>
+                          ) : (
+                            <button className="btn btn-ghost btn-sm" style={{ color:"var(--amber)", flex:1 }} onClick={(e) => { e.stopPropagation(); leaveProject(p.id); }}>
+                              Sair do projeto
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
