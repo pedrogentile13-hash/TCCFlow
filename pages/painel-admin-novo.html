@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Painel Admin Avançado - TCCFlow</title>
+    <link rel="icon" href="../assets/logo.png">
+    <link rel="stylesheet" href="../css/app.css">
+    <script src="../js/darkmode.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        :root {
+            --page-max-width: 1600px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 250px;
+            background: var(--paper);
+            border-right: 1px solid var(--line);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            left: 0;
+            top: 0;
+        }
+
+        .admin-main {
+            margin-left: 250px;
+            flex: 1;
+            padding: 20px;
+        }
+
+        .admin-header {
+            background: var(--paper);
+            border-bottom: 1px solid var(--line);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .admin-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .admin-nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-nav-item:hover {
+            background: var(--bg-2);
+            color: var(--ink);
+        }
+
+        .admin-nav-item.active {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--violet);
+            font-weight: 600;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--violet), var(--cyan));
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .kpi-change {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .kpi-change.positive {
+            color: var(--emerald);
+        }
+
+        .kpi-change.negative {
+            color: var(--rose);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--ink);
+        }
+
+        .table-container {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .table-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-2);
+        }
+
+        .table-search {
+            padding: 8px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--paper);
+            color: var(--ink);
+            width: 250px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-2);
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--muted);
+            border-bottom: 1px solid var(--line);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-2);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--emerald);
+        }
+
+        .badge-warning {
+            background: rgba(217, 119, 6, 0.15);
+            color: var(--amber);
+        }
+
+        .badge-danger {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--rose);
+        }
+
+        .badge-info {
+            background: rgba(124, 58, 237, 0.15);
+            color: var(--violet);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            background: var(--paper);
+            color: var(--ink);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background: var(--bg-2);
+        }
+
+        .btn-primary {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+
+        .btn-primary:hover {
+            background: var(--violet);
+            opacity: 0.8;
+        }
+
+        .chart-container {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            height: 400px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .access-denied {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .access-denied h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-violet {
+            background: var(--violet);
+            color: white;
+        }
+
+        .btn-violet:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 200px;
+            }
+            .admin-main {
+                margin-left: 200px;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            .admin-sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--line);
+            }
+            .admin-main {
+                margin-left: 0;
+            }
+            .admin-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .admin-nav-item {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="accessDenied" class="access-denied" style="display: none;">
+        <h1>🔐 Acesso Negado</h1>
+        <p style="color: var(--muted); margin-bottom: 20px;">Você não tem permissão para acessar este painel.</p>
+        <a href="dashboard.html" style="color: var(--violet); text-decoration: none; font-weight: 600;">Voltar ao Dashboard</a>
+    </div>
+
+    <div class="admin-container" id="adminContainer" style="display: none;">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="admin-logo">🛡️ TCCFlow Admin</div>
+            <div class="admin-nav">
+                <a href="#" data-section="dashboard" class="admin-nav-item active">📊 Dashboard</a>
+                <a href="#" data-section="analytics" class="admin-nav-item">📈 Analytics</a>
+                <a href="#" data-section="payments" class="admin-nav-item">💳 Pagamentos</a>
+                <a href="#" data-section="subscriptions" class="admin-nav-item">👑 Assinaturas</a>
+                <a href="#" data-section="coupons" class="admin-nav-item">🎟️ Cupons</a>
+                <a href="#" data-section="refunds" class="admin-nav-item">↩️ Reembolsos</a>
+                <a href="#" data-section="churn" class="admin-nav-item">⚠️ Churn Analysis</a>
+                <a href="#" data-section="campaigns" class="admin-nav-item">📧 Email Campaigns</a>
+                <a href="#" data-section="features" class="admin-nav-item">⚙️ Feature Flags</a>
+                <a href="#" data-section="users" class="admin-nav-item">👥 Usuários</a>
+                <a href="#" data-section="logs" class="admin-nav-item">📝 Logs</a>
+                <a href="dashboard.html" class="admin-nav-item" style="margin-top: 20px; border-top: 1px solid var(--line); padding-top: 20px;">← Voltar</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-header">
+                <div>
+                    <h1 style="font-size: 28px; margin-bottom: 4px;">Painel Administrativo</h1>
+                    <p style="color: var(--muted); font-size: 14px;">Gerencie todos os aspectos do TCCFlow</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="color: var(--muted); font-size: 12px; margin-bottom: 4px;" id="adminEmail">Carregando...</div>
+                    <button onclick="logout()" class="btn-small" style="margin-top: 8px;">Sair</button>
+                </div>
+            </div>
+
+            <!-- ============ DASHBOARD ============ -->
+            <div id="dashboard" class="content-section active">
+                <div class="section-title">Dashboard</div>
+
+                <div class="kpi-grid" id="kpiGrid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Total de Usuários</div>
+                        <div class="kpi-value" id="kpiTotalUsers">-</div>
+                        <div class="kpi-change" id="kpiUsersChange"></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Assinantes PRO</div>
+                        <div class="kpi-value" id="kpiProSubs">-</div>
+                        <div class="kpi-change" id="kpiProChange"></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Receita Total</div>
+                        <div class="kpi-value" id="kpiRevenue">-</div>
+                        <div class="kpi-change" id="kpiRevenueChange"></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">MRR Estimado</div>
+                        <div class="kpi-value" id="kpiMRR">-</div>
+                        <div class="kpi-change" id="kpiMRRChange"></div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="subscriptionsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="usersChart"></canvas>
+                </div>
+            </div>
+
+            <!-- ============ ANALYTICS ============ -->
+            <div id="analytics" class="content-section">
+                <div class="section-title">Analytics Avançado</div>
+
+                <div class="grid-2">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Taxa de Conversão</div>
+                        <div class="kpi-value" id="conversionRate">-</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Churn Rate (30d)</div>
+                        <div class="kpi-value" id="churnRate">-</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">LTV Médio</div>
+                        <div class="kpi-value" id="avgLTV">-</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">CAC Médio</div>
+                        <div class="kpi-value" id="avgCAC">-</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Estatísticas por Período</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Período</th>
+                                <th>Novos Usuários</th>
+                                <th>Novos PRO</th>
+                                <th>Receita</th>
+                                <th>Cancelamentos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analyticsTable">
+                            <tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--muted);">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ PAYMENTS ============ -->
+            <div id="payments" class="content-section">
+                <div class="section-title">Pagamentos Recebidos</div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <div>
+                            <input type="text" class="table-search" placeholder="Buscar por nome, email ou ID..." id="paymentsSearch">
+                        </div>
+                        <button onclick="exportPayments()" class="btn-small">📥 Exportar CSV</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Plano</th>
+                                <th>Valor</th>
+                                <th>Cupom</th>
+                                <th>Método</th>
+                                <th>Status</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsTable">
+                            <tr><td colspan="8" style="text-align: center; padding: 20px;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ SUBSCRIPTIONS ============ -->
+            <div id="subscriptions" class="content-section">
+                <div class="section-title">Gerenciar Assinaturas</div>
+
+                <div class="grid-2" style="margin-bottom: 20px;">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Ativas</div>
+                        <div class="kpi-value" id="subsActive">-</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Canceladas (30d)</div>
+                        <div class="kpi-value" id="subsCancelled">-</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <input type="text" class="table-search" placeholder="Buscar por nome ou email..." id="subsSearch">
+                        <select id="subsFilter" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink);">
+                            <option value="all">Todas</option>
+                            <option value="active">Ativas</option>
+                            <option value="cancelled">Canceladas</option>
+                        </select>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Plano</th>
+                                <th>Status</th>
+                                <th>Método</th>
+                                <th>Motivo Cancelamento</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subsTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 20px;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ COUPONS ============ -->
+            <div id="coupons" class="content-section">
+                <div class="section-title">Gerenciar Cupons</div>
+
+                <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 16px;">Criar Novo Cupom</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                        <div class="form-group">
+                            <label class="form-label">Código</label>
+                            <input type="text" id="newCouponCode" class="form-input" placeholder="EX: TCCFLOW50" maxlength="30">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Desconto (%)</label>
+                            <input type="number" id="newCouponDiscount" class="form-input" min="1" max="100" placeholder="50">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Máx. Usos</label>
+                            <input type="number" id="newCouponMaxUses" class="form-input" placeholder="Vazio = ilimitado">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Expira em</label>
+                            <input type="date" id="newCouponExpires" class="form-input">
+                        </div>
+                    </div>
+                    <button onclick="createCoupon()" class="btn btn-violet" style="margin-top: 12px;">+ Criar Cupom</button>
+                    <div id="couponMsg" style="margin-top: 12px; display: none; padding: 10px 12px; border-radius: 8px;"></div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Cupons Existentes</h3>
+                        <button onclick="loadCouponsTable()" class="btn-small">🔄 Atualizar</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Desconto</th>
+                                <th>Usos</th>
+                                <th>Limite</th>
+                                <th>Expira</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="couponsTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 20px;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ REFUNDS ============ -->
+            <div id="refunds" class="content-section">
+                <div class="section-title">Gerenciar Reembolsos</div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <input type="text" class="table-search" placeholder="Buscar por usuário ou email..." id="refundsSearch">
+                        <select id="refundsFilter" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink);">
+                            <option value="all">Todos</option>
+                            <option value="pending">Pendentes</option>
+                            <option value="approved">Aprovados</option>
+                            <option value="processed">Processados</option>
+                            <option value="rejected">Rejeitados</option>
+                        </select>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Valor</th>
+                                <th>Motivo</th>
+                                <th>Status</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="refundsTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 20px;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ CHURN ANALYSIS ============ -->
+            <div id="churn" class="content-section">
+                <div class="section-title">Análise de Churn</div>
+
+                <div style="margin-bottom: 20px;">
+                    <button onclick="analyzeChurn()" class="btn btn-violet">🔍 Analisar Agora</button>
+                </div>
+
+                <div class="grid-2" style="margin-bottom: 20px;">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Risco Crítico</div>
+                        <div class="kpi-value" id="churnCritical" style="color: var(--rose);">-</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Risco Alto</div>
+                        <div class="kpi-value" id="churnHigh" style="color: var(--amber);">-</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <input type="text" class="table-search" placeholder="Buscar usuário em risco..." id="churnSearch">
+                        <select id="churnFilter" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink);">
+                            <option value="all">Todos</option>
+                            <option value="critical">Crítico</option>
+                            <option value="high">Alto</option>
+                            <option value="medium">Médio</option>
+                        </select>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Dias sem atividade</th>
+                                <th>Score Risco</th>
+                                <th>Nível</th>
+                                <th>Motivo</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="churnTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 20px;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ EMAIL CAMPAIGNS ============ -->
+            <div id="campaigns" class="content-section">
+                <div class="section-title">Campanhas de Email</div>
+
+                <button onclick="showNewCampaignForm()" class="btn btn-violet" style="margin-bottom: 20px;">📧 Nova Campanha</button>
+
+                <div id="campaignForm" style="background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none;">
+                    <h3 style="margin-bottom: 16px;">Criar Nova Campanha</h3>
+                    <div class="form-group">
+                        <label class="form-label">Nome da Campanha</label>
+                        <input type="text" id="campaignName" class="form-input" placeholder="Ex: Promoção Black Friday">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Assunto do Email</label>
+                        <input type="text" id="campaignSubject" class="form-input" placeholder="Ex: Ofertas incríveis para você!">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Segmento Alvo</label>
+                        <select id="campaignSegment" class="form-select">
+                            <option value="all">Todos os usuários</option>
+                            <option value="free">Usuários Gratuitos</option>
+                            <option value="pro">Usuários PRO</option>
+                            <option value="churn_risk">Em risco de cancelamento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Conteúdo (HTML)</label>
+                        <textarea id="campaignContent" class="form-textarea" placeholder="Escreva o conteúdo do email em HTML..."></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="saveCampaign()" class="btn btn-violet">💾 Salvar</button>
+                        <button onclick="scheduleCampaign()" class="btn" style="background: var(--emerald); color: white;">📅 Agendar</button>
+                        <button onclick="cancelCampaign()" class="btn" style="background: var(--line); color: var(--ink);">✕ Cancelar</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Campanhas Ativas</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Segmento</th>
+                                <th>Destinatários</th>
+                                <th>Enviados</th>
+                                <th>Taxa Abertura</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="campaignsTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 20px;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ FEATURE FLAGS ============ -->
+            <div id="features" class="content-section">
+                <div class="section-title">Feature Flags</div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Gerenciar Features</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Descrição</th>
+                                <th>Habilitada</th>
+                                <th>Free</th>
+                                <th>PRO</th>
+                                <th>Rollout %</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="featuresTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 20px;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ USERS ============ -->
+            <div id="users" class="content-section">
+                <div class="section-title">Gerenciar Usuários</div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <input type="text" class="table-search" placeholder="Buscar por nome ou email..." id="usersSearch">
+                        <button onclick="exportUsers()" class="btn-small">📥 Exportar CSV</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Plano</th>
+                                <th>Projeto</th>
+                                <th>Criado em</th>
+                                <th>Último Acesso</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 20px;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ LOGS ============ -->
+            <div id="logs" class="content-section">
+                <div class="section-title">Logs de Atividade</div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <input type="text" class="table-search" placeholder="Buscar por ação ou admin..." id="logsSearch">
+                        <button onclick="exportLogs()" class="btn-small">📥 Exportar CSV</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Admin</th>
+                                <th>Ação</th>
+                                <th>Entidade</th>
+                                <th>Detalhes</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTable">
+                            <tr><td colspan="5" style="text-align: center; padding: 20px;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        let adminCharts = {};
+        let allData = {
+            payments: [],
+            subscriptions: [],
+            coupons: [],
+            users: [],
+            campaigns: [],
+            features: [],
+            refunds: [],
+            churn: [],
+            logs: []
+        };
+
+        // ========== AUTH CHECK ==========
+        auth.onAuthStateChanged(async user => {
+            if (!user || !ADMIN_EMAILS.includes(user.email)) {
+                document.getElementById('accessDenied').style.display = 'flex';
+                document.getElementById('adminContainer').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('adminEmail').textContent = user.email;
+            document.getElementById('adminContainer').style.display = 'flex';
+            await loadAllData();
+        });
+
+        // ========== NAVIGATION ==========
+        document.querySelectorAll('[data-section]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = el.dataset.section;
+                document.querySelectorAll('[data-section]').forEach(x => x.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(x => x.classList.remove('active'));
+                el.classList.add('active');
+                document.getElementById(section).classList.add('active');
+            });
+        });
+
+        // ========== LOAD DATA ==========
+        async function loadAllData() {
+            await Promise.all([
+                loadDashboardData(),
+                loadPayments(),
+                loadSubscriptions(),
+                loadCouponsTable(),
+                loadUsers(),
+                loadCampaigns(),
+                loadFeatures(),
+                loadRefunds(),
+                loadChurn(),
+                loadLogs()
+            ]);
+        }
+
+        // ========== DASHBOARD ==========
+        async function loadDashboardData() {
+            try {
+                const [users, subs, coupons] = await Promise.all([
+                    _supa.from('users').select('id', { count: 'exact', head: true }),
+                    _supa.from('subscriptions').select('*').eq('status', 'active'),
+                    _supa.from('coupons').select('*').eq('active', true)
+                ]);
+
+                const totalUsers = users.count || 0;
+                const proSubs = (subs.data || []).length;
+                const totalRevenue = (subs.data || []).reduce((sum, s) => sum + (parseFloat(s.paid_amount) || 0), 0);
+                const mrr = proSubs * 14.90;
+
+                document.getElementById('kpiTotalUsers').textContent = totalUsers.toLocaleString();
+                document.getElementById('kpiProSubs').textContent = proSubs.toLocaleString();
+                document.getElementById('kpiRevenue').textContent = `R$ ${totalRevenue.toFixed(2).replace('.', ',')}`;
+                document.getElementById('kpiMRR').textContent = `R$ ${mrr.toFixed(2).replace('.', ',')}`;
+
+                createCharts();
+            } catch (e) {
+                console.error('Dashboard error:', e);
+            }
+        }
+
+        function createCharts() {
+            const ctx1 = document.getElementById('revenueChart');
+            const ctx2 = document.getElementById('subscriptionsChart');
+            const ctx3 = document.getElementById('usersChart');
+
+            if (ctx1 && !adminCharts.revenue) {
+                adminCharts.revenue = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                        datasets: [{
+                            label: 'Receita',
+                            data: [1200, 1900, 3000, 2800, 3500, 4100],
+                            borderColor: '#7c3aed',
+                            backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            if (ctx2 && !adminCharts.subscriptions) {
+                adminCharts.subscriptions = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Ativas', 'Canceladas'],
+                        datasets: [{
+                            data: [85, 15],
+                            backgroundColor: ['#10b981', '#f43f5e']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+
+            if (ctx3 && !adminCharts.users) {
+                adminCharts.users = new Chart(ctx3, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                        datasets: [{
+                            label: 'Novos Usuários',
+                            data: [50, 75, 120, 100, 140, 160],
+                            backgroundColor: '#06b6d4'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        // ========== PAYMENTS ==========
+        async function loadPayments() {
+            try {
+                const { data: subs } = await _supa.from('subscriptions').select('*').order('activated_at', { ascending: false });
+                allData.payments = subs || [];
+                renderPayments(allData.payments);
+            } catch (e) {
+                console.error('Payments error:', e);
+            }
+        }
+
+        function renderPayments(payments) {
+            const tbody = document.getElementById('paymentsTable');
+            if (!payments.length) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Nenhum pagamento encontrado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = payments.map(p => `
+                <tr>
+                    <td>${p.user_name || '-'}</td>
+                    <td>${p.user_email || '-'}</td>
+                    <td><span class="badge badge-info">${p.plan}</span></td>
+                    <td>R$ ${parseFloat(p.paid_amount || 0).toFixed(2).replace('.', ',')}</td>
+                    <td>${p.coupon_code ? `<span class="badge badge-warning">${p.coupon_code}</span>` : '-'}</td>
+                    <td>${p.payment_method || '-'}</td>
+                    <td><span class="badge ${p.status === 'active' ? 'badge-success' : 'badge-danger'}">${p.status}</span></td>
+                    <td>${new Date(p.activated_at).toLocaleDateString('pt-BR')}</td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('paymentsSearch')?.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase();
+            const filtered = allData.payments.filter(p =>
+                (p.user_name || '').toLowerCase().includes(q) ||
+                (p.user_email || '').toLowerCase().includes(q)
+            );
+            renderPayments(filtered);
+        });
+
+        // ========== SUBSCRIPTIONS ==========
+        async function loadSubscriptions() {
+            try {
+                const { data: subs } = await _supa.from('subscriptions').select('*');
+                allData.subscriptions = subs || [];
+                const active = subs.filter(s => s.status === 'active').length;
+                const cancelled = subs.filter(s => s.status === 'cancelled').length;
+                document.getElementById('subsActive').textContent = active;
+                document.getElementById('subsCancelled').textContent = cancelled;
+                renderSubscriptions(allData.subscriptions);
+            } catch (e) {
+                console.error('Subscriptions error:', e);
+            }
+        }
+
+        function renderSubscriptions(subs) {
+            const tbody = document.getElementById('subsTable');
+            if (!subs.length) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhuma assinatura encontrada</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = subs.map(s => `
+                <tr>
+                    <td>${s.user_name || '-'}</td>
+                    <td>${s.user_email || '-'}</td>
+                    <td><span class="badge badge-info">${s.plan}</span></td>
+                    <td><span class="badge ${s.status === 'active' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td>
+                    <td>${s.payment_method || '-'}</td>
+                    <td>${s.cancel_reason ? `<span style="color: var(--rose);">${s.cancel_reason}</span>` : '-'}</td>
+                    <td>
+                        ${s.status === 'active'
+                            ? `<button onclick="cancelSubAdmin('${s.id}')" class="btn-small">Cancelar</button>`
+                            : `<button onclick="reactivateSub('${s.id}')" class="btn-small">Reativar</button>`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('subsFilter')?.addEventListener('change', (e) => {
+            const filtered = e.target.value === 'all'
+                ? allData.subscriptions
+                : allData.subscriptions.filter(s => s.status === e.target.value);
+            renderSubscriptions(filtered);
+        });
+
+        async function cancelSubAdmin(id) {
+            if (!confirm('Cancelar esta assinatura?')) return;
+            try {
+                await _supa.from('subscriptions').update({ status: 'cancelled', cancelled_at: new Date().toISOString() }).eq('id', id);
+                loadSubscriptions();
+            } catch (e) {
+                alert('Erro: ' + e.message);
+            }
+        }
+
+        async function reactivateSub(id) {
+            if (!confirm('Reativar esta assinatura?')) return;
+            try {
+                await _supa.from('subscriptions').update({ status: 'active', cancelled_at: null }).eq('id', id);
+                loadSubscriptions();
+            } catch (e) {
+                alert('Erro: ' + e.message);
+            }
+        }
+
+        // ========== COUPONS ==========
+        async function loadCouponsTable() {
+            try {
+                const { data: coupons } = await _supa.from('coupons').select('*');
+                allData.coupons = coupons || [];
+                renderCoupons(allData.coupons);
+            } catch (e) {
+                console.error('Coupons error:', e);
+            }
+        }
+
+        function renderCoupons(coupons) {
+            const tbody = document.getElementById('couponsTable');
+            if (!coupons.length) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum cupom encontrado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = coupons.map(c => {
+                const expired = c.expires_at && new Date(c.expires_at) < new Date();
+                const exhausted = c.max_uses && c.used_count >= c.max_uses;
+                const isActive = c.active && !expired && !exhausted;
+
+                return `<tr>
+                    <td><strong>${c.code}</strong></td>
+                    <td>${c.discount_percent}%</td>
+                    <td>${c.used_count}</td>
+                    <td>${c.max_uses || '∞'}</td>
+                    <td>${c.expires_at ? new Date(c.expires_at).toLocaleDateString('pt-BR') : 'Nunca'}</td>
+                    <td><span class="badge ${isActive ? 'badge-success' : 'badge-danger'}">${isActive ? 'Ativo' : 'Inativo'}</span></td>
+                    <td>
+                        <button onclick="toggleCoupon('${c.id}', ${!c.active})" class="btn-small">
+                            ${c.active ? 'Desativar' : 'Ativar'}
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function createCoupon() {
+            const code = document.getElementById('newCouponCode').value.toUpperCase();
+            const discount = parseInt(document.getElementById('newCouponDiscount').value);
+            const maxUses = document.getElementById('newCouponMaxUses').value;
+            const expires = document.getElementById('newCouponExpires').value;
+            const msg = document.getElementById('couponMsg');
+
+            if (!code || !discount) {
+                msg.style.display = 'block';
+                msg.style.background = 'rgba(244, 63, 94, 0.1)';
+                msg.style.color = '#f43f5e';
+                msg.textContent = 'Preencha código e desconto';
+                return;
+            }
+
+            try {
+                await _supa.from('coupons').insert({
+                    code, discount_percent: discount,
+                    max_uses: maxUses ? parseInt(maxUses) : null,
+                    expires_at: expires ? new Date(expires).toISOString() : null,
+                    active: true, used_count: 0
+                });
+
+                msg.style.display = 'block';
+                msg.style.background = 'rgba(16, 185, 129, 0.1)';
+                msg.style.color = '#10b981';
+                msg.textContent = `✓ Cupom ${code} criado com sucesso!`;
+                setTimeout(() => msg.style.display = 'none', 3000);
+
+                document.getElementById('newCouponCode').value = '';
+                document.getElementById('newCouponDiscount').value = '';
+                document.getElementById('newCouponMaxUses').value = '';
+                document.getElementById('newCouponExpires').value = '';
+                loadCouponsTable();
+            } catch (e) {
+                msg.style.display = 'block';
+                msg.style.background = 'rgba(244, 63, 94, 0.1)';
+                msg.style.color = '#f43f5e';
+                msg.textContent = 'Erro: ' + e.message;
+            }
+        }
+
+        async function toggleCoupon(id, newState) {
+            try {
+                await _supa.from('coupons').update({ active: newState }).eq('id', id);
+                loadCouponsTable();
+            } catch (e) {
+                alert('Erro: ' + e.message);
+            }
+        }
+
+        // ========== STUB FUNCTIONS ==========
+        async function loadAnalytics() {}
+        async function loadRefunds() {}
+        async function loadChurn() {}
+        async function loadCampaigns() {}
+        async function loadFeatures() {}
+        async function loadUsers() {}
+        async function loadLogs() {}
+        async function analyzeChurn() {}
+        async function exportPayments() {}
+        async function exportUsers() {}
+        async function exportLogs() {}
+        function showNewCampaignForm() {}
+        function saveCampaign() {}
+        function scheduleCampaign() {}
+        function cancelCampaign() {}
+
+        function logout() {
+            auth.signOut().then(() => window.location.href = '../index.html');
+        }
+    </script>
+</body>
+</html>
