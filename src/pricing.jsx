@@ -23,24 +23,19 @@ function useCountdown() {
 function CountdownTimer({ compact }) {
   const { d, h, m, s, expired } = useCountdown();
   if (expired) return null;
-  const boxStyle = compact
-    ? { display:"inline-flex",alignItems:"center",gap:6,background:"rgba(244,63,94,.1)",padding:"4px 10px",borderRadius:8,fontSize:".75rem",fontWeight:600,color:"var(--rose,#f43f5e)" }
-    : { display:"flex",justifyContent:"center",gap:10,margin:"12px 0" };
-  const unitStyle = compact ? { fontVariantNumeric:"tabular-nums" } : {
-    display:"flex",flexDirection:"column",alignItems:"center",background:"rgba(244,63,94,.08)",borderRadius:10,padding:"8px 14px",minWidth:56
-  };
-  const numStyle = compact ? {} : { fontSize:"1.5rem",fontWeight:700,color:"#f43f5e",fontVariantNumeric:"tabular-nums" };
-  const lblStyle = { fontSize:".6rem",textTransform:"uppercase",letterSpacing:".08em",color:"#f43f5e",opacity:.7 };
   if (compact) return (
-    <span style={boxStyle}>
+    <span style={{ display:"inline-flex",alignItems:"center",gap:6,background:"rgba(244,63,94,.1)",padding:"4px 10px",borderRadius:8,fontSize:".75rem",fontWeight:600,color:"#f43f5e" }}>
       <span>{"⏱"}</span>
-      <span style={unitStyle}>{d}d {String(h).padStart(2,"0")}:{String(m).padStart(2,"0")}:{String(s).padStart(2,"0")}</span>
+      <span style={{ fontVariantNumeric:"tabular-nums" }}>{d}d {String(h).padStart(2,"0")}:{String(m).padStart(2,"0")}:{String(s).padStart(2,"0")}</span>
     </span>
   );
   return (
-    <div style={boxStyle}>
+    <div style={{ display:"flex",justifyContent:"center",gap:10,margin:"12px 0" }}>
       {[[d,"dias"],[h,"horas"],[m,"min"],[s,"seg"]].map(([v,l],i) => (
-        <div key={i} style={unitStyle}><span style={numStyle}>{String(v).padStart(2,"0")}</span><span style={lblStyle}>{l}</span></div>
+        <div key={i} style={{ display:"flex",flexDirection:"column",alignItems:"center",background:"rgba(255,255,255,.2)",borderRadius:10,padding:"8px 14px",minWidth:56 }}>
+          <span style={{ fontSize:"1.5rem",fontWeight:700,color:"white",fontVariantNumeric:"tabular-nums" }}>{String(v).padStart(2,"0")}</span>
+          <span style={{ fontSize:".6rem",textTransform:"uppercase",letterSpacing:".08em",color:"rgba(255,255,255,.8)" }}>{l}</span>
+        </div>
       ))}
     </div>
   );
@@ -75,9 +70,9 @@ function Pricing() {
       name: "Grupo",
       sub: "O plano mais usado por grupos de TCC.",
       priceM: expired ? ORIGINAL_M : OFFER_M,
-      priceY: expired ? (ORIGINAL_Y / 12) : (OFFER_Y / 12),
+      priceY: expired ? 27.9 : 10.9,
       originalM: expired ? null : ORIGINAL_M,
-      originalY: expired ? null : (ORIGINAL_Y / 12),
+      originalY: expired ? null : 27.9,
       cta: "Escolher Grupo",
       popular: true,
       highlight: true,
@@ -170,11 +165,11 @@ function Pricing() {
                   <>
                     {(annual ? p.originalY : p.originalM) && (
                       <div style={{fontSize:".875rem",color:"#f43f5e",textDecoration:"line-through",opacity:.7,marginBottom:2}}>
-                        R$ {(annual ? p.originalY : p.originalM).toFixed(2).replace(".",",")}
+                        R$ {(annual ? p.originalY : p.originalM).toFixed(annual ? 1 : 2).replace(".",",")}
                       </div>
                     )}
                     <span className="currency">R$</span>
-                    <span className="amount">{(annual ? p.priceY : p.priceM).toFixed(2).replace(".",",")}</span>
+                    <span className="amount">{(annual ? p.priceY : p.priceM).toFixed(annual ? 1 : 2).replace(".",",")}</span>
                     <span className="period">/ mês por grupo</span>
                     {!expired && p.popular && <CountdownTimer compact />}
                   </>

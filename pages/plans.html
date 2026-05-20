@@ -43,7 +43,7 @@ function OfferCountdown({ compact }) {
   const { d, h, m, s, expired } = useOfferCountdown();
   if (expired) return null;
   if (compact) return (
-    <span style={{ display:"inline-flex",alignItems:"center",gap:6,background:"rgba(244,63,94,.1)",padding:"4px 10px",borderRadius:8,fontSize:".75rem",fontWeight:600,color:"var(--rose)" }}>
+    <span style={{ display:"inline-flex",alignItems:"center",gap:6,background:"rgba(244,63,94,.1)",padding:"4px 10px",borderRadius:8,fontSize:".75rem",fontWeight:600,color:"#f43f5e" }}>
       <span>{"⏱"}</span>
       <span style={{ fontVariantNumeric:"tabular-nums" }}>{d}d {String(h).padStart(2,"0")}:{String(m).padStart(2,"0")}:{String(s).padStart(2,"0")}</span>
     </span>

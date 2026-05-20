@@ -282,8 +282,6 @@
                 _supa.from('users').select('id, role').eq('id', user.uid).maybeSingle().then(({ data }) => {
                     if (!data) {
                         const role = redirectTarget.includes('orientador') ? 'orientador' : 'student';
-                        // Use insert (not upsert) to avoid overwriting project_id
-                        // if the record was already created by dashboard.html
                         _supa.from('users').upsert({
                             id: user.uid,
                             name: user.displayName || 'Usuario',
@@ -294,11 +292,7 @@
                             window.location.href = redirectTarget;
                         });
                     } else {
-                        if (data.role === 'orientador' && redirectTarget === 'dashboard.html') {
-                            window.location.href = 'orientador-painel.html';
-                        } else {
-                            window.location.href = redirectTarget;
-                        }
+                        window.location.href = redirectTarget;
                     }
                 }).catch(() => {
                     window.location.href = redirectTarget;
