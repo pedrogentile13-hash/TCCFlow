@@ -375,20 +375,17 @@ const DB = {
         },
 
         async getMaxProjects(userId) {
-            // Multiple projects only available to beta testers
-            const isBeta = await DB.isBetaTester(userId);
-            if (!isBeta) return 1;
-
-            // Check if there's a custom max_projects set in subscriptions
+            // Check subscription for project limits
             const sub = await DB.subscriptions.get(userId);
-            if (sub && sub.maxProjects !== null && sub.maxProjects !== undefined) {
-                return sub.maxProjects;
+
+            // Custom max_projects if set
+            if (sub && sub.max_projects !== null && sub.max_projects !== undefined) {
+                return sub.max_projects;
             }
-            // Default limits from pricing config
+
+            // Default limits: Free=1, PRO=5
             const isPro = sub && sub.status === 'active' && sub.plan === 'pro';
-            const proProjects = (typeof PRICING !== 'undefined') ? PRICING.PRO_PROJECTS : 2;
-            const freeProjects = (typeof PRICING !== 'undefined') ? PRICING.FREE_PROJECTS : 1;
-            return isPro ? proProjects : freeProjects;
+            return isPro ? 5 : 1;
         },
 
         async setMaxProjects(userId, maxProjects) {

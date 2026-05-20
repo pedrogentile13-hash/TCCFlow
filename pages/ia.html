@@ -513,14 +513,26 @@
             const maxResults = userIsPro ? 50 : 20;
 
             try {
-                // Search OpenAlex (primary - indexes Google Scholar + SciELO content)
-                const openAlexResults = await searchOpenAlex(query, yearRange, lang, area, docType, openAccess, sortBy);
+                let allResults = [];
 
-                // Search CrossRef as secondary source
-                const crossrefResults = await searchCrossRef(query, yearRange, lang, docType, openAccess);
+                // Search based on document type
+                if (docType === 'book' || docType === 'all') {
+                    // Search for books
+                    const bookResults = await searchBooks(query, yearRange, lang, area, sortBy);
+                    allResults = allResults.concat(bookResults);
+                }
+
+                if (docType !== 'book') {
+                    // Search OpenAlex (primary - indexes Google Scholar + SciELO content)
+                    const openAlexResults = await searchOpenAlex(query, yearRange, lang, area, docType, openAccess, sortBy);
+                    allResults = allResults.concat(openAlexResults);
+
+                    // Search CrossRef as secondary source
+                    const crossrefResults = await searchCrossRef(query, yearRange, lang, docType, openAccess);
+                    allResults = allResults.concat(crossrefResults);
+                }
 
                 // Merge and deduplicate by title
-                const allResults = [...openAlexResults, ...crossrefResults];
                 let unique = allResults.filter((v, i, a) =>
                     a.findIndex(t => t.title.toLowerCase().trim() === v.title.toLowerCase().trim()) === i
                 );
@@ -731,6 +743,74 @@
             document.getElementById('errorState').classList.remove('hidden');
         }
 
+        async function searchBooks(query, yearRange, lang, area, sortBy) {
+            try {
+                // Search Google Books API
+                const langCode = lang === 'pt' ? 'pt-BR' : lang === 'es' ? 'es' : 'en';
+                const maxResults = userIsPro ? 20 : 10;
+
+                let url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${maxResults}&langRestrict=${lang === 'all' ? '' : lang}`;
+
+                if (lang !== 'all') {
+                    url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${maxResults}&langRestrict=${lang}`;
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Google Books error');
+                const data = await response.json();
+
+                let books = (data.items || []).map(item => {
+                    const info = item.volumeInfo || {};
+                    const saleInfo = item.saleInfo || {};
+                    const year = parseInt(info.publishedDate?.substring(0, 4)) || 0;
+
+                    // Filter by year if specified
+                    if (yearRange) {
+                        const [start, end] = yearRange.split('-').map(Number);
+                        if (year < start || year > end) return null;
+                    }
+
+                    const price = saleInfo.listPrice?.amount || saleInfo.retailPrice?.amount || null;
+                    const currency = saleInfo.listPrice?.currencyCode || saleInfo.retailPrice?.currencyCode || 'USD';
+                    const buyLink = saleInfo.buyLink || `https://www.google.com/search?q=${encodeURIComponent(info.title)} buy`;
+                    const previewLink = info.previewLink || '';
+
+                    return {
+                        title: info.title || 'Sem título',
+                        authors: (info.authors || []).join(', '),
+                        year: year,
+                        abstract: info.description || '',
+                        url: previewLink || buyLink,
+                        buyLink: buyLink,
+                        price: price,
+                        currency: currency,
+                        source: 'Google Books',
+                        citations: 0,
+                        image: info.imageLinks?.thumbnail || '',
+                        publisher: info.publisher || '',
+                        pageCount: info.pageCount || 0,
+                        isBook: true,
+                        fields: (info.categories || []).join(', ')
+                    };
+                }).filter(Boolean);
+
+                // Area filter
+                if (area && books.length > 0) {
+                    const areaLower = area.toLowerCase();
+                    const filtered = books.filter(b =>
+                        (b.fields || '').toLowerCase().includes(areaLower) ||
+                        (b.title.toLowerCase()).includes(areaLower)
+                    );
+                    if (filtered.length >= 2) books = filtered;
+                }
+
+                return books;
+            } catch (err) {
+                console.warn('Google Books search error:', err);
+                return [];
+            }
+        }
+
         function showResults(results, query) {
             document.getElementById('loadingState').classList.add('hidden');
             document.getElementById('welcomeState').classList.add('hidden');
@@ -759,6 +839,38 @@
                 const isSaved = getSavedPapers().some(s => s.title.toLowerCase() === paper.title.toLowerCase());
                 const abstractPreview = paper.abstract ? paper.abstract.substring(0, 200) + (paper.abstract.length > 200 ? '...' : '') : '';
 
+                // Special template for books
+                if (paper.isBook) {
+                    const priceDisplay = paper.price ? `${paper.currency === 'BRL' ? 'R$' : '$'} ${paper.price.toFixed(2)}` : 'Preço não informado';
+                    return `
+                    <div class="result-card bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5 hover:shadow-md transition group" style="animation-delay: ${i * 0.05}s">
+                        <div class="flex gap-4">
+                            ${paper.image ? `<img src="${escapeHtml(paper.image)}" alt="${escapeHtml(paper.title)}" class="w-16 h-24 object-cover rounded-lg flex-shrink-0">` : ''}
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">📚 ${paper.source}</span>
+                                    ${paper.year ? `<span class="text-[10px] text-slate-400">${paper.year}</span>` : ''}
+                                </div>
+                                <h4 class="text-sm font-bold mb-1 leading-snug">${escapeHtml(paper.title)}</h4>
+                                ${paper.authors ? `<p class="text-xs text-slate-600 mb-1"><strong>Autor:</strong> ${escapeHtml(paper.authors)}</p>` : ''}
+                                ${paper.publisher ? `<p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-building mr-1"></i>${escapeHtml(paper.publisher)}</p>` : ''}
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="text-sm font-bold text-amber-700">${priceDisplay}</span>
+                                    ${paper.pageCount ? `<span class="text-xs text-slate-500">• ${paper.pageCount} páginas</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-3 pt-3 border-t border-amber-200">
+                            ${paper.buyLink ? `<a href="${escapeHtml(paper.buyLink)}" target="_blank" class="text-xs bg-amber-200 text-amber-900 px-3 py-1.5 rounded-lg hover:bg-amber-300 transition font-bold"><i class="fa-solid fa-shopping-cart mr-1"></i>Comprar</a>` : ''}
+                            ${paper.url ? `<a href="${escapeHtml(paper.url)}" target="_blank" class="text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition"><i class="fa-solid fa-eye mr-1"></i>Visualizar</a>` : ''}
+                            <button onclick='savePaper(${JSON.stringify(paper).replace(/'/g, "&apos;")})' class="text-xs ${isSaved ? 'bg-amber-100 text-amber-700' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'} px-3 py-1.5 rounded-lg transition ml-auto">
+                                <i class="fa-solid ${isSaved ? 'fa-check' : 'fa-bookmark'} mr-1"></i>${isSaved ? i18n.t('ai.alreadySaved') : i18n.t('ai.save')}
+                            </button>
+                        </div>
+                    </div>`;
+                }
+
+                // Regular template for articles/papers
                 return `
                 <div class="result-card bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md transition group" style="animation-delay: ${i * 0.05}s">
                     <div class="flex items-start justify-between gap-3">
