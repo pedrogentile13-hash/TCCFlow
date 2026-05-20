@@ -1,6 +1,20 @@
 /* ============ TCCFlow — App Shell CSS ============ */
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* ---- App Splash / Loading Screen ---- */
+.app-splash{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:var(--bg,#fafaf7);gap:16px;animation:splash-in .5s ease-out}
+.app-splash .splash-logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(124,58,237,.25);animation:splash-pulse-logo 2s ease-in-out infinite}
+.app-splash .splash-logo img{width:34px;height:34px;object-fit:contain;filter:brightness(0) invert(1)}
+.app-splash .splash-name{font-family:"Instrument Serif",Georgia,serif;font-size:1.5rem;font-weight:400;letter-spacing:-.02em;color:var(--ink,#0f0d1e)}
+.app-splash .splash-name em{font-style:italic;color:#7c3aed}
+.app-splash .splash-dots{display:flex;gap:6px}
+.app-splash .splash-dots span{width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:splash-dot 1.2s ease-in-out infinite}
+.app-splash .splash-dots span:nth-child(2){animation-delay:.2s}
+.app-splash .splash-dots span:nth-child(3){animation-delay:.4s}
+@keyframes splash-in{from{opacity:0}to{opacity:1}}
+@keyframes splash-pulse-logo{0%,100%{box-shadow:0 8px 24px rgba(124,58,237,.25)}50%{box-shadow:0 8px 36px rgba(124,58,237,.45)}}
+@keyframes splash-dot{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
 :root {
   --violet:    #7c3aed;
   --violet-2:  #8b5cf6;
