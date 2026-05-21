@@ -19,209 +19,567 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Termos de Serviço - TCCFlow</title>
-    <script src="../js/darkmode.js"></script>
-    <script src="../js/i18n.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        /* ============ Design System Variables ============ */
+        :root {
+            --violet: #7c3aed;
+            --violet-2: #8b5cf6;
+            --cyan: #06b6d4;
+            --bg: #fafaf7;
+            --bg-2: #f3f2ec;
+            --paper: #ffffff;
+            --ink: #0f0d1e;
+            --ink-2: #2a2540;
+            --muted: #6b6480;
+            --line: #e7e3d8;
+            --grad: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            --radius: 18px;
+            --shadow: 0 10px 30px -12px rgba(15,13,30,.12), 0 4px 12px -6px rgba(15,13,30,.08);
+            --font-display: "Instrument Serif", Georgia, serif;
+            --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+        }
+
+        /* ============ Reset & Base ============ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--ink);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+        }
+        ::selection { background: var(--violet); color: white; }
+
+        /* ============ Grid Background ============ */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(15,13,30,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15,13,30,.03) 1px, transparent 1px);
+            background-size: 72px 72px;
+        }
+
+        /* ============ Links ============ */
+        a { color: var(--violet); text-decoration: none; transition: opacity 0.2s; }
+        a:hover { opacity: 0.8; text-decoration: underline; }
+
+        /* ============ Sticky Nav ============ */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(250, 250, 247, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--line);
+        }
+        .nav-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .nav-brand:hover { text-decoration: none; opacity: 1; }
+        .nav-brand img {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+        }
+        .nav-brand-text {
+            font-family: var(--font-body);
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+        .nav-brand-accent {
+            background: var(--grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .nav-links a {
+            font-size: 0.875rem;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: var(--violet);
+            text-decoration: none;
+            opacity: 1;
+        }
+        .nav-links a.nav-back {
+            color: var(--violet);
+            font-weight: 600;
+        }
+
+        /* ============ Main Container ============ */
+        .main {
+            position: relative;
+            z-index: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 48px 32px 64px;
+        }
+
+        /* ============ Page Header ============ */
+        .page-header {
+            margin-bottom: 40px;
+        }
+        .page-header h1 {
+            font-family: var(--font-display);
+            font-weight: 400;
+            font-size: 2.75rem;
+            line-height: 1.1;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+        .page-header .date {
+            font-family: var(--font-mono);
+            font-size: 0.8125rem;
+            color: var(--muted);
+            letter-spacing: 0.02em;
+        }
+
+        /* ============ Card Sections ============ */
+        .cards {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .card {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            box-shadow: var(--shadow);
+        }
+        .card h2 {
+            font-family: var(--font-body);
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+        .card h3 {
+            font-family: var(--font-body);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--ink-2);
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+        .card p {
+            font-size: 0.9375rem;
+            color: var(--ink-2);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .card p:last-child { margin-bottom: 0; }
+        .card ul {
+            list-style: disc;
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        .card ul:last-child { margin-bottom: 0; }
+        .card li {
+            font-size: 0.9375rem;
+            color: var(--ink-2);
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+        .card li:last-child { margin-bottom: 0; }
+        .card li strong { color: var(--ink); }
+
+        /* ============ Highlighted Boxes ============ */
+        .highlight-box {
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+        }
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        /* Google / third-party policy - blue tint */
+        .highlight-blue {
+            background: rgba(6, 182, 212, 0.06);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+        .highlight-blue p {
+            color: #0e7490;
+        }
+        .highlight-blue i { color: #0e7490; }
+
+        /* LGPD / legal notice - violet tint */
+        .highlight-violet {
+            background: rgba(124, 58, 237, 0.06);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+        .highlight-violet p {
+            color: #6d28d9;
+        }
+        .highlight-violet a {
+            color: #6d28d9;
+            font-weight: 700;
+        }
+
+        /* Cookies / security notice - green tint */
+        .highlight-green {
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .highlight-green p {
+            color: #047857;
+        }
+        .highlight-green i { color: #047857; }
+
+        /* Contact info - neutral bg-2 */
+        .highlight-neutral {
+            background: var(--bg-2);
+            border: 1px solid var(--line);
+        }
+        .highlight-neutral p {
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: var(--ink-2);
+            margin-bottom: 8px;
+        }
+        .highlight-neutral p:last-child { margin-bottom: 0; }
+        .highlight-neutral i {
+            color: var(--violet);
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Plan boxes */
+        .plan-box {
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+        .plan-box h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+        .plan-box ul {
+            margin-bottom: 0;
+        }
+        .plan-free {
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .plan-free h3 i { color: #10b981; }
+        .plan-pro {
+            background: rgba(124, 58, 237, 0.06);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+        .plan-pro h3 i { color: var(--violet); }
+
+        /* ============ Bottom Link ============ */
+        .bottom-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .bottom-link a {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--violet);
+        }
+
+        /* ============ Footer ============ */
+        .footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--line);
+            padding: 32px 32px;
+            text-align: center;
+        }
+        .footer-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer p {
+            font-size: 0.8125rem;
+            color: var(--muted);
+        }
+        .footer a {
+            color: var(--violet);
+            font-weight: 500;
+        }
+
+        /* ============ Responsive ============ */
+        @media (max-width: 640px) {
+            .nav-inner {
+                padding: 0 16px;
+            }
+            .nav-links {
+                gap: 16px;
+            }
+            .nav-links a {
+                font-size: 0.8125rem;
+            }
+            .main {
+                padding: 32px 16px 48px;
+            }
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            .card {
+                padding: 20px 16px;
+            }
+            .highlight-box,
+            .plan-box {
+                padding: 14px 16px;
+            }
+            .footer {
+                padding: 24px 16px;
+            }
+        }
     </style>
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
+<body>
 
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
-
-    <!-- Navbar simples -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="../index.html" class="flex items-center gap-2.5">
-                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="flex items-center gap-4">
-                    <a href="privacidade.html" class="text-sm text-slate-500 hover:text-violet-600 transition">Privacidade</a>
-                    <a href="../index.html" class="text-sm font-medium text-violet-600 hover:text-violet-700 transition">Voltar ao Início</a>
-                </div>
+    <!-- Sticky Nav -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-brand">
+                <img src="../favicon.png" alt="TCCFlow">
+                <span class="nav-brand-text">TCC<span class="nav-brand-accent">Flow</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="privacidade.html">Privacidade</a>
+                <a href="../index.html" class="nav-back"><i class="fa-solid fa-arrow-left" style="margin-right:4px;font-size:0.75rem"></i>Voltar ao Inicio</a>
             </div>
         </div>
     </nav>
 
-    <main class="relative z-10 pt-16 min-h-screen pb-12">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Main Content -->
+    <main class="main">
 
-            <div class="mb-10">
-                <h1 class="text-3xl font-extrabold mb-2">Termos de Serviço</h1>
-                <p class="text-sm text-slate-400">Última atualização: 20 de maio de 2026</p>
-            </div>
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Termos de Serviço</h1>
+            <p class="date">Última atualização: 20 de maio de 2026</p>
+        </div>
 
-            <div class="space-y-8">
+        <!-- Sections -->
+        <div class="cards">
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">1. Aceitação dos Termos</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">Ao acessar ou utilizar o TCCFlow, disponível em <a href="https://tccflow.com.br" class="text-violet-600 hover:underline">tccflow.com.br</a> ("Plataforma"), você concorda integralmente com estes Termos de Serviço. Se você não concordar com qualquer parte destes termos, não deverá utilizar a Plataforma. O uso continuado constitui aceitação integral destes termos e da nossa <a href="privacidade.html" class="text-violet-600 hover:underline">Política de Privacidade</a>.</p>
-                </section>
+            <!-- 1. Aceitação dos Termos -->
+            <section class="card">
+                <h2>1. Aceitação dos Termos</h2>
+                <p>Ao acessar ou utilizar o TCCFlow, disponível em <a href="https://tccflow.com.br">tccflow.com.br</a> ("Plataforma"), você concorda integralmente com estes Termos de Serviço. Se você não concordar com qualquer parte destes termos, não deverá utilizar a Plataforma. O uso continuado constitui aceitação integral destes termos e da nossa <a href="privacidade.html">Política de Privacidade</a>.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">2. Descrição do Serviço</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">O TCCFlow é uma plataforma de organização e gerenciamento de Trabalhos de Conclusão de Curso (TCC), que oferece:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li>Dashboard de acompanhamento do projeto com estatísticas em tempo real</li>
-                        <li>Gerenciamento de tarefas e organização por membros</li>
-                        <li>Calendário interativo com metas, prazos e sessões de estudo</li>
-                        <li>Hub de Pesquisa com quadro Kanban para anotações e referências</li>
-                        <li>Assistente de pesquisa com Inteligência Artificial</li>
-                        <li>Integrações com Google Drive e Google Calendar (plano PRO)</li>
-                        <li>Gerenciamento de equipe com até 8 membros (plano PRO)</li>
+            <!-- 2. Descrição do Serviço -->
+            <section class="card">
+                <h2>2. Descrição do Serviço</h2>
+                <p>O TCCFlow é uma plataforma de organização e gerenciamento de Trabalhos de Conclusão de Curso (TCC), que oferece:</p>
+                <ul>
+                    <li>Dashboard de acompanhamento do projeto com estatísticas em tempo real</li>
+                    <li>Gerenciamento de tarefas e organização por membros</li>
+                    <li>Calendário interativo com metas, prazos e sessões de estudo</li>
+                    <li>Hub de Pesquisa com quadro Kanban para anotações e referências</li>
+                    <li>Assistente de pesquisa com Inteligência Artificial</li>
+                    <li>Integrações com Google Drive e Google Calendar (plano PRO)</li>
+                    <li>Gerenciamento de equipe com até 8 membros (plano PRO)</li>
+                </ul>
+            </section>
+
+            <!-- 3. Contas de Usuário -->
+            <section class="card">
+                <h2>3. Contas de Usuário</h2>
+                <p>Para utilizar o TCCFlow, você deve criar uma conta fornecendo informações precisas e atualizadas. Você é responsável por:</p>
+                <ul>
+                    <li>Manter a confidencialidade de suas credenciais de acesso</li>
+                    <li>Todas as atividades realizadas em sua conta</li>
+                    <li>Notificar imediatamente sobre qualquer uso não autorizado pelo e-mail <a href="mailto:tccflow.contato@gmail.com">tccflow.contato@gmail.com</a></li>
+                </ul>
+                <p>Nós reservamos o direito de suspender ou encerrar contas que violem estes termos, sem aviso prévio em caso de violações graves.</p>
+            </section>
+
+            <!-- 4. Planos e Pagamentos -->
+            <section class="card">
+                <h2>4. Planos e Pagamentos</h2>
+                <p>O TCCFlow oferece os seguintes planos:</p>
+                <div class="plan-box plan-free">
+                    <h3><i class="fa-solid fa-gift" style="margin-right:8px"></i>Plano Gratuito — R$ 0</h3>
+                    <ul>
+                        <li>1 usuário</li>
+                        <li>Dashboard, calendário e organização de tarefas</li>
+                        <li>Hub de pesquisa</li>
+                        <li>Até 10 buscas de I.A. por mês</li>
                     </ul>
-                </section>
-
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">3. Contas de Usuário</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Para utilizar o TCCFlow, você deve criar uma conta fornecendo informações precisas e atualizadas. Você é responsável por:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li>Manter a confidencialidade de suas credenciais de acesso</li>
-                        <li>Todas as atividades realizadas em sua conta</li>
-                        <li>Notificar imediatamente sobre qualquer uso não autorizado pelo e-mail <a href="mailto:tccflow.contato@gmail.com" class="text-violet-600 hover:underline">tccflow.contato@gmail.com</a></li>
+                </div>
+                <div class="plan-box plan-pro">
+                    <h3><i class="fa-solid fa-crown" style="margin-right:8px"></i>Plano PRO — a partir de R$ 97/ano</h3>
+                    <ul>
+                        <li>R$ 97,00/ano (1 assento) + R$ 30,00/ano por assento adicional (até 8 membros)</li>
+                        <li>Acesso completo a todos os recursos</li>
+                        <li>Integrações com Google Drive e Google Calendar</li>
+                        <li>Gerenciamento de equipe</li>
+                        <li>Até 100 buscas de I.A. por mês</li>
+                        <li>Suporte prioritário</li>
                     </ul>
-                    <p class="text-sm text-slate-600 leading-relaxed mt-3">Nós reservamos o direito de suspender ou encerrar contas que violem estes termos, sem aviso prévio em caso de violações graves.</p>
-                </section>
+                </div>
+                <ul>
+                    <li>Os preços podem ser alterados com aviso prévio de 30 dias aos assinantes ativos</li>
+                    <li>Pagamentos são processados de forma segura pelo Mercado Pago</li>
+                    <li><strong>Não armazenamos dados de cartão de crédito</strong> em nossos servidores</li>
+                    <li>Reembolsos podem ser solicitados em até 7 dias após a compra, mediante análise, pelo e-mail <a href="mailto:tccflow.contato@gmail.com">tccflow.contato@gmail.com</a></li>
+                </ul>
+                <div class="highlight-box highlight-green">
+                    <p><i class="fa-solid fa-shield-halved" style="margin-right:8px"></i><strong>Não armazenamos dados de cartão de crédito.</strong> Todos os pagamentos são processados de forma segura pelo Mercado Pago.</p>
+                </div>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">4. Planos e Pagamentos</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">O TCCFlow oferece os seguintes planos:</p>
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
-                        <h3 class="text-sm font-bold mb-2"><i class="fa-solid fa-gift mr-2 text-emerald-500"></i>Plano Gratuito — R$ 0</h3>
-                        <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
-                            <li>1 usuário</li>
-                            <li>Dashboard, calendário e organização de tarefas</li>
-                            <li>Hub de pesquisa</li>
-                            <li>Até 10 buscas de I.A. por mês</li>
-                        </ul>
-                    </div>
-                    <div class="bg-violet-50 border border-violet-200 rounded-xl p-4 mb-4">
-                        <h3 class="text-sm font-bold mb-2"><i class="fa-solid fa-crown mr-2 text-violet-600"></i>Plano PRO — a partir de R$ 97/ano</h3>
-                        <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
-                            <li>R$ 97,00/ano (1 assento) + R$ 30,00/ano por assento adicional (até 8 membros)</li>
-                            <li>Acesso completo a todos os recursos</li>
-                            <li>Integrações com Google Drive e Google Calendar</li>
-                            <li>Gerenciamento de equipe</li>
-                            <li>Até 100 buscas de I.A. por mês</li>
-                            <li>Suporte prioritário</li>
-                        </ul>
-                    </div>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li>Os preços podem ser alterados com aviso prévio de 30 dias aos assinantes ativos</li>
-                        <li>Pagamentos são processados de forma segura pelo Mercado Pago</li>
-                        <li><strong>Não armazenamos dados de cartão de crédito</strong> em nossos servidores</li>
-                        <li>Reembolsos podem ser solicitados em até 7 dias após a compra, mediante análise, pelo e-mail <a href="mailto:tccflow.contato@gmail.com" class="text-violet-600 hover:underline">tccflow.contato@gmail.com</a></li>
-                    </ul>
-                </section>
+            <!-- 5. Cancelamento e Renovação -->
+            <section class="card">
+                <h2>5. Cancelamento e Renovação</h2>
+                <p>Sobre o cancelamento da assinatura PRO:</p>
+                <ul>
+                    <li>Você pode cancelar a qualquer momento entrando em contato pelo e-mail <a href="mailto:tccflow.contato@gmail.com">tccflow.contato@gmail.com</a></li>
+                    <li>Após o cancelamento, o acesso PRO permanece ativo até o fim do período já pago</li>
+                    <li>Seus dados <strong>não serão apagados automaticamente</strong> após o cancelamento</li>
+                    <li>A assinatura é renovada automaticamente ao fim de cada período, salvo cancelamento prévio</li>
+                    <li>Você será notificado por e-mail antes de cada renovação</li>
+                </ul>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">5. Cancelamento e Renovação</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Sobre o cancelamento da assinatura PRO:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li>Você pode cancelar a qualquer momento entrando em contato pelo e-mail <a href="mailto:tccflow.contato@gmail.com" class="text-violet-600 hover:underline">tccflow.contato@gmail.com</a></li>
-                        <li>Após o cancelamento, o acesso PRO permanece ativo até o fim do período já pago</li>
-                        <li>Seus dados <strong>não serão apagados automaticamente</strong> após o cancelamento</li>
-                        <li>A assinatura é renovada automaticamente ao fim de cada período, salvo cancelamento prévio</li>
-                        <li>Você será notificado por e-mail antes de cada renovação</li>
-                    </ul>
-                </section>
+            <!-- 6. Uso Aceitável -->
+            <section class="card">
+                <h2>6. Uso Aceitável</h2>
+                <p>Ao utilizar o TCCFlow, você concorda em não:</p>
+                <ul>
+                    <li>Utilizar a Plataforma para fins ilegais ou não autorizados</li>
+                    <li>Tentar acessar contas de outros usuários</li>
+                    <li>Interferir no funcionamento ou segurança da Plataforma</li>
+                    <li>Fazer engenharia reversa, descompilar ou copiar o código-fonte</li>
+                    <li>Utilizar bots, scrapers ou scripts automatizados sem autorização expressa</li>
+                    <li>Compartilhar conteúdo ofensivo, ilegal ou que viole direitos de terceiros</li>
+                    <li>Revender ou sublicenciar o acesso à Plataforma</li>
+                </ul>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">6. Uso Aceitável</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Ao utilizar o TCCFlow, você concorda em não:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li>Utilizar a Plataforma para fins ilegais ou não autorizados</li>
-                        <li>Tentar acessar contas de outros usuários</li>
-                        <li>Interferir no funcionamento ou segurança da Plataforma</li>
-                        <li>Fazer engenharia reversa, descompilar ou copiar o código-fonte</li>
-                        <li>Utilizar bots, scrapers ou scripts automatizados sem autorização expressa</li>
-                        <li>Compartilhar conteúdo ofensivo, ilegal ou que viole direitos de terceiros</li>
-                        <li>Revender ou sublicenciar o acesso à Plataforma</li>
-                    </ul>
-                </section>
+            <!-- 7. Propriedade Intelectual -->
+            <section class="card">
+                <h2>7. Propriedade Intelectual</h2>
+                <p>Todo o conteúdo da Plataforma, incluindo design, código-fonte, logotipos, textos e marca "TCCFlow", é de propriedade exclusiva do TCCFlow e está protegido pelas leis brasileiras de propriedade intelectual.</p>
+                <p>O conteúdo que você criar (tarefas, projetos, documentos, anotações) <strong>permanece integralmente de sua propriedade</strong>. Ao utilizar a Plataforma, você nos concede uma licença limitada, não-exclusiva e revogável para armazenar e processar seus dados exclusivamente para a prestação do serviço.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">7. Propriedade Intelectual</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Todo o conteúdo da Plataforma, incluindo design, código-fonte, logotipos, textos e marca "TCCFlow", é de propriedade exclusiva do TCCFlow e está protegido pelas leis brasileiras de propriedade intelectual.</p>
-                    <p class="text-sm text-slate-600 leading-relaxed">O conteúdo que você criar (tarefas, projetos, documentos, anotações) <strong>permanece integralmente de sua propriedade</strong>. Ao utilizar a Plataforma, você nos concede uma licença limitada, não-exclusiva e revogável para armazenar e processar seus dados exclusivamente para a prestação do serviço.</p>
-                </section>
+            <!-- 8. Integrações com Terceiros -->
+            <section class="card">
+                <h2>8. Integrações com Terceiros</h2>
+                <p>O TCCFlow integra-se com serviços de terceiros. O uso desses serviços está sujeito aos respectivos termos e políticas:</p>
+                <ul>
+                    <li><strong>Google (Drive, Calendar, OAuth):</strong> Sujeito aos <a href="https://policies.google.com/terms" target="_blank">Termos de Serviço do Google</a></li>
+                    <li><strong>Supabase:</strong> Autenticação e armazenamento de dados</li>
+                    <li><strong>Mercado Pago:</strong> Processamento de pagamentos (PIX e cartão de crédito), sujeito aos <a href="https://www.mercadopago.com.br/ajuda/termos-e-condicoes-de-uso_300" target="_blank">Termos do Mercado Pago</a></li>
+                </ul>
+                <p>O TCCFlow não se responsabiliza por falhas, indisponibilidades ou alterações em serviços de terceiros.</p>
+                <div class="highlight-box highlight-blue">
+                    <p><i class="fa-brands fa-google" style="margin-right:8px"></i><strong>Conformidade com a Política de Dados de Usuário do Google:</strong> Utilizamos os dados do Google exclusivamente para as funcionalidades autorizadas pelo usuário. Não vendemos, compartilhamos ou transferimos dados do Google para terceiros.</p>
+                </div>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">8. Integrações com Terceiros</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">O TCCFlow integra-se com serviços de terceiros. O uso desses serviços está sujeito aos respectivos termos e políticas:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li><strong>Google (Drive, Calendar, OAuth):</strong> Sujeito aos <a href="https://policies.google.com/terms" target="_blank" class="text-violet-600 hover:underline">Termos de Serviço do Google</a></li>
-                        <li><strong>Supabase:</strong> Autenticação e armazenamento de dados</li>
-                        <li><strong>Mercado Pago:</strong> Processamento de pagamentos (PIX e cartão de crédito), sujeito aos <a href="https://www.mercadopago.com.br/ajuda/termos-e-condicoes-de-uso_300" target="_blank" class="text-violet-600 hover:underline">Termos do Mercado Pago</a></li>
-                    </ul>
-                    <p class="text-sm text-slate-600 leading-relaxed mt-3">O TCCFlow não se responsabiliza por falhas, indisponibilidades ou alterações em serviços de terceiros.</p>
-                </section>
+            <!-- 9. Disponibilidade do Serviço -->
+            <section class="card">
+                <h2>9. Disponibilidade do Serviço</h2>
+                <p>O TCCFlow se esforçará para manter a Plataforma disponível 24 horas por dia, 7 dias por semana. No entanto, o serviço pode sofrer interrupções para manutenção, atualizações ou por motivos de força maior. Sempre que possível, comunicaremos manutenções programadas com antecedência.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">9. Disponibilidade do Serviço</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">O TCCFlow se esforçará para manter a Plataforma disponível 24 horas por dia, 7 dias por semana. No entanto, o serviço pode sofrer interrupções para manutenção, atualizações ou por motivos de força maior. Sempre que possível, comunicaremos manutenções programadas com antecedência.</p>
-                </section>
+            <!-- 10. Limitação de Responsabilidade -->
+            <section class="card">
+                <h2>10. Limitação de Responsabilidade</h2>
+                <p>O TCCFlow é fornecido "como está" (as is), sem garantias expressas ou implícitas de qualquer natureza. Não nos responsabilizamos por:</p>
+                <ul>
+                    <li>Perdas de dados decorrentes de falhas técnicas ou uso indevido</li>
+                    <li>Interrupções temporárias de serviço</li>
+                    <li>Danos indiretos, incidentais ou consequenciais decorrentes do uso da Plataforma</li>
+                    <li>Conteúdo acadêmico produzido pelo usuário com auxílio da Plataforma</li>
+                </ul>
+                <p>Recomendamos que você mantenha backups independentes do conteúdo importante do seu TCC.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">10. Limitação de Responsabilidade</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">O TCCFlow é fornecido "como está" (as is), sem garantias expressas ou implícitas de qualquer natureza. Não nos responsabilizamos por:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li>Perdas de dados decorrentes de falhas técnicas ou uso indevido</li>
-                        <li>Interrupções temporárias de serviço</li>
-                        <li>Danos indiretos, incidentais ou consequenciais decorrentes do uso da Plataforma</li>
-                        <li>Conteúdo acadêmico produzido pelo usuário com auxílio da Plataforma</li>
-                    </ul>
-                    <p class="text-sm text-slate-600 leading-relaxed mt-3">Recomendamos que você mantenha backups independentes do conteúdo importante do seu TCC.</p>
-                </section>
+            <!-- 11. Legislação Aplicável -->
+            <section class="card">
+                <h2>11. Legislação Aplicável</h2>
+                <p>Estes Termos de Serviço são regidos pelas leis da República Federativa do Brasil, incluindo o Código de Defesa do Consumidor (Lei n. 8.078/1990), o Marco Civil da Internet (Lei n. 12.965/2014) e a Lei Geral de Proteção de Dados (Lei n. 13.709/2018 - LGPD). Qualquer disputa será resolvida no foro da comarca do domicílio do usuário consumidor.</p>
+                <div class="highlight-box highlight-violet">
+                    <p><i class="fa-solid fa-scale-balanced" style="margin-right:8px"></i>Este serviço está em conformidade com a <strong>LGPD</strong> (Lei n. 13.709/2018), o <strong>Marco Civil da Internet</strong> (Lei n. 12.965/2014) e o <strong>Código de Defesa do Consumidor</strong> (Lei n. 8.078/1990).</p>
+                </div>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">11. Legislação Aplicável</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">Estes Termos de Serviço são regidos pelas leis da República Federativa do Brasil, incluindo o Código de Defesa do Consumidor (Lei n. 8.078/1990), o Marco Civil da Internet (Lei n. 12.965/2014) e a Lei Geral de Proteção de Dados (Lei n. 13.709/2018 - LGPD). Qualquer disputa será resolvida no foro da comarca do domicílio do usuário consumidor.</p>
-                </section>
+            <!-- 12. Alterações nos Termos -->
+            <section class="card">
+                <h2>12. Alterações nos Termos</h2>
+                <p>Podemos atualizar estes Termos de Serviço periodicamente. Alterações significativas serão comunicadas por e-mail ou aviso na Plataforma com pelo menos 15 dias de antecedência. O uso continuado após as alterações constitui aceitação dos novos termos. Caso não concorde, você poderá encerrar sua conta a qualquer momento.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">12. Alterações nos Termos</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">Podemos atualizar estes Termos de Serviço periodicamente. Alterações significativas serão comunicadas por e-mail ou aviso na Plataforma com pelo menos 15 dias de antecedência. O uso continuado após as alterações constitui aceitação dos novos termos. Caso não concorde, você poderá encerrar sua conta a qualquer momento.</p>
-                </section>
-
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">13. Contato</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Para dúvidas, sugestões ou solicitações sobre estes Termos de Serviço:</p>
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
-                        <p class="text-sm font-medium"><i class="fa-solid fa-globe mr-2 text-violet-600"></i>Site: <a href="https://tccflow.com.br" class="text-violet-600 hover:underline">tccflow.com.br</a></p>
-                        <p class="text-sm font-medium"><i class="fa-solid fa-envelope mr-2 text-violet-600"></i>E-mail: <a href="mailto:tccflow.contato@gmail.com" class="text-violet-600 hover:underline">tccflow.contato@gmail.com</a></p>
-                        <p class="text-sm font-medium"><i class="fa-brands fa-instagram mr-2 text-violet-600"></i>Instagram: <a href="https://instagram.com/tccflow0" class="text-violet-600 hover:underline">@tccflow0</a></p>
-                        <p class="text-sm font-medium"><i class="fa-solid fa-user mr-2 text-violet-600"></i>Responsável: Pedro Gentile</p>
-                    </div>
-                </section>
-
-            </div>
-
-            <div class="mt-10 text-center">
-                <a href="privacidade.html" class="text-sm text-violet-600 hover:underline font-medium"><i class="fa-solid fa-shield-halved mr-1"></i>Ver Política de Privacidade</a>
-            </div>
+            <!-- 13. Contato -->
+            <section class="card">
+                <h2>13. Contato</h2>
+                <p>Para dúvidas, sugestões ou solicitações sobre estes Termos de Serviço:</p>
+                <div class="highlight-box highlight-neutral">
+                    <p><i class="fa-solid fa-globe"></i>Site: <a href="https://tccflow.com.br">tccflow.com.br</a></p>
+                    <p><i class="fa-solid fa-envelope"></i>E-mail: <a href="mailto:tccflow.contato@gmail.com">tccflow.contato@gmail.com</a></p>
+                    <p><i class="fa-brands fa-instagram"></i>Instagram: <a href="https://instagram.com/tccflow0">@tccflow0</a></p>
+                    <p><i class="fa-solid fa-user"></i>Responsável: Pedro Gentile</p>
+                </div>
+            </section>
 
         </div>
+
+        <!-- Bottom Link -->
+        <div class="bottom-link">
+            <a href="privacidade.html"><i class="fa-solid fa-shield-halved" style="margin-right:6px"></i>Ver Política de Privacidade</a>
+        </div>
+
     </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2026 TCCFlow. Todos os direitos reservados.</p>
+            <p><a href="termos.html">Termos de Serviço</a></p>
+        </div>
+    </footer>
 
     <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>

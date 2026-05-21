@@ -21,84 +21,289 @@
     <title>Recuperar Senha - TCCFlow</title>
     <script src="../js/darkmode.js"></script>
     <script src="../js/i18n.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --violet: #7c3aed;
+            --cyan: #06b6d4;
+            --bg: #fafaf7;
+            --bg-2: #f3f2ec;
+            --paper: #ffffff;
+            --ink: #0f0d1e;
+            --ink-2: #2a2540;
+            --muted: #6b6480;
+            --line: #e7e3d8;
+            --grad: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            --radius: 18px;
+            --shadow: 0 10px 30px -12px rgba(15,13,30,.12), 0 4px 12px -6px rgba(15,13,30,.08);
+            --font-display: "Instrument Serif", Georgia, serif;
+            --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Grid background */
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 72px 72px;
+            opacity: .3;
+            pointer-events: none;
+        }
+
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 32px 16px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: var(--muted);
+            text-decoration: none;
+            margin-bottom: 32px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--violet); }
+
+        .card {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--grad);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .logo-icon i { color: #fff; font-size: 1.25rem; }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 400;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--ink-2);
+            margin-bottom: 8px;
+        }
+        .form-label i { margin-right: 4px; color: var(--violet); }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--line);
+            background: var(--bg-2);
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input::placeholder { color: var(--muted); }
+        .form-input:focus {
+            border-color: var(--violet);
+            box-shadow: 0 0 0 3px rgba(124,58,237,.12);
+        }
+
+        .error-msg {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239,68,68,.08);
+            border: 1px solid rgba(239,68,68,.2);
+            color: #dc2626;
+            font-size: 0.875rem;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+        .error-msg.show { display: flex; }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 14px 24px;
+            background: var(--grad);
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -6px rgba(124,58,237,.35);
+        }
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .form-footer {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin-top: 24px;
+        }
+        .form-footer a {
+            color: var(--violet);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .form-footer a:hover { text-decoration: underline; }
+
+        /* Step 2 success */
+        .success-box {
+            background: rgba(22,163,74,.08);
+            border: 1px solid rgba(22,163,74,.2);
+            color: #15803d;
+            font-size: 0.875rem;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(22,163,74,.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .success-icon i { color: #16a34a; font-size: 1.25rem; }
+
+        .hidden { display: none; }
+
+        .page-footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 24px;
+        }
     </style>
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased flex items-center justify-center relative overflow-hidden">
+<body>
 
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-    </div>
+    <div class="grid-bg"></div>
 
-    <div class="relative z-10 w-full max-w-md mx-4">
-        <a href="login.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-violet-600 transition mb-8">
+    <div class="page-wrapper">
+        <a href="login.html" class="back-link">
             <i class="fa-solid fa-arrow-left"></i> Voltar ao login
         </a>
 
-        <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50">
+        <div class="card">
 
             <!-- Step 1: Email Input -->
             <div id="step1">
-                <div class="text-center mb-8">
-                    <div class="w-14 h-14 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
-                        <i class="fa-solid fa-key text-white text-xl"></i>
+                <div class="card-header">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-key"></i>
                     </div>
-                    <h1 class="text-2xl font-bold">Recuperar Senha</h1>
-                    <p class="text-sm text-slate-500 mt-2">Enviaremos um link de recuperacao para seu email</p>
+                    <h1 class="card-title">Recuperar Senha</h1>
+                    <p class="card-subtitle">Enviaremos um link de recuperacao para seu email</p>
                 </div>
 
-                <form id="recoveryForm" class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-2">
-                            <i class="fa-solid fa-envelope mr-1 text-violet-600"></i> Email
+                <form id="recoveryForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa-solid fa-envelope"></i> Email
                         </label>
-                        <input type="email" id="email" required placeholder="seu@email.com"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition">
+                        <input type="email" id="email" required placeholder="seu@email.com" class="form-input">
                     </div>
 
-                    <div id="errorMsg" class="hidden bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3"></div>
+                    <div id="errorMsg" class="error-msg"></div>
 
-                    <button type="submit" id="submitBtn"
-                        class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25">
-                        <i class="fa-solid fa-paper-plane mr-2"></i>Enviar link
+                    <button type="submit" id="submitBtn" class="btn-primary">
+                        <i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Enviar link
                     </button>
                 </form>
 
-                <p class="text-center text-sm text-slate-500 mt-6">
-                    Lembrou a senha? <a href="login.html" class="text-violet-600 hover:underline font-medium">Fazer login</a>
+                <p class="form-footer">
+                    Lembrou a senha? <a href="login.html">Fazer login</a>
                 </p>
             </div>
 
             <!-- Step 2: Success Message -->
             <div id="step2" class="hidden">
-                <div class="text-center">
-                    <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-check text-green-600 text-xl"></i>
+                <div style="text-align:center">
+                    <div class="success-icon">
+                        <i class="fa-solid fa-check"></i>
                     </div>
-                    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-4 mb-6">
+                    <div class="success-box">
                         Link de recuperacao enviado! Verifique seu email (inclusive a pasta de spam).
                     </div>
-                    <a href="login.html"
-                        class="inline-block w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-center">
-                        <i class="fa-solid fa-arrow-left mr-2"></i>Voltar ao Login
+                    <a href="login.html" class="btn-primary">
+                        <i class="fa-solid fa-arrow-left" style="margin-right:8px"></i>Voltar ao Login
                     </a>
                 </div>
             </div>
 
         </div>
+
+        <div class="page-footer">&copy; 2025 TCCFlow. Todos os direitos reservados.</div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -114,9 +319,9 @@
             const errorMsg = document.getElementById('errorMsg');
             const btn = document.getElementById('submitBtn');
 
-            errorMsg.classList.add('hidden');
+            errorMsg.classList.remove('show');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Enviando...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:8px"></i>Enviando...';
 
             try {
                 await auth.resetPasswordForEmail(email);
@@ -124,9 +329,9 @@
                 document.getElementById('step2').classList.remove('hidden');
             } catch (err) {
                 errorMsg.textContent = err.message || 'Erro ao enviar email de recuperacao.';
-                errorMsg.classList.remove('hidden');
+                errorMsg.classList.add('show');
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar link';
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Enviar link';
             }
         });
     </script>

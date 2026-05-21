@@ -1,109 +1,257 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Pagamento Confirmado — TCCFlow</title>
-  <link rel="icon" href="../assets/logo.png"/>
-  <link rel="stylesheet" href="../css/app.css"/>
-  <script src="../js/darkmode.js"></script>
-</head>
-<body><div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../js/supabase-init.js"></script>
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
-<script type="text/babel">
-const { useState, useEffect } = React;
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WX7MD9CL9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1WX7MD9CL9');
+    </script>
 
-function PagamentoSucesso() {
-  const [status, setStatus] = useState('loading');
-  const [message, setMessage] = useState('Processando seu pagamento...');
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Confirmado - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  useEffect(() => {
-    setTimeout(() => {
-      setStatus('success');
-      setMessage('Parabéns! Seu pagamento foi confirmado.');
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 3000);
-    }, 2000);
-  }, []);
-
-  return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      background: 'var(--paper)',
-      flexDirection: 'column',
-      gap: 24,
-      padding: 20
-    }}>
-      {status === 'loading' ? (
-        <>
-          <div style={{
-            width: 60,
-            height: 60,
-            border: '4px solid var(--line)',
-            borderTop: '4px solid var(--violet)',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
-          <p style={{ color: 'var(--muted)', fontSize: '1rem' }}>
-            {message}
-          </p>
-        </>
-      ) : (
-        <>
-          <div style={{
-            width: 80,
-            height: 80,
-            background: 'var(--emerald)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontSize: '2.5rem'
-          }}>
-            ✓
-          </div>
-          <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '2rem',
-            fontWeight: 400,
-            color: 'var(--ink)',
-            margin: 0,
-            textAlign: 'center'
-          }}>
-            {message}
-          </h1>
-          <p style={{
-            color: 'var(--muted)',
-            fontSize: '0.9375rem',
-            textAlign: 'center',
-            maxWidth: '40ch'
-          }}>
-            Você será redirecionado para o dashboard em alguns segundos...
-          </p>
-          <a href="dashboard.html" className="btn btn-primary" style={{ marginTop: 24 }}>
-            Ir para Dashboard
-          </a>
-        </>
-      )}
-
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
+        :root {
+            --violet: #7c3aed;
+            --cyan: #06b6d4;
+            --bg: #fafaf7;
+            --bg-2: #f3f2ec;
+            --paper: #ffffff;
+            --ink: #0f0d1e;
+            --ink-2: #2a2540;
+            --muted: #6b6480;
+            --line: #e7e3d8;
+            --grad: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            --radius: 18px;
+            --shadow: 0 10px 30px -12px rgba(15,13,30,.12), 0 4px 12px -6px rgba(15,13,30,.08);
+            --font-display: "Instrument Serif", Georgia, serif;
+            --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
         }
-      `}</style>
-    </div>
-  );
-}
 
-ReactDOM.createRoot(document.getElementById("root")).render(<PagamentoSucesso/>);
-</script>
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Grid background */
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 72px 72px;
+            opacity: .3;
+            pointer-events: none;
+        }
+
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 32px 16px;
+        }
+
+        .card {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--grad);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .logo-icon i { color: #fff; font-size: 1.25rem; }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 400;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        /* Loading spinner */
+        .loading-section {
+            padding: 32px 0;
+        }
+
+        .spinner {
+            width: 56px;
+            height: 56px;
+            border: 4px solid var(--line);
+            border-top-color: var(--violet);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-section p {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        /* Success section */
+        .success-section {
+            padding: 32px 0 0;
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(22,163,74,.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .success-icon i { color: #16a34a; font-size: 1.5rem; }
+
+        .success-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .success-subtitle {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--ink-2);
+            margin-bottom: 8px;
+        }
+
+        .success-text {
+            font-size: 0.8125rem;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 24px;
+            background: var(--grad);
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -6px rgba(124,58,237,.35);
+        }
+
+        .hidden { display: none; }
+
+        .page-footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <div class="page-wrapper">
+        <div class="card">
+            <div class="logo-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h1 class="card-title">Pagamento Confirmado</h1>
+
+            <!-- Loading Section -->
+            <div id="loadingSection" class="loading-section">
+                <div class="spinner"></div>
+                <p>Processando seu pagamento...</p>
+            </div>
+
+            <!-- Success Section -->
+            <div id="successSection" class="hidden success-section">
+                <div class="success-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h2 class="success-title">Pagamento confirmado!</h2>
+                <p class="success-subtitle">Seu plano PRO esta ativo</p>
+                <p class="success-text">Voce sera redirecionado para o dashboard em alguns segundos...</p>
+                <a href="dashboard.html" class="btn-primary">
+                    <i class="fa-solid fa-arrow-right" style="margin-right:8px"></i>Ir para Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="page-footer">&copy; 2025 TCCFlow. Todos os direitos reservados.</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script>
+        // Show success after 2 seconds, then auto-redirect after 3 more seconds
+        setTimeout(function() {
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('successSection').classList.remove('hidden');
+            setTimeout(function() {
+                window.location.href = 'dashboard.html';
+            }, 3000);
+        }, 2000);
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>

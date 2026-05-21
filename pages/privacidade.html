@@ -18,227 +18,551 @@
     <meta name="theme-color" content="#7c3aed">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Política de Privacidade - TCCFlow</title>
-    <script src="../js/darkmode.js"></script>
-    <script src="../js/i18n.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Politica de Privacidade - TCCFlow</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        /* ============ Design System Variables ============ */
+        :root {
+            --violet: #7c3aed;
+            --violet-2: #8b5cf6;
+            --cyan: #06b6d4;
+            --bg: #fafaf7;
+            --bg-2: #f3f2ec;
+            --paper: #ffffff;
+            --ink: #0f0d1e;
+            --ink-2: #2a2540;
+            --muted: #6b6480;
+            --line: #e7e3d8;
+            --grad: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            --radius: 18px;
+            --shadow: 0 10px 30px -12px rgba(15,13,30,.12), 0 4px 12px -6px rgba(15,13,30,.08);
+            --font-display: "Instrument Serif", Georgia, serif;
+            --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+        }
+
+        /* ============ Reset & Base ============ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--ink);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+        }
+        ::selection { background: var(--violet); color: white; }
+
+        /* ============ Grid Background ============ */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(15,13,30,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15,13,30,.03) 1px, transparent 1px);
+            background-size: 72px 72px;
+        }
+
+        /* ============ Links ============ */
+        a { color: var(--violet); text-decoration: none; transition: opacity 0.2s; }
+        a:hover { opacity: 0.8; text-decoration: underline; }
+
+        /* ============ Sticky Nav ============ */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(250, 250, 247, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--line);
+        }
+        .nav-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .nav-brand:hover { text-decoration: none; opacity: 1; }
+        .nav-brand img {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+        }
+        .nav-brand-text {
+            font-family: var(--font-body);
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+        .nav-brand-accent {
+            background: var(--grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .nav-links a {
+            font-size: 0.875rem;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: var(--violet);
+            text-decoration: none;
+            opacity: 1;
+        }
+        .nav-links a.nav-back {
+            color: var(--violet);
+            font-weight: 600;
+        }
+
+        /* ============ Main Container ============ */
+        .main {
+            position: relative;
+            z-index: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 48px 32px 64px;
+        }
+
+        /* ============ Page Header ============ */
+        .page-header {
+            margin-bottom: 40px;
+        }
+        .page-header h1 {
+            font-family: var(--font-display);
+            font-weight: 400;
+            font-size: 2.75rem;
+            line-height: 1.1;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+        .page-header .date {
+            font-family: var(--font-mono);
+            font-size: 0.8125rem;
+            color: var(--muted);
+            letter-spacing: 0.02em;
+        }
+
+        /* ============ Card Sections ============ */
+        .cards {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .card {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            box-shadow: var(--shadow);
+        }
+        .card h2 {
+            font-family: var(--font-body);
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+        .card h3 {
+            font-family: var(--font-body);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--ink-2);
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+        .card p {
+            font-size: 0.9375rem;
+            color: var(--ink-2);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .card p:last-child { margin-bottom: 0; }
+        .card ul {
+            list-style: disc;
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        .card ul:last-child { margin-bottom: 0; }
+        .card li {
+            font-size: 0.9375rem;
+            color: var(--ink-2);
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+        .card li:last-child { margin-bottom: 0; }
+        .card li strong { color: var(--ink); }
+
+        /* ============ Highlighted Boxes ============ */
+        .highlight-box {
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+        }
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        /* Google policy - blue tint */
+        .highlight-blue {
+            background: rgba(6, 182, 212, 0.06);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+        .highlight-blue p {
+            color: #0e7490;
+        }
+        .highlight-blue i { color: #0e7490; }
+
+        /* LGPD contact - violet tint */
+        .highlight-violet {
+            background: rgba(124, 58, 237, 0.06);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+        .highlight-violet p {
+            color: #6d28d9;
+        }
+        .highlight-violet a {
+            color: #6d28d9;
+            font-weight: 700;
+        }
+
+        /* Cookies notice - green tint */
+        .highlight-green {
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .highlight-green p {
+            color: #047857;
+        }
+        .highlight-green i { color: #047857; }
+
+        /* Contact info - neutral bg-2 */
+        .highlight-neutral {
+            background: var(--bg-2);
+            border: 1px solid var(--line);
+        }
+        .highlight-neutral p {
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: var(--ink-2);
+            margin-bottom: 8px;
+        }
+        .highlight-neutral p:last-child { margin-bottom: 0; }
+        .highlight-neutral i {
+            color: var(--violet);
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* ============ Bottom Link ============ */
+        .bottom-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .bottom-link a {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--violet);
+        }
+
+        /* ============ Footer ============ */
+        .footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--line);
+            padding: 32px 32px;
+            text-align: center;
+        }
+        .footer-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer p {
+            font-size: 0.8125rem;
+            color: var(--muted);
+        }
+        .footer a {
+            color: var(--violet);
+            font-weight: 500;
+        }
+
+        /* ============ Responsive ============ */
+        @media (max-width: 640px) {
+            .nav-inner {
+                padding: 0 16px;
+            }
+            .nav-links {
+                gap: 16px;
+            }
+            .nav-links a {
+                font-size: 0.8125rem;
+            }
+            .main {
+                padding: 32px 16px 48px;
+            }
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            .card {
+                padding: 20px 16px;
+            }
+            .highlight-box {
+                padding: 14px 16px;
+            }
+            .footer {
+                padding: 24px 16px;
+            }
+        }
     </style>
 </head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
+<body>
 
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
-
-    <!-- Navbar simples -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="../index.html" class="flex items-center gap-2.5">
-                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="flex items-center gap-4">
-                    <a href="termos.html" class="text-sm text-slate-500 hover:text-violet-600 transition">Termos de Serviço</a>
-                    <a href="../index.html" class="text-sm font-medium text-violet-600 hover:text-violet-700 transition">Voltar ao Início</a>
-                </div>
+    <!-- Sticky Nav -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-brand">
+                <img src="../favicon.png" alt="TCCFlow">
+                <span class="nav-brand-text">TCC<span class="nav-brand-accent">Flow</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="termos.html">Termos de Servico</a>
+                <a href="../index.html" class="nav-back"><i class="fa-solid fa-arrow-left" style="margin-right:4px;font-size:0.75rem"></i>Voltar ao Inicio</a>
             </div>
         </div>
     </nav>
 
-    <main class="relative z-10 pt-16 min-h-screen pb-12">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Main Content -->
+    <main class="main">
 
-            <div class="mb-10">
-                <h1 class="text-3xl font-extrabold mb-2">Política de Privacidade</h1>
-                <p class="text-sm text-slate-400">Última atualização: 20 de maio de 2026</p>
-            </div>
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Politica de Privacidade</h1>
+            <p class="date">Ultima atualizacao: 20 de maio de 2026</p>
+        </div>
 
-            <div class="space-y-8">
+        <!-- Sections -->
+        <div class="cards">
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">1. Introdução</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">O TCCFlow, disponível em <a href="https://tccflow.com.br" class="text-violet-600 hover:underline">tccflow.com.br</a> ("nós", "nosso" ou "Plataforma"), respeita a sua privacidade e está comprometido em proteger seus dados pessoais em conformidade com a Lei Geral de Proteção de Dados (Lei n. 13.709/2018 - LGPD). Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos suas informações quando você utiliza nossos serviços.</p>
-                </section>
+            <!-- 1. Introducao -->
+            <section class="card">
+                <h2>1. Introducao</h2>
+                <p>O TCCFlow, disponivel em <a href="https://tccflow.com.br">tccflow.com.br</a> ("nos", "nosso" ou "Plataforma"), respeita a sua privacidade e esta comprometido em proteger seus dados pessoais em conformidade com a Lei Geral de Protecao de Dados (Lei n. 13.709/2018 - LGPD). Esta Politica de Privacidade explica como coletamos, usamos, armazenamos e protegemos suas informacoes quando voce utiliza nossos servicos.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">2. Dados que Coletamos</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Coletamos os seguintes tipos de informações:</p>
+            <!-- 2. Dados que Coletamos -->
+            <section class="card">
+                <h2>2. Dados que Coletamos</h2>
+                <p>Coletamos os seguintes tipos de informacoes:</p>
 
-                    <h3 class="text-sm font-bold mt-4 mb-2">2.1 Dados fornecidos por você:</h3>
-                    <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
-                        <li>Nome completo</li>
-                        <li>Endereço de e-mail</li>
-                        <li>Senha (armazenada de forma criptografada pelo Supabase Auth — nunca em texto puro)</li>
-                        <li>Conteúdo de projetos, tarefas, metas, anotações e documentos criados na Plataforma</li>
-                    </ul>
+                <h3>2.1 Dados fornecidos por voce:</h3>
+                <ul>
+                    <li>Nome completo</li>
+                    <li>Endereco de e-mail</li>
+                    <li>Senha (armazenada de forma criptografada pelo Supabase Auth — nunca em texto puro)</li>
+                    <li>Conteudo de projetos, tarefas, metas, anotacoes e documentos criados na Plataforma</li>
+                </ul>
 
-                    <h3 class="text-sm font-bold mt-4 mb-2">2.2 Dados coletados automaticamente:</h3>
-                    <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
-                        <li>Dados de uso (páginas visitadas, funcionalidades utilizadas)</li>
-                        <li>Informações do dispositivo (navegador, sistema operacional)</li>
-                        <li>Endereço IP</li>
-                    </ul>
+                <h3>2.2 Dados coletados automaticamente:</h3>
+                <ul>
+                    <li>Dados de uso (paginas visitadas, funcionalidades utilizadas)</li>
+                    <li>Informacoes do dispositivo (navegador, sistema operacional)</li>
+                    <li>Endereco IP</li>
+                </ul>
 
-                    <h3 class="text-sm font-bold mt-4 mb-2">2.3 Dados de terceiros (somente com sua autorização):</h3>
-                    <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
-                        <li><strong>Google OAuth:</strong> Ao conectar sua conta Google, recebemos seu nome, e-mail e foto de perfil</li>
-                        <li><strong>Google Calendar:</strong> Acesso para criar e gerenciar eventos em seu nome</li>
-                        <li><strong>Google Drive:</strong> Acesso para criar e gerenciar arquivos (Docs, Sheets, Slides) em pastas específicas do TCC</li>
-                        <li><strong>Mercado Pago:</strong> Dados de transação para processamento de pagamentos (PIX e cartão) — <strong>não armazenamos dados de cartão de crédito</strong></li>
-                    </ul>
-                </section>
+                <h3>2.3 Dados de terceiros (somente com sua autorizacao):</h3>
+                <ul>
+                    <li><strong>Google OAuth:</strong> Ao conectar sua conta Google, recebemos seu nome, e-mail e foto de perfil</li>
+                    <li><strong>Google Calendar:</strong> Acesso para criar e gerenciar eventos em seu nome</li>
+                    <li><strong>Google Drive:</strong> Acesso para criar e gerenciar arquivos (Docs, Sheets, Slides) em pastas especificas do TCC</li>
+                    <li><strong>Mercado Pago:</strong> Dados de transacao para processamento de pagamentos (PIX e cartao) — <strong>nao armazenamos dados de cartao de credito</strong></li>
+                </ul>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">3. Finalidade do Tratamento de Dados</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Utilizamos suas informações para as seguintes finalidades (bases legais conforme a LGPD):</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li><strong>Execução do contrato:</strong> Fornecer, manter e melhorar a Plataforma</li>
-                        <li><strong>Execução do contrato:</strong> Autenticar seu acesso e gerenciar sua conta</li>
-                        <li><strong>Execução do contrato:</strong> Processar pagamentos de assinaturas</li>
-                        <li><strong>Consentimento:</strong> Sincronizar dados com Google Calendar e Google Drive quando autorizado por você</li>
-                        <li><strong>Interesse legítimo:</strong> Enviar comunicações sobre sua conta, alterações no serviço ou atualizações importantes</li>
-                        <li><strong>Interesse legítimo:</strong> Prevenir fraudes e garantir a segurança da Plataforma</li>
-                    </ul>
-                </section>
+            <!-- 3. Finalidade do Tratamento de Dados -->
+            <section class="card">
+                <h2>3. Finalidade do Tratamento de Dados</h2>
+                <p>Utilizamos suas informacoes para as seguintes finalidades (bases legais conforme a LGPD):</p>
+                <ul>
+                    <li><strong>Execucao do contrato:</strong> Fornecer, manter e melhorar a Plataforma</li>
+                    <li><strong>Execucao do contrato:</strong> Autenticar seu acesso e gerenciar sua conta</li>
+                    <li><strong>Execucao do contrato:</strong> Processar pagamentos de assinaturas</li>
+                    <li><strong>Consentimento:</strong> Sincronizar dados com Google Calendar e Google Drive quando autorizado por voce</li>
+                    <li><strong>Interesse legitimo:</strong> Enviar comunicacoes sobre sua conta, alteracoes no servico ou atualizacoes importantes</li>
+                    <li><strong>Interesse legitimo:</strong> Prevenir fraudes e garantir a seguranca da Plataforma</li>
+                </ul>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">4. Uso dos Dados do Google</h2>
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
-                        <p class="text-sm text-blue-700"><i class="fa-brands fa-google mr-2"></i><strong>Conformidade com a Política de Dados de Usuário do Google (Google API Services User Data Policy):</strong></p>
-                    </div>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li>O TCCFlow solicita acesso ao Google Calendar e Google Drive <strong>somente quando o usuário autoriza explicitamente</strong> clicando no botão "Conectar"</li>
-                        <li>Os dados do Google são utilizados <strong>exclusivamente</strong> para as funcionalidades solicitadas (criar eventos no calendário, gerenciar arquivos do TCC)</li>
-                        <li><strong>Não vendemos, compartilhamos ou transferimos</strong> seus dados do Google para terceiros</li>
-                        <li><strong>Não utilizamos</strong> dados do Google para publicidade, marketing, mineração de dados ou qualquer finalidade não relacionada ao serviço</li>
-                        <li>Os tokens de acesso do Google são armazenados <strong>apenas na sessão do navegador</strong> e não são persistidos em nossos servidores</li>
-                        <li>Você pode revogar o acesso a qualquer momento nas <a href="https://myaccount.google.com/permissions" target="_blank" class="text-violet-600 hover:underline">configurações da sua conta Google</a></li>
-                    </ul>
-                </section>
+            <!-- 4. Uso dos Dados do Google -->
+            <section class="card">
+                <h2>4. Uso dos Dados do Google</h2>
+                <div class="highlight-box highlight-blue">
+                    <p><i class="fa-brands fa-google" style="margin-right:8px"></i><strong>Conformidade com a Politica de Dados de Usuario do Google (Google API Services User Data Policy):</strong></p>
+                </div>
+                <ul style="margin-top:16px">
+                    <li>O TCCFlow solicita acesso ao Google Calendar e Google Drive <strong>somente quando o usuario autoriza explicitamente</strong> clicando no botao "Conectar"</li>
+                    <li>Os dados do Google sao utilizados <strong>exclusivamente</strong> para as funcionalidades solicitadas (criar eventos no calendario, gerenciar arquivos do TCC)</li>
+                    <li><strong>Nao vendemos, compartilhamos ou transferimos</strong> seus dados do Google para terceiros</li>
+                    <li><strong>Nao utilizamos</strong> dados do Google para publicidade, marketing, mineracao de dados ou qualquer finalidade nao relacionada ao servico</li>
+                    <li>Os tokens de acesso do Google sao armazenados <strong>apenas na sessao do navegador</strong> e nao sao persistidos em nossos servidores</li>
+                    <li>Voce pode revogar o acesso a qualquer momento nas <a href="https://myaccount.google.com/permissions" target="_blank">configuracoes da sua conta Google</a></li>
+                </ul>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">5. Armazenamento e Segurança</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Seus dados são armazenados utilizando os seguintes serviços:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li><strong>Supabase Auth:</strong> Gerenciamento seguro de contas e autenticação</li>
-                        <li><strong>Supabase Database (PostgreSQL):</strong> Banco de dados para projetos, tarefas e dados da Plataforma</li>
-                        <li><strong>Netlify:</strong> Hospedagem da aplicação web</li>
-                    </ul>
-                    <p class="text-sm text-slate-600 leading-relaxed mt-3">Medidas de segurança adotadas:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside mt-2">
-                        <li>Conexões criptografadas via HTTPS/TLS em todo o site (<a href="https://tccflow.com.br" class="text-violet-600 hover:underline">tccflow.com.br</a>)</li>
-                        <li>Autenticação segura via Supabase Auth com suporte a login Google</li>
-                        <li>Row Level Security (RLS) no Supabase para controle granular de acesso</li>
-                        <li>Senhas nunca armazenadas em texto puro — hash criptográfico gerenciado pelo Supabase</li>
-                        <li>Tokens de pagamento processados exclusivamente pelo Mercado Pago</li>
-                    </ul>
-                </section>
+            <!-- 5. Armazenamento e Seguranca -->
+            <section class="card">
+                <h2>5. Armazenamento e Seguranca</h2>
+                <p>Seus dados sao armazenados utilizando os seguintes servicos:</p>
+                <ul>
+                    <li><strong>Supabase Auth:</strong> Gerenciamento seguro de contas e autenticacao</li>
+                    <li><strong>Supabase Database (PostgreSQL):</strong> Banco de dados para projetos, tarefas e dados da Plataforma</li>
+                    <li><strong>Netlify:</strong> Hospedagem da aplicacao web</li>
+                </ul>
+                <p style="margin-top:16px">Medidas de seguranca adotadas:</p>
+                <ul>
+                    <li>Conexoes criptografadas via HTTPS/TLS em todo o site (<a href="https://tccflow.com.br">tccflow.com.br</a>)</li>
+                    <li>Autenticacao segura via Supabase Auth com suporte a login Google</li>
+                    <li>Row Level Security (RLS) no Supabase para controle granular de acesso</li>
+                    <li>Senhas nunca armazenadas em texto puro — hash criptografico gerenciado pelo Supabase</li>
+                    <li>Tokens de pagamento processados exclusivamente pelo Mercado Pago</li>
+                </ul>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">6. Compartilhamento de Dados</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3"><strong>Não vendemos, alugamos ou comercializamos seus dados pessoais.</strong> Compartilhamos informações apenas nas seguintes situações:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li><strong>Membros da equipe:</strong> Dados do projeto (tarefas, metas, progresso) são compartilhados com membros convidados por você dentro da Plataforma</li>
-                        <li><strong>Mercado Pago:</strong> Dados estritamente necessários para processar pagamentos (nome, e-mail, CPF para transações)</li>
-                        <li><strong>Google APIs:</strong> Dados enviados para o Google Calendar e Drive somente quando você autorizar explicitamente</li>
-                        <li><strong>Supabase:</strong> Infraestrutura de armazenamento e autenticação</li>
-                        <li><strong>Obrigação legal:</strong> Quando exigido por lei, regulamento ou ordem judicial brasileira</li>
-                    </ul>
-                </section>
+            <!-- 6. Compartilhamento de Dados -->
+            <section class="card">
+                <h2>6. Compartilhamento de Dados</h2>
+                <p><strong>Nao vendemos, alugamos ou comercializamos seus dados pessoais.</strong> Compartilhamos informacoes apenas nas seguintes situacoes:</p>
+                <ul>
+                    <li><strong>Membros da equipe:</strong> Dados do projeto (tarefas, metas, progresso) sao compartilhados com membros convidados por voce dentro da Plataforma</li>
+                    <li><strong>Mercado Pago:</strong> Dados estritamente necessarios para processar pagamentos (nome, e-mail, CPF para transacoes)</li>
+                    <li><strong>Google APIs:</strong> Dados enviados para o Google Calendar e Drive somente quando voce autorizar explicitamente</li>
+                    <li><strong>Supabase:</strong> Infraestrutura de armazenamento e autenticacao</li>
+                    <li><strong>Obrigacao legal:</strong> Quando exigido por lei, regulamento ou ordem judicial brasileira</li>
+                </ul>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">7. Seus Direitos (LGPD)</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">De acordo com a Lei Geral de Proteção de Dados (Lei n. 13.709/2018), você tem os seguintes direitos:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li><strong>Confirmação e Acesso:</strong> Solicitar a confirmação do tratamento e uma cópia dos seus dados pessoais</li>
-                        <li><strong>Correção:</strong> Solicitar a correção de dados incompletos, inexatos ou desatualizados</li>
-                        <li><strong>Exclusão:</strong> Solicitar a exclusão dos seus dados pessoais tratados com base no consentimento</li>
-                        <li><strong>Portabilidade:</strong> Solicitar a transferência dos seus dados a outro fornecedor de serviço</li>
-                        <li><strong>Revogação do consentimento:</strong> Revogar o consentimento para o uso dos seus dados a qualquer momento</li>
-                        <li><strong>Informação:</strong> Ser informado sobre as entidades públicas e privadas com as quais compartilhamos seus dados</li>
-                        <li><strong>Oposição:</strong> Opor-se ao tratamento realizado com base em uma das hipóteses de dispensa de consentimento</li>
-                    </ul>
-                    <div class="bg-violet-50 border border-violet-200 rounded-xl p-4 mt-4">
-                        <p class="text-sm text-violet-700">Para exercer qualquer um desses direitos, envie um e-mail para <a href="mailto:tccflow.contato@gmail.com" class="font-bold hover:underline">tccflow.contato@gmail.com</a> com o assunto "Direitos LGPD". Responderemos em até 15 dias úteis.</p>
-                    </div>
-                </section>
+            <!-- 7. Seus Direitos (LGPD) -->
+            <section class="card">
+                <h2>7. Seus Direitos (LGPD)</h2>
+                <p>De acordo com a Lei Geral de Protecao de Dados (Lei n. 13.709/2018), voce tem os seguintes direitos:</p>
+                <ul>
+                    <li><strong>Confirmacao e Acesso:</strong> Solicitar a confirmacao do tratamento e uma copia dos seus dados pessoais</li>
+                    <li><strong>Correcao:</strong> Solicitar a correcao de dados incompletos, inexatos ou desatualizados</li>
+                    <li><strong>Exclusao:</strong> Solicitar a exclusao dos seus dados pessoais tratados com base no consentimento</li>
+                    <li><strong>Portabilidade:</strong> Solicitar a transferencia dos seus dados a outro fornecedor de servico</li>
+                    <li><strong>Revogacao do consentimento:</strong> Revogar o consentimento para o uso dos seus dados a qualquer momento</li>
+                    <li><strong>Informacao:</strong> Ser informado sobre as entidades publicas e privadas com as quais compartilhamos seus dados</li>
+                    <li><strong>Oposicao:</strong> Opor-se ao tratamento realizado com base em uma das hipoteses de dispensa de consentimento</li>
+                </ul>
+                <div class="highlight-box highlight-violet">
+                    <p>Para exercer qualquer um desses direitos, envie um e-mail para <a href="mailto:tccflow.contato@gmail.com">tccflow.contato@gmail.com</a> com o assunto "Direitos LGPD". Responderemos em ate 15 dias uteis.</p>
+                </div>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">8. Retenção de Dados</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Mantemos seus dados pessoais pelo tempo necessário para:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li>Fornecer os serviços contratados enquanto sua conta estiver ativa</li>
-                        <li>Cumprir obrigações legais, fiscais ou regulatórias</li>
-                        <li>Resolver disputas e fazer cumprir nossos acordos</li>
-                    </ul>
-                    <p class="text-sm text-slate-600 leading-relaxed mt-3">Após a exclusão da conta, seus dados serão removidos em até 30 dias, exceto quando a retenção for exigida por lei.</p>
-                </section>
+            <!-- 8. Retencao de Dados -->
+            <section class="card">
+                <h2>8. Retencao de Dados</h2>
+                <p>Mantemos seus dados pessoais pelo tempo necessario para:</p>
+                <ul>
+                    <li>Fornecer os servicos contratados enquanto sua conta estiver ativa</li>
+                    <li>Cumprir obrigacoes legais, fiscais ou regulatorias</li>
+                    <li>Resolver disputas e fazer cumprir nossos acordos</li>
+                </ul>
+                <p>Apos a exclusao da conta, seus dados serao removidos em ate 30 dias, exceto quando a retencao for exigida por lei.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">9. Cookies e Armazenamento Local</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">O TCCFlow utiliza tecnologias de armazenamento local da seguinte forma:</p>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside">
-                        <li><strong>localStorage:</strong> Para salvar preferências do usuário como o modo escuro (dark mode)</li>
-                        <li><strong>Supabase Auth:</strong> Pode utilizar cookies para gerenciar sessões de autenticação</li>
-                        <li><strong>Tokens Google:</strong> Armazenados temporariamente na sessão do navegador para integrações autorizadas</li>
-                    </ul>
-                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mt-4">
-                        <p class="text-sm text-emerald-700"><i class="fa-solid fa-shield-halved mr-2"></i><strong>Não utilizamos cookies de rastreamento, publicidade ou analytics de terceiros.</strong></p>
-                    </div>
-                </section>
+            <!-- 9. Cookies e Armazenamento Local -->
+            <section class="card">
+                <h2>9. Cookies e Armazenamento Local</h2>
+                <p>O TCCFlow utiliza tecnologias de armazenamento local da seguinte forma:</p>
+                <ul>
+                    <li><strong>localStorage:</strong> Para salvar preferencias do usuario como o modo escuro (dark mode)</li>
+                    <li><strong>Supabase Auth:</strong> Pode utilizar cookies para gerenciar sessoes de autenticacao</li>
+                    <li><strong>Tokens Google:</strong> Armazenados temporariamente na sessao do navegador para integracoes autorizadas</li>
+                </ul>
+                <div class="highlight-box highlight-green">
+                    <p><i class="fa-solid fa-shield-halved" style="margin-right:8px"></i><strong>Nao utilizamos cookies de rastreamento, publicidade ou analytics de terceiros.</strong></p>
+                </div>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">10. Menores de Idade</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">O TCCFlow é destinado a estudantes e pode ser utilizado por menores de 18 anos. Conforme o artigo 14 da LGPD, o tratamento de dados de crianças e adolescentes será realizado em seu melhor interesse. Recomendamos que menores de 18 anos utilizem a Plataforma com o conhecimento e consentimento de seus pais ou responsáveis legais. Pais ou responsáveis podem solicitar informações sobre o tratamento de dados de menores pelo e-mail <a href="mailto:tccflow.contato@gmail.com" class="text-violet-600 hover:underline">tccflow.contato@gmail.com</a>.</p>
-                </section>
+            <!-- 10. Menores de Idade -->
+            <section class="card">
+                <h2>10. Menores de Idade</h2>
+                <p>O TCCFlow e destinado a estudantes e pode ser utilizado por menores de 18 anos. Conforme o artigo 14 da LGPD, o tratamento de dados de criancas e adolescentes sera realizado em seu melhor interesse. Recomendamos que menores de 18 anos utilizem a Plataforma com o conhecimento e consentimento de seus pais ou responsaveis legais. Pais ou responsaveis podem solicitar informacoes sobre o tratamento de dados de menores pelo e-mail <a href="mailto:tccflow.contato@gmail.com">tccflow.contato@gmail.com</a>.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">11. Transferência Internacional de Dados</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">Seus dados podem ser armazenados e processados em servidores localizados fora do Brasil (Supabase/AWS, Netlify). O Mercado Pago processa os pagamentos no Brasil. Transferências internacionais são realizadas para provedores que adotam padrões adequados de proteção de dados, em conformidade com o artigo 33 da LGPD.</p>
-                </section>
+            <!-- 11. Transferencia Internacional de Dados -->
+            <section class="card">
+                <h2>11. Transferencia Internacional de Dados</h2>
+                <p>Seus dados podem ser armazenados e processados em servidores localizados fora do Brasil (Supabase/AWS, Netlify). O Mercado Pago processa os pagamentos no Brasil. Transferencias internacionais sao realizadas para provedores que adotam padroes adequados de protecao de dados, em conformidade com o artigo 33 da LGPD.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">12. Alterações nesta Política</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">Podemos atualizar esta Política de Privacidade periodicamente. Alterações significativas serão comunicadas por e-mail ou aviso na Plataforma com pelo menos 15 dias de antecedência. Recomendamos que revise esta página regularmente. A data da última atualização será sempre indicada no topo desta página.</p>
-                </section>
+            <!-- 12. Alteracoes nesta Politica -->
+            <section class="card">
+                <h2>12. Alteracoes nesta Politica</h2>
+                <p>Podemos atualizar esta Politica de Privacidade periodicamente. Alteracoes significativas serao comunicadas por e-mail ou aviso na Plataforma com pelo menos 15 dias de antecedencia. Recomendamos que revise esta pagina regularmente. A data da ultima atualizacao sera sempre indicada no topo desta pagina.</p>
+            </section>
 
-                <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <h2 class="text-lg font-bold mb-3">13. Contato e Encarregado de Dados</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed mb-3">Para dúvidas sobre esta Política de Privacidade, sobre o tratamento dos seus dados ou para exercer seus direitos:</p>
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
-                        <p class="text-sm font-medium"><i class="fa-solid fa-globe mr-2 text-violet-600"></i>Site: <a href="https://tccflow.com.br" class="text-violet-600 hover:underline">tccflow.com.br</a></p>
-                        <p class="text-sm font-medium"><i class="fa-solid fa-envelope mr-2 text-violet-600"></i>E-mail: <a href="mailto:tccflow.contato@gmail.com" class="text-violet-600 hover:underline">tccflow.contato@gmail.com</a></p>
-                        <p class="text-sm font-medium"><i class="fa-brands fa-instagram mr-2 text-violet-600"></i>Instagram: <a href="https://instagram.com/tccflow0" class="text-violet-600 hover:underline">@tccflow0</a></p>
-                        <p class="text-sm font-medium"><i class="fa-solid fa-user mr-2 text-violet-600"></i>Encarregado de Dados (DPO): Pedro Gentile</p>
-                    </div>
-                    <p class="text-sm text-slate-500 leading-relaxed mt-3">Caso não esteja satisfeito com a resposta, você pode apresentar reclamação a Autoridade Nacional de Proteção de Dados (ANPD) pelo site <a href="https://www.gov.br/anpd" target="_blank" class="text-violet-600 hover:underline">gov.br/anpd</a>.</p>
-                </section>
-
-            </div>
-
-            <div class="mt-10 text-center">
-                <a href="termos.html" class="text-sm text-violet-600 hover:underline font-medium"><i class="fa-solid fa-file-contract mr-1"></i>Ver Termos de Serviço</a>
-            </div>
+            <!-- 13. Contato e Encarregado de Dados -->
+            <section class="card">
+                <h2>13. Contato e Encarregado de Dados</h2>
+                <p>Para duvidas sobre esta Politica de Privacidade, sobre o tratamento dos seus dados ou para exercer seus direitos:</p>
+                <div class="highlight-box highlight-neutral">
+                    <p><i class="fa-solid fa-globe"></i>Site: <a href="https://tccflow.com.br">tccflow.com.br</a></p>
+                    <p><i class="fa-solid fa-envelope"></i>E-mail: <a href="mailto:tccflow.contato@gmail.com">tccflow.contato@gmail.com</a></p>
+                    <p><i class="fa-brands fa-instagram"></i>Instagram: <a href="https://instagram.com/tccflow0">@tccflow0</a></p>
+                    <p><i class="fa-solid fa-user"></i>Encarregado de Dados (DPO): Pedro Gentile</p>
+                </div>
+                <p style="margin-top:16px;color:var(--muted);font-size:0.875rem">Caso nao esteja satisfeito com a resposta, voce pode apresentar reclamacao a Autoridade Nacional de Protecao de Dados (ANPD) pelo site <a href="https://www.gov.br/anpd" target="_blank">gov.br/anpd</a>.</p>
+            </section>
 
         </div>
+
+        <!-- Bottom Link -->
+        <div class="bottom-link">
+            <a href="termos.html"><i class="fa-solid fa-file-contract" style="margin-right:6px"></i>Ver Termos de Servico</a>
+        </div>
+
     </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2026 TCCFlow. Todos os direitos reservados.</p>
+            <p><a href="privacidade.html">Politica de Privacidade</a></p>
+        </div>
+    </footer>
 
     <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
