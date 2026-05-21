@@ -132,7 +132,7 @@ function HeroPreview() {
 
 function PreviewDashboard() {
   return (
-    <div style={{display:"grid", gridTemplateColumns:"220px 1fr", minHeight:"440px"}}>
+    <div className="preview-dashboard" style={{display:"grid", gridTemplateColumns:"220px 1fr", minHeight:"440px"}}>
       <aside style={{padding:"24px 16px", borderRight:"1px solid var(--line)", background:"var(--bg-2)"}}>
         <div className="mono" style={{fontSize:"0.625rem", color:"var(--muted)", textTransform:"uppercase", letterSpacing:"0.12em", margin:"0 8px 10px"}}>Meu TCC</div>
         <div style={{display:"flex",flexDirection:"column",gap:"2px"}}>
