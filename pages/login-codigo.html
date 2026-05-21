@@ -25,11 +25,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../css/dark.css">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         :root {
             --violet: #7c3aed;
+            --violet-2: #8b5cf6;
+            --violet-dk: #6d28d9;
             --cyan: #06b6d4;
+            --emerald: #10b981;
             --bg: #fafaf7;
             --bg-2: #f3f2ec;
             --paper: #ffffff;
@@ -37,73 +38,160 @@
             --ink-2: #2a2540;
             --muted: #6b6480;
             --line: #e7e3d8;
+            --line-2: #d9d4c4;
             --grad: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
             --radius: 18px;
+            --radius-lg: 28px;
             --shadow: 0 10px 30px -12px rgba(15,13,30,.12), 0 4px 12px -6px rgba(15,13,30,.08);
             --font-display: "Instrument Serif", Georgia, serif;
             --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
         }
 
+        [data-theme="dark"] {
+            --bg: #0a0818;
+            --bg-2: #120f24;
+            --paper: #15112a;
+            --ink: #f5f3ff;
+            --ink-2: #d8d3f0;
+            --muted: #9189ad;
+            --line: #251f40;
+            --line-2: #1e1938;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { margin: 0; padding: 0; }
         body {
-            font-family: var(--font-body);
             background: var(--bg);
             color: var(--ink);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.55;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            transition: background .4s, color .4s;
+            min-height: 100vh;
         }
+
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+        input { font-family: inherit; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
 
         /* Grid background */
         .grid-bg {
-            position: absolute;
+            position: fixed;
             inset: 0;
             background-image:
                 linear-gradient(var(--line) 1px, transparent 1px),
                 linear-gradient(90deg, var(--line) 1px, transparent 1px);
             background-size: 72px 72px;
-            opacity: .3;
+            opacity: .35;
+            z-index: 0;
             pointer-events: none;
         }
 
-        .page-wrapper {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 32px 16px;
+        /* ============ Nav ============ */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 80%, transparent);
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid transparent;
+            transition: border-color .3s;
         }
 
-        .back-link {
+        .nav.scrolled { border-bottom-color: var(--line); }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.0625rem;
+            letter-spacing: -0.01em;
+        }
+
+        .brand img { width: 28px; height: 28px; }
+
+        .brand .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--violet);
+            margin-left: 2px;
+        }
+
+        .nav-cta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.875rem;
-            color: var(--muted);
-            text-decoration: none;
-            margin-bottom: 32px;
-            transition: color 0.2s;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: transform .25s cubic-bezier(.2,.9,.3,1.2), background .2s, color .2s, box-shadow .25s;
+            white-space: nowrap;
         }
-        .back-link:hover { color: var(--violet); }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
 
-        .card {
-            background: var(--paper);
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 40px;
+        .btn-primary {
+            background: var(--ink);
+            color: var(--bg);
+            box-shadow: 0 1px 0 rgba(255,255,255,.08) inset, 0 6px 20px -8px rgba(15,13,30,.35);
+        }
+        .btn-primary:hover {
+            background: var(--violet);
+            box-shadow: 0 6px 24px -6px rgba(124,58,237,.5);
+            color: #fff;
         }
 
-        .card-header {
-            text-align: center;
-            margin-bottom: 32px;
+        .btn-ghost {
+            background: transparent;
+            color: var(--ink);
+            padding: 10px 16px;
+        }
+        .btn-ghost:hover { background: var(--bg-2); }
+
+        .btn-active {
+            background: var(--bg-2);
+            color: var(--violet);
+            padding: 10px 16px;
+            font-weight: 600;
         }
 
-        .logo-icon {
+        /* ============ Main content ============ */
+        .auth-main {
+            position: relative;
+            z-index: 2;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 120px 32px 60px;
+        }
+
+        /* Icon box */
+        .icon-box {
             width: 56px;
             height: 56px;
             background: var(--grad);
@@ -111,238 +199,370 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 16px;
-        }
-        .logo-icon i { color: #fff; font-size: 1.25rem; }
-
-        .card-title {
-            font-family: var(--font-display);
-            font-size: 1.75rem;
-            font-weight: 400;
-            color: var(--ink);
-            margin-bottom: 8px;
+            color: white;
+            font-size: 1.25rem;
+            margin-bottom: 24px;
         }
 
-        .card-subtitle {
-            font-size: 0.875rem;
+        /* Eyebrow */
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
             color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
         }
-        .card-subtitle .highlight {
+
+        .eyebrow::before {
+            content: "";
+            width: 24px;
+            height: 1px;
+            background: currentColor;
+            opacity: .5;
+        }
+
+        /* Title */
+        .auth-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin: 0 0 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 0.9375rem;
+            color: var(--ink-2);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .auth-subtitle .highlight {
             font-weight: 500;
             color: var(--violet);
         }
 
-        .form-group { margin-bottom: 20px; }
-
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--ink-2);
-            margin-bottom: 8px;
-        }
-        .form-label i { margin-right: 4px; color: var(--violet); }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1.5px solid var(--line);
-            background: var(--bg-2);
-            border-radius: 12px;
-            font-family: var(--font-body);
-            font-size: 0.875rem;
-            color: var(--ink);
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-input::placeholder { color: var(--muted); }
-        .form-input:focus {
-            border-color: var(--violet);
-            box-shadow: 0 0 0 3px rgba(124,58,237,.12);
-        }
-
-        .error-msg {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            background: rgba(239,68,68,.08);
-            border: 1px solid rgba(239,68,68,.2);
-            color: #dc2626;
-            font-size: 0.875rem;
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-        }
-        .error-msg.show { display: flex; }
-
-        .btn-primary {
-            display: block;
-            width: 100%;
-            padding: 14px 24px;
-            background: var(--grad);
-            color: #fff;
-            font-family: var(--font-body);
-            font-size: 0.9375rem;
-            font-weight: 600;
+        /* Dashed separator */
+        .sep {
             border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px -6px rgba(124,58,237,.35);
-        }
-        .btn-primary:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+            border-top: 1px dashed var(--line);
+            margin: 32px 0;
         }
 
-        .form-footer {
+        /* Form */
+        .auth-form {
             display: flex;
             flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            display: flex;
             align-items: center;
             gap: 8px;
-            margin-top: 24px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--ink);
         }
-        .form-footer a {
+
+        .form-group label i {
+            color: var(--violet);
+            font-size: 0.75rem;
+        }
+
+        .form-group input {
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            background: var(--bg-2);
+            border-radius: 14px;
+            font-size: 0.9375rem;
+            color: var(--ink);
+            transition: all .2s;
+        }
+
+        .form-group input::placeholder { color: var(--muted); }
+
+        .form-group input:focus {
+            outline: none;
+            background: var(--paper);
+            border-color: var(--violet);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, .08);
+        }
+
+        /* Error message */
+        .error-box {
+            display: none;
+            padding: 14px 18px;
+            border-left: 3px solid #ef4444;
+            background: rgba(239,68,68,.06);
+            color: #dc2626;
             font-size: 0.875rem;
-            color: var(--violet);
-            text-decoration: none;
-            font-weight: 500;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 20px;
         }
-        .form-footer a:hover { text-decoration: underline; }
-        .form-footer .secondary-link {
-            color: var(--muted);
-            font-weight: 400;
-            transition: color 0.2s;
+
+        .error-box.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .form-footer .secondary-link:hover {
-            color: var(--violet);
-            text-decoration: none;
+
+        /* Submit button */
+        .btn-submit {
+            padding: 16px 24px;
+            background: var(--grad);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px -6px rgba(124, 58, 237, .4);
+        }
+
+        .btn-submit:active { transform: translateY(0); }
+
+        .btn-submit:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* OTP digit inputs */
-        .otp-row {
+        .otp-inputs {
             display: flex;
+            gap: 8px;
             justify-content: center;
-            gap: 6px;
-            margin-bottom: 20px;
+            margin: 32px 0;
         }
 
         .digit-input {
             width: 44px;
             height: 56px;
+            border: 1px solid var(--line);
             background: var(--bg-2);
-            border: 1.5px solid var(--line);
-            border-radius: 12px;
+            border-radius: 14px;
+            font-size: 1.5rem;
+            font-weight: 600;
             text-align: center;
-            font-family: var(--font-body);
-            font-size: 1.125rem;
-            font-weight: 700;
             color: var(--ink);
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: var(--font-mono);
+            transition: all .2s;
         }
+
         .digit-input:focus {
+            outline: none;
+            background: var(--paper);
             border-color: var(--violet);
-            box-shadow: 0 0 0 3px rgba(124,58,237,.12);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, .08);
         }
 
-        .hidden { display: none; }
+        /* Resend code button */
+        .btn-resend {
+            display: block;
+            margin: 16px auto 0;
+            color: var(--violet);
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: color .2s;
+        }
 
-        .page-footer {
+        .btn-resend:hover { color: var(--violet-2); }
+
+        .btn-secondary {
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .btn-secondary:hover {
+            color: var(--violet);
+        }
+
+        /* Links */
+        .auth-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
             text-align: center;
+        }
+
+        .auth-link {
+            font-size: 0.875rem;
+            color: var(--violet);
+            transition: color .2s;
+        }
+
+        .auth-link:hover { color: var(--violet-2); }
+
+        /* Footer */
+        .auth-footer {
+            text-align: center;
+            padding-top: 48px;
+            padding-bottom: 24px;
             font-size: 0.75rem;
             color: var(--muted);
-            margin-top: 24px;
+        }
+
+        /* Steps */
+        .step { display: none; }
+        .step.active { display: block; }
+
+        /* ============ Responsive ============ */
+        @media (max-width: 640px) {
+            .auth-main { padding: 100px 16px 40px; }
+            .nav-inner { padding: 0 16px; height: 56px; }
+            .brand { font-size: 0.9375rem; gap: 8px; }
+            .auth-title { font-size: 2.5rem; }
+            .otp-inputs { gap: 6px; }
+            .digit-input { width: 38px; height: 48px; font-size: 1.25rem; border-radius: 10px; }
         }
     </style>
 </head>
 <body>
-
     <div class="grid-bg"></div>
 
-    <div class="page-wrapper">
-        <a href="../index.html" class="back-link">
-            <i class="fa-solid fa-arrow-left"></i> Voltar ao inicio
-        </a>
+    <!-- Sticky Nav -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="brand">
+                <img src="../favicon.png" alt="TCCFlow">
+                <span>TCCFlow<span class="dot"></span></span>
+            </a>
+            <div class="nav-cta">
+                <a href="login.html" class="btn btn-ghost">Entrar com senha</a>
+            </div>
+        </div>
+    </nav>
 
-        <div class="card">
+    <!-- Main -->
+    <main class="auth-main">
 
-            <!-- Step 1: Email Input -->
-            <div id="step1">
-                <div class="card-header">
-                    <div class="logo-icon">
+        <!-- STEP 1: Email Input -->
+        <div class="step active" id="step1">
+            <div class="icon-box">
+                <i class="fa-solid fa-key"></i>
+            </div>
+
+            <div class="eyebrow">Verificação</div>
+
+            <h1 class="auth-title">Entrar com código</h1>
+            <p class="auth-subtitle">Enviaremos um código de 8 dígitos para seu email</p>
+
+            <hr class="sep">
+
+            <!-- Error -->
+            <div class="error-box" id="errorMsg">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="errorText"></span>
+            </div>
+
+            <!-- Form -->
+            <form class="auth-form" id="emailForm">
+                <div class="form-group">
+                    <label>
                         <i class="fa-solid fa-envelope"></i>
-                    </div>
-                    <h1 class="card-title">Entrar com Codigo</h1>
-                    <p class="card-subtitle">Enviaremos um codigo de acesso para seu email</p>
+                        Email
+                    </label>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
                 </div>
 
-                <form id="emailForm">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fa-solid fa-envelope"></i> Email
-                        </label>
-                        <input type="email" id="email" required placeholder="seu@email.com" class="form-input">
-                    </div>
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>Enviar código</span>
+                </button>
+            </form>
 
-                    <div id="errorMsg" class="error-msg"></div>
+            <hr class="sep">
 
-                    <button type="submit" id="submitBtn" class="btn-primary">
-                        <i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Enviar codigo
-                    </button>
-                </form>
-
-                <div class="form-footer">
-                    <a href="login.html"><i class="fa-solid fa-lock" style="margin-right:4px"></i>Entrar com senha</a>
-                </div>
+            <!-- Links -->
+            <div class="auth-links">
+                <a href="login.html" class="auth-link">
+                    <i class="fa-solid fa-lock" style="margin-right: 4px;"></i>
+                    Entrar com senha
+                </a>
             </div>
 
-            <!-- Step 2: Code Verification -->
-            <div id="step2" class="hidden">
-                <div class="card-header">
-                    <div class="logo-icon">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <h1 class="card-title">Digite o Codigo</h1>
-                    <p class="card-subtitle">Enviamos um codigo para <span id="sentEmail" class="highlight"></span></p>
-                </div>
-
-                <form id="verifyForm">
-                    <div class="otp-row">
-                        <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
-                        <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
-                        <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
-                        <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
-                        <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
-                        <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
-                        <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
-                        <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
-                    </div>
-
-                    <div id="errorMsg2" class="error-msg"></div>
-
-                    <button type="submit" id="verifyBtn" class="btn-primary">
-                        <i class="fa-solid fa-check" style="margin-right:8px"></i>Verificar
-                    </button>
-                </form>
-
-                <div class="form-footer">
-                    <a href="javascript:void(0)" onclick="resendCode()"><i class="fa-solid fa-rotate-right" style="margin-right:4px"></i>Reenviar codigo</a>
-                    <a href="javascript:void(0)" onclick="backToEmail()" class="secondary-link">Usar outro email</a>
-                </div>
+            <!-- Footer -->
+            <div class="auth-footer">
+                &copy; 2026 TCCFlow
             </div>
-
         </div>
 
-        <div class="page-footer">&copy; 2025 TCCFlow. Todos os direitos reservados.</div>
-    </div>
+        <!-- STEP 2: Code Verification -->
+        <div class="step" id="step2">
+            <div class="icon-box">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div class="eyebrow">Verificação</div>
+
+            <h1 class="auth-title">Digite o código</h1>
+            <p class="auth-subtitle">Enviamos um código para <strong id="sentEmail" style="color: var(--violet);"></strong></p>
+
+            <hr class="sep">
+
+            <!-- Error -->
+            <div class="error-box" id="errorMsg2">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="errorText2"></span>
+            </div>
+
+            <form class="auth-form" id="verifyForm">
+                <div class="otp-inputs">
+                    <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" class="digit-input" inputmode="numeric" pattern="[0-9]">
+                </div>
+
+                <button type="submit" class="btn-submit" id="verifyBtn">
+                    <i class="fa-solid fa-check"></i>
+                    <span>Verificar</span>
+                </button>
+            </form>
+
+            <button type="button" class="btn-resend" onclick="resendCode()">Reenviar código</button>
+
+            <hr class="sep">
+
+            <div class="auth-links">
+                <a href="javascript:void(0)" onclick="backToEmail()" class="auth-link btn-secondary">Usar outro email</a>
+            </div>
+
+            <!-- Footer -->
+            <div class="auth-footer">
+                &copy; 2026 TCCFlow
+            </div>
+        </div>
+
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-init.js"></script>
@@ -387,6 +607,16 @@
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Backspace' && !e.target.value && i > 0) digits[i - 1].focus();
             });
+        });
+
+        // Paste support for OTP
+        digits[0].addEventListener('paste', (e) => {
+            e.preventDefault();
+            const paste = (e.clipboardData || window.clipboardData).getData('text').trim();
+            if (paste.length === digits.length && /^\d+$/.test(paste)) {
+                digits.forEach((input, i) => { input.value = paste[i]; });
+                digits[digits.length - 1].focus();
+            }
         });
 
         document.getElementById('verifyForm').addEventListener('submit', async function(e) {

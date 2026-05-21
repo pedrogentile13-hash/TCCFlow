@@ -20,15 +20,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagamento Confirmado - TCCFlow</title>
     <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../css/dark.css">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         :root {
             --violet: #7c3aed;
+            --violet-2: #8b5cf6;
             --cyan: #06b6d4;
+            --emerald: #10b981;
             --bg: #fafaf7;
             --bg-2: #f3f2ec;
             --paper: #ffffff;
@@ -36,221 +37,429 @@
             --ink-2: #2a2540;
             --muted: #6b6480;
             --line: #e7e3d8;
+            --line-2: #d9d4c4;
             --grad: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
             --radius: 18px;
+            --radius-lg: 28px;
             --shadow: 0 10px 30px -12px rgba(15,13,30,.12), 0 4px 12px -6px rgba(15,13,30,.08);
             --font-display: "Instrument Serif", Georgia, serif;
             --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
         }
 
+        [data-theme="dark"] {
+            --bg: #0a0818;
+            --bg-2: #120f24;
+            --paper: #15112a;
+            --ink: #f5f3ff;
+            --ink-2: #d8d3f0;
+            --muted: #9189ad;
+            --line: #251f40;
+            --line-2: #1e1938;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { margin: 0; padding: 0; }
         body {
-            font-family: var(--font-body);
             background: var(--bg);
             color: var(--ink);
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            transition: background .4s, color .4s;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
         }
+
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 
         /* Grid background */
         .grid-bg {
-            position: absolute;
+            position: fixed;
             inset: 0;
             background-image:
                 linear-gradient(var(--line) 1px, transparent 1px),
                 linear-gradient(90deg, var(--line) 1px, transparent 1px);
             background-size: 72px 72px;
-            opacity: .3;
+            opacity: .35;
+            z-index: 0;
             pointer-events: none;
         }
 
-        .page-wrapper {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 32px 16px;
+        /* Gradient blur blob */
+        .blob {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(124,58,237,.12) 0%, rgba(6,182,212,.12) 50%, rgba(16,185,129,.08) 100%);
+            filter: blur(140px);
+            opacity: 0.5;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .card {
-            background: var(--paper);
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 40px;
+        /* ============ Nav ============ */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 80%, transparent);
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid transparent;
+            transition: border-color .3s;
+        }
+
+        .nav.scrolled { border-bottom-color: var(--line); }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.0625rem;
+            letter-spacing: -0.01em;
+        }
+
+        .brand img { width: 28px; height: 28px; }
+
+        .brand .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--violet);
+            margin-left: 2px;
+        }
+
+        .nav-cta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: transform .25s cubic-bezier(.2,.9,.3,1.2), background .2s, color .2s, box-shadow .25s;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-primary {
+            background: var(--ink);
+            color: var(--bg);
+            box-shadow: 0 1px 0 rgba(255,255,255,.08) inset, 0 6px 20px -8px rgba(15,13,30,.35);
+        }
+        .btn-primary:hover {
+            background: var(--violet);
+            box-shadow: 0 6px 24px -6px rgba(124,58,237,.5);
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--ink);
+            padding: 10px 16px;
+        }
+        .btn-ghost:hover { background: var(--bg-2); }
+
+        /* ============ Main content ============ */
+        .auth-main {
+            position: relative;
+            z-index: 2;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 120px 32px 60px;
             text-align: center;
         }
 
-        .logo-icon {
-            width: 56px;
-            height: 56px;
+        /* Eyebrow */
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 24px;
+            height: 1px;
+            background: currentColor;
+            opacity: .5;
+        }
+
+        /* Check icon */
+        .check-icon {
+            width: 80px;
+            height: 80px;
             background: var(--grad);
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 16px;
+            color: white;
+            font-size: 2rem;
+            margin: 0 auto 28px;
+            box-shadow: 0 10px 32px -8px rgba(124, 58, 237, .3);
         }
-        .logo-icon i { color: #fff; font-size: 1.25rem; }
 
-        .card-title {
+        /* Title */
+        .auth-title {
             font-family: var(--font-display);
-            font-size: 1.75rem;
+            font-size: 3rem;
             font-weight: 400;
-            color: var(--ink);
-            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin: 0 0 8px;
         }
 
-        .card-subtitle {
-            font-size: 0.875rem;
+        .auth-subtitle {
+            font-size: 0.9375rem;
+            color: var(--ink-2);
+            margin: 0 0 32px;
+            line-height: 1.5;
+        }
+
+        /* Dashed separator */
+        .sep {
+            border: none;
+            border-top: 1px dashed var(--line);
+            margin: 32px 0;
+        }
+
+        /* Progress bar */
+        .progress-wrapper {
+            width: 100%;
+            max-width: 320px;
+            height: 3px;
+            background: var(--line);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 32px auto;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--grad);
+            border-radius: 4px;
+            animation: fillProgress 3s linear forwards;
+        }
+
+        @keyframes fillProgress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        /* Submit button */
+        .btn-submit {
+            padding: 16px 24px;
+            background: var(--grad);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin: 32px 0 0;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px -6px rgba(124, 58, 237, .4);
+        }
+
+        .btn-submit:active { transform: translateY(0); }
+
+        .btn-submit:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Footer */
+        .auth-footer {
+            text-align: center;
+            padding-top: 48px;
+            padding-bottom: 24px;
+            font-size: 0.75rem;
             color: var(--muted);
         }
 
-        /* Loading spinner */
-        .loading-section {
-            padding: 32px 0;
+        /* Loading state */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
 
         .spinner {
-            width: 56px;
-            height: 56px;
-            border: 4px solid var(--line);
-            border-top-color: var(--violet);
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            margin: 0 auto 16px;
-            animation: spin 1s linear infinite;
+            border: 3px solid transparent;
+            border-top-color: var(--violet);
+            border-right-color: var(--cyan);
+            animation: spin 0.9s linear infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .loading-section p {
+        .loading-text {
+            font-family: var(--font-mono);
             font-size: 0.875rem;
             color: var(--muted);
+            letter-spacing: 0.02em;
         }
 
-        /* Success section */
-        .success-section {
-            padding: 32px 0 0;
+        /* Success state */
+        .success-state {
+            display: none;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .success-state.active {
+            display: block;
         }
 
-        .success-icon {
-            width: 64px;
-            height: 64px;
-            background: rgba(22,163,74,.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-        .success-icon i { color: #16a34a; font-size: 1.5rem; }
-
-        .success-title {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            font-weight: 400;
-            color: var(--ink);
-            margin-bottom: 8px;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .success-subtitle {
-            font-size: 0.9375rem;
-            font-weight: 600;
-            color: var(--ink-2);
-            margin-bottom: 8px;
-        }
+        .hidden { display: none !important; }
 
-        .success-text {
-            font-size: 0.8125rem;
-            color: var(--muted);
-            margin-bottom: 24px;
-        }
-
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 14px 24px;
-            background: var(--grad);
-            color: #fff;
-            font-family: var(--font-body);
-            font-size: 0.9375rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px -6px rgba(124,58,237,.35);
-        }
-
-        .hidden { display: none; }
-
-        .page-footer {
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-top: 24px;
+        /* ============ Responsive ============ */
+        @media (max-width: 640px) {
+            .auth-main { padding: 100px 16px 40px; }
+            .nav-inner { padding: 0 16px; height: 56px; }
+            .brand { font-size: 0.9375rem; gap: 8px; }
+            .auth-title { font-size: 2.5rem; }
+            .check-icon { width: 64px; height: 64px; font-size: 1.5rem; margin-bottom: 24px; }
+            .blob { width: 400px; height: 400px; }
         }
     </style>
 </head>
 <body>
-
     <div class="grid-bg"></div>
+    <div class="blob"></div>
 
-    <div class="page-wrapper">
-        <div class="card">
-            <div class="logo-icon">
+    <!-- Sticky Nav -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="brand">
+                <img src="../favicon.png" alt="TCCFlow">
+                <span>TCCFlow<span class="dot"></span></span>
+            </a>
+            <div class="nav-cta">
+                <a href="dashboard.html" class="btn btn-primary">Ir para Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="auth-main">
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <div class="spinner"></div>
+            <p class="loading-text">Processando pagamento...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="successState" class="success-state">
+            <div class="check-icon">
                 <i class="fa-solid fa-check"></i>
             </div>
-            <h1 class="card-title">Pagamento Confirmado</h1>
 
-            <!-- Loading Section -->
-            <div id="loadingSection" class="loading-section">
-                <div class="spinner"></div>
-                <p>Processando seu pagamento...</p>
+            <div class="eyebrow">Transação</div>
+
+            <h1 class="auth-title">Pagamento confirmado!</h1>
+            <p class="auth-subtitle">Sua transação foi processada com sucesso</p>
+
+            <hr class="sep">
+
+            <div class="progress-wrapper">
+                <div class="progress-bar"></div>
             </div>
 
-            <!-- Success Section -->
-            <div id="successSection" class="hidden success-section">
-                <div class="success-icon">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-                <h2 class="success-title">Pagamento confirmado!</h2>
-                <p class="success-subtitle">Seu plano PRO esta ativo</p>
-                <p class="success-text">Voce sera redirecionado para o dashboard em alguns segundos...</p>
-                <a href="dashboard.html" class="btn-primary">
-                    <i class="fa-solid fa-arrow-right" style="margin-right:8px"></i>Ir para Dashboard
-                </a>
+            <button class="btn-submit" onclick="window.location.href='dashboard.html'">
+                <i class="fa-solid fa-arrow-right"></i>
+                <span>Ir para Dashboard</span>
+            </button>
+
+            <!-- Footer -->
+            <div class="auth-footer">
+                &copy; 2026 TCCFlow
             </div>
         </div>
 
-        <div class="page-footer">&copy; 2025 TCCFlow. Todos os direitos reservados.</div>
-    </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-init.js"></script>
     <script>
-        // Show success after 2 seconds, then auto-redirect after 3 more seconds
+        // Show success after 1 second, then auto-redirect after 3 more seconds
         setTimeout(function() {
-            document.getElementById('loadingSection').classList.add('hidden');
-            document.getElementById('successSection').classList.remove('hidden');
+            document.getElementById('loadingState').classList.add('hidden');
+            var successEl = document.getElementById('successState');
+            successEl.classList.add('active');
             setTimeout(function() {
                 window.location.href = 'dashboard.html';
             }, 3000);
-        }, 2000);
+        }, 1000);
+
+        // Nav scroll border
+        window.addEventListener('scroll', () => {
+            document.querySelector('.nav').classList.toggle('scrolled', window.scrollY > 8);
+        });
     </script>
     <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
