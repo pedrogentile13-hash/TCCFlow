@@ -15,7 +15,10 @@
   <title>Anotações e Fichamentos — TCCFlow</title>
   <link rel="icon" href="../assets/logo.png"/>
   <link rel="stylesheet" href="../css/app.css"/>
+  <link rel="stylesheet" href="../css/rich-text-editor.css"/>
   <script src="../js/darkmode.js"></script>
+  <script src="../js/rich-text-editor.js"></script>
+  <script src="../js/editor-toolbar.js"></script>
   <style>
     .notes-grid{display:grid;grid-template-columns:260px 1fr 280px;height:calc(100vh - 60px);overflow:hidden;}
     .notes-left{background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
@@ -84,6 +87,8 @@ function AnotacoesPage() {
   const [saveState, setSaveState] = useState("");
   const debounceRef = useRef(null);
   const [meta, setMeta] = useState({ created_at: null, updated_at: null });
+  const notesEditorRef = useRef(null);
+  const notesToolbarRef = useRef(null);
 
   const projectId = project?.id;
 
@@ -101,6 +106,76 @@ function AnotacoesPage() {
   useEffect(() => {
     if (projectId) loadNotes();
   }, [projectId]);
+
+  useEffect(() => {
+    // Initialize editor after DOM is ready and note is selected
+    if (activeId && !notesEditorRef.current) {
+      setTimeout(() => {
+        const editorElement = document.getElementById('notes-editor-content');
+        if (editorElement) {
+          notesEditorRef.current = new RichTextEditor('notes-editor-content', {
+            storageKey: `note_${activeId}`,
+            autoSaveInterval: 30000,
+            onSave: (data) => {
+              setSaveState('saved');
+              setTimeout(() => setSaveState(''), 2000);
+            }
+          });
+
+          // Initialize toolbar
+          const toolbarContainer = document.getElementById('notes-editor-toolbar');
+          if (toolbarContainer) {
+            notesToolbarRef.current = new EditorToolbar(notesEditorRef.current, 'notes-editor-toolbar');
+            notesToolbarRef.current.build();
+          }
+
+          // Set initial content
+          notesEditorRef.current.setContent(content);
+          updateNotesStatusBar();
+        }
+      }, 100);
+    }
+  }, [activeId]);
+
+  useEffect(() => {
+    // Update editor content when note changes
+    if (notesEditorRef.current && activeId) {
+      notesEditorRef.current.setContent(content);
+      updateNotesStatusBar();
+    }
+  }, [content, activeId]);
+
+  function updateNotesStatusBar() {
+    if (notesEditorRef.current) {
+      const wordCount = notesEditorRef.current.getWordCount();
+      const charCount = notesEditorRef.current.getCharCount();
+      const wordCountEl = document.getElementById('notes-word-count');
+      const charCountEl = document.getElementById('notes-char-count');
+      if (wordCountEl) wordCountEl.textContent = wordCount;
+      if (charCountEl) charCountEl.textContent = charCount;
+    }
+  }
+
+  // Update editor content on input
+  useEffect(() => {
+    const contentElement = document.getElementById('notes-editor-content');
+    if (contentElement && notesEditorRef.current && activeId) {
+      const updateContent = () => {
+        const newContent = notesEditorRef.current.getContent();
+        setContent(newContent);
+        scheduleSave({ content: newContent });
+        updateNotesStatusBar();
+      };
+
+      contentElement.addEventListener('input', updateContent);
+      contentElement.addEventListener('paste', updateContent);
+
+      return () => {
+        contentElement.removeEventListener('input', updateContent);
+        contentElement.removeEventListener('paste', updateContent);
+      };
+    }
+  }, [activeId]);
 
   const activeNote = notes.find(n => n.id === activeId);
 
@@ -310,14 +385,15 @@ function AnotacoesPage() {
                 <div style={{fontSize:".75rem",color:"var(--muted)"}}>Use o botão "+ Nova anotação" para começar</div>
               </div>
             ) : (
-              <>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0, flex: 1, overflow: 'hidden' }}>
+                <div id="notes-editor-toolbar" style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--line)', padding: '0', margin: '0' }}></div>
                 <input className="notes-main-title" placeholder="Título da anotação..." value={title} onChange={e => handleTitleChange(e.target.value)}/>
-                <textarea className="notes-main-textarea" placeholder="Escreva suas anotações, fichamentos, citações e reflexões aqui..." value={content} onChange={e => handleContentChange(e.target.value)}/>
+                <div id="notes-editor-content" className="editor-content" style={{ flex: 1, outline: 'none', minHeight: '300px' }}/>
                 <div className="notes-main-footer">
-                  <span>{wordCount} palavras &middot; {charCount} caracteres</span>
+                  <span><span id="notes-word-count">{wordCount}</span> palavras &middot; <span id="notes-char-count">{charCount}</span> caracteres</span>
                   <span className={"save-indicator" + (saveState === "saving" ? " saving" : "")}>{saveState === "saving" ? "Salvando..." : saveState === "saved" ? "Salvo" : ""}</span>
                 </div>
-              </>
+              </div>
             )}
           </div>
 

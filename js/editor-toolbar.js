@@ -1,0 +1,351 @@
+/**
+ * Editor Toolbar Component
+ * Builds and manages the rich text editor toolbar
+ */
+
+class EditorToolbar {
+  constructor(editor, containerId) {
+    this.editor = editor;
+    this.container = document.getElementById(containerId);
+    this.colorPickerOpen = false;
+    this.highlightPickerOpen = false;
+  }
+
+  build() {
+    if (!this.container) return;
+
+    const html = `
+      <div class="editor-toolbar">
+        <!-- Undo/Redo -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btn-undo" title="Desfazer (Ctrl+Z)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 7 3 13 9 13"/>
+              <path d="M23 1v6h-6"/>
+              <path d="M20.49 15a9 9 0 1 1-2-8.83"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-redo" title="Refazer (Ctrl+Y)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="21 7 21 13 15 13"/>
+              <path d="M1 1v6h6"/>
+              <path d="M3.51 15a9 9 0 0 0 14.85-4.95"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Text Formatting -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btn-bold" title="Negrito (Ctrl+B)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 4h8a6 6 0 0 1 6 6 6 6 0 0 1-6 6H6V4zm10 10a2 2 0 1 0 0-4H6v4h10z"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-italic" title="Itálico (Ctrl+I)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="4" x2="10" y2="4"/>
+              <line x1="14" y1="20" x2="5" y2="20"/>
+              <line x1="15" y1="4" x2="9" y2="20"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-underline" title="Sublinhado (Ctrl+U)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/>
+              <line x1="4" y1="21" x2="20" y2="21"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-strikethrough" title="Tachado">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17.3 13.61a6.3 6.3 0 0 0-.02-2.61m-2.65-2.61a6 6 0 1 0 10.3 6.84"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Font Controls -->
+        <div class="toolbar-group">
+          <select class="toolbar-select" id="font-family" title="Fonte">
+            <option value="">Fonte padrão</option>
+            <option value="Arial">Arial</option>
+            <option value="'Times New Roman'">Times New Roman</option>
+            <option value="'Courier New'">Courier New</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Verdana">Verdana</option>
+            <option value="'Trebuchet MS'">Trebuchet MS</option>
+            <option value="'Comic Sans MS'">Comic Sans MS</option>
+            <option value="'Segoe UI'">Segoe UI</option>
+          </select>
+
+          <select class="toolbar-select" id="font-size" title="Tamanho">
+            <option value="8">8px</option>
+            <option value="10">10px</option>
+            <option value="12">12px</option>
+            <option value="14">14px</option>
+            <option value="16">16px</option>
+            <option value="18">18px</option>
+            <option value="20">20px</option>
+            <option value="24">24px</option>
+            <option value="28">28px</option>
+            <option value="32">32px</option>
+            <option value="36">36px</option>
+            <option value="48">48px</option>
+          </select>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Color Pickers -->
+        <div class="toolbar-group">
+          <div class="toolbar-color-wrapper">
+            <button class="toolbar-btn toolbar-color-btn" id="btn-text-color" title="Cor do texto">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L2 20h5l1.12-3h6.76L15.88 20h5L12 2zm-2.5 9l2.5-6.5 2.5 6.5h-5z"/>
+              </svg>
+              <span class="color-indicator" id="text-color-indicator"></span>
+            </button>
+            <div class="color-picker" id="text-color-picker" style="display: none;">
+              <div class="color-grid">
+                ${this.buildColorGrid()}
+              </div>
+              <input type="color" id="text-color-input" class="color-input" title="Cor personalizada">
+            </div>
+          </div>
+
+          <div class="toolbar-color-wrapper">
+            <button class="toolbar-btn toolbar-color-btn" id="btn-highlight" title="Marca-texto">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4 7l-1.8 3.6H1v2h1.2L4 17v2h2v-2l2.8-4.4H13v-2H8.8L7 10.6V9h-2V7H4z"/>
+                <path d="M12 4v2h8v8h2V6h-10z"/>
+              </svg>
+              <span class="color-indicator" id="highlight-color-indicator"></span>
+            </button>
+            <div class="color-picker" id="highlight-color-picker" style="display: none;">
+              <div class="color-grid">
+                ${this.buildColorGrid(true)}
+              </div>
+              <input type="color" id="highlight-color-input" class="color-input" title="Cor personalizada">
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Alignment -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btn-align-left" title="Alinhar à esquerda">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/>
+              <line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-align-center" title="Centralizar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="10" x2="5" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/>
+              <line x1="21" y1="14" x2="3" y2="14"/><line x1="19" y1="18" x2="5" y2="18"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-align-right" title="Alinhar à direita">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/>
+              <line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-align-justify" title="Justificar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="21" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/>
+              <line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Lists and Indentation -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btn-list-ul" title="Lista com marcadores">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/>
+              <line x1="9" y1="18" x2="20" y2="18"/><line x1="5" y1="6" x2="5" y2="6.01"/>
+              <line x1="5" y1="12" x2="5" y2="12.01"/><line x1="5" y1="18" x2="5" y2="18.01"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-list-ol" title="Lista numerada">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/>
+              <line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/>
+              <path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-indent" title="Aumentar recuo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 12 21 12"/><polyline points="7 6 21 6"/><polyline points="7 18 21 18"/>
+              <path d="M3 12h4v4l-4-2z"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-outdent" title="Diminuir recuo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 12 21 12"/><polyline points="7 6 21 6"/><polyline points="7 18 21 18"/>
+              <path d="M6 12h-3v-3l3 1.5z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Advanced -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btn-link" title="Inserir link (Ctrl+Shift+K)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-image" title="Inserir imagem">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-table" title="Inserir tabela">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/>
+              <line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="3" y1="15" x2="21" y2="15"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-clear" title="Limpar formatação">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M8 6v12M16 6v12M6 18h12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Print -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btn-print" title="Imprimir">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.container.innerHTML = html;
+    this.attachEventListeners();
+  }
+
+  buildColorGrid(isHighlight = false) {
+    const colors = isHighlight
+      ? ['#ffff00', '#ffcc00', '#ff99cc', '#ff6666', '#ff9999', '#ffcccc', '#ccffcc', '#99ff99', '#ccffff', '#99ccff', '#ccccff']
+      : ['#000000', '#333333', '#666666', '#999999', '#cccccc', '#ffffff', '#ff0000', '#ff6666', '#ff9999', '#ff3333', '#cc0000', '#ff9900', '#ffcc00', '#ffff00', '#ccff00', '#00ff00', '#00cc00', '#00ff99', '#00ffcc', '#00ccff', '#0099ff', '#0000ff', '#3333ff', '#6666ff', '#9999ff', '#cc00ff', '#ff00ff', '#ff0099'];
+
+    return colors.map(color => `
+      <button class="color-option" style="background-color: ${color};" data-color="${color}" title="${color}"></button>
+    `).join('');
+  }
+
+  attachEventListeners() {
+    // Undo/Redo
+    document.getElementById('btn-undo')?.addEventListener('click', () => this.editor.undo());
+    document.getElementById('btn-redo')?.addEventListener('click', () => this.editor.redo());
+
+    // Text formatting
+    document.getElementById('btn-bold')?.addEventListener('click', () => this.editor.toggleFormat('bold'));
+    document.getElementById('btn-italic')?.addEventListener('click', () => this.editor.toggleFormat('italic'));
+    document.getElementById('btn-underline')?.addEventListener('click', () => this.editor.toggleFormat('underline'));
+    document.getElementById('btn-strikethrough')?.addEventListener('click', () => this.editor.toggleFormat('strikeThrough'));
+
+    // Font controls
+    document.getElementById('font-family')?.addEventListener('change', (e) => {
+      if (e.target.value) this.editor.setFontFamily(e.target.value);
+    });
+
+    document.getElementById('font-size')?.addEventListener('change', (e) => {
+      if (e.target.value) this.editor.setFontSize(e.target.value);
+    });
+
+    // Color pickers
+    this.setupColorPicker('text-color', 'foreColor');
+    this.setupColorPicker('highlight-color', 'backColor');
+
+    // Alignment
+    document.getElementById('btn-align-left')?.addEventListener('click', () => this.editor.setAlignment('left'));
+    document.getElementById('btn-align-center')?.addEventListener('click', () => this.editor.setAlignment('center'));
+    document.getElementById('btn-align-right')?.addEventListener('click', () => this.editor.setAlignment('right'));
+    document.getElementById('btn-align-justify')?.addEventListener('click', () => this.editor.formatText('justifyFull'));
+
+    // Lists
+    document.getElementById('btn-list-ul')?.addEventListener('click', () => this.editor.insertList('unordered'));
+    document.getElementById('btn-list-ol')?.addEventListener('click', () => this.editor.insertList('ordered'));
+    document.getElementById('btn-indent')?.addEventListener('click', () => this.editor.formatText('indent'));
+    document.getElementById('btn-outdent')?.addEventListener('click', () => this.editor.formatText('outdent'));
+
+    // Advanced
+    document.getElementById('btn-link')?.addEventListener('click', () => this.editor.insertLink());
+    document.getElementById('btn-image')?.addEventListener('click', () => this.editor.insertImage());
+    document.getElementById('btn-table')?.addEventListener('click', () => {
+      const rows = prompt('Number of rows:', '3');
+      const cols = prompt('Number of columns:', '3');
+      if (rows && cols) {
+        this.editor.insertTable(parseInt(rows), parseInt(cols));
+      }
+    });
+    document.getElementById('btn-clear')?.addEventListener('click', () => this.editor.clearFormatting());
+
+    // Print
+    document.getElementById('btn-print')?.addEventListener('click', () => this.editor.print());
+
+    // Close color pickers on click outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.toolbar-color-wrapper')) {
+        document.getElementById('text-color-picker').style.display = 'none';
+        document.getElementById('highlight-color-picker').style.display = 'none';
+      }
+    });
+  }
+
+  setupColorPicker(baseName, command) {
+    const btn = document.getElementById(`btn-${baseName}`);
+    const picker = document.getElementById(`${baseName}-picker`);
+    const input = document.getElementById(`${baseName}-input`);
+    const indicator = document.getElementById(`${baseName}-indicator`);
+
+    if (!btn || !picker || !input) return;
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = picker.style.display !== 'none';
+      document.querySelectorAll('.color-picker').forEach(p => p.style.display = 'none');
+      if (!isOpen) picker.style.display = 'block';
+    });
+
+    picker.querySelectorAll('.color-option').forEach(option => {
+      option.addEventListener('click', (e) => {
+        e.preventDefault();
+        const color = option.dataset.color;
+        this.editor.formatText(command, color);
+        indicator.style.backgroundColor = color;
+        picker.style.display = 'none';
+      });
+    });
+
+    input.addEventListener('change', (e) => {
+      const color = e.target.value;
+      this.editor.formatText(command, color);
+      indicator.style.backgroundColor = color;
+      picker.style.display = 'none';
+    });
+  }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = EditorToolbar;
+}

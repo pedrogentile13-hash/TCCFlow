@@ -15,7 +15,10 @@
   <title>Trabalho Escrito — TCCFlow</title>
   <link rel="icon" href="../assets/logo.png"/>
   <link rel="stylesheet" href="../css/app.css"/>
+  <link rel="stylesheet" href="../css/rich-text-editor.css"/>
   <script src="../js/darkmode.js"></script>
+  <script src="../js/rich-text-editor.js"></script>
+  <script src="../js/editor-toolbar.js"></script>
   <style>
     .trabalho-layout{display:grid;grid-template-columns:260px 1fr 0px;height:calc(100vh - var(--topbar-h));overflow:hidden;transition:grid-template-columns .3s ease;}
     .trabalho-layout.right-open{grid-template-columns:260px 1fr 280px;}
@@ -156,11 +159,83 @@ function TrabalhoPage() {
   const [editStatus, setEditStatus] = useState("draft");
   const saveTimerRef = useRef(null);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const editorRef = useRef(null);
+  const toolbarRef = useRef(null);
 
   useEffect(() => {
     if (!project) return;
     loadData();
   }, [project]);
+
+  useEffect(() => {
+    // Initialize editor after DOM is ready
+    if (selectedSectionId && !editorRef.current) {
+      setTimeout(() => {
+        const editorElement = document.getElementById('editor-content-area');
+        if (editorElement) {
+          editorRef.current = new RichTextEditor('editor-content-area', {
+            storageKey: `thesis_section_${selectedSectionId}`,
+            autoSaveInterval: 30000,
+            onSave: (data) => {
+              setSaving(false);
+              setLastSaved(new Date());
+            }
+          });
+
+          // Initialize toolbar
+          const toolbarContainer = document.getElementById('editor-toolbar-container');
+          if (toolbarContainer) {
+            toolbarRef.current = new EditorToolbar(editorRef.current, 'editor-toolbar-container');
+            toolbarRef.current.build();
+          }
+
+          // Set initial content
+          editorRef.current.setContent(editContent);
+          updateStatusBar();
+        }
+      }, 100);
+    }
+  }, [selectedSectionId]);
+
+  useEffect(() => {
+    // Update editor content when section changes
+    if (editorRef.current && selectedSectionId) {
+      editorRef.current.setContent(editContent);
+      updateStatusBar();
+    }
+  }, [editContent, selectedSectionId]);
+
+  function updateStatusBar() {
+    if (editorRef.current) {
+      const wordCount = editorRef.current.getWordCount();
+      const charCount = editorRef.current.getCharCount();
+      const wordCountEl = document.getElementById('word-count');
+      const charCountEl = document.getElementById('char-count');
+      if (wordCountEl) wordCountEl.textContent = `${wordCount} palavras`;
+      if (charCountEl) charCountEl.textContent = `${charCount} caracteres`;
+    }
+  }
+
+  // Update editor content on input
+  useEffect(() => {
+    const contentElement = document.getElementById('editor-content-area');
+    if (contentElement && editorRef.current) {
+      const updateContent = () => {
+        const newContent = editorRef.current.getContent();
+        setEditContent(newContent);
+        scheduleAutoSave(editTitle, newContent, editStatus);
+        updateStatusBar();
+      };
+
+      contentElement.addEventListener('input', updateContent);
+      contentElement.addEventListener('paste', updateContent);
+
+      return () => {
+        contentElement.removeEventListener('input', updateContent);
+        contentElement.removeEventListener('paste', updateContent);
+      };
+    }
+  }, [editTitle, editStatus]);
 
   async function loadData() {
     try {
@@ -629,7 +704,8 @@ function TrabalhoPage() {
                     ) : null}
                   </div>
                 </div>
-                <div className="editor-area">
+                <div id="editor-toolbar-container" style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--line)', padding: '0', margin: '0' }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0, flex: 1, overflow: 'hidden' }}>
                   <input
                     className="editor-title-input"
                     type="text"
@@ -637,16 +713,17 @@ function TrabalhoPage() {
                     onChange={e => handleTitleChange(e.target.value)}
                     placeholder="Título da seção..."
                   />
-                  <textarea
-                    className="editor-textarea"
-                    value={editContent}
-                    onChange={e => handleContentChange(e.target.value)}
-                    placeholder="Comece a escrever o conteúdo desta seção..."
+                  <div
+                    id="editor-content-area"
+                    className="editor-content"
+                    style={{ flex: 1, outline: 'none', minHeight: '300px' }}
                   />
                 </div>
                 <div className="editor-footer">
-                  <span>{countWords(editContent)} palavras</span>
-                  <span>{editContent.length} caracteres</span>
+                  <div style={{ display: 'flex', gap: '16px' }}>
+                    <span id="word-count">0 palavras</span>
+                    <span id="char-count">0 caracteres</span>
+                  </div>
                 </div>
               </React.Fragment>
             ) : (
