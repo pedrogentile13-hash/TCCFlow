@@ -1735,9 +1735,6 @@ section { position: relative; }
   /* Tweaks - hide on mobile */
   .tweaks { display: none; }
 
-  /* Nav CTA — hide "Entrar" text on small screens */
-  .nav-cta .btn-ghost { display: none; }
-
   /* Buttons */
   .btn { padding: 10px 16px; font-size: 0.875rem; }
 
