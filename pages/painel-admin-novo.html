@@ -25,11 +25,14 @@
             background: var(--bg);
             color: var(--ink);
             line-height: 1.6;
+            overflow: hidden;
+            height: 100vh;
         }
 
         .admin-container {
             display: flex;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .admin-sidebar {
@@ -48,6 +51,8 @@
             margin-left: 250px;
             flex: 1;
             padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         .admin-header {
@@ -398,8 +403,14 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                overflow: auto;
+                height: auto;
+            }
             .admin-container {
                 flex-direction: column;
+                height: auto;
+                overflow: visible;
             }
             .admin-sidebar {
                 position: static;
@@ -410,6 +421,8 @@
             }
             .admin-main {
                 margin-left: 0;
+                height: auto;
+                overflow-y: visible;
             }
             .admin-nav {
                 flex-direction: row;
