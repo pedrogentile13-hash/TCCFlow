@@ -176,6 +176,33 @@
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-container table {
+            width: 100%;
+            min-width: 600px;
+            overflow-x: auto;
+        }
+
+        .table-scroll-wrapper {
+            overflow-x: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-scroll-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-scroll-wrapper::-webkit-scrollbar-track {
+            background: var(--bg-2);
+        }
+        .table-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: var(--line);
+            border-radius: 4px;
+        }
+        .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--line-2);
         }
 
         .table-header {
@@ -1584,6 +1611,17 @@
         function logout() {
             auth.signOut().then(() => window.location.href = '../index.html');
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.table-container table').forEach(table => {
+                if (!table.parentElement.classList.contains('table-scroll-wrapper')) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'table-scroll-wrapper';
+                    table.parentElement.insertBefore(wrapper, table);
+                    wrapper.appendChild(table);
+                }
+            });
+        });
     </script>
 </body>
 </html>

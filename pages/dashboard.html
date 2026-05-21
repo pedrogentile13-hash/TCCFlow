@@ -174,17 +174,17 @@ function Dashboard() {
                   </span>
                   <a href="team.html" className="btn btn-ghost btn-sm">Gerenciar</a>
                 </div>
-                <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                <div style={{display:"flex",flexDirection:"column",gap:12,maxHeight:"280px",overflowY:"auto"}}>
                   {teamMembers.filter(m => m.role !== 'orientador').map((m, i) => (
-                    <div key={m.id} style={{display:"flex",alignItems:"center",gap:10}}>
+                    <div key={m.id} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 12px",borderRadius:"10px",backgroundColor:"var(--bg-2)",border:"1px solid transparent",transition:"all 0.2s"}}>
                       <div className={`av av-sm c${(i%4)+1}`}>{getInitials(m.name)}</div>
-                      <div style={{flex:1}}>
-                        <div style={{fontSize:"0.8125rem",fontWeight:500}}>{m.name || m.email}</div>
-                        <div style={{fontFamily:"var(--font-mono)",fontSize:"0.625rem",color:"var(--muted)"}}>Estudante</div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontSize:"0.8125rem",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.name || m.email}</div>
+                        <div style={{fontFamily:"var(--font-mono)",fontSize:"0.625rem",color:"var(--muted)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>Estudante</div>
                       </div>
                     </div>
                   ))}
-                  {teamMembers.filter(m => m.role !== 'orientador').length === 0 && <div style={{color:"var(--muted)",fontSize:"0.8125rem"}}>Nenhum membro ainda</div>}
+                  {teamMembers.filter(m => m.role !== 'orientador').length === 0 && <div style={{color:"var(--muted)",fontSize:"0.8125rem",textAlign:"center",padding:"16px"}}>Nenhum membro ainda</div>}
                 </div>
               </div>
             </div>
