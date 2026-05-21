@@ -90,12 +90,22 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-init.js"></script>
   <script src="../js/db-service.js"></script>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
+
+    function AppSplash() {
+      return (
+        <div className="app-splash">
+          <div className="splash-logo"><img src="../assets/logo.png" alt="" /></div>
+          <div className="splash-name">TCC<em>Flow</em></div>
+          <div className="splash-dots"><span/><span/><span/></div>
+        </div>
+      );
+    }
 
     /* ──── Auth Hook ──── */
     function useOrientadorAuth() {
