@@ -45,7 +45,6 @@ function HeroEditorial() {
           <a href="/pages/cadastro.html" className="btn btn-primary">
             Criar grupo grátis <Arrow/>
           </a>
-          <a href="/pages/demo.html" className="btn btn-ghost">Ver demo interativa →</a>
           <span className="trust">▸ Sem cartão · Cancele quando quiser</span>
         </Reveal>
 
@@ -78,7 +77,6 @@ function HeroManifesto() {
         </Reveal>
         <Reveal delay={3} className="hero-ctas" style={{justifyContent:"center"}}>
           <a href="/pages/cadastro.html" className="btn btn-primary">Começar grátis <Arrow/></a>
-          <a href="/pages/demo.html" className="btn btn-glass">Ver por dentro</a>
         </Reveal>
         <Reveal delay={4}>
           <HeroPreview />
@@ -108,7 +106,6 @@ function HeroProduct() {
         </Reveal>
         <Reveal delay={3} className="hero-ctas" style={{justifyContent:"center"}}>
           <a href="/pages/cadastro.html" className="btn btn-primary">Começar grátis <Arrow/></a>
-          <a href="/pages/demo.html" className="btn btn-ghost">Explorar recursos →</a>
         </Reveal>
         <Reveal delay={4}>
           <HeroPreview />
