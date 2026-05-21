@@ -190,6 +190,13 @@
         }
         .btn-ghost:hover { background: var(--bg-2); }
 
+        .btn-active {
+            background: var(--bg-2);
+            color: var(--violet);
+            padding: 10px 16px;
+            font-weight: 600;
+        }
+
         /* ============ Main content ============ */
         .auth-main {
             position: relative;
@@ -212,6 +219,7 @@
             gap: 8px;
             margin-bottom: 16px;
             justify-content: center;
+            width: 100%;
         }
 
         .eyebrow::before {
@@ -377,7 +385,7 @@
         .hidden { display: none !important; }
 
         /* ============ Responsive ============ */
-        @media (max-width: 640px) {
+        @media (max-width: 480px) {
             .auth-main { padding: 100px 16px 40px; }
             .nav-inner { padding: 0 16px; height: 56px; }
             .brand { font-size: 0.9375rem; gap: 8px; }
@@ -419,7 +427,7 @@
                 <i class="fa-solid fa-check"></i>
             </div>
 
-            <div class="eyebrow">Transação</div>
+            <div class="eyebrow">&middot; Transação</div>
 
             <h1 class="auth-title">Pagamento confirmado!</h1>
             <p class="auth-subtitle">Sua transação foi processada com sucesso</p>
