@@ -197,9 +197,12 @@ function PlansPage() {
       });
       const data = await response.json();
       console.log("Response:", data);
-      if (data.success) {
+      if (response.ok && data.success) {
         alert("👑 Parabéns! Seu plano PRO foi ativado com sucesso!\nVálido até: " + new Date(data.expires_at).toLocaleDateString('pt-BR'));
         setTimeout(() => window.location.href = "dashboard.html", 1000);
+      } else if (response.status === 500) {
+        alert("❌ ERRO 500 - Problema no servidor:\n" + (data.error || data.details || "Erro desconhecido"));
+        console.error("Server error:", data);
       } else {
         alert("❌ Erro ao ativar PRO:\n" + (data.error || "Não foi possível ativar o PRO."));
         console.error("Activation error:", data);

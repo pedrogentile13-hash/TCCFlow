@@ -110,7 +110,11 @@ exports.handler = async (event) => {
         console.error('Activate PRO coupon error:', err);
         return {
             statusCode: 500, headers,
-            body: JSON.stringify({ success: false, error: 'Erro interno' })
+            body: JSON.stringify({
+                success: false,
+                error: 'Erro ao ativar PRO: ' + (err.message || err.toString()),
+                details: err.toString()
+            })
         };
     }
 };
