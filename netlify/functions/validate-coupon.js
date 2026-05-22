@@ -65,7 +65,9 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 valid: true,
                 code: coupon.code,
-                discount_percent: coupon.discount_percent
+                discount_percent: coupon.discount_percent,
+                coupon_type: coupon.coupon_type || 'discount',
+                pro_duration_days: coupon.pro_duration_days || null
             })
         };
 

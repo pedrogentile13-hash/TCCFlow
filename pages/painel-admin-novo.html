@@ -657,6 +657,13 @@
                             <input type="text" id="newCouponCode" class="form-input" placeholder="EX: TCCFLOW50" maxlength="30">
                         </div>
                         <div class="form-group">
+                            <label class="form-label">Tipo</label>
+                            <select id="newCouponType" class="form-select" onchange="toggleCouponTypeFields()">
+                                <option value="discount">Desconto (%)</option>
+                                <option value="instant_pro">PRO Direto (grátis)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="discountField">
                             <label class="form-label">Desconto (%)</label>
                             <input type="number" id="newCouponDiscount" class="form-input" min="1" max="100" placeholder="50">
                         </div>
@@ -668,6 +675,13 @@
                             <label class="form-label">Expira em</label>
                             <input type="date" id="newCouponExpires" class="form-input">
                         </div>
+                        <div class="form-group" id="proDurationField" style="display: none;">
+                            <label class="form-label">Duração PRO (dias)</label>
+                            <input type="number" id="newCouponProDuration" class="form-input" min="1" placeholder="365 = 1 ano">
+                        </div>
+                    </div>
+                    <div id="instantProInfo" style="display: none; margin-top: 12px; padding: 12px 16px; background: rgba(16,185,129,.08); border-left: 3px solid var(--emerald); border-radius: 0 8px 8px 0; font-size: 13px; color: var(--ink-2);">
+                        👑 <strong>PRO Direto:</strong> Ao usar este cupom, o usuário ganha acesso PRO automaticamente sem precisar pagar. Ideal para parceiros, influenciadores e promoções especiais.
                     </div>
                     <button onclick="createCoupon()" class="btn btn-violet" style="margin-top: 12px;">+ Criar Cupom</button>
                     <div id="couponMsg" style="margin-top: 12px; display: none; padding: 10px 12px; border-radius: 8px;"></div>
@@ -682,7 +696,8 @@
                         <thead>
                             <tr>
                                 <th>Código</th>
-                                <th>Desconto</th>
+                                <th>Tipo</th>
+                                <th>Desconto / Duração</th>
                                 <th>Usos</th>
                                 <th>Limite</th>
                                 <th>Expira</th>
@@ -1187,10 +1202,19 @@
             }
         }
 
+        function toggleCouponTypeFields() {
+            const type = document.getElementById('newCouponType').value;
+            const isPro = type === 'instant_pro';
+            document.getElementById('discountField').style.display = isPro ? 'none' : '';
+            document.getElementById('proDurationField').style.display = isPro ? '' : 'none';
+            document.getElementById('instantProInfo').style.display = isPro ? '' : 'none';
+            if (isPro) document.getElementById('newCouponDiscount').value = '100';
+        }
+
         function renderCoupons(coupons) {
             const tbody = document.getElementById('couponsTable');
             if (!coupons.length) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum cupom encontrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Nenhum cupom encontrado</td></tr>';
                 return;
             }
 
@@ -1198,10 +1222,12 @@
                 const expired = c.expires_at && new Date(c.expires_at) < new Date();
                 const exhausted = c.max_uses && c.used_count >= c.max_uses;
                 const isActive = c.active && !expired && !exhausted;
+                const isPro = c.coupon_type === 'instant_pro';
 
                 return `<tr>
                     <td><strong>${c.code}</strong></td>
-                    <td>${c.discount_percent}%</td>
+                    <td><span class="badge ${isPro ? 'badge-success' : 'badge-info'}">${isPro ? '👑 PRO Direto' : '💰 Desconto'}</span></td>
+                    <td>${isPro ? (c.pro_duration_days || 365) + ' dias' : c.discount_percent + '%'}</td>
                     <td>${c.used_count}</td>
                     <td>${c.max_uses || '∞'}</td>
                     <td>${c.expires_at ? new Date(c.expires_at).toLocaleDateString('pt-BR') : 'Nunca'}</td>
@@ -1278,12 +1304,14 @@
 
         async function createCoupon() {
             const code = document.getElementById('newCouponCode').value.toUpperCase();
-            const discount = parseInt(document.getElementById('newCouponDiscount').value);
+            const couponType = document.getElementById('newCouponType').value;
+            const discount = couponType === 'instant_pro' ? 100 : parseInt(document.getElementById('newCouponDiscount').value);
             const maxUses = document.getElementById('newCouponMaxUses').value;
             const expires = document.getElementById('newCouponExpires').value;
+            const proDuration = document.getElementById('newCouponProDuration').value;
             const msg = document.getElementById('couponMsg');
 
-            if (!code || !discount) {
+            if (!code || (couponType === 'discount' && !discount)) {
                 msg.style.display = 'block';
                 msg.style.background = 'rgba(244, 63, 94, 0.1)';
                 msg.style.color = '#f43f5e';
@@ -1294,6 +1322,8 @@
             try {
                 await _supa.from('coupons').insert({
                     code, discount_percent: discount,
+                    coupon_type: couponType,
+                    pro_duration_days: couponType === 'instant_pro' ? (proDuration ? parseInt(proDuration) : 365) : null,
                     max_uses: maxUses ? parseInt(maxUses) : null,
                     expires_at: expires ? new Date(expires).toISOString() : null,
                     active: true, used_count: 0
