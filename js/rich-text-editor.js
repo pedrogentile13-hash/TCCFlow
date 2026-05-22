@@ -62,6 +62,9 @@ class RichTextEditor {
       clearTimeout(this.debounceTimer);
       this.debounceTimer = setTimeout(() => {
         this.captureHistory();
+        // Auto-update numbering when headings are modified
+        this.autonumberDocument();
+        this.updateTableOfContents();
       }, 300);
     });
 
@@ -108,44 +111,63 @@ class RichTextEditor {
     this.editor.addEventListener('keydown', (e) => {
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
-
-      if (!ctrlOrCmd) return;
+      const altKey = e.altKey;
 
       const key = e.key.toLowerCase();
       let handled = false;
 
-      switch (key) {
-        case 'b':
-          document.execCommand('bold');
-          handled = true;
-          break;
-        case 'i':
-          document.execCommand('italic');
-          handled = true;
-          break;
-        case 'u':
-          document.execCommand('underline');
-          handled = true;
-          break;
-        case 'z':
-          if (e.shiftKey) {
-            this.redo();
-          } else {
-            this.undo();
-          }
-          handled = true;
-          break;
-        case 'y':
-          this.redo();
-          handled = true;
-          break;
-        case 'k':
-          if (e.shiftKey) {
-            e.preventDefault();
-            this.insertLink();
+      // Text formatting shortcuts
+      if (ctrlOrCmd && !altKey) {
+        switch (key) {
+          case 'b':
+            document.execCommand('bold');
             handled = true;
-          }
-          break;
+            break;
+          case 'i':
+            document.execCommand('italic');
+            handled = true;
+            break;
+          case 'u':
+            document.execCommand('underline');
+            handled = true;
+            break;
+          case 'z':
+            if (e.shiftKey) {
+              this.redo();
+            } else {
+              this.undo();
+            }
+            handled = true;
+            break;
+          case 'y':
+            this.redo();
+            handled = true;
+            break;
+          case 'k':
+            if (e.shiftKey) {
+              e.preventDefault();
+              this.insertLink();
+              handled = true;
+            }
+            break;
+        }
+      }
+
+      // Heading shortcuts: Ctrl+Alt+1 to Ctrl+Alt+4
+      if (ctrlOrCmd && altKey && !e.shiftKey) {
+        const headingLevel = parseInt(key);
+        if (headingLevel >= 1 && headingLevel <= 4) {
+          e.preventDefault();
+          this.applyHeadingStyle(headingLevel);
+          handled = true;
+        }
+      }
+
+      // Clear formatting: Ctrl+Shift+M
+      if (ctrlOrCmd && e.shiftKey && key === 'm') {
+        e.preventDefault();
+        this.clearFormatting();
+        handled = true;
       }
 
       if (handled) {
@@ -407,7 +429,10 @@ class RichTextEditor {
     const tag = `h${level}`;
     document.execCommand('formatBlock', false, `<${tag}>`);
     this.editor.focus();
-    setTimeout(() => this.autonumberDocument(), 50);
+    setTimeout(() => {
+      this.autonumberDocument();
+      this.updateTableOfContents();
+    }, 50);
   }
 
   applyNumberingStyle(style) {
@@ -421,70 +446,171 @@ class RichTextEditor {
 
     if (!paragraph) return;
 
-    switch (style) {
-      case 'bullet-circle':
-        paragraph.setAttribute('data-numbering-style', 'bullet-circle');
-        break;
-      case 'bullet-square':
-        paragraph.setAttribute('data-numbering-style', 'bullet-square');
-        break;
-      case 'bullet-dash':
-        paragraph.setAttribute('data-numbering-style', 'bullet-dash');
-        break;
-      case 'number-123':
-        paragraph.setAttribute('data-numbering-style', 'number-123');
-        break;
-      case 'number-abc':
-        paragraph.setAttribute('data-numbering-style', 'number-abc');
-        break;
-      case 'number-roman':
-        paragraph.setAttribute('data-numbering-style', 'number-roman');
-        break;
-      case 'custom-1.1':
-        paragraph.setAttribute('data-numbering-style', 'custom-1.1');
-        break;
+    // Check if it's a heading - if so, apply to heading level
+    if (paragraph.tagName && /^H[1-4]$/.test(paragraph.tagName)) {
+      // Clear existing numbering if any
+      const existing = paragraph.querySelector('.auto-number');
+      if (existing) existing.remove();
+
+      // Reapply heading numbering
+      this.autonumberDocument();
+      return;
+    }
+
+    // Apply paragraph numbering styles
+    const styleMap = {
+      'bullet-circle': { icon: '◦', type: 'bullet' },
+      'bullet-square': { icon: '◾', type: 'bullet' },
+      'bullet-dash': { icon: '–', type: 'bullet' },
+      'number-123': { type: 'number', format: 'decimal' },
+      'number-abc': { type: 'number', format: 'alpha' },
+      'number-roman': { type: 'number', format: 'roman' },
+      'custom-1.1': { type: 'custom', format: 'hierarchical' }
+    };
+
+    if (styleMap[style]) {
+      paragraph.setAttribute('data-numbering-style', style);
+      paragraph.setAttribute('data-numbering-type', styleMap[style].type);
+      if (styleMap[style].format) {
+        paragraph.setAttribute('data-numbering-format', styleMap[style].format);
+      }
+      if (styleMap[style].icon) {
+        paragraph.setAttribute('data-numbering-icon', styleMap[style].icon);
+      }
+
+      // Apply numbering to this paragraph group
+      this.renumberParagraphGroup(paragraph, style);
     }
 
     this.editor.focus();
   }
 
+  renumberParagraphGroup(targetParagraph, style) {
+    const allParagraphs = this.editor.querySelectorAll(`p[data-numbering-style="${style}"]`);
+    const styleConfig = {
+      'bullet-circle': { icon: '◦' },
+      'bullet-square': { icon: '◾' },
+      'bullet-dash': { icon: '–' },
+      'number-123': { format: 'decimal' },
+      'number-abc': { format: 'alpha' },
+      'number-roman': { format: 'roman' },
+      'custom-1.1': { format: 'hierarchical' }
+    };
+
+    let counter = 1;
+    const customHierarchy = {};
+
+    allParagraphs.forEach((p, idx) => {
+      if (styleConfig[style].icon) {
+        p.setAttribute('data-numbering-icon', styleConfig[style].icon);
+      }
+
+      if (style === 'number-123') {
+        p.setAttribute('data-number', counter);
+      } else if (style === 'number-abc') {
+        const letter = String.fromCharCode(96 + counter); // a, b, c, ...
+        p.setAttribute('data-letter', letter);
+      } else if (style === 'number-roman') {
+        const roman = this.toRomanNumeral(counter);
+        p.setAttribute('data-roman', roman);
+      } else if (style === 'custom-1.1') {
+        const customNum = this.generateCustomNumber(idx);
+        p.setAttribute('data-custom', customNum);
+      }
+
+      counter++;
+    });
+  }
+
+  generateCustomNumber(index) {
+    // Generate hierarchical numbers like 1.1, 1.2, 2.1, etc.
+    // This is simplified - tracks depth by analyzing the document structure
+    const allNumberedElements = this.editor.querySelectorAll('[data-numbering-style]');
+    const levels = {};
+
+    for (let i = 0; i <= index && i < allNumberedElements.length; i++) {
+      // Simple increment - could be enhanced with indent tracking
+      if (!levels[0]) levels[0] = 0;
+      levels[0]++;
+    }
+
+    return levels[0] ? `${Math.ceil(levels[0] / 2)}.${((levels[0] - 1) % 2) + 1}` : '1.1';
+  }
+
+  toRomanNumeral(num) {
+    const romanNumerals = [
+      { value: 1000, numeral: 'm' },
+      { value: 900, numeral: 'cm' },
+      { value: 500, numeral: 'd' },
+      { value: 400, numeral: 'cd' },
+      { value: 100, numeral: 'c' },
+      { value: 90, numeral: 'xc' },
+      { value: 50, numeral: 'l' },
+      { value: 40, numeral: 'xl' },
+      { value: 10, numeral: 'x' },
+      { value: 9, numeral: 'ix' },
+      { value: 5, numeral: 'v' },
+      { value: 4, numeral: 'iv' },
+      { value: 1, numeral: 'i' }
+    ];
+
+    let result = '';
+    let remaining = num;
+
+    for (const { value, numeral } of romanNumerals) {
+      while (remaining >= value) {
+        result += numeral;
+        remaining -= value;
+      }
+    }
+
+    return result;
+  }
+
   autonumberDocument() {
-    const headings = this.editor.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    const headingCounts = { h1: 0, h2: 0, h3: 0, h4: 0, h5: 0, h6: 0 };
+    const headings = this.editor.querySelectorAll('h1, h2, h3, h4');
+    const headingCounts = { h1: 0, h2: 0, h3: 0, h4: 0 };
+    const headingHierarchy = { h1: [], h2: [], h3: [], h4: [] };
 
-    headings.forEach((heading) => {
+    headings.forEach((heading, idx) => {
       const level = parseInt(heading.tagName[1]);
+      const tag = heading.tagName.toLowerCase();
 
-      // Reset lower level counts
-      for (let i = level + 1; i <= 6; i++) {
+      // Reset lower level counts when we encounter a higher level heading
+      for (let i = level + 1; i <= 4; i++) {
         headingCounts[`h${i}`] = 0;
       }
 
       // Increment current level
-      headingCounts[`h${level}`]++;
+      headingCounts[tag]++;
 
-      // Build the number
+      // Build hierarchical number
       let number = '';
       for (let i = 1; i <= level; i++) {
         if (i > 1) number += '.';
         number += headingCounts[`h${i}`];
       }
 
-      // Remove existing number if present
+      // Add styling attributes for CSS-based formatting
+      heading.setAttribute('data-heading-level', level);
+      heading.setAttribute('data-heading-number', number);
+
+      // Remove existing number span if present
       const existingSpan = heading.querySelector('.auto-number');
       if (existingSpan) {
         existingSpan.remove();
       }
 
-      // Create and prepend number
+      // Create number span
       const numberSpan = document.createElement('span');
       numberSpan.className = 'auto-number';
       numberSpan.textContent = number + '. ';
-      numberSpan.style.cssText = `
-        color: var(--violet);
-        font-weight: 600;
-        margin-right: 6px;
-      `;
+      numberSpan.setAttribute('data-level', level);
+
+      // Add unique ID for TOC links
+      const headingId = `heading-${level}-${number.replace(/\./g, '-')}`;
+      heading.id = headingId;
+      heading.setAttribute('data-heading-id', headingId);
 
       heading.insertBefore(numberSpan, heading.firstChild);
     });
@@ -492,16 +618,46 @@ class RichTextEditor {
 
   clearNumbering(target) {
     if (target === 'all') {
+      // Clear paragraph numbering
       const numberedElements = this.editor.querySelectorAll('[data-numbering-style]');
       numberedElements.forEach(el => {
         el.removeAttribute('data-numbering-style');
+        el.removeAttribute('data-numbering-type');
+        el.removeAttribute('data-numbering-format');
+        el.removeAttribute('data-numbering-icon');
+        el.removeAttribute('data-number');
+        el.removeAttribute('data-letter');
+        el.removeAttribute('data-roman');
+        el.removeAttribute('data-custom');
       });
 
+      // Clear heading numbering
       const autoNumbers = this.editor.querySelectorAll('.auto-number');
       autoNumbers.forEach(el => el.remove());
+
+      // Clear heading attributes
+      const headings = this.editor.querySelectorAll('h1, h2, h3, h4');
+      headings.forEach(h => {
+        h.removeAttribute('data-heading-level');
+        h.removeAttribute('data-heading-number');
+        h.removeAttribute('data-heading-id');
+      });
+
+      // Clear TOC if exists
+      const toc = this.editor.querySelector('.toc-container');
+      if (toc) {
+        toc.remove();
+      }
     } else if (target === 'headings') {
       const autoNumbers = this.editor.querySelectorAll('.auto-number');
       autoNumbers.forEach(el => el.remove());
+
+      const headings = this.editor.querySelectorAll('h1, h2, h3, h4');
+      headings.forEach(h => {
+        h.removeAttribute('data-heading-level');
+        h.removeAttribute('data-heading-number');
+        h.removeAttribute('data-heading-id');
+      });
     }
 
     this.editor.focus();
@@ -509,38 +665,49 @@ class RichTextEditor {
 
   generateTableOfContents() {
     const headings = this.editor.querySelectorAll('h1, h2, h3, h4');
+    if (headings.length === 0) return '';
+
     let toc = '<div class="table-of-contents">\n';
-    toc += '<h3 style="margin-bottom: 16px; font-size: 1.1rem;">Índice</h3>\n';
-    toc += '<ul style="list-style: none; padding-left: 0;">\n';
+    toc += '<div class="toc-header">\n';
+    toc += '<h3 class="toc-title">Índice</h3>\n';
+    toc += '<button class="toc-close-btn" onclick="this.closest(\'.table-of-contents\').remove()" title="Fechar índice" style="background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1.2rem; padding: 0;">&times;</button>\n';
+    toc += '</div>\n';
+    toc += '<ul class="toc-list">\n';
 
     let currentLevel = 1;
+    const levelStack = [];
 
     headings.forEach((heading, index) => {
       const level = parseInt(heading.tagName[1]);
       const numberSpan = heading.querySelector('.auto-number');
-      const title = heading.textContent.replace(/^\d+(\.\d+)*\.\s+/, '');
-      const headingId = `heading-${index}`;
-
+      const headingId = heading.getAttribute('data-heading-id') || `heading-${index}`;
       heading.id = headingId;
 
-      // Handle level changes
+      // Extract title text without the number
+      let titleText = heading.textContent;
+      if (numberSpan) {
+        titleText = titleText.replace(numberSpan.textContent, '').trim();
+      }
+
+      // Handle level changes with proper nesting
       while (currentLevel < level) {
-        toc += '<ul style="list-style: none; padding-left: 24px;">\n';
+        toc += '<ul class="toc-nested">\n';
+        levelStack.push(currentLevel);
         currentLevel++;
       }
       while (currentLevel > level) {
         toc += '</ul>\n';
         currentLevel--;
+        levelStack.pop();
       }
 
-      if (numberSpan) {
-        toc += `<li style="margin: 6px 0;"><a href="#${headingId}" style="color: var(--violet); text-decoration: none; border-bottom: 1px solid rgba(124, 58, 237, 0.3);">${numberSpan.textContent}${title}</a></li>\n`;
-      } else {
-        toc += `<li style="margin: 6px 0;"><a href="#${headingId}" style="color: var(--violet); text-decoration: none; border-bottom: 1px solid rgba(124, 58, 237, 0.3);">${title}</a></li>\n`;
-      }
+      // Build entry with number and title
+      const displayText = numberSpan ? `${numberSpan.textContent}${titleText}` : titleText;
+      const indentClass = `toc-level-${level}`;
+      toc += `<li class="${indentClass}"><a href="#${headingId}" class="toc-link">${displayText}</a></li>\n`;
     });
 
-    // Close remaining lists
+    // Close remaining open lists
     while (currentLevel > 1) {
       toc += '</ul>\n';
       currentLevel--;
@@ -552,21 +719,37 @@ class RichTextEditor {
   }
 
   insertTableOfContents() {
+    // Check if TOC already exists
+    if (this.editor.querySelector('.toc-container')) {
+      alert('Índice já existe. Remova o anterior primeiro.');
+      return;
+    }
+
     const toc = this.generateTableOfContents();
-    const tocDiv = document.createElement('div');
-    tocDiv.className = 'toc-container';
-    tocDiv.innerHTML = toc;
-    this.editor.insertBefore(tocDiv, this.editor.firstChild);
+    if (!toc) {
+      alert('Adicione títulos antes de gerar o índice.');
+      return;
+    }
+
+    const tocContainer = document.createElement('div');
+    tocContainer.className = 'toc-container';
+    tocContainer.innerHTML = toc;
+
+    // Add as first child or after existing TOC
+    this.editor.insertBefore(tocContainer, this.editor.firstChild);
     this.editor.focus();
+    this.captureHistory();
   }
 
   updateTableOfContents() {
     const existingToc = this.editor.querySelector('.toc-container');
     if (existingToc) {
       const newToc = this.generateTableOfContents();
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = newToc;
-      existingToc.replaceWith(tempDiv.firstChild);
+      if (newToc) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newToc;
+        existingToc.replaceWith(tempDiv.firstChild);
+      }
     }
   }
 

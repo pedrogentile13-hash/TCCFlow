@@ -167,7 +167,7 @@ class EditorToolbar {
         <!-- Numbering and Outline -->
         <div class="toolbar-group">
           <div class="toolbar-numbering-wrapper">
-            <button class="toolbar-btn" id="btn-numbering" title="Estilos de numeração">
+            <button class="toolbar-btn" id="btn-numbering" title="Estilos de numeração e títulos (Ctrl+Alt+1 para H1)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/>
                 <line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/>
@@ -178,42 +178,58 @@ class EditorToolbar {
             <div class="numbering-menu" id="numbering-menu" style="display: none;">
               <div class="numbering-submenu">
                 <div class="numbering-label">Estilos de Título</div>
-                <button class="numbering-option" data-heading="1" title="Título 1">
-                  <span class="heading-preview">1</span> Título 1
+                <button class="numbering-option" data-heading="1" title="Título 1 - Nível mais alto (Ctrl+Alt+1)">
+                  <span class="heading-preview">1</span>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600;">Título 1</div>
+                    <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">Nível principal</div>
+                  </div>
                 </button>
-                <button class="numbering-option" data-heading="2" title="Título 2">
-                  <span class="heading-preview">1.1</span> Título 2
+                <button class="numbering-option" data-heading="2" title="Título 2 - Subtítulo (Ctrl+Alt+2)">
+                  <span class="heading-preview">1.1</span>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600;">Título 2</div>
+                    <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">Subseção</div>
+                  </div>
                 </button>
-                <button class="numbering-option" data-heading="3" title="Título 3">
-                  <span class="heading-preview">1.1.1</span> Título 3
+                <button class="numbering-option" data-heading="3" title="Título 3 - Sub-subtítulo (Ctrl+Alt+3)">
+                  <span class="heading-preview">1.1.1</span>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600;">Título 3</div>
+                    <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">Menor destaque</div>
+                  </div>
                 </button>
-                <button class="numbering-option" data-heading="4" title="Título 4">
-                  <span class="heading-preview">1.1.1.1</span> Título 4
+                <button class="numbering-option" data-heading="4" title="Título 4 - Menor nível (Ctrl+Alt+4)">
+                  <span class="heading-preview">1.1.1.1</span>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600;">Título 4</div>
+                    <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">Detalhe</div>
+                  </div>
                 </button>
               </div>
               <div class="numbering-divider"></div>
               <div class="numbering-submenu">
                 <div class="numbering-label">Numeração de Parágrafos</div>
-                <button class="numbering-option" data-style="number-123" title="Numeração 1, 2, 3">
+                <button class="numbering-option" data-style="number-123" title="Numerar com 1, 2, 3...">
                   <span class="style-icon">①</span> 1, 2, 3
                 </button>
-                <button class="numbering-option" data-style="number-abc" title="Numeração a, b, c">
+                <button class="numbering-option" data-style="number-abc" title="Numerar com a, b, c...">
                   <span class="style-icon">ⓐ</span> a, b, c
                 </button>
-                <button class="numbering-option" data-style="number-roman" title="Numeração i, ii, iii">
+                <button class="numbering-option" data-style="number-roman" title="Numerar com i, ii, iii...">
                   <span class="style-icon">ⓘ</span> i, ii, iii
                 </button>
-                <button class="numbering-option" data-style="custom-1.1" title="Numeração customizada 1.1">
+                <button class="numbering-option" data-style="custom-1.1" title="Numeração hierárquica 1.1, 1.2, 2.1">
                   <span class="style-icon">§</span> 1.1, 1.2, 2.1
                 </button>
               </div>
               <div class="numbering-divider"></div>
               <div class="numbering-submenu">
                 <div class="numbering-label">Marcadores</div>
-                <button class="numbering-option" data-style="bullet-circle" title="Círculos">
+                <button class="numbering-option" data-style="bullet-circle" title="Pontos vazios">
                   <span class="style-icon">◦</span> Círculos
                 </button>
-                <button class="numbering-option" data-style="bullet-square" title="Quadrados">
+                <button class="numbering-option" data-style="bullet-square" title="Quadrados sólidos">
                   <span class="style-icon">◾</span> Quadrados
                 </button>
                 <button class="numbering-option" data-style="bullet-dash" title="Traços">
@@ -222,11 +238,19 @@ class EditorToolbar {
               </div>
               <div class="numbering-divider"></div>
               <div class="numbering-submenu">
-                <button class="numbering-option" id="btn-toc" title="Gerar Índice">
-                  <span class="style-icon">📑</span> Gerar Índice
+                <button class="numbering-option" id="btn-toc" title="Insere um índice automático com links para títulos">
+                  <span class="style-icon">📑</span>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600;">Gerar Índice</div>
+                    <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">Automático e navegável</div>
+                  </div>
                 </button>
-                <button class="numbering-option" id="btn-clear-numbering" title="Limpar Numeração">
-                  <span class="style-icon">✕</span> Limpar Tudo
+                <button class="numbering-option" id="btn-clear-numbering" title="Remove todos os números e marcadores">
+                  <span class="style-icon">✕</span>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600;">Limpar Tudo</div>
+                    <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">Remove numeração</div>
+                  </div>
                 </button>
               </div>
             </div>
@@ -404,7 +428,21 @@ class EditorToolbar {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           const style = btn.dataset.style;
+
+          // Track which numbering style was applied for user feedback
+          const icon = btn.querySelector('.style-icon');
+          const label = btn.textContent.trim();
+
           this.editor.applyNumberingStyle(style);
+
+          // Visual feedback
+          btn.style.background = 'rgba(124, 58, 237, 0.15)';
+          btn.style.color = 'var(--violet)';
+          setTimeout(() => {
+            btn.style.background = '';
+            btn.style.color = '';
+          }, 300);
+
           numberingMenu.style.display = 'none';
         });
       });
