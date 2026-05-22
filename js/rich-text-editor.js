@@ -20,6 +20,9 @@ class RichTextEditor {
     this.historyIndex = -1;
     this.isSaving = false;
     this.lastSaveTime = null;
+    this.footnoteCounter = 0;
+    this.autoSaveTimer = null;
+    this.debounceTimer = null;
 
     this.init();
   }
@@ -30,41 +33,65 @@ class RichTextEditor {
       return;
     }
 
-    // Make editor contenteditable
-    this.editor.contentEditable = true;
+    // Make editor contenteditable with attributes
+    this.editor.contentEditable = 'true';
     this.editor.spellcheck = true;
+    this.editor.setAttribute('role', 'textbox');
+    this.editor.setAttribute('aria-label', 'Rich text editor');
+    this.editor.setAttribute('data-gramm_editor', 'false');
+
+    // Ensure editor is focused on init
+    setTimeout(() => {
+      this.editor.focus();
+    }, 100);
 
     // Setup event listeners
     this.setupEventListeners();
     this.loadFromStorage();
     this.setupAutoSave();
     this.captureHistory();
+    this.countFootnotes();
 
     // Setup keyboard shortcuts
     this.setupKeyboardShortcuts();
   }
 
   setupEventListeners() {
-    // Auto-capture history on input
+    // Auto-capture history on input with debounce
     this.editor.addEventListener('input', () => {
-      this.captureHistory();
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.captureHistory();
+      }, 300);
     });
 
-    // Handle paste to clean formatting
+    // Handle paste - allow rich paste by default, but with option to clean
     this.editor.addEventListener('paste', (e) => {
-      e.preventDefault();
-      const text = e.clipboardData.getData('text/plain');
-      document.execCommand('insertText', false, text);
+      // Capture history after paste is processed
+      setTimeout(() => {
+        this.captureHistory();
+      }, 10);
+
+      // Note: To implement "paste as plain text" option, uncomment below:
+      // e.preventDefault();
+      // const text = e.clipboardData.getData('text/plain');
+      // document.execCommand('insertText', false, text);
     });
 
     // Prevent default drag and drop
     this.editor.addEventListener('dragover', (e) => {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'copy';
+      this.editor.style.opacity = '0.8';
+    });
+
+    this.editor.addEventListener('dragleave', () => {
+      this.editor.style.opacity = '1';
     });
 
     this.editor.addEventListener('drop', (e) => {
       e.preventDefault();
+      this.editor.style.opacity = '1';
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         this.handleFileUpload(files[0]);
@@ -79,7 +106,10 @@ class RichTextEditor {
 
   setupKeyboardShortcuts() {
     this.editor.addEventListener('keydown', (e) => {
-      if (!e.ctrlKey && !e.metaKey) return;
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+      if (!ctrlOrCmd) return;
 
       const key = e.key.toLowerCase();
       let handled = false;
@@ -237,11 +267,25 @@ class RichTextEditor {
 
   getWordCount() {
     const text = this.editor.innerText || '';
+    if (!text.trim()) return 0;
     return text.trim().split(/\s+/).filter(w => w.length > 0).length;
   }
 
   getCharCount() {
-    return (this.editor.innerText || '').length;
+    const text = this.editor.innerText || '';
+    return text.length;
+  }
+
+  getCharCountWithoutSpaces() {
+    const text = this.editor.innerText || '';
+    return text.replace(/\s/g, '').length;
+  }
+
+  getReadingTime() {
+    const wordCount = this.getWordCount();
+    const wordsPerMinute = 200; // Average reading speed
+    const minutes = Math.ceil(wordCount / wordsPerMinute);
+    return minutes < 1 ? '< 1 min' : `~${minutes} min`;
   }
 
   getContent() {
@@ -287,22 +331,113 @@ class RichTextEditor {
       const content = localStorage.getItem(this.options.storageKey);
       if (content) {
         this.editor.innerHTML = content;
+      } else {
+        // Load example content if storage is empty
+        this.loadExampleContent();
       }
     } catch (e) {
       console.error('Failed to load from localStorage:', e);
+      this.loadExampleContent();
+    }
+  }
+
+  loadExampleContent() {
+    // Only load example for new editors
+    if (this.editor.innerHTML.trim() === '') {
+      const example = `
+        <p style="line-height: 1.8;">
+          <strong>Bem-vindo ao Editor de Texto Rico!</strong>
+        </p>
+        <p style="line-height: 1.8;">
+          Este é um editor profissional com suporte a:
+        </p>
+        <ul style="line-height: 1.8;">
+          <li><strong>Formatação de texto:</strong> negrito, itálico, sublinhado, tachado</li>
+          <li><strong>Controles de fonte:</strong> família, tamanho e cores</li>
+          <li><strong>Alinhamento:</strong> esquerda, centro, direita e justificado</li>
+          <li><strong>Listas:</strong> com marcadores e numeradas</li>
+          <li><strong>Tabelas:</strong> insira e formate tabelas facilmente</li>
+          <li><strong>Imagens:</strong> arraste e solte ou insira via URL</li>
+          <li><strong>Links:</strong> Ctrl+Shift+K para inserir hiperlinks</li>
+          <li><strong>Auto-salvamento:</strong> seu conteúdo é salvo automaticamente</li>
+        </ul>
+        <p style="line-height: 1.8; margin-top: 1.5em;">
+          Use os atalhos de teclado para agilizar seu trabalho:
+        </p>
+        <ul style="line-height: 1.8;">
+          <li><strong>Ctrl+B:</strong> Negrito</li>
+          <li><strong>Ctrl+I:</strong> Itálico</li>
+          <li><strong>Ctrl+U:</strong> Sublinhado</li>
+          <li><strong>Ctrl+Z:</strong> Desfazer</li>
+          <li><strong>Ctrl+Y:</strong> Refazer</li>
+        </ul>
+        <p style="line-height: 1.8; margin-top: 1.5em; color: #6b6480;">
+          <em>Dica: Comece a digitação para substituir este texto de exemplo.</em>
+        </p>
+      `;
+      this.editor.innerHTML = example;
     }
   }
 
   setupAutoSave() {
-    setInterval(() => {
+    this.autoSaveTimer = setInterval(() => {
       this.saveToStorage();
     }, this.options.autoSaveInterval);
   }
 
+  clearAutoSave() {
+    if (this.autoSaveTimer) {
+      clearInterval(this.autoSaveTimer);
+      this.autoSaveTimer = null;
+    }
+  }
+
+  countFootnotes() {
+    this.footnoteCounter = this.editor.querySelectorAll('.footnote-ref').length;
+  }
+
   insertFootnote() {
-    const footnoteCount = this.editor.querySelectorAll('.footnote-ref').length + 1;
-    const footnoteHTML = `<a href="#fn${footnoteCount}" class="footnote-ref">[${footnoteCount}]</a>`;
+    this.footnoteCounter++;
+    const footnoteHTML = `<sup><a href="#fn${this.footnoteCounter}" class="footnote-ref" data-footnote="${this.footnoteCounter}">[${this.footnoteCounter}]</a></sup>`;
     document.execCommand('insertHTML', false, footnoteHTML);
+  }
+
+  insertEndnote() {
+    this.footnoteCounter++;
+    const endnoteHTML = `<sup><a href="#en${this.footnoteCounter}" class="endnote-ref" data-endnote="${this.footnoteCounter}">[${this.footnoteCounter}]</a></sup>`;
+    document.execCommand('insertHTML', false, endnoteHTML);
+  }
+
+  setSuperscript() {
+    document.execCommand('superscript');
+  }
+
+  setSubscript() {
+    document.execCommand('subscript');
+  }
+
+  increaseLineHeight() {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const selectedContent = range.extractContents();
+      const span = document.createElement('span');
+      span.style.lineHeight = '2';
+      span.appendChild(selectedContent);
+      range.insertNode(span);
+    }
+  }
+
+  decreaseLineHeight() {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const selectedContent = range.extractContents();
+      const span = document.createElement('span');
+      span.style.lineHeight = '1.5';
+      span.appendChild(selectedContent);
+      range.insertNode(span);
+    }
   }
 
   handleFileUpload(file) {
@@ -313,14 +448,18 @@ class RichTextEditor {
         img.src = e.target.result;
         img.style.maxWidth = '100%';
         img.style.height = 'auto';
+        img.style.borderRadius = '6px';
+        img.style.margin = '12px 0';
 
         const div = document.createElement('div');
+        div.style.textAlign = 'center';
+        div.style.margin = '12px 0';
         div.appendChild(img);
-        document.execCommand('insertHTML', false, div.innerHTML);
+        document.execCommand('insertHTML', false, div.outerHTML);
       };
       reader.readAsDataURL(file);
     } else {
-      alert('Please upload an image file');
+      alert('Por favor, faça upload de um arquivo de imagem');
     }
   }
 
@@ -332,27 +471,106 @@ class RichTextEditor {
     return this.getText();
   }
 
-  print() {
-    const printWindow = window.open('', '', 'width=800,height=600');
-    printWindow.document.write(`
+  downloadAsHTML(filename = 'document.html') {
+    const content = this.getContent();
+    const html = `
       <!DOCTYPE html>
-      <html>
+      <html lang="pt-BR">
       <head>
-        <title>Print</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${filename}</title>
         <style>
-          body { font-family: "Geist", sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
-          table { border-collapse: collapse; width: 100%; }
-          td, th { border: 1px solid #ddd; padding: 8px; text-align: left; }
-          img { max-width: 100%; height: auto; }
+          body {
+            font-family: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            color: #0f0d1e;
+          }
+          h1, h2, h3, h4, h5, h6 {
+            font-family: "Instrument Serif", Georgia, serif;
+            margin: 1.5em 0 0.5em 0;
+            line-height: 1.3;
+          }
+          table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+          td, th { border: 1px solid #ddd; padding: 12px; text-align: left; }
+          th { background: #f3f2ec; font-weight: 600; }
+          img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0; }
+          a { color: #7c3aed; text-decoration: none; }
+          code { background: #f3f2ec; padding: 2px 6px; border-radius: 4px; }
+          pre { background: #f3f2ec; padding: 12px; border-radius: 6px; overflow-x: auto; }
+          blockquote { border-left: 3px solid #7c3aed; padding-left: 1em; margin: 1em 0; font-style: italic; }
         </style>
       </head>
       <body>
+        ${content}
+      </body>
+      </html>
+    `;
+    this.downloadFile(html, filename, 'text/html');
+  }
+
+  downloadAsText(filename = 'document.txt') {
+    const content = this.getText();
+    this.downloadFile(content, filename, 'text/plain');
+  }
+
+  downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  print() {
+    const printWindow = window.open('', '', 'width=800,height=600');
+    const title = document.querySelector('.editor-title-input')?.value || 'Documento';
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <title>${title}</title>
+        <style>
+          body {
+            font-family: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            color: #0f0d1e;
+          }
+          h1 { font-size: 2em; margin-top: 1.5em; margin-bottom: 0.5em; }
+          h2 { font-size: 1.5em; margin-top: 1.3em; margin-bottom: 0.5em; }
+          h3 { font-size: 1.2em; margin-top: 1.2em; margin-bottom: 0.4em; }
+          table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+          td, th { border: 1px solid #ddd; padding: 12px; text-align: left; }
+          th { background: #f3f2ec; font-weight: 600; }
+          img { max-width: 100%; height: auto; margin: 1em 0; }
+          @media print {
+            body { padding: 0; }
+            img { page-break-inside: avoid; }
+            table { page-break-inside: avoid; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>${title}</h1>
         ${this.getContent()}
-        <script>window.print();</script>
       </body>
       </html>
     `);
     printWindow.document.close();
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
   }
 
   updateFloatingToolbar() {
@@ -365,11 +583,9 @@ class RichTextEditor {
 
   destroy() {
     this.saveToStorage();
+    this.clearAutoSave();
+    clearTimeout(this.debounceTimer);
     this.editor.contentEditable = false;
-    this.editor.removeEventListener('input', null);
-    this.editor.removeEventListener('paste', null);
-    this.editor.removeEventListener('dragover', null);
-    this.editor.removeEventListener('drop', null);
   }
 }
 

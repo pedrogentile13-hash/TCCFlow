@@ -386,9 +386,9 @@ function AnotacoesPage() {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0, flex: 1, overflow: 'hidden' }}>
-                <div id="notes-editor-toolbar" style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--line)', padding: '0', margin: '0' }}></div>
-                <input className="notes-main-title" placeholder="Título da anotação..." value={title} onChange={e => handleTitleChange(e.target.value)}/>
-                <div id="notes-editor-content" className="editor-content" style={{ flex: 1, outline: 'none', minHeight: '300px' }}/>
+                <div id="notes-editor-toolbar" style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--line)', padding: '0', margin: '0', overflowX: 'auto' }}></div>
+                <input className="notes-main-title" placeholder="Título da anotação..." value={title} onChange={e => handleTitleChange(e.target.value)} spellCheck="true"/>
+                <div id="notes-editor-content" className="editor-content" style={{ flex: 1, outline: 'none' }}/>
                 <div className="notes-main-footer">
                   <span><span id="notes-word-count">{wordCount}</span> palavras &middot; <span id="notes-char-count">{charCount}</span> caracteres</span>
                   <span className={"save-indicator" + (saveState === "saving" ? " saving" : "")}>{saveState === "saving" ? "Salvando..." : saveState === "saved" ? "Salvo" : ""}</span>

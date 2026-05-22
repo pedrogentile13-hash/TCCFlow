@@ -198,6 +198,18 @@ class EditorToolbar {
 
         <!-- Advanced -->
         <div class="toolbar-group">
+          <button class="toolbar-btn" id="btn-superscript" title="Sobrescrito">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 7h10M3 13h18M6 19h12"/>
+              <text x="16" y="5" font-size="8" font-weight="bold">x²</text>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-subscript" title="Subscrito">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3h10M3 9h18M6 15h12"/>
+              <text x="16" y="21" font-size="8" font-weight="bold">x₂</text>
+            </svg>
+          </button>
           <button class="toolbar-btn" id="btn-link" title="Inserir link (Ctrl+Shift+K)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
@@ -217,6 +229,12 @@ class EditorToolbar {
               <line x1="3" y1="15" x2="21" y2="15"/>
             </svg>
           </button>
+          <button class="toolbar-btn" id="btn-footnote" title="Inserir nota de rodapé">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v15H6.5A2.5 2.5 0 0 1 4 14.5v-13A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </button>
           <button class="toolbar-btn" id="btn-clear" title="Limpar formatação">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 6h18M8 6v12M16 6v12M6 18h12"/>
@@ -226,12 +244,29 @@ class EditorToolbar {
 
         <div class="toolbar-divider"></div>
 
-        <!-- Print -->
+        <!-- Line Height -->
+        <div class="toolbar-group">
+          <select class="toolbar-select" id="line-height" title="Espaçamento de linha">
+            <option value="1">1.0</option>
+            <option value="1.5">1.5</option>
+            <option value="2">2.0</option>
+            <option value="2.5">2.5</option>
+          </select>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Export/Print -->
         <div class="toolbar-group">
           <button class="toolbar-btn" id="btn-print" title="Imprimir">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
               <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+          </button>
+          <button class="toolbar-btn" id="btn-download-html" title="Baixar como HTML">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
           </button>
         </div>
@@ -244,11 +279,29 @@ class EditorToolbar {
 
   buildColorGrid(isHighlight = false) {
     const colors = isHighlight
-      ? ['#ffff00', '#ffcc00', '#ff99cc', '#ff6666', '#ff9999', '#ffcccc', '#ccffcc', '#99ff99', '#ccffff', '#99ccff', '#ccccff']
-      : ['#000000', '#333333', '#666666', '#999999', '#cccccc', '#ffffff', '#ff0000', '#ff6666', '#ff9999', '#ff3333', '#cc0000', '#ff9900', '#ffcc00', '#ffff00', '#ccff00', '#00ff00', '#00cc00', '#00ff99', '#00ffcc', '#00ccff', '#0099ff', '#0000ff', '#3333ff', '#6666ff', '#9999ff', '#cc00ff', '#ff00ff', '#ff0099'];
+      ? [
+          '#ffff00', '#ffeb3b', '#fdd835', '#ffca28', '#fbc02d', '#f9a825',
+          '#ff9800', '#fb8c00', '#f57c00', '#e65100', '#ffb74d', '#ffb300',
+          '#ff9100', '#ff6d00', '#ff3d00', '#dd2c00', '#ffcdd2', '#ef9a9a',
+          '#e57373', '#ef5350', '#f44336', '#e53935', '#ffebee', '#ffcdd2'
+        ]
+      : [
+          '#000000', '#424242', '#616161', '#757575', '#9e9e9e', '#bdbdbd',
+          '#e0e0e0', '#f5f5f5', '#ffffff', '#ffebee', '#ffcdd2', '#ef9a9a',
+          '#e57373', '#ef5350', '#f44336', '#e53935', '#fce4ec', '#f8bbd0',
+          '#f48fb1', '#f06292', '#ec407a', '#e91e63', '#f3e5f5', '#e1bee7',
+          '#ce93d8', '#ba68c8', '#ab47bc', '#9c27b0', '#ede7f6', '#d1c4e9',
+          '#b39ddb', '#9575cd', '#7e57c2', '#673ab7', '#e8eaf6', '#c5cae9',
+          '#9fa8da', '#7986cb', '#5c6bc0', '#3f51b5', '#e3f2fd', '#bbdefb',
+          '#90caf9', '#64b5f6', '#42a5f5', '#2196f3', '#e0f2f1', '#b2dfdb',
+          '#80cbc4', '#4db6ac', '#26a69a', '#009688', '#e8f5e9', '#c8e6c9',
+          '#a5d6a7', '#81c784', '#66bb6a', '#4caf50', '#fff8e1', '#fff9c4',
+          '#fff59d', '#fff176', '#ffee58', '#ffeb3b', '#fff3e0', '#ffe0b2',
+          '#ffcc80', '#ffb74d', '#ffa726', '#ff9800'
+        ];
 
     return colors.map(color => `
-      <button class="color-option" style="background-color: ${color};" data-color="${color}" title="${color}"></button>
+      <button class="color-option" style="background-color: ${color}; border-color: ${color === '#ffffff' ? '#bdbdbd' : 'transparent'};" data-color="${color}" title="${color}"></button>
     `).join('');
   }
 
@@ -289,19 +342,47 @@ class EditorToolbar {
     document.getElementById('btn-outdent')?.addEventListener('click', () => this.editor.formatText('outdent'));
 
     // Advanced
+    document.getElementById('btn-superscript')?.addEventListener('click', () => this.editor.setSuperscript());
+    document.getElementById('btn-subscript')?.addEventListener('click', () => this.editor.setSubscript());
     document.getElementById('btn-link')?.addEventListener('click', () => this.editor.insertLink());
     document.getElementById('btn-image')?.addEventListener('click', () => this.editor.insertImage());
     document.getElementById('btn-table')?.addEventListener('click', () => {
-      const rows = prompt('Number of rows:', '3');
-      const cols = prompt('Number of columns:', '3');
+      const rows = prompt('Número de linhas:', '3');
+      const cols = prompt('Número de colunas:', '3');
       if (rows && cols) {
         this.editor.insertTable(parseInt(rows), parseInt(cols));
       }
     });
+    document.getElementById('btn-footnote')?.addEventListener('click', () => this.editor.insertFootnote());
     document.getElementById('btn-clear')?.addEventListener('click', () => this.editor.clearFormatting());
+
+    // Line height
+    document.getElementById('line-height')?.addEventListener('change', (e) => {
+      if (e.target.value) {
+        const lineHeight = e.target.value;
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const commonAncestor = range.commonAncestorContainer;
+          const parentElement = commonAncestor.nodeType === 3
+            ? commonAncestor.parentElement
+            : commonAncestor;
+          if (parentElement) {
+            parentElement.style.lineHeight = lineHeight;
+          }
+        }
+      }
+    });
 
     // Print
     document.getElementById('btn-print')?.addEventListener('click', () => this.editor.print());
+
+    // Download HTML
+    document.getElementById('btn-download-html')?.addEventListener('click', () => {
+      const title = document.querySelector('.editor-title-input')?.value || 'document';
+      const filename = `${title.toLowerCase().replace(/\s+/g, '-')}.html`;
+      this.editor.downloadAsHTML(filename);
+    });
 
     // Close color pickers on click outside
     document.addEventListener('click', (e) => {
