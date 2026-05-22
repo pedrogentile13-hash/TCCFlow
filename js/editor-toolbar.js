@@ -164,6 +164,77 @@ class EditorToolbar {
 
         <div class="toolbar-divider"></div>
 
+        <!-- Numbering and Outline -->
+        <div class="toolbar-group">
+          <div class="toolbar-numbering-wrapper">
+            <button class="toolbar-btn" id="btn-numbering" title="Estilos de numeração">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/>
+                <line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/>
+                <path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>
+              </svg>
+              <span class="toolbar-dropdown-arrow">▼</span>
+            </button>
+            <div class="numbering-menu" id="numbering-menu" style="display: none;">
+              <div class="numbering-submenu">
+                <div class="numbering-label">Estilos de Título</div>
+                <button class="numbering-option" data-heading="1" title="Título 1">
+                  <span class="heading-preview">1</span> Título 1
+                </button>
+                <button class="numbering-option" data-heading="2" title="Título 2">
+                  <span class="heading-preview">1.1</span> Título 2
+                </button>
+                <button class="numbering-option" data-heading="3" title="Título 3">
+                  <span class="heading-preview">1.1.1</span> Título 3
+                </button>
+                <button class="numbering-option" data-heading="4" title="Título 4">
+                  <span class="heading-preview">1.1.1.1</span> Título 4
+                </button>
+              </div>
+              <div class="numbering-divider"></div>
+              <div class="numbering-submenu">
+                <div class="numbering-label">Numeração de Parágrafos</div>
+                <button class="numbering-option" data-style="number-123" title="Numeração 1, 2, 3">
+                  <span class="style-icon">①</span> 1, 2, 3
+                </button>
+                <button class="numbering-option" data-style="number-abc" title="Numeração a, b, c">
+                  <span class="style-icon">ⓐ</span> a, b, c
+                </button>
+                <button class="numbering-option" data-style="number-roman" title="Numeração i, ii, iii">
+                  <span class="style-icon">ⓘ</span> i, ii, iii
+                </button>
+                <button class="numbering-option" data-style="custom-1.1" title="Numeração customizada 1.1">
+                  <span class="style-icon">§</span> 1.1, 1.2, 2.1
+                </button>
+              </div>
+              <div class="numbering-divider"></div>
+              <div class="numbering-submenu">
+                <div class="numbering-label">Marcadores</div>
+                <button class="numbering-option" data-style="bullet-circle" title="Círculos">
+                  <span class="style-icon">◦</span> Círculos
+                </button>
+                <button class="numbering-option" data-style="bullet-square" title="Quadrados">
+                  <span class="style-icon">◾</span> Quadrados
+                </button>
+                <button class="numbering-option" data-style="bullet-dash" title="Traços">
+                  <span class="style-icon">–</span> Traços
+                </button>
+              </div>
+              <div class="numbering-divider"></div>
+              <div class="numbering-submenu">
+                <button class="numbering-option" id="btn-toc" title="Gerar Índice">
+                  <span class="style-icon">📑</span> Gerar Índice
+                </button>
+                <button class="numbering-option" id="btn-clear-numbering" title="Limpar Numeração">
+                  <span class="style-icon">✕</span> Limpar Tudo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
         <!-- Lists and Indentation -->
         <div class="toolbar-group">
           <button class="toolbar-btn" id="btn-list-ul" title="Lista com marcadores">
@@ -306,6 +377,60 @@ class EditorToolbar {
   }
 
   attachEventListeners() {
+    // Numbering menu toggle
+    const numberingBtn = document.getElementById('btn-numbering');
+    const numberingMenu = document.getElementById('numbering-menu');
+
+    if (numberingBtn && numberingMenu) {
+      numberingBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = numberingMenu.style.display !== 'none';
+        document.querySelectorAll('.numbering-menu').forEach(m => m.style.display = 'none');
+        if (!isOpen) numberingMenu.style.display = 'block';
+      });
+
+      // Heading styles
+      numberingMenu.querySelectorAll('[data-heading]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const level = parseInt(btn.dataset.heading);
+          this.editor.applyHeadingStyle(level);
+          numberingMenu.style.display = 'none';
+        });
+      });
+
+      // Numbering styles
+      numberingMenu.querySelectorAll('[data-style]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const style = btn.dataset.style;
+          this.editor.applyNumberingStyle(style);
+          numberingMenu.style.display = 'none';
+        });
+      });
+
+      // Table of contents
+      document.getElementById('btn-toc')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.editor.insertTableOfContents();
+        numberingMenu.style.display = 'none';
+      });
+
+      // Clear numbering
+      document.getElementById('btn-clear-numbering')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.editor.clearNumbering('all');
+        numberingMenu.style.display = 'none';
+      });
+    }
+
+    // Close numbering menu on click outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.toolbar-numbering-wrapper')) {
+        document.querySelectorAll('.numbering-menu').forEach(m => m.style.display = 'none');
+      }
+    });
+
     // Undo/Redo
     document.getElementById('btn-undo')?.addEventListener('click', () => this.editor.undo());
     document.getElementById('btn-redo')?.addEventListener('click', () => this.editor.redo());

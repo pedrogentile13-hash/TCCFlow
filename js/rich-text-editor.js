@@ -402,6 +402,174 @@ class RichTextEditor {
     document.execCommand('insertHTML', false, footnoteHTML);
   }
 
+  // Auto-Numbering System Methods
+  applyHeadingStyle(level) {
+    const tag = `h${level}`;
+    document.execCommand('formatBlock', false, `<${tag}>`);
+    this.editor.focus();
+    setTimeout(() => this.autonumberDocument(), 50);
+  }
+
+  applyNumberingStyle(style) {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const paragraph = range.commonAncestorContainer.nodeType === 3
+      ? range.commonAncestorContainer.parentElement
+      : range.commonAncestorContainer;
+
+    if (!paragraph) return;
+
+    switch (style) {
+      case 'bullet-circle':
+        paragraph.setAttribute('data-numbering-style', 'bullet-circle');
+        break;
+      case 'bullet-square':
+        paragraph.setAttribute('data-numbering-style', 'bullet-square');
+        break;
+      case 'bullet-dash':
+        paragraph.setAttribute('data-numbering-style', 'bullet-dash');
+        break;
+      case 'number-123':
+        paragraph.setAttribute('data-numbering-style', 'number-123');
+        break;
+      case 'number-abc':
+        paragraph.setAttribute('data-numbering-style', 'number-abc');
+        break;
+      case 'number-roman':
+        paragraph.setAttribute('data-numbering-style', 'number-roman');
+        break;
+      case 'custom-1.1':
+        paragraph.setAttribute('data-numbering-style', 'custom-1.1');
+        break;
+    }
+
+    this.editor.focus();
+  }
+
+  autonumberDocument() {
+    const headings = this.editor.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    const headingCounts = { h1: 0, h2: 0, h3: 0, h4: 0, h5: 0, h6: 0 };
+
+    headings.forEach((heading) => {
+      const level = parseInt(heading.tagName[1]);
+
+      // Reset lower level counts
+      for (let i = level + 1; i <= 6; i++) {
+        headingCounts[`h${i}`] = 0;
+      }
+
+      // Increment current level
+      headingCounts[`h${level}`]++;
+
+      // Build the number
+      let number = '';
+      for (let i = 1; i <= level; i++) {
+        if (i > 1) number += '.';
+        number += headingCounts[`h${i}`];
+      }
+
+      // Remove existing number if present
+      const existingSpan = heading.querySelector('.auto-number');
+      if (existingSpan) {
+        existingSpan.remove();
+      }
+
+      // Create and prepend number
+      const numberSpan = document.createElement('span');
+      numberSpan.className = 'auto-number';
+      numberSpan.textContent = number + '. ';
+      numberSpan.style.cssText = `
+        color: var(--violet);
+        font-weight: 600;
+        margin-right: 6px;
+      `;
+
+      heading.insertBefore(numberSpan, heading.firstChild);
+    });
+  }
+
+  clearNumbering(target) {
+    if (target === 'all') {
+      const numberedElements = this.editor.querySelectorAll('[data-numbering-style]');
+      numberedElements.forEach(el => {
+        el.removeAttribute('data-numbering-style');
+      });
+
+      const autoNumbers = this.editor.querySelectorAll('.auto-number');
+      autoNumbers.forEach(el => el.remove());
+    } else if (target === 'headings') {
+      const autoNumbers = this.editor.querySelectorAll('.auto-number');
+      autoNumbers.forEach(el => el.remove());
+    }
+
+    this.editor.focus();
+  }
+
+  generateTableOfContents() {
+    const headings = this.editor.querySelectorAll('h1, h2, h3, h4');
+    let toc = '<div class="table-of-contents">\n';
+    toc += '<h3 style="margin-bottom: 16px; font-size: 1.1rem;">Índice</h3>\n';
+    toc += '<ul style="list-style: none; padding-left: 0;">\n';
+
+    let currentLevel = 1;
+
+    headings.forEach((heading, index) => {
+      const level = parseInt(heading.tagName[1]);
+      const numberSpan = heading.querySelector('.auto-number');
+      const title = heading.textContent.replace(/^\d+(\.\d+)*\.\s+/, '');
+      const headingId = `heading-${index}`;
+
+      heading.id = headingId;
+
+      // Handle level changes
+      while (currentLevel < level) {
+        toc += '<ul style="list-style: none; padding-left: 24px;">\n';
+        currentLevel++;
+      }
+      while (currentLevel > level) {
+        toc += '</ul>\n';
+        currentLevel--;
+      }
+
+      if (numberSpan) {
+        toc += `<li style="margin: 6px 0;"><a href="#${headingId}" style="color: var(--violet); text-decoration: none; border-bottom: 1px solid rgba(124, 58, 237, 0.3);">${numberSpan.textContent}${title}</a></li>\n`;
+      } else {
+        toc += `<li style="margin: 6px 0;"><a href="#${headingId}" style="color: var(--violet); text-decoration: none; border-bottom: 1px solid rgba(124, 58, 237, 0.3);">${title}</a></li>\n`;
+      }
+    });
+
+    // Close remaining lists
+    while (currentLevel > 1) {
+      toc += '</ul>\n';
+      currentLevel--;
+    }
+
+    toc += '</ul>\n</div>\n';
+
+    return toc;
+  }
+
+  insertTableOfContents() {
+    const toc = this.generateTableOfContents();
+    const tocDiv = document.createElement('div');
+    tocDiv.className = 'toc-container';
+    tocDiv.innerHTML = toc;
+    this.editor.insertBefore(tocDiv, this.editor.firstChild);
+    this.editor.focus();
+  }
+
+  updateTableOfContents() {
+    const existingToc = this.editor.querySelector('.toc-container');
+    if (existingToc) {
+      const newToc = this.generateTableOfContents();
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = newToc;
+      existingToc.replaceWith(tempDiv.firstChild);
+    }
+  }
+
   insertEndnote() {
     this.footnoteCounter++;
     const endnoteHTML = `<sup><a href="#en${this.footnoteCounter}" class="endnote-ref" data-endnote="${this.footnoteCounter}">[${this.footnoteCounter}]</a></sup>`;
