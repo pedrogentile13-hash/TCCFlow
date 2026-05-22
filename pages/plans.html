@@ -181,8 +181,10 @@ function PlansPage() {
 
   async function activateProCoupon() {
     if (!user) { alert("Faça login para continuar"); return; }
+    if (!coupon.trim()) { alert("Digite um cupom válido"); return; }
     setActivatingPro(true);
     try {
+      console.log("Ativando PRO com cupom:", coupon);
       const response = await fetch("/.netlify/functions/activate-pro-coupon", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -194,15 +196,17 @@ function PlansPage() {
         })
       });
       const data = await response.json();
+      console.log("Response:", data);
       if (data.success) {
-        alert("👑 Parabéns! Seu plano PRO foi ativado com sucesso!");
-        window.location.href = "dashboard.html";
+        alert("👑 Parabéns! Seu plano PRO foi ativado com sucesso!\nVálido até: " + new Date(data.expires_at).toLocaleDateString('pt-BR'));
+        setTimeout(() => window.location.href = "dashboard.html", 1000);
       } else {
-        alert("Erro: " + (data.error || "Não foi possível ativar o PRO."));
+        alert("❌ Erro ao ativar PRO:\n" + (data.error || "Não foi possível ativar o PRO."));
+        console.error("Activation error:", data);
       }
     } catch (e) {
       console.error("Erro:", e);
-      alert("Erro ao ativar PRO: " + e.message);
+      alert("❌ Erro de conexão:\n" + e.message);
     }
     setActivatingPro(false);
   }

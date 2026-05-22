@@ -58,7 +58,7 @@ exports.handler = async (event) => {
         const expiresAt = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
 
         // Create subscription
-        await supabase.from('subscriptions').insert({
+        const { data: subData, error: subError } = await supabase.from('subscriptions').insert({
             user_id: userId,
             user_email: userEmail,
             user_name: userName || 'Usuário',
@@ -70,17 +70,31 @@ exports.handler = async (event) => {
             activated_at: now.toISOString(),
             expires_at: expiresAt.toISOString(),
             seats: 5
-        });
+        }).select();
+
+        if (subError) {
+            console.error('Subscription creation error:', subError);
+            return { statusCode: 500, headers, body: JSON.stringify({ success: false, error: 'Erro ao criar assinatura: ' + subError.message }) };
+        }
 
         // Update user plan
-        await supabase.from('users')
+        const { error: userError } = await supabase.from('users')
             .update({ plan: 'pro' })
             .eq('id', userId);
 
+        if (userError) {
+            console.error('User update error:', userError);
+            return { statusCode: 500, headers, body: JSON.stringify({ success: false, error: 'Erro ao atualizar plano: ' + userError.message }) };
+        }
+
         // Increment coupon usage
-        await supabase.from('coupons')
+        const { error: couponError } = await supabase.from('coupons')
             .update({ used_count: coupon.used_count + 1 })
             .eq('id', coupon.id);
+
+        if (couponError) {
+            console.error('Coupon update error:', couponError);
+        }
 
         return {
             statusCode: 200, headers,
