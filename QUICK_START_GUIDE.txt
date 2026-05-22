@@ -1,0 +1,266 @@
+================================================================================
+QUICK START GUIDE - Enhanced Rich Text Editor
+================================================================================
+
+GETTING STARTED WITH THE NEW FEATURES:
+
+1. INSERTING CITATIONS (NEW!)
+   ───────────────────────────
+   Step 1: Select the text you want to cite
+   Step 2: Press Ctrl+Shift+C
+   Step 3: A blue superscript number appears (e.g., ¹)
+   Step 4: Type the citation reference at the bottom in the footnote
+   Step 5: Done! Numbers update automatically
+
+   EXAMPLE:
+   Before: "The Earth is round" [select this text]
+   Press: Ctrl+Shift+C
+   After: "The Earth is round¹"
+   
+   At bottom:
+   ────────────────────────
+   ¹ Smith, J. (2020). Modern Geography. Oxford Press.
+
+2. FORMATTING TEXT
+   ────────────────
+   Ctrl+B        = Bold
+   Ctrl+I        = Italic
+   Ctrl+U        = Underline
+   Ctrl+Shift+M  = Remove all formatting
+
+3. CREATING HEADINGS
+   ──────────────────
+   Ctrl+Alt+1    = Heading 1 (biggest, main title)
+   Ctrl+Alt+2    = Heading 2 (subtitle)
+   Ctrl+Alt+3    = Heading 3 (sub-subtitle)
+   Ctrl+Alt+4    = Heading 4 (smallest)
+   
+   These are AUTO-NUMBERED! (1, 1.1, 1.1.1, etc)
+
+4. CREATING LISTS
+   ───────────────
+   Ctrl+Shift+7  = Numbered list (1, 2, 3...)
+   Ctrl+Shift+8  = Bullet points (•, •, •)
+
+5. UNDOING & REDOING
+   ──────────────────
+   Ctrl+Z        = Undo last action
+   Ctrl+Y        = Redo last undone action
+
+6. HELP GUIDE
+   ───────────
+   Click the ? (question mark) button in the toolbar
+   
+   Inside you'll find:
+   - All keyboard shortcuts
+   - Feature explanations
+   - Complete citation guide with examples
+   - Pro tips and tricks
+
+7. OTHER USEFUL SHORTCUTS
+   ───────────────────────
+   Ctrl+Shift+K  = Insert hyperlink
+   Ctrl+Alt+F    = Insert footnote
+   Ctrl+Shift+C  = Insert citation (with auto-numbering)
+
+================================================================================
+CITATION SYSTEM - DETAILED EXPLANATION
+================================================================================
+
+WHY USE CITATIONS?
+Academic papers need citations. This editor makes it EASY.
+
+HOW IT WORKS:
+
+1. SELECT YOUR TEXT
+   Choose the sentence/quote you're citing:
+   "Climate change affects global weather patterns"
+
+2. PRESS Ctrl+Shift+C
+   The text stays there, but a blue number appears:
+   "Climate change affects global weather patterns¹"
+
+3. SCROLL TO BOTTOM
+   You'll see a new section with:
+   ─────────────────────────────
+   ¹ [empty field for your citation]
+
+4. TYPE THE CITATION
+   "Smith, M. & Johnson, K. (2023). Climate Science Today. Harvard Press."
+
+5. IT SAVES AUTOMATICALLY!
+   Everything is saved to your browser's storage.
+   Close and reopen? It's still there.
+
+DELETING A CITATION:
+- Scroll to footnote area
+- Click the × button next to the citation
+- All numbers auto-update! (¹, ², ³ becomes ¹, ²)
+
+EDITING A CITATION:
+- Click in the footnote text field
+- Edit your citation text
+- It saves automatically
+
+MULTIPLE CITATIONS:
+You can add as many citations as you want:
+"First source¹ mentions X, while another study² found Y."
+
+And the footnotes:
+─────────────────────────────
+¹ First source citation...
+² Second source citation...
+
+================================================================================
+KEYBOARD SHORTCUTS - QUICK REFERENCE
+================================================================================
+
+TEXT FORMATTING:
+  Ctrl+B              Bold
+  Ctrl+I              Italic
+  Ctrl+U              Underline
+  Ctrl+Shift+M        Clear formatting
+
+HEADINGS:
+  Ctrl+Alt+1          Heading 1
+  Ctrl+Alt+2          Heading 2
+  Ctrl+Alt+3          Heading 3
+  Ctrl+Alt+4          Heading 4
+
+LISTS:
+  Ctrl+Shift+7        Numbered list
+  Ctrl+Shift+8        Bullet list
+
+CITATIONS & NOTES:
+  Ctrl+Shift+C        Insert citation (select text first!)
+  Ctrl+Alt+F          Insert footnote
+
+EDITING:
+  Ctrl+Z              Undo
+  Ctrl+Y              Redo
+  Ctrl+Shift+K        Insert link
+
+HELP:
+  Click ? button      Open complete help guide
+
+================================================================================
+PRO TIPS
+================================================================================
+
+TIP 1: USE HEADINGS FOR STRUCTURE
+Create clear document structure:
+- Heading 1: Chapter title
+- Heading 2: Section title
+- Heading 3: Subsection
+
+TIP 2: USE THE HELP BUTTON
+The ? button in the toolbar shows all shortcuts and features.
+Search for what you need in real-time!
+
+TIP 3: CREATE CITATIONS AS YOU WRITE
+Don't wait until the end. Cite as you go:
+Select text → Ctrl+Shift+C → Add citation → Continue writing
+
+TIP 4: YOUR WORK IS AUTO-SAVED
+No need to hit Save. Every keystroke is saved to your browser.
+Close the page? Come back later? Everything's still there!
+
+TIP 5: USE THE TABLE OF CONTENTS
+If you use Headings 1-4 properly, click the numbering button
+and select "Generate Table of Contents" for automatic TOC.
+
+TIP 6: DELETE UNWANTED CITATIONS EASILY
+Go to the footnote area and click × to delete.
+Numbers automatically adjust!
+
+================================================================================
+EXAMPLE ACADEMIC PARAGRAPH
+================================================================================
+
+WHAT YOU WRITE:
+─────────────────────────────────────────
+
+1. INTRODUCTION HEADING
+[Ctrl+Alt+1 to create auto-numbered heading]
+
+Research shows¹ that exercise improves mental health².
+Multiple studies³ confirm this finding.
+
+[At bottom, blue superscripts appear with auto-numbering]
+
+WHAT IT LOOKS LIKE:
+─────────────────────────────────────────
+
+1. INTRODUCTION HEADING
+
+Research shows¹ that exercise improves mental health².
+Multiple studies³ confirm this finding.
+
+────────────────────────────────────────────────────
+¹ Smith, J. (2020). Exercise and Health. Cambridge University Press.
+² Johnson, M. (2021). Mental Wellness Research. Oxford Press.
+³ Brown, K., et al. (2022). Comparative Studies. Harvard Press.
+
+PERFECT FOR ACADEMIC WORK!
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Q: Citation didn't appear after Ctrl+Shift+C?
+A: Make sure you selected text BEFORE pressing the shortcut.
+   Try again: Select → Ctrl+Shift+C
+
+Q: Numbers aren't auto-updating after deletion?
+A: Give it a moment. The app recalculates in the background.
+   If it persists, refresh the page.
+
+Q: Can't find the citations at the bottom?
+A: Scroll down in the editor. Citations appear at the very bottom.
+   They might be below your current view.
+
+Q: Lost my work?
+A: Check your browser's localStorage. Ctrl+Alt+1 might be
+   typing instead of creating heading? Make sure it's CTRL+ALT (not SHIFT)
+
+Q: Help button not working?
+A: Make sure you're clicking the ? icon in the toolbar.
+   It's on the right side, after the print button.
+
+================================================================================
+GETTING HELP
+================================================================================
+
+1. CLICK THE ? BUTTON IN THE TOOLBAR
+   Opens the comprehensive help guide with:
+   - All shortcuts documented
+   - Feature explanations
+   - Citation guide with examples
+   - Pro tips
+
+2. SEARCH THE HELP GUIDE
+   Type in the search box to find specific information
+
+3. READ THE TIPS & TRICKS TAB
+   Learn advanced techniques and best practices
+
+================================================================================
+SUMMARY
+================================================================================
+
+You now have:
+✓ Professional citations (select text → Ctrl+Shift+C)
+✓ Auto-numbered headings (Ctrl+Alt+1-4)
+✓ Numbered lists (Ctrl+Shift+7)
+✓ Bullet lists (Ctrl+Shift+8)
+✓ Complete help guide (? button)
+✓ Professional formatting (Ctrl+B, I, U, etc)
+✓ Auto-saving (your work is always safe)
+
+Start writing! The editor will take care of the rest.
+
+Any questions? Click the ? button for the complete guide.
+
+HAPPY WRITING!
+
+================================================================================

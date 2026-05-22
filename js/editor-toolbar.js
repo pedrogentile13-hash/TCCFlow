@@ -365,6 +365,17 @@ class EditorToolbar {
             </svg>
           </button>
         </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Help -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btn-help" title="Guia de ajuda e atalhos de teclado (?)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+            </svg>
+          </button>
+        </div>
       </div>
     `;
 
@@ -547,11 +558,352 @@ class EditorToolbar {
       this.editor.downloadAsHTML(filename);
     });
 
+    // Help button
+    document.getElementById('btn-help')?.addEventListener('click', () => {
+      this.openHelpModal();
+    });
+
     // Close color pickers on click outside
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.toolbar-color-wrapper')) {
         document.getElementById('text-color-picker').style.display = 'none';
         document.getElementById('highlight-color-picker').style.display = 'none';
+      }
+    });
+  }
+
+  /**
+   * Open comprehensive Help Modal with keyboard shortcuts guide
+   */
+  openHelpModal() {
+    // Remove existing modal if any
+    const existing = document.querySelector('.help-modal-overlay');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.className = 'help-modal-overlay';
+    modal.innerHTML = `
+      <div class="help-modal">
+        <div class="help-modal-header">
+          <h2>Guia de Ajuda - Editor de Texto Rico</h2>
+          <button class="help-modal-close" title="Fechar (ESC)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="help-modal-body">
+          <div class="help-search-container">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" class="help-search-input" placeholder="Buscar..." id="help-search-input"/>
+          </div>
+
+          <div class="help-tabs" id="help-tabs">
+            <button class="help-tab-btn active" data-tab="shortcuts">
+              <span>⌨️</span> Atalhos de Teclado
+            </button>
+            <button class="help-tab-btn" data-tab="features">
+              <span>✨</span> Recursos
+            </button>
+            <button class="help-tab-btn" data-tab="citations">
+              <span>¹²³</span> Sistema de Citações
+            </button>
+            <button class="help-tab-btn" data-tab="tips">
+              <span>💡</span> Dicas & Truques
+            </button>
+          </div>
+
+          <div class="help-content">
+            <!-- SHORTCUTS TAB -->
+            <div class="help-tab-content active" id="tab-shortcuts">
+              <div class="shortcuts-container">
+                <div class="shortcuts-category">
+                  <h3 class="shortcuts-category-title">Formatação de Texto</h3>
+                  <div class="shortcuts-list">
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>B</kbd></div>
+                      <div class="shortcut-action">Negrito</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>I</kbd></div>
+                      <div class="shortcut-action">Itálico</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>U</kbd></div>
+                      <div class="shortcut-action">Sublinhado</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>M</kbd></div>
+                      <div class="shortcut-action">Limpar Formatação</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="shortcuts-category">
+                  <h3 class="shortcuts-category-title">Títulos e Estrutura</h3>
+                  <div class="shortcuts-list">
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>1</kbd></div>
+                      <div class="shortcut-action">Título 1 (Nível Principal)</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>2</kbd></div>
+                      <div class="shortcut-action">Título 2</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>3</kbd></div>
+                      <div class="shortcut-action">Título 3</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>4</kbd></div>
+                      <div class="shortcut-action">Título 4</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="shortcuts-category">
+                  <h3 class="shortcuts-category-title">Listas e Numeração</h3>
+                  <div class="shortcuts-list">
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>7</kbd></div>
+                      <div class="shortcut-action">Lista Numerada</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>8</kbd></div>
+                      <div class="shortcut-action">Lista com Marcadores</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="shortcuts-category">
+                  <h3 class="shortcuts-category-title">Citações e Notas</h3>
+                  <div class="shortcuts-list">
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>C</kbd></div>
+                      <div class="shortcut-action">Inserir Citação (selecione texto antes)</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>F</kbd></div>
+                      <div class="shortcut-action">Inserir Nota de Rodapé</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="shortcuts-category">
+                  <h3 class="shortcuts-category-title">Edição</h3>
+                  <div class="shortcuts-list">
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Z</kbd></div>
+                      <div class="shortcut-action">Desfazer</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Y</kbd></div>
+                      <div class="shortcut-action">Refazer</div>
+                    </div>
+                    <div class="shortcut-item">
+                      <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>K</kbd></div>
+                      <div class="shortcut-action">Inserir Link</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FEATURES TAB -->
+            <div class="help-tab-content" id="tab-features">
+              <div class="features-container">
+                <div class="features-list">
+                  <div class="feature-item">
+                    <div class="feature-icon">🎨</div>
+                    <div class="feature-content">
+                      <h4>Formatação Avançada</h4>
+                      <p>Negrito, itálico, sublinhado, cores personalizadas e muito mais</p>
+                    </div>
+                  </div>
+                  <div class="feature-item">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-content">
+                      <h4>Estilos de Títulos</h4>
+                      <p>Títulos auto-numerados de H1 a H4 com formatação profissional</p>
+                    </div>
+                  </div>
+                  <div class="feature-item">
+                    <div class="feature-icon">¹²³</div>
+                    <div class="feature-content">
+                      <h4>Sistema de Citações</h4>
+                      <p>Insira citações automáticas com superscript e notas de rodapé</p>
+                    </div>
+                  </div>
+                  <div class="feature-item">
+                    <div class="feature-icon">📑</div>
+                    <div class="feature-content">
+                      <h4>Índice Automático</h4>
+                      <p>Gere um índice navegável baseado em seus títulos</p>
+                    </div>
+                  </div>
+                  <div class="feature-item">
+                    <div class="feature-icon">💾</div>
+                    <div class="feature-content">
+                      <h4>Auto-salvamento</h4>
+                      <p>Seu trabalho é salvo automaticamente a cada 30 segundos</p>
+                    </div>
+                  </div>
+                  <div class="feature-item">
+                    <div class="feature-icon">📥</div>
+                    <div class="feature-content">
+                      <h4>Exportação</h4>
+                      <p>Baixe seu documento como HTML com toda a formatação preservada</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CITATIONS TAB -->
+            <div class="help-tab-content" id="tab-citations">
+              <div class="citations-guide">
+                <div class="guide-section">
+                  <h3>Como Usar o Sistema de Citações</h3>
+                  <div class="guide-steps">
+                    <ol class="guide-steps">
+                      <li><strong>Selecione o texto</strong> que deseja citar (ex: "O mundo é plano")</li>
+                      <li><strong>Pressione Ctrl+Shift+C</strong> ou use o menu de ferramentas</li>
+                      <li>Um <strong>superscript azul</strong> aparecerá no texto (ex: O mundo é plano¹)</li>
+                      <li>Uma <strong>nota de rodapé</strong> será criada automaticamente no final</li>
+                      <li><strong>Digite a referência</strong> na nota de rodapé (autor, data, fonte, etc)</li>
+                      <li>Os números são <strong>atualizados automaticamente</strong> se você deletar uma citação</li>
+                    </ol>
+                  </div>
+                </div>
+
+                <div class="guide-preview">
+                  <h4>Exemplo Visual:</h4>
+                  <div class="preview-box">
+                    <p>A pesquisa mostra que os padrões de dormir afetam a produtividade<span class="example-citation">¹</span>, enquanto exercício regular melhora a concentração<span class="example-citation">²</span>.</p>
+                    <div class="preview-footnotes">
+                      <div class="preview-footnote-divider"></div>
+                      <div class="preview-footnote"><strong>¹</strong> Walker, M. (2017). Why We Sleep. Scribner.</div>
+                      <div class="preview-footnote"><strong>²</strong> Ratey, J. (2008). Spark: The Revolutionary New Science of Exercise and the Brain.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="guide-features">
+                  <h4>Recursos do Sistema de Citações:</h4>
+                  <ul>
+                    <li>Superscript azul e clicável</li>
+                    <li>Auto-numeração (1, 2, 3...)</li>
+                    <li>Notas de rodapé formatadas profissionalmente</li>
+                    <li>Re-numeração automática ao deletar citações</li>
+                    <li>Sincronização entre superscript e nota de rodapé</li>
+                    <li>Salvamento automático no localStorage</li>
+                    <li>Suporte para múltiplos formatos (APA, MLA, Chicago)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- TIPS TAB -->
+            <div class="help-tab-content" id="tab-tips">
+              <div class="tips-container">
+                <div class="tips-list">
+                  <div class="tip-item">
+                    <div class="tip-icon">⏱️</div>
+                    <div class="tip-content">
+                      <h4>Use Títulos para Estrutura</h4>
+                      <p>Títulos bem organizados facilitam a geração automática de índice e melhora a navegação</p>
+                    </div>
+                  </div>
+                  <div class="tip-item">
+                    <div class="tip-icon">🔍</div>
+                    <div class="tip-content">
+                      <h4>Verifique Seus Atalhos</h4>
+                      <p>Abra este guia anytime para consultar os atalhos de teclado - economia de tempo garantida</p>
+                    </div>
+                  </div>
+                  <div class="tip-item">
+                    <div class="tip-icon">✏️</div>
+                    <div class="tip-content">
+                      <h4>Edite Citações Facilmente</h4>
+                      <p>Clique nas notas de rodapé para editar referências a qualquer momento</p>
+                    </div>
+                  </div>
+                  <div class="tip-item">
+                    <div class="tip-icon">🎯</div>
+                    <div class="tip-content">
+                      <h4>Use o Painel de Numeração</h4>
+                      <p>Acesse estilos de títulos, numeração e marcadores visual e facilmente</p>
+                    </div>
+                  </div>
+                  <div class="tip-item">
+                    <div class="tip-icon">📊</div>
+                    <div class="tip-content">
+                      <h4>Acompanhe Estatísticas</h4>
+                      <p>Monitore contagem de palavras, caracteres e tempo de leitura estimado</p>
+                    </div>
+                  </div>
+                  <div class="tip-item">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-content">
+                      <h4>Índice Automático</h4>
+                      <p>Gere um índice navegável com um clique - perfeito para trabalhos acadêmicos</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Setup event listeners
+    const closeBtn = modal.querySelector('.help-modal-close');
+    closeBtn?.addEventListener('click', () => modal.remove());
+
+    // ESC key to close
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        modal.remove();
+        document.removeEventListener('keydown', handleEsc);
+      }
+    };
+    document.addEventListener('keydown', handleEsc);
+
+    // Tab switching
+    const tabs = modal.querySelectorAll('.help-tab-btn');
+    const contents = modal.querySelectorAll('.help-tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        const tabName = tab.dataset.tab;
+        document.getElementById(`tab-${tabName}`)?.classList.add('active');
+      });
+    });
+
+    // Search functionality
+    const searchInput = modal.querySelector('#help-search-input');
+    searchInput?.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const shortcuts = modal.querySelectorAll('.shortcut-item');
+      shortcuts.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? '' : 'none';
+      });
+    });
+
+    // Click outside to close
+    modal.querySelector('.help-modal-overlay')?.addEventListener('click', (e) => {
+      if (e.target === modal.querySelector('.help-modal-overlay')) {
+        modal.remove();
       }
     });
   }

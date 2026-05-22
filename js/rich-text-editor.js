@@ -52,6 +52,11 @@ class RichTextEditor {
     this.captureHistory();
     this.countFootnotes();
 
+    // Initialize citation manager if CitationManager is available
+    if (typeof CitationManager !== 'undefined') {
+      this.citationManager = new CitationManager(this.editor);
+    }
+
     // Setup keyboard shortcuts
     this.setupKeyboardShortcuts();
   }
@@ -153,6 +158,17 @@ class RichTextEditor {
         }
       }
 
+      // CRITICAL: Ctrl+Shift+C - Insert Citation
+      if (ctrlOrCmd && e.shiftKey && key === 'c') {
+        e.preventDefault();
+        if (this.citationManager) {
+          this.citationManager.insertCitationAtSelection();
+        } else {
+          alert('Sistema de citações não carregado');
+        }
+        handled = true;
+      }
+
       // Heading shortcuts: Ctrl+Alt+1 to Ctrl+Alt+4
       if (ctrlOrCmd && altKey && !e.shiftKey) {
         const headingLevel = parseInt(key);
@@ -161,6 +177,27 @@ class RichTextEditor {
           this.applyHeadingStyle(headingLevel);
           handled = true;
         }
+      }
+
+      // Ctrl+Shift+7 - Ordered List
+      if (ctrlOrCmd && e.shiftKey && key === '7') {
+        e.preventDefault();
+        this.insertList('ordered');
+        handled = true;
+      }
+
+      // Ctrl+Shift+8 - Unordered List
+      if (ctrlOrCmd && e.shiftKey && key === '8') {
+        e.preventDefault();
+        this.insertList('unordered');
+        handled = true;
+      }
+
+      // Ctrl+Alt+F - Insert Footnote
+      if (ctrlOrCmd && altKey && key === 'f') {
+        e.preventDefault();
+        this.insertFootnote();
+        handled = true;
       }
 
       // Clear formatting: Ctrl+Shift+M

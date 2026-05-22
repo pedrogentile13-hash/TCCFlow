@@ -1,6 +1,7 @@
 /**
  * Citation Management System
  * Handles automatic citations with superscript numbers and footnotes
+ * CRITICAL FEATURE: Select text → Ctrl+Shift+C → superscript appears → footnote auto-created
  */
 
 class CitationManager {
@@ -23,6 +24,9 @@ class CitationManager {
     // The shortcut Ctrl+Shift+C will trigger insertCitationAtSelection()
   }
 
+  /**
+   * CRITICAL: Insert citation when user presses Ctrl+Shift+C with selected text
+   */
   insertCitationAtSelection() {
     const selection = window.getSelection();
     if (selection.toString().length === 0) {
@@ -35,18 +39,21 @@ class CitationManager {
     this.insertCitation(selectedText);
   }
 
+  /**
+   * CRITICAL: Create superscript number in text and auto-create footnote at bottom
+   */
   insertCitation(selectedText) {
     this.citationCounter++;
     const citationId = `citation-${this.citationCounter}`;
     const citationNum = this.citationCounter;
 
-    // Create superscript citation marker
+    // Create superscript citation marker - BLUE COLOR, CLICKABLE
     const citationHTML = `<sup class="citation-marker" data-citation-id="${citationId}" data-citation-num="${citationNum}"><a href="#${citationId}" class="citation-link">${citationNum}</a></sup>`;
 
-    // Insert into document
+    // Insert into document at cursor position
     document.execCommand('insertHTML', false, citationHTML);
 
-    // Store citation data
+    // Store citation data with timestamp
     const citation = {
       id: citationId,
       number: citationNum,
