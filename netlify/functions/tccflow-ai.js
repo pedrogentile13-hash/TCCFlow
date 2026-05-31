@@ -95,28 +95,24 @@ exports.handler = async (event) => {
             return { statusCode: 400, headers, body: JSON.stringify({ error: 'Mensagens obrigatórias' }) };
         }
 
-        const apiKey = process.env.GROQ_KEY;
+        const apiKey = process.env.GEMINI_KEY;
         if (!apiKey) {
-            return { statusCode: 500, headers, body: JSON.stringify({ error: 'GROQ_KEY não configurada no servidor' }) };
+            return { statusCode: 500, headers, body: JSON.stringify({ error: 'GEMINI_KEY não configurada no servidor' }) };
         }
-
-        // Detect if any message has images (use vision model if so)
-        const hasImages = messages.some(m => Array.isArray(m.content) && m.content.some(c => c.type === 'image_url'));
-        const model = hasImages ? 'meta-llama/llama-4-scout-17b-16e-instruct' : 'llama-3.3-70b-versatile';
 
         const apiMessages = [
             { role: 'system', content: SYSTEM_PROMPT },
             ...messages.slice(-20)
         ];
 
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model,
+                model: 'gemini-2.0-flash',
                 messages: apiMessages,
                 max_tokens: 4096,
                 temperature: 0.7
@@ -134,7 +130,7 @@ exports.handler = async (event) => {
 
         return {
             statusCode: 200, headers,
-            body: JSON.stringify({ reply, model, usage: data.usage || null })
+            body: JSON.stringify({ reply, model: 'gemini-2.0-flash', usage: data.usage || null })
         };
 
     } catch (err) {
