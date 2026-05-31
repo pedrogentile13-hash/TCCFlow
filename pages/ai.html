@@ -1,97 +1,109 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-Z0XRG60XV9');
-    </script>
-
-
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-Z0XRG60XV9');
+  </script>
   <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>I.A. — TCCFlow</title>
+  <title>TCCFlow AI — Beta</title>
   <link rel="icon" href="../assets/logo.png"/>
   <link rel="stylesheet" href="../css/app.css"/>
   <script src="../js/darkmode.js"></script>
   <style>
-    .ai-root{display:flex;height:100%;overflow:hidden;}
-    .conv-sidebar{width:240px;flex-shrink:0;border-right:1px solid var(--line);display:flex;flex-direction:column;background:var(--paper);overflow:hidden;}
-    .conv-sidebar-head{padding:14px 12px 10px;border-bottom:1px solid var(--line);flex-shrink:0;}
-    .conv-list{flex:1;overflow-y:auto;padding:8px;scrollbar-width:none;}
-    .conv-list::-webkit-scrollbar{display:none;}
-    .conv-item{padding:10px 12px;border-radius:9px;cursor:pointer;transition:background .15s;margin-bottom:4px;font-size:.8125rem;}
-    .conv-item:hover{background:var(--bg-2);}
-    .conv-item.active{background:rgba(124,58,237,.08);color:var(--violet);font-weight:500;}
-    .conv-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.8125rem;margin-bottom:2px;}
-    .conv-date{font-family:var(--font-mono);font-size:.625rem;color:var(--muted);}
-    .ai-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
-    .mode-tabs{display:flex;gap:2px;padding:12px 20px 0;border-bottom:1px solid var(--line);background:var(--paper);}
-    .mode-tab{display:flex;align-items:center;gap:8px;padding:10px 20px;font-size:.875rem;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s;margin-bottom:-1px;}
-    .mode-tab:hover{color:var(--ink);}
-    .mode-tab.active{color:var(--violet);border-bottom-color:var(--violet);}
-    .pesquisa-area{flex:1;overflow-y:auto;padding:24px 28px;}
-    .search-bar-wrap{display:flex;align-items:center;gap:10px;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:14px;}
-    .search-bar-wrap:focus-within{border-color:var(--violet);}
-    .search-bar-wrap input{flex:1;border:none;background:none;font-family:var(--font-body);font-size:1rem;color:var(--ink);outline:none;}
-    .search-btn{background:var(--grad);color:white;padding:8px 18px;border-radius:9px;font-size:.875rem;font-weight:600;cursor:pointer;border:none;}
-    .filter-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--line);font-size:.8125rem;cursor:pointer;background:var(--paper);transition:border-color .15s,color .15s;}
-    .filter-btn:hover{border-color:var(--violet);}
-    .filter-btn.active{border-color:var(--violet);color:var(--violet);background:rgba(124,58,237,.06);}
-    .article-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:10px;transition:border-color .2s;}
-    .article-card:hover{border-color:var(--violet);}
-    .chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-    .chat-messages{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:18px;}
-    .msg{display:flex;gap:12px;align-items:flex-start;max-width:820px;width:100%;}
-    .msg.user{flex-direction:row-reverse;align-self:flex-end;}
-    .msg .bubble{padding:12px 16px;border-radius:14px;font-size:.9375rem;line-height:1.55;max-width:100%;}
-    .msg.ai .bubble{background:var(--paper);border:1px solid var(--line);}
-    .msg.user .bubble{background:var(--grad);color:white;}
-    .msg .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem;font-weight:600;}
-    .msg.ai .avatar{background:linear-gradient(135deg,#7c3aed,#06b6d4);color:white;}
-    .msg.user .avatar{background:var(--bg-2);color:var(--ink);}
-    .chat-inputbar{border-top:1px solid var(--line);padding:14px 20px;background:var(--paper);}
-    .chat-input-wrap{display:flex;gap:10px;align-items:flex-end;background:var(--bg-2);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;}
-    .chat-input-wrap:focus-within{border-color:var(--violet);}
-    .chat-input-wrap textarea{flex:1;border:none;background:none;resize:none;font-family:var(--font-body);font-size:.9375rem;color:var(--ink);outline:none;max-height:160px;min-height:24px;}
-    .send-btn{width:34px;height:34px;border-radius:8px;background:var(--grad);color:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;border:none;transition:opacity .2s;}
-    .send-btn:disabled{opacity:.4;cursor:not-allowed;}
-    .year-select{padding:5px 10px;border-radius:7px;border:1.5px solid var(--line);font-size:.8125rem;background:var(--paper);color:var(--ink);font-family:var(--font-body);cursor:pointer;}
-    .year-select:focus{border-color:var(--violet);outline:none;}
-    .beta-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#f59e0b,#f97316);color:white;padding:2px 8px;border-radius:999px;font-size:.625rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
-    .ai-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;padding:40px 20px;gap:16px;}
-    .ai-welcome-icon{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-size:1.75rem;box-shadow:0 8px 32px rgba(124,58,237,.2);}
-    .ai-welcome h2{font-family:var(--font-display);font-size:1.5rem;font-weight:400;color:var(--ink);margin:0;}
-    .ai-welcome p{font-size:.875rem;color:var(--muted);max-width:500px;line-height:1.6;margin:0;}
-    .ai-suggestions{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;width:100%;margin-top:8px;}
-    .ai-suggestion{padding:12px 16px;border:1.5px solid var(--line);border-radius:12px;text-align:left;cursor:pointer;background:var(--paper);transition:border-color .2s,background .2s;font-size:.8125rem;color:var(--ink);}
-    .ai-suggestion:hover{border-color:var(--violet);background:rgba(124,58,237,.04);}
-    .ai-suggestion-title{font-weight:600;margin-bottom:2px;font-size:.8125rem;}
-    .ai-suggestion-desc{color:var(--muted);font-size:.75rem;}
-    .typing-indicator{display:flex;gap:4px;padding:8px 12px;}
-    .typing-indicator span{width:6px;height:6px;border-radius:50%;background:var(--violet);opacity:.4;animation:typing 1.4s infinite;}
-    .typing-indicator span:nth-child(2){animation-delay:.2s;}
-    .typing-indicator span:nth-child(3){animation-delay:.4s;}
-    @keyframes typing{0%,60%,100%{opacity:.4;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
-    .msg .bubble h1,.msg .bubble h2,.msg .bubble h3{margin:12px 0 6px;font-family:var(--font-display);font-weight:600;}
-    .msg .bubble h2{font-size:1.1rem;}
-    .msg .bubble h3{font-size:1rem;}
-    .msg .bubble p{margin:6px 0;}
-    .msg .bubble ul,.msg .bubble ol{margin:6px 0;padding-left:20px;}
-    .msg .bubble li{margin:3px 0;}
-    .msg .bubble code{background:var(--bg-2);padding:1px 5px;border-radius:4px;font-family:var(--font-mono);font-size:.85em;}
-    .msg .bubble blockquote{border-left:3px solid var(--violet);padding-left:12px;margin:8px 0;color:var(--muted);font-style:italic;}
-    .msg .bubble strong{font-weight:600;}
-    .upload-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:.75rem;cursor:pointer;background:var(--paper);color:var(--muted);transition:all .2s;}
-    .upload-btn:hover{border-color:var(--violet);color:var(--violet);}
-    .conv-delete{opacity:0;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--rose);cursor:pointer;font-size:.75rem;padding:2px 4px;border-radius:4px;}
-    .conv-item:hover .conv-delete{opacity:1;}
-    .conv-item{position:relative;}
+    /* Layout */
+    .ai-layout{display:flex;height:100%;overflow:hidden;}
+    .ai-conv-sidebar{width:220px;flex-shrink:0;border-right:1px solid var(--line);display:flex;flex-direction:column;background:var(--paper);}
+    .ai-conv-head{padding:12px 10px;border-bottom:1px solid var(--line);}
+    .ai-conv-list{flex:1;overflow-y:auto;padding:6px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;}
+    .ai-conv-item{padding:9px 10px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:3px;position:relative;}
+    .ai-conv-item:hover{background:var(--bg-2);}
+    .ai-conv-item.active{background:rgba(124,58,237,.08);color:var(--violet);}
+    .ai-conv-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.8rem;font-weight:500;margin-bottom:1px;}
+    .ai-conv-date{font-family:var(--font-mono);font-size:.6rem;color:var(--muted);}
+    .ai-conv-del{opacity:0;position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--rose);cursor:pointer;font-size:.7rem;padding:2px 5px;border-radius:4px;line-height:1;}
+    .ai-conv-item:hover .ai-conv-del{opacity:1;}
+
+    /* Main area */
+    .ai-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+    /* Messages */
+    .ai-messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth;}
+    .ai-msg{display:flex;gap:10px;align-items:flex-start;max-width:800px;width:100%;}
+    .ai-msg.user{flex-direction:row-reverse;align-self:flex-end;}
+    .ai-msg .ai-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;font-weight:700;}
+    .ai-msg.ai .ai-av{background:linear-gradient(135deg,#7c3aed,#06b6d4);color:white;}
+    .ai-msg.user .ai-av{background:var(--bg-2);color:var(--ink);border:1px solid var(--line);}
+    .ai-bubble{padding:11px 14px;border-radius:13px;font-size:.9rem;line-height:1.6;max-width:100%;}
+    .ai-msg.ai .ai-bubble{background:var(--paper);border:1px solid var(--line);}
+    .ai-msg.user .ai-bubble{background:var(--grad);color:white;}
+    .ai-bubble img{max-width:100%;border-radius:8px;margin:6px 0;border:1px solid var(--line);}
+
+    /* Markdown rendering */
+    .ai-bubble h2{font-size:1.05rem;font-weight:600;margin:12px 0 5px;color:var(--ink);}
+    .ai-bubble h3{font-size:.95rem;font-weight:600;margin:10px 0 4px;color:var(--ink);}
+    .ai-bubble p{margin:5px 0;}
+    .ai-bubble ul,.ai-bubble ol{margin:5px 0;padding-left:18px;}
+    .ai-bubble li{margin:2px 0;}
+    .ai-bubble code{background:var(--bg-2);padding:1px 5px;border-radius:4px;font-family:var(--font-mono);font-size:.82em;}
+    .ai-bubble blockquote{border-left:3px solid var(--violet);padding-left:10px;margin:6px 0;color:var(--muted);font-style:italic;}
+    .ai-bubble strong{font-weight:600;}
+    .ai-bubble hr{border:none;border-top:1px solid var(--line);margin:10px 0;}
+
+    /* Typing */
+    .typing-dot{display:flex;gap:4px;padding:4px 2px;}
+    .typing-dot span{width:6px;height:6px;border-radius:50%;background:var(--violet);opacity:.4;animation:td 1.4s infinite;}
+    .typing-dot span:nth-child(2){animation-delay:.2s;}
+    .typing-dot span:nth-child(3){animation-delay:.4s;}
+    @keyframes td{0%,60%,100%{opacity:.4;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+    /* Input area */
+    .ai-inputbar{border-top:1px solid var(--line);padding:12px 16px 12px;background:var(--paper);}
+    .ai-tools-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+    .ai-tool-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1.5px solid var(--line);border-radius:7px;font-size:.7rem;font-weight:500;cursor:pointer;background:var(--paper);color:var(--muted);transition:all .15s;white-space:nowrap;}
+    .ai-tool-btn:hover{border-color:var(--violet);color:var(--violet);background:rgba(124,58,237,.05);}
+    .ai-tool-btn.active{border-color:var(--violet);color:var(--violet);background:rgba(124,58,237,.08);}
+    .ai-input-wrap{display:flex;gap:8px;align-items:flex-end;background:var(--bg-2);border:1.5px solid var(--line);border-radius:11px;padding:9px 12px;}
+    .ai-input-wrap:focus-within{border-color:var(--violet);}
+    .ai-input-wrap textarea{flex:1;border:none;background:none;resize:none;font-family:var(--font-body);font-size:.9rem;color:var(--ink);outline:none;max-height:150px;min-height:22px;}
+    .ai-send{width:32px;height:32px;border-radius:7px;background:var(--grad);color:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;border:none;transition:opacity .2s;}
+    .ai-send:disabled{opacity:.35;cursor:not-allowed;}
+    .ai-footer-row{display:flex;align-items:center;justify-content:space-between;margin-top:6px;font-size:.65rem;color:var(--muted);}
+
+    /* Image preview */
+    .img-preview-wrap{position:relative;display:inline-block;margin-bottom:6px;}
+    .img-preview{max-height:80px;border-radius:8px;border:1px solid var(--line);}
+    .img-preview-rm{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--rose);color:white;border:none;cursor:pointer;font-size:.6rem;display:flex;align-items:center;justify-content:center;}
+
+    /* Welcome screen */
+    .ai-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;padding:32px 20px;gap:14px;}
+    .ai-welcome-logo{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 8px 28px rgba(124,58,237,.22);}
+    .ai-welcome h2{font-family:var(--font-display);font-size:1.4rem;font-weight:400;color:var(--ink);margin:0;}
+    .ai-welcome p{font-size:.85rem;color:var(--muted);max-width:460px;line-height:1.6;margin:0;}
+    .ai-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:500px;width:100%;margin-top:6px;}
+    .ai-chip{padding:11px 14px;border:1.5px solid var(--line);border-radius:11px;text-align:left;cursor:pointer;background:var(--paper);transition:all .2s;}
+    .ai-chip:hover{border-color:var(--violet);background:rgba(124,58,237,.04);}
+    .ai-chip-title{font-size:.8rem;font-weight:600;margin-bottom:2px;color:var(--ink);}
+    .ai-chip-desc{font-size:.7rem;color:var(--muted);}
+
+    /* Beta badge */
+    .beta-pill{display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#f97316);color:white;padding:2px 8px;border-radius:999px;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+
+    /* Drag overlay */
+    .drag-overlay{position:fixed;inset:0;background:rgba(124,58,237,.12);border:3px dashed var(--violet);z-index:9999;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:600;color:var(--violet);pointer-events:none;opacity:0;transition:opacity .2s;}
+    .drag-overlay.active{opacity:1;}
+
+    /* Hidden file input */
+    #file-img-input,#file-txt-input{display:none;}
   </style>
 </head>
-<body><div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<body>
+<div class="drag-overlay" id="dragOverlay">Solte a imagem aqui</div>
+<div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-init.js"></script>
 <script src="../js/db-service.js"></script>
@@ -100,547 +112,424 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script type="text/babel" src="../src/sidebar.jsx"></script>
 <script type="text/babel">
-const { useState, useRef, useEffect } = React;
+const { useState, useEffect, useRef, useCallback } = React;
 
-const SOURCES = [
-  { id:"all", label:"Todas as fontes" },
-  { id:"scholar", label:"Google Scholar" },
-  { id:"scielo", label:"SciELO" },
-  { id:"pubmed", label:"PubMed" },
-  { id:"ieee", label:"IEEE" },
-];
+const CONV_KEY = 'tccflow_ai_v2_conversations';
 
-const TYPES = [
-  { id:"all", label:"Todos" },
-  { id:"article", label:"Artigos" },
-  { id:"thesis", label:"Teses" },
-  { id:"book", label:"Livros" },
-  { id:"conference", label:"Conferências" },
-];
-
-function reconstructAbstract(invertedIndex) {
-  if (!invertedIndex) return '';
-  try {
-    const wordPositions = [];
-    for (const [word, positions] of Object.entries(invertedIndex)) {
-      for (const pos of positions) { wordPositions.push({ word, pos }); }
-    }
-    wordPositions.sort((a, b) => a.pos - b.pos);
-    return wordPositions.map(wp => wp.word).join(' ').substring(0, 400);
-  } catch(e) { return ''; }
+function loadConvs() {
+  try { return JSON.parse(localStorage.getItem(CONV_KEY) || '[]'); } catch { return []; }
 }
+function saveConvs(c) { localStorage.setItem(CONV_KEY, JSON.stringify(c)); }
 
-async function searchOpenAlex(query, yearFrom, yearTo, sourceFilter, typeFilter) {
-  const perPage = 20;
-  let filters = [];
-  if (yearFrom) filters.push(`publication_year:>${yearFrom-1}`);
-  if (yearTo) filters.push(`publication_year:<${parseInt(yearTo)+1}`);
-  if (typeFilter && typeFilter !== 'all') {
-    const typeMap = { article:'article', thesis:'dissertation', book:'book', conference:'proceedings-article' };
-    if (typeMap[typeFilter]) filters.push(`type:${typeMap[typeFilter]}`);
-  }
-  let url = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per_page=${perPage}&mailto=tccflow.contato@gmail.com&sort=relevance_score:desc`;
-  if (filters.length > 0) url += `&filter=${filters.join(',')}`;
-
-  const response = await fetch(url);
-  if (!response.ok) throw new Error('OpenAlex error');
-  const data = await response.json();
-
-  return (data.results || []).map(work => {
-    const authors = (work.authorships || []).map(a => a.author?.display_name || '').filter(Boolean).join(', ');
-    const bestUrl = work.open_access?.oa_url || work.primary_location?.landing_page_url || work.doi || '';
-    const isScielo = bestUrl.includes('scielo') || (work.primary_location?.source?.display_name || '').toLowerCase().includes('scielo');
-    return {
-      title: work.display_name || work.title || 'Sem título',
-      authors, year: work.publication_year || '',
-      abstract: work.abstract_inverted_index ? reconstructAbstract(work.abstract_inverted_index) : '',
-      url: bestUrl, citations: work.cited_by_count || 0,
-      source: isScielo ? 'SciELO' : 'Google Acadêmico',
-      doi: work.doi ? work.doi.replace('https://doi.org/', '') : '',
-      isOpenAccess: work.open_access?.is_oa || false,
-    };
-  });
-}
-
-async function searchCrossRef(query, yearFrom, yearTo, typeFilter) {
-  let url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=10&sort=relevance`;
-  let filters = [];
-  if (yearFrom) filters.push(`from-pub-date:${yearFrom}`);
-  if (yearTo) filters.push(`until-pub-date:${yearTo}`);
-  if (typeFilter && typeFilter !== 'all') {
-    const crossRefTypes = { article:'journal-article', book:'book', thesis:'dissertation', conference:'proceedings-article' };
-    if (crossRefTypes[typeFilter]) filters.push(`type:${crossRefTypes[typeFilter]}`);
-  }
-  if (filters.length > 0) url += `&filter=${filters.join(',')}`;
-
-  const response = await fetch(url);
-  if (!response.ok) throw new Error('CrossRef error');
-  const data = await response.json();
-
-  return (data.message?.items || []).map(item => ({
-    title: Array.isArray(item.title) ? item.title[0] : (item.title || 'Sem título'),
-    authors: (item.author || []).map(a => `${a.given || ''} ${a.family || ''}`).join(', '),
-    year: item.published?.['date-parts']?.[0]?.[0] || '',
-    abstract: (item.abstract || '').replace(/<[^>]*>/g, '').substring(0, 300),
-    url: item.URL || '', citations: item['is-referenced-by-count'] || 0,
-    source: 'CrossRef', doi: item.DOI || '',
-  }));
-}
-
-function PesquisaMode({ project, user }) {
-  const [query, setQuery] = useState("");
-  const [savedPapers, setSavedPapers] = useState([]);
-  const [results, setResults] = useState([]);
-  const [searching, setSearching] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [usage, setUsage] = useState(null);
-  const [sourceFilter, setSourceFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
-  const [yearFrom, setYearFrom] = useState("");
-  const [yearTo, setYearTo] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
-
-  useEffect(() => {
-    if (!project) return;
-    (async () => {
-      const papers = await DB.savedPapers.getAll(project.id);
-      setSavedPapers(papers);
-      const u = await DB.aiUsage.canSearch(project.id);
-      setUsage(u);
-    })();
-  }, [project]);
-
-  async function doSearch() {
-    if (!query.trim() || searching) return;
-    if (usage && usage.remaining <= 0) { alert('Limite de buscas atingido. Faça upgrade para continuar.'); return; }
-    setSearching(true); setSearched(true); setResults([]);
-    try {
-      const [oaResults, crResults] = await Promise.all([
-        searchOpenAlex(query, yearFrom, yearTo, sourceFilter, typeFilter).catch(() => []),
-        searchCrossRef(query, yearFrom, yearTo, typeFilter).catch(() => [])
-      ]);
-      let all = [...oaResults, ...crResults];
-      all = all.filter((v, i, a) => a.findIndex(t => t.title.toLowerCase().trim() === v.title.toLowerCase().trim()) === i);
-      if (sourceFilter !== 'all') {
-        const sourceMap = { scholar:'Google Acadêmico', scielo:'SciELO', crossref:'CrossRef' };
-        if (sourceMap[sourceFilter]) all = all.filter(r => r.source === sourceMap[sourceFilter]);
-      }
-      setResults(all);
-      if (project) { try { await DB.aiUsage.increment(project.id); const u = await DB.aiUsage.canSearch(project.id); setUsage(u); } catch(e){} }
-    } catch(e) { console.error('Search error:', e); }
-    setSearching(false);
-  }
-
-  async function savePaper(paper) {
-    const exists = await DB.savedPapers.exists(project.id, paper.title);
-    if (exists) { alert('Artigo já salvo!'); return; }
-    await DB.savedPapers.add(project.id, paper);
-    const papers = await DB.savedPapers.getAll(project.id);
-    setSavedPapers(papers);
-  }
-
-  async function removePaper(id) {
-    await DB.savedPapers.remove(id);
-    setSavedPapers(prev => prev.filter(p => p.id !== id));
-  }
-
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({length: 30}, (_, i) => currentYear - i);
-
-  return (
-    <div className="pesquisa-area">
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-        <div className="mono-label">Pesquisa Acadêmica</div>
-        {usage && (
-          <div style={{fontFamily:"var(--font-mono)",fontSize:".75rem",color:"var(--muted)"}}>
-            {usage.remaining}/{usage.limit} buscas restantes
-          </div>
-        )}
-      </div>
-
-      <div className="search-bar-wrap">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{color:"var(--muted)",flexShrink:0}}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" placeholder="Buscar artigos acadêmicos…" value={query} onChange={e=>setQuery(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') doSearch(); }}/>
-        <button className="search-btn" onClick={doSearch} disabled={searching}>{searching ? "Buscando…" : "Buscar →"}</button>
-      </div>
-
-      <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap",alignItems:"center"}}>
-        <button className={`filter-btn ${showFilters?"active":""}`} onClick={() => setShowFilters(!showFilters)}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-          Filtros
-        </button>
-        {SOURCES.filter(s => s.id !== "all").map(s => (
-          <button key={s.id} className={`filter-btn ${sourceFilter===s.id?"active":""}`}
-            onClick={() => setSourceFilter(sourceFilter===s.id?"all":s.id)}>{s.label}</button>
-        ))}
-      </div>
-
-      {showFilters && (
-        <div className="card" style={{marginBottom:16,padding:16}}>
-          <div className="ai-filter-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
-            <div>
-              <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",textTransform:"uppercase",letterSpacing:".1em",color:"var(--muted)",marginBottom:6}}>Tipo de publicação</div>
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {TYPES.map(t => (
-                  <button key={t.id} className={`filter-btn ${typeFilter===t.id?"active":""}`}
-                    onClick={() => setTypeFilter(t.id)} style={{fontSize:".75rem",padding:"4px 10px"}}>{t.label}</button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",textTransform:"uppercase",letterSpacing:".1em",color:"var(--muted)",marginBottom:6}}>Ano de publicação</div>
-              <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                <select className="year-select" value={yearFrom} onChange={e=>setYearFrom(e.target.value)}>
-                  <option value="">De</option>
-                  {years.map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-                <span style={{color:"var(--muted)"}}>—</span>
-                <select className="year-select" value={yearTo} onChange={e=>setYearTo(e.target.value)}>
-                  <option value="">Até</option>
-                  {years.map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-              </div>
-            </div>
-            <div>
-              <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",textTransform:"uppercase",letterSpacing:".1em",color:"var(--muted)",marginBottom:6}}>Ordenar por</div>
-              <select className="year-select" style={{width:"100%"}}>
-                <option>Relevância</option>
-                <option>Mais recente</option>
-                <option>Mais citado</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {searched && (
-        <div style={{marginBottom:20}}>
-          <div className="mono-label" style={{marginBottom:8}}>Resultados ({results.length})</div>
-          {searching && <div style={{textAlign:"center",padding:32,color:"var(--violet)"}}><div style={{fontSize:"1.5rem",marginBottom:8}}>🔍</div>Buscando artigos…</div>}
-          {!searching && results.length === 0 && <div style={{color:"var(--muted)",fontSize:".875rem",padding:16,textAlign:"center",background:"var(--bg-2)",borderRadius:12,border:"1px dashed var(--line)"}}>Nenhum resultado encontrado. Tente outros termos.</div>}
-          {results.map((r, i) => (
-            <div key={i} className="article-card">
-              <div style={{fontWeight:600,fontSize:".9375rem",marginBottom:4}}>{r.title}</div>
-              <div style={{fontSize:".8125rem",color:"var(--muted)",marginBottom:4}}>{r.authors} · {r.year}</div>
-              {r.abstract && <div style={{fontSize:".8125rem",color:"var(--ink-2)",lineHeight:1.5,marginBottom:8}}>{r.abstract.substring(0,250)}{r.abstract.length>250?"…":""}</div>}
-              <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
-                <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)",background:"var(--bg-2)",padding:"2px 8px",borderRadius:4}}>{r.source}</span>
-                {r.citations > 0 && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{r.citations} citações</span>}
-                {r.isOpenAccess && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--emerald)",background:"rgba(16,185,129,.1)",padding:"2px 8px",borderRadius:4}}>Acesso aberto</span>}
-                {r.url && <a href={r.url} target="_blank" className="btn btn-ghost btn-sm" style={{marginLeft:"auto",fontSize:".6875rem"}}>Abrir</a>}
-                <button className="btn btn-violet btn-sm" style={{fontSize:".6875rem"}} onClick={() => savePaper(r)}>Salvar</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div style={{marginBottom:20}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-          <div className="mono-label">Artigos salvos ({savedPapers.length})</div>
-        </div>
-        {savedPapers.length === 0 && <div style={{color:"var(--muted)",fontSize:".875rem",padding:16,textAlign:"center",background:"var(--bg-2)",borderRadius:12,border:"1px dashed var(--line)"}}>Nenhum artigo salvo ainda. Faça uma busca para encontrar artigos.</div>}
-        {savedPapers.map(p => (
-          <div key={p.id} className="article-card">
-            <div style={{fontWeight:600,fontSize:".9375rem",marginBottom:4}}>{p.title}</div>
-            <div style={{fontSize:".8125rem",color:"var(--muted)",marginBottom:4}}>{p.authors} · {p.year}</div>
-            {p.abstract && <div style={{fontSize:".8125rem",color:"var(--ink-2)",lineHeight:1.5,marginBottom:8}}>{p.abstract}</div>}
-            <div style={{display:"flex",gap:8,alignItems:"center"}}>
-              {p.source && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)",background:"var(--bg-2)",padding:"2px 8px",borderRadius:4}}>{p.source}</span>}
-              {p.citations > 0 && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{p.citations} citações</span>}
-              {p.url && <a href={p.url} target="_blank" className="btn btn-ghost btn-sm" style={{marginLeft:"auto",fontSize:".6875rem"}}>Abrir</a>}
-              <button className="btn btn-ghost btn-sm" style={{color:"var(--rose)",fontSize:".6875rem"}} onClick={() => removePaper(p.id)}>Remover</button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
 }
 
 function parseMarkdown(text) {
   if (!text) return '';
-  let html = text
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br/>');
-  html = html.replace(/(<li>.*?<\/li>)/gs, (match) => {
-    if (!match.startsWith('<ul>') && !match.startsWith('<ol>')) return '<ul>' + match + '</ul>';
-    return match;
-  });
-  return '<p>' + html + '</p>';
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h2>$1</h2>')
+    .replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
+    .replace(/---/g,'<hr/>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    .replace(/<\/ul>\s*<ul>/g,'')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br/>')
+    .replace(/^(.)/,'<p>$1')
+    .replace(/(.)$/,'$1</p>');
 }
 
-const CONVERSATIONS_KEY = 'tccflow_ai_conversations';
-
-function loadConversations() {
-  try {
-    return JSON.parse(localStorage.getItem(CONVERSATIONS_KEY) || '[]');
-  } catch { return []; }
-}
-
-function saveConversations(convs) {
-  localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(convs));
-}
-
-function TCCFlowAIMode({ user, userData }) {
-  const [conversations, setConversations] = useState(() => loadConversations());
-  const [activeConvId, setActiveConvId] = useState(null);
+function AIPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [convs, setConvs] = useState(() => loadConvs());
+  const [activeId, setActiveId] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [pendingImage, setPendingImage] = useState(null); // {url, base64, name}
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
+  const fileImgRef = useRef(null);
+  const fileTxtRef = useRef(null);
+  // Hidden file inputs rendered inside component
+
 
   useEffect(() => {
-    if (activeConvId) {
-      const conv = conversations.find(c => c.id === activeConvId);
-      setMessages(conv?.messages || []);
+    if (activeId) {
+      const c = convs.find(c => c.id === activeId);
+      setMessages(c?.messages || []);
     } else {
       setMessages([]);
     }
-  }, [activeConvId]);
+  }, [activeId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, sending]);
 
   useEffect(() => {
-    saveConversations(conversations);
-  }, [conversations]);
+    saveConvs(convs);
+  }, [convs]);
 
-  function createNewConversation() {
-    const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-    const conv = { id, title: 'Nova conversa', messages: [], createdAt: new Date().toISOString() };
-    setConversations(prev => [conv, ...prev]);
-    setActiveConvId(id);
+  // Drag & drop images
+  useEffect(() => {
+    const overlay = document.getElementById('dragOverlay');
+    const onDragOver = (e) => { e.preventDefault(); overlay.classList.add('active'); };
+    const onDragLeave = () => overlay.classList.remove('active');
+    const onDrop = (e) => {
+      e.preventDefault();
+      overlay.classList.remove('active');
+      const file = e.dataTransfer?.files?.[0];
+      if (file && file.type.startsWith('image/')) loadImageFile(file);
+    };
+    document.addEventListener('dragover', onDragOver);
+    document.addEventListener('dragleave', onDragLeave);
+    document.addEventListener('drop', onDrop);
+    return () => {
+      document.removeEventListener('dragover', onDragOver);
+      document.removeEventListener('dragleave', onDragLeave);
+      document.removeEventListener('drop', onDrop);
+    };
+  }, []);
+
+  function loadImageFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result; // data:image/jpeg;base64,...
+      setPendingImage({ url: base64, base64, name: file.name });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleImgInput(e) {
+    const file = e.target.files?.[0];
+    if (file) loadImageFile(file);
+    if (fileImgRef.current) fileImgRef.current.value = '';
+  }
+
+  function handleTxtInput(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target.result;
+      setInput(prev => prev + (prev ? '\n\n' : '') + `[Arquivo: ${file.name}]\n\n${text.substring(0, 8000)}`);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '24px';
+        textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 150) + 'px';
+      }
+    };
+    reader.readAsText(file);
+    if (fileTxtRef.current) fileTxtRef.current.value = '';
+  }
+
+  async function importFromTrabalho() {
+    if (!project) { alert('Selecione um projeto primeiro.'); return; }
+    try {
+      const { data, error } = await _supa.from('work_content').select('content').eq('project_id', project.id).maybeSingle();
+      if (error || !data?.content) {
+        setInput(prev => prev + (prev ? '\n\n' : '') + 'Por favor, analise a estrutura ideal para meu TCC e me ajude a organizar os capítulos.');
+      } else {
+        setInput(prev => prev + (prev ? '\n\n' : '') + `Analise meu trabalho escrito:\n\n${data.content.substring(0, 6000)}`);
+      }
+    } catch {
+      setInput(prev => prev + (prev ? '\n\n' : '') + 'Analise meu trabalho e me ajude com a estrutura ABNT.');
+    }
+  }
+
+  async function importFromReferencias() {
+    if (!project) { alert('Selecione um projeto primeiro.'); return; }
+    try {
+      const refs = await DB.userReferences?.getAll(project.id) || [];
+      if (refs.length === 0) {
+        setInput(prev => prev + (prev ? '\n\n' : '') + 'Ainda não tenho referências. Como devo formatar referências bibliográficas em ABNT?');
+      } else {
+        const refList = refs.slice(0, 10).map(r => `- ${r.formatted || r.title}`).join('\n');
+        setInput(prev => prev + (prev ? '\n\n' : '') + `Revise minhas referências bibliográficas no formato ABNT:\n\n${refList}`);
+      }
+    } catch {
+      setInput(prev => prev + (prev ? '\n\n' : '') + 'Como formatar referências no padrão ABNT?');
+    }
+  }
+
+  function exportChat() {
+    if (!messages.length) return;
+    const text = messages.map(m => `[${m.role === 'user' ? 'Você' : 'TCCFlow AI'}]\n${
+      Array.isArray(m.content) ? m.content.find(c => c.type === 'text')?.text || '' : m.content
+    }`).join('\n\n---\n\n');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `tccflow-ai-${Date.now()}.txt`; a.click();
+  }
+
+  function newConv() {
+    const c = { id: uid(), title: 'Nova conversa', messages: [], createdAt: new Date().toISOString() };
+    setConvs(prev => [c, ...prev]);
+    setActiveId(c.id);
     setMessages([]);
+    setPendingImage(null);
+    setInput('');
   }
 
-  function deleteConversation(id) {
-    setConversations(prev => prev.filter(c => c.id !== id));
-    if (activeConvId === id) { setActiveConvId(null); setMessages([]); }
+  function deleteConv(id) {
+    setConvs(prev => prev.filter(c => c.id !== id));
+    if (activeId === id) { setActiveId(null); setMessages([]); }
   }
 
-  function updateConversation(id, msgs) {
-    setConversations(prev => prev.map(c => {
+  function updateConv(id, msgs) {
+    setConvs(prev => prev.map(c => {
       if (c.id !== id) return c;
-      const title = msgs[0]?.content?.substring(0, 40) || 'Nova conversa';
-      return { ...c, messages: msgs, title };
+      const firstUserText = msgs.find(m => m.role === 'user');
+      const rawText = Array.isArray(firstUserText?.content)
+        ? firstUserText.content.find(x => x.type === 'text')?.text || 'Conversa'
+        : firstUserText?.content || 'Conversa';
+      return { ...c, messages: msgs, title: rawText.substring(0, 42) };
     }));
   }
 
-  async function sendMessage(text) {
-    if (!text?.trim() || sending) return;
-    let convId = activeConvId;
+  async function send(text, img) {
+    const hasText = text?.trim();
+    const hasImg = !!img;
+    if (!hasText && !hasImg) return;
+    if (sending) return;
+
+    let convId = activeId;
     if (!convId) {
-      const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-      const conv = { id, title: text.substring(0, 40), messages: [], createdAt: new Date().toISOString() };
-      setConversations(prev => [conv, ...prev]);
-      setActiveConvId(id);
-      convId = id;
+      const c = { id: uid(), title: text?.substring(0, 42) || 'Imagem', messages: [], createdAt: new Date().toISOString() };
+      setConvs(prev => [c, ...prev]);
+      setActiveId(c.id);
+      convId = c.id;
     }
 
-    const userMsg = { role: 'user', content: text };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
-    setInput("");
-    setSending(true);
+    // Build user message content
+    let userContent;
+    if (hasImg && hasText) {
+      userContent = [
+        { type: 'text', text },
+        { type: 'image_url', image_url: { url: img.base64 } }
+      ];
+    } else if (hasImg) {
+      userContent = [
+        { type: 'text', text: 'Analise esta imagem do meu trabalho acadêmico.' },
+        { type: 'image_url', image_url: { url: img.base64 } }
+      ];
+    } else {
+      userContent = text;
+    }
 
-    if (textareaRef.current) textareaRef.current.style.height = '24px';
+    const userMsg = { role: 'user', content: userContent, _imgPreview: img?.url };
+    const newMsgs = [...messages, userMsg];
+    setMessages(newMsgs);
+    setInput('');
+    setPendingImage(null);
+    setSending(true);
+    if (textareaRef.current) textareaRef.current.style.height = '22px';
+
+    // Build API messages (strip _imgPreview)
+    const apiMsgs = newMsgs.map(({ _imgPreview, ...m }) => m);
 
     try {
-      const response = await fetch('/.netlify/functions/tccflow-ai', {
+      const res = await fetch('/.netlify/functions/tccflow-ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
-          userId: user?.uid || 'anonymous'
-        })
+        body: JSON.stringify({ messages: apiMsgs, userId: user?.uid || 'anonymous' })
       });
-
-      const data = await response.json();
-      if (response.ok && data.reply) {
-        const aiMsg = { role: 'assistant', content: data.reply };
-        const finalMessages = [...newMessages, aiMsg];
-        setMessages(finalMessages);
-        updateConversation(convId, finalMessages);
-      } else {
-        const errMsg = { role: 'assistant', content: '**Erro:** ' + (data.error || 'Não foi possível gerar resposta. Tente novamente.') };
-        const finalMessages = [...newMessages, errMsg];
-        setMessages(finalMessages);
-        updateConversation(convId, finalMessages);
-      }
+      const data = await res.json();
+      const reply = res.ok && data.reply ? data.reply : ('**Erro:** ' + (data.error || 'Falha ao obter resposta.'));
+      const aiMsg = { role: 'assistant', content: reply };
+      const finalMsgs = [...newMsgs, aiMsg];
+      setMessages(finalMsgs);
+      updateConv(convId, finalMsgs);
     } catch (e) {
-      const errMsg = { role: 'assistant', content: '**Erro de conexão:** Verifique sua internet e tente novamente.' };
-      const finalMessages = [...newMessages, errMsg];
-      setMessages(finalMessages);
-      updateConversation(convId, finalMessages);
+      const aiMsg = { role: 'assistant', content: '**Erro de conexão.** Verifique sua internet e tente novamente.' };
+      const finalMsgs = [...newMsgs, aiMsg];
+      setMessages(finalMsgs);
+      updateConv(convId, finalMsgs);
     }
     setSending(false);
   }
 
   function handleKeyDown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage(input);
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input, pendingImage); }
   }
 
   function autoResize(e) {
-    e.target.style.height = '24px';
-    e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px';
+    e.target.style.height = '22px';
+    e.target.style.height = Math.min(e.target.scrollHeight, 150) + 'px';
   }
-
-  function useSuggestion(text) {
-    sendMessage(text);
-  }
-
-  const suggestions = [
-    { title: "Analisar meu trabalho", desc: "Cole seu texto para uma análise completa" },
-    { title: "Estrutura ABNT", desc: "Monte a estrutura do seu TCC" },
-    { title: "Revisar texto", desc: "Melhore a escrita acadêmica" },
-    { title: "Criar metodologia", desc: "Ajuda com a seção de métodos" },
-  ];
-
-  return (
-    <div style={{display:"flex",height:"100%",overflow:"hidden"}}>
-      {/* Sidebar de conversas */}
-      <div className="conv-sidebar">
-        <div className="conv-sidebar-head">
-          <button onClick={createNewConversation} style={{width:"100%",padding:"10px 12px",background:"var(--grad)",color:"white",border:"none",borderRadius:9,fontSize:".8125rem",fontWeight:600,cursor:"pointer",fontFamily:"var(--font-body)"}}>
-            + Nova conversa
-          </button>
-        </div>
-        <div className="conv-list">
-          {conversations.map(c => (
-            <div key={c.id} className={`conv-item ${activeConvId === c.id ? 'active' : ''}`} onClick={() => setActiveConvId(c.id)}>
-              <div className="conv-title">{c.title}</div>
-              <div className="conv-date">{new Date(c.createdAt).toLocaleDateString('pt-BR')}</div>
-              <button className="conv-delete" onClick={(e) => { e.stopPropagation(); deleteConversation(c.id); }} title="Excluir">x</button>
-            </div>
-          ))}
-          {conversations.length === 0 && (
-            <div style={{padding:16,textAlign:"center",color:"var(--muted)",fontSize:".75rem"}}>
-              Nenhuma conversa ainda
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Area principal do chat */}
-      <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-        {messages.length === 0 ? (
-          <div className="ai-welcome">
-            <div className="ai-welcome-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2a4 4 0 0 1 4 4c0 1.4-.7 2.6-1.8 3.4L16 21H8l1.8-11.6A4 4 0 0 1 8 6a4 4 0 0 1 4-4z"/><path d="M8 21h8"/><circle cx="12" cy="6" r="1"/></svg>
-            </div>
-            <h2>TCCFlow AI</h2>
-            <span className="beta-badge">BETA</span>
-            <p>
-              Seu orientador acadêmico digital. Cole seu trabalho para análise completa (ABNT, detecção de IA, coerência),
-              peça ajuda para estruturar capítulos, formatar referências ou melhorar a escrita.
-            </p>
-            <div className="ai-suggestions">
-              {suggestions.map((s, i) => (
-                <div key={i} className="ai-suggestion" onClick={() => useSuggestion(s.title)}>
-                  <div className="ai-suggestion-title">{s.title}</div>
-                  <div className="ai-suggestion-desc">{s.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="chat-messages">
-            {messages.map((msg, i) => (
-              <div key={i} className={`msg ${msg.role === 'user' ? 'user' : 'ai'}`}>
-                <div className="avatar">
-                  {msg.role === 'user' ? (userData?.name?.[0]?.toUpperCase() || 'U') : 'AI'}
-                </div>
-                <div className="bubble" dangerouslySetInnerHTML={{ __html: msg.role === 'user' ? msg.content.replace(/\n/g,'<br/>') : parseMarkdown(msg.content) }} />
-              </div>
-            ))}
-            {sending && (
-              <div className="msg ai">
-                <div className="avatar">AI</div>
-                <div className="bubble">
-                  <div className="typing-indicator"><span></span><span></span><span></span></div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-        )}
-
-        {/* Input area */}
-        <div className="chat-inputbar">
-          <div className="chat-input-wrap">
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              placeholder="Cole seu trabalho aqui ou pergunte algo..."
-              value={input}
-              onChange={(e) => { setInput(e.target.value); autoResize(e); }}
-              onKeyDown={handleKeyDown}
-            />
-            <button className="send-btn" onClick={() => sendMessage(input)} disabled={!input.trim() || sending}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </div>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:8,fontSize:".6875rem",color:"var(--muted)"}}>
-            <span>Shift+Enter para nova linha · Enter para enviar</span>
-            <span className="beta-badge">BETA TESTER</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AIPage() {
-  const { user, userData, project, subscription, loading } = useTCCData();
-  const [mode, setMode] = useState("tccflow-ai");
 
   if (loading) return <AppSplash />;
+
+  const userInitials = (userData?.name || user?.displayName || 'U').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+
+  const suggestions = [
+    { title: '📄 Analisar meu trabalho', desc: 'Análise ABNT, detecção de IA, coerência', q: 'Analise meu trabalho acadêmico. Verifique a estrutura ABNT, identifique possível uso de IA e aponte problemas de coerência.' },
+    { title: '📝 Revisar texto', desc: 'Melhore linguagem e estilo acadêmico', q: 'Revise o seguinte texto acadêmico e sugira melhorias de linguagem:' },
+    { title: '🏗️ Estruturar TCC', desc: 'Monte a estrutura dos capítulos', q: 'Me ajude a estruturar os capítulos do meu TCC. Qual é o tema?' },
+    { title: '📚 Formatar referências', desc: 'ABNT NBR 6023 automático', q: 'Me explique como formatar referências no padrão ABNT e dê exemplos para livro, artigo e site.' },
+    { title: '🔬 Metodologia', desc: 'Defina o método da pesquisa', q: 'Me ajude a escrever a seção de Metodologia do meu TCC.' },
+    { title: '🎯 Criar objetivos', desc: 'Objetivo geral e específicos', q: 'Me ajude a criar objetivos geral e específicos para o meu TCC.' },
+  ];
 
   return (
     <div className="app-layout">
       <Sidebar active="ai" userData={userData} project={project} subscription={subscription}/>
-      <div className="main-area" style={{overflow:"hidden"}}>
-        <Topbar page="I.A." user={user}/>
-        <div className="ai-root">
+      <div className="main-area" style={{overflow:'hidden'}}>
+        <Topbar page="TCCFlow AI" user={user}/>
+        <div className="ai-layout">
+
+          {/* Conversation sidebar */}
+          <div className="ai-conv-sidebar">
+            <div className="ai-conv-head">
+              <button onClick={newConv} style={{width:'100%',padding:'9px 10px',background:'var(--grad)',color:'white',border:'none',borderRadius:8,fontSize:'.8rem',fontWeight:600,cursor:'pointer',fontFamily:'var(--font-body)',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nova conversa
+              </button>
+            </div>
+            <div className="ai-conv-list">
+              {convs.length === 0 && (
+                <div style={{padding:'14px 10px',textAlign:'center',color:'var(--muted)',fontSize:'.72rem'}}>Nenhuma conversa ainda</div>
+              )}
+              {convs.map(c => (
+                <div key={c.id} className={`ai-conv-item ${activeId === c.id ? 'active' : ''}`} onClick={() => setActiveId(c.id)}>
+                  <div className="ai-conv-title">{c.title}</div>
+                  <div className="ai-conv-date">{new Date(c.createdAt).toLocaleDateString('pt-BR')}</div>
+                  <button className="ai-conv-del" onClick={e => { e.stopPropagation(); deleteConv(c.id); }} title="Excluir">✕</button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Main chat area */}
           <div className="ai-main">
-            <div className="mode-tabs">
-              <div className={`mode-tab ${mode === 'tccflow-ai' ? 'active' : ''}`} onClick={() => setMode('tccflow-ai')}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2a4 4 0 0 1 4 4c0 1.4-.7 2.6-1.8 3.4L16 21H8l1.8-11.6A4 4 0 0 1 8 6a4 4 0 0 1 4-4z"/><circle cx="12" cy="6" r="1"/></svg>
-                TCCFlow AI
-                <span className="beta-badge">BETA</span>
+            {messages.length === 0 ? (
+              <div className="ai-welcome">
+                <div className="ai-welcome-logo">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2a4 4 0 0 1 4 4c0 1.4-.7 2.6-1.8 3.4L16 21H8l1.8-11.6A4 4 0 0 1 8 6a4 4 0 0 1 4-4z"/><path d="M8 21h8"/><circle cx="12" cy="6" r="1"/></svg>
+                </div>
+                <h2>TCCFlow AI</h2>
+                <span className="beta-pill">BETA TESTER</span>
+                <p>Orientador acadêmico digital. Cole seu trabalho, envie fotos de páginas ou pergunte qualquer coisa sobre seu TCC.</p>
+                <div className="ai-chips">
+                  {suggestions.map((s, i) => (
+                    <div key={i} className="ai-chip" onClick={() => send(s.q, null)}>
+                      <div className="ai-chip-title">{s.title}</div>
+                      <div className="ai-chip-desc">{s.desc}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className={`mode-tab ${mode === 'pesquisa' ? 'active' : ''}`} onClick={() => setMode('pesquisa')}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                Pesquisa Acadêmica
+            ) : (
+              <div className="ai-messages">
+                {messages.map((msg, i) => {
+                  const isUser = msg.role === 'user';
+                  const textContent = Array.isArray(msg.content) ? msg.content.find(c => c.type === 'text')?.text || '' : msg.content;
+                  const hasImgContent = Array.isArray(msg.content) && msg.content.some(c => c.type === 'image_url');
+                  return (
+                    <div key={i} className={`ai-msg ${isUser ? 'user' : 'ai'}`}>
+                      <div className="ai-av">{isUser ? userInitials : 'AI'}</div>
+                      <div className="ai-bubble">
+                        {isUser ? (
+                          <>
+                            {msg._imgPreview && <img src={msg._imgPreview} alt="uploaded" style={{maxHeight:120,borderRadius:8,marginBottom:6,display:'block'}}/>}
+                            {!msg._imgPreview && hasImgContent && <div style={{fontSize:'.75rem',color:'white',opacity:.8,marginBottom:4}}>📷 Imagem enviada</div>}
+                            <span>{textContent.replace(/\n/g, '\n')}</span>
+                          </>
+                        ) : (
+                          <span dangerouslySetInnerHTML={{ __html: parseMarkdown(textContent) }}/>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                {sending && (
+                  <div className="ai-msg ai">
+                    <div className="ai-av">AI</div>
+                    <div className="ai-bubble"><div className="typing-dot"><span/><span/><span/></div></div>
+                  </div>
+                )}
+                <div ref={messagesEndRef}/>
+              </div>
+            )}
+
+            {/* Input area */}
+            <div className="ai-inputbar">
+              {/* Tools row */}
+              <div className="ai-tools-row">
+                <button className="ai-tool-btn" onClick={() => fileImgRef.current?.click()} title="Enviar foto ou print do trabalho">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  Foto / Imagem
+                </button>
+                <button className="ai-tool-btn" onClick={() => fileTxtRef.current?.click()} title="Importar arquivo de texto">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Arquivo .txt
+                </button>
+                <button className="ai-tool-btn" onClick={importFromReferencias} title="Importar referências do seu projeto">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  Referências
+                </button>
+                <button className="ai-tool-btn" onClick={() => window.location.href = 'trabalho.html'} title="Abrir Trabalho Escrito">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  Trabalho Escrito
+                </button>
+                <button className="ai-tool-btn" onClick={() => window.location.href = 'tasks.html'} title="Ver e criar tarefas">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  Tarefas
+                </button>
+                {messages.length > 0 && (
+                  <button className="ai-tool-btn" onClick={exportChat} title="Baixar conversa como .txt">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Exportar
+                  </button>
+                )}
+              </div>
+
+              {/* Image preview */}
+              {pendingImage && (
+                <div className="img-preview-wrap">
+                  <img src={pendingImage.url} className="img-preview" alt="preview"/>
+                  <button className="img-preview-rm" onClick={() => setPendingImage(null)}>✕</button>
+                </div>
+              )}
+
+              {/* Text input */}
+              <div className="ai-input-wrap">
+                <textarea
+                  ref={textareaRef}
+                  rows={1}
+                  placeholder={pendingImage ? 'Adicione um contexto para a imagem (opcional)...' : 'Cole seu trabalho, faça uma pergunta ou arraste uma imagem...'}
+                  value={input}
+                  onChange={e => { setInput(e.target.value); autoResize(e); }}
+                  onKeyDown={handleKeyDown}
+                />
+                <button className="ai-send" onClick={() => send(input, pendingImage)} disabled={(!input.trim() && !pendingImage) || sending}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+              </div>
+              <div className="ai-footer-row">
+                <span>Enter enviar · Shift+Enter nova linha · Arraste imagens</span>
+                <span className="beta-pill">BETA TESTER</span>
               </div>
             </div>
-            {mode === 'tccflow-ai' && <TCCFlowAIMode user={user} userData={userData} />}
-            {mode === 'pesquisa' && <PesquisaMode project={project} user={user}/>}
           </div>
         </div>
       </div>
+      <input ref={fileImgRef} type="file" accept="image/*" style={{display:'none'}} onChange={handleImgInput}/>
+      <input ref={fileTxtRef} type="file" accept=".txt,.md" style={{display:'none'}} onChange={handleTxtInput}/>
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<AIPage/>);
+ReactDOM.createRoot(document.getElementById('root')).render(<AIPage/>);
 </script>
 </body>
 </html>

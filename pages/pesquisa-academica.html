@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-Z0XRG60XV9');
+  </script>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Pesquisa Acadêmica — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .pesquisa-area{flex:1;overflow-y:auto;padding:24px 28px;}
+    .search-bar-wrap{display:flex;align-items:center;gap:10px;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:14px;}
+    .search-bar-wrap:focus-within{border-color:var(--violet);}
+    .search-bar-wrap input{flex:1;border:none;background:none;font-family:var(--font-body);font-size:1rem;color:var(--ink);outline:none;}
+    .search-btn{background:var(--grad);color:white;padding:8px 18px;border-radius:9px;font-size:.875rem;font-weight:600;cursor:pointer;border:none;white-space:nowrap;}
+    .filter-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--line);font-size:.8125rem;cursor:pointer;background:var(--paper);transition:border-color .15s,color .15s;}
+    .filter-btn:hover{border-color:var(--violet);}
+    .filter-btn.active{border-color:var(--violet);color:var(--violet);background:rgba(124,58,237,.06);}
+    .article-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:10px;transition:border-color .2s;}
+    .article-card:hover{border-color:var(--violet);}
+    .year-select{padding:5px 10px;border-radius:7px;border:1.5px solid var(--line);font-size:.8125rem;background:var(--paper);color:var(--ink);font-family:var(--font-body);cursor:pointer;}
+    .year-select:focus{border-color:var(--violet);outline:none;}
+  </style>
+</head>
+<body>
+<div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const SOURCES = [
+  { id:"all", label:"Todas as fontes" },
+  { id:"scholar", label:"Google Scholar" },
+  { id:"scielo", label:"SciELO" },
+  { id:"pubmed", label:"PubMed" },
+  { id:"ieee", label:"IEEE" },
+];
+
+const TYPES = [
+  { id:"all", label:"Todos" },
+  { id:"article", label:"Artigos" },
+  { id:"thesis", label:"Teses" },
+  { id:"book", label:"Livros" },
+  { id:"conference", label:"Conferências" },
+];
+
+function reconstructAbstract(invertedIndex) {
+  if (!invertedIndex) return '';
+  try {
+    const wordPositions = [];
+    for (const [word, positions] of Object.entries(invertedIndex)) {
+      for (const pos of positions) wordPositions.push({ word, pos });
+    }
+    wordPositions.sort((a, b) => a.pos - b.pos);
+    return wordPositions.map(wp => wp.word).join(' ').substring(0, 400);
+  } catch(e) { return ''; }
+}
+
+async function searchOpenAlex(query, yearFrom, yearTo, sourceFilter, typeFilter) {
+  let filters = [];
+  if (yearFrom) filters.push(`publication_year:>${yearFrom-1}`);
+  if (yearTo) filters.push(`publication_year:<${parseInt(yearTo)+1}`);
+  if (typeFilter && typeFilter !== 'all') {
+    const typeMap = { article:'article', thesis:'dissertation', book:'book', conference:'proceedings-article' };
+    if (typeMap[typeFilter]) filters.push(`type:${typeMap[typeFilter]}`);
+  }
+  let url = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per_page=20&mailto=tccflow.contato@gmail.com&sort=relevance_score:desc`;
+  if (filters.length) url += `&filter=${filters.join(',')}`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('OpenAlex error');
+  const data = await response.json();
+  return (data.results || []).map(work => {
+    const authors = (work.authorships || []).map(a => a.author?.display_name || '').filter(Boolean).join(', ');
+    const bestUrl = work.open_access?.oa_url || work.primary_location?.landing_page_url || work.doi || '';
+    const isScielo = bestUrl.includes('scielo') || (work.primary_location?.source?.display_name || '').toLowerCase().includes('scielo');
+    return {
+      title: work.display_name || work.title || 'Sem título',
+      authors, year: work.publication_year || '',
+      abstract: work.abstract_inverted_index ? reconstructAbstract(work.abstract_inverted_index) : '',
+      url: bestUrl, citations: work.cited_by_count || 0,
+      source: isScielo ? 'SciELO' : 'Google Acadêmico',
+      doi: work.doi ? work.doi.replace('https://doi.org/', '') : '',
+      isOpenAccess: work.open_access?.is_oa || false,
+    };
+  });
+}
+
+async function searchCrossRef(query, yearFrom, yearTo, typeFilter) {
+  let url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=10&sort=relevance`;
+  let filters = [];
+  if (yearFrom) filters.push(`from-pub-date:${yearFrom}`);
+  if (yearTo) filters.push(`until-pub-date:${yearTo}`);
+  if (typeFilter && typeFilter !== 'all') {
+    const crossRefTypes = { article:'journal-article', book:'book', thesis:'dissertation', conference:'proceedings-article' };
+    if (crossRefTypes[typeFilter]) filters.push(`type:${crossRefTypes[typeFilter]}`);
+  }
+  if (filters.length) url += `&filter=${filters.join(',')}`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('CrossRef error');
+  const data = await response.json();
+  return (data.message?.items || []).map(item => ({
+    title: Array.isArray(item.title) ? item.title[0] : (item.title || 'Sem título'),
+    authors: (item.author || []).map(a => `${a.given || ''} ${a.family || ''}`).join(', '),
+    year: item.published?.['date-parts']?.[0]?.[0] || '',
+    abstract: (item.abstract || '').replace(/<[^>]*>/g, '').substring(0, 300),
+    url: item.URL || '', citations: item['is-referenced-by-count'] || 0,
+    source: 'CrossRef', doi: item.DOI || '',
+  }));
+}
+
+function PesquisaPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [query, setQuery] = useState("");
+  const [savedPapers, setSavedPapers] = useState([]);
+  const [results, setResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const [searched, setSearched] = useState(false);
+  const [usage, setUsage] = useState(null);
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [yearFrom, setYearFrom] = useState("");
+  const [yearTo, setYearTo] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    if (!project) return;
+    (async () => {
+      const papers = await DB.savedPapers.getAll(project.id);
+      setSavedPapers(papers);
+      const u = await DB.aiUsage.canSearch(project.id);
+      setUsage(u);
+    })();
+  }, [project]);
+
+  async function doSearch() {
+    if (!query.trim() || searching) return;
+    if (usage && usage.remaining <= 0) { alert('Limite de buscas atingido. Faça upgrade para continuar.'); return; }
+    setSearching(true); setSearched(true); setResults([]);
+    try {
+      const [oaResults, crResults] = await Promise.all([
+        searchOpenAlex(query, yearFrom, yearTo, sourceFilter, typeFilter).catch(() => []),
+        searchCrossRef(query, yearFrom, yearTo, typeFilter).catch(() => [])
+      ]);
+      let all = [...oaResults, ...crResults];
+      all = all.filter((v, i, a) => a.findIndex(t => t.title.toLowerCase().trim() === v.title.toLowerCase().trim()) === i);
+      if (sourceFilter !== 'all') {
+        const sourceMap = { scholar:'Google Acadêmico', scielo:'SciELO', crossref:'CrossRef' };
+        if (sourceMap[sourceFilter]) all = all.filter(r => r.source === sourceMap[sourceFilter]);
+      }
+      setResults(all);
+      if (project) { try { await DB.aiUsage.increment(project.id); const u = await DB.aiUsage.canSearch(project.id); setUsage(u); } catch(e){} }
+    } catch(e) { console.error('Search error:', e); }
+    setSearching(false);
+  }
+
+  async function savePaper(paper) {
+    const exists = await DB.savedPapers.exists(project.id, paper.title);
+    if (exists) { alert('Artigo já salvo!'); return; }
+    await DB.savedPapers.add(project.id, paper);
+    const papers = await DB.savedPapers.getAll(project.id);
+    setSavedPapers(papers);
+  }
+
+  async function removePaper(id) {
+    await DB.savedPapers.remove(id);
+    setSavedPapers(prev => prev.filter(p => p.id !== id));
+  }
+
+  if (loading) return <AppSplash />;
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({length: 30}, (_, i) => currentYear - i);
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="pesquisa" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Pesquisa Acadêmica" user={user}/>
+        <div className="pesquisa-area">
+
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+            <div className="mono-label">Pesquisa Acadêmica</div>
+            {usage && (
+              <div style={{fontFamily:"var(--font-mono)",fontSize:".75rem",color:"var(--muted)"}}>
+                {usage.remaining}/{usage.limit} buscas restantes
+              </div>
+            )}
+          </div>
+
+          <div className="search-bar-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{color:"var(--muted)",flexShrink:0}}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar artigos acadêmicos…" value={query} onChange={e=>setQuery(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') doSearch(); }}/>
+            <button className="search-btn" onClick={doSearch} disabled={searching}>{searching ? "Buscando…" : "Buscar →"}</button>
+          </div>
+
+          <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap",alignItems:"center"}}>
+            <button className={`filter-btn ${showFilters?"active":""}`} onClick={() => setShowFilters(!showFilters)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              Filtros
+            </button>
+            {SOURCES.filter(s => s.id !== "all").map(s => (
+              <button key={s.id} className={`filter-btn ${sourceFilter===s.id?"active":""}`}
+                onClick={() => setSourceFilter(sourceFilter===s.id?"all":s.id)}>{s.label}</button>
+            ))}
+          </div>
+
+          {showFilters && (
+            <div className="card" style={{marginBottom:16,padding:16}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+                <div>
+                  <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",textTransform:"uppercase",letterSpacing:".1em",color:"var(--muted)",marginBottom:6}}>Tipo</div>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                    {TYPES.map(t => (
+                      <button key={t.id} className={`filter-btn ${typeFilter===t.id?"active":""}`}
+                        onClick={() => setTypeFilter(t.id)} style={{fontSize:".75rem",padding:"4px 10px"}}>{t.label}</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",textTransform:"uppercase",letterSpacing:".1em",color:"var(--muted)",marginBottom:6}}>Ano</div>
+                  <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                    <select className="year-select" value={yearFrom} onChange={e=>setYearFrom(e.target.value)}>
+                      <option value="">De</option>
+                      {years.map(y => <option key={y} value={y}>{y}</option>)}
+                    </select>
+                    <span style={{color:"var(--muted)"}}>—</span>
+                    <select className="year-select" value={yearTo} onChange={e=>setYearTo(e.target.value)}>
+                      <option value="">Até</option>
+                      {years.map(y => <option key={y} value={y}>{y}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",textTransform:"uppercase",letterSpacing:".1em",color:"var(--muted)",marginBottom:6}}>Ordenar</div>
+                  <select className="year-select" style={{width:"100%"}}>
+                    <option>Relevância</option>
+                    <option>Mais recente</option>
+                    <option>Mais citado</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {searched && (
+            <div style={{marginBottom:20}}>
+              <div className="mono-label" style={{marginBottom:8}}>Resultados ({results.length})</div>
+              {searching && <div style={{textAlign:"center",padding:32,color:"var(--violet)"}}><div style={{fontSize:"1.5rem",marginBottom:8}}>🔍</div>Buscando artigos…</div>}
+              {!searching && results.length === 0 && <div style={{color:"var(--muted)",fontSize:".875rem",padding:16,textAlign:"center",background:"var(--bg-2)",borderRadius:12,border:"1px dashed var(--line)"}}>Nenhum resultado encontrado. Tente outros termos.</div>}
+              {results.map((r, i) => (
+                <div key={i} className="article-card">
+                  <div style={{fontWeight:600,fontSize:".9375rem",marginBottom:4}}>{r.title}</div>
+                  <div style={{fontSize:".8125rem",color:"var(--muted)",marginBottom:4}}>{r.authors} · {r.year}</div>
+                  {r.abstract && <div style={{fontSize:".8125rem",color:"var(--ink-2)",lineHeight:1.5,marginBottom:8}}>{r.abstract.substring(0,250)}{r.abstract.length>250?"…":""}</div>}
+                  <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+                    <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)",background:"var(--bg-2)",padding:"2px 8px",borderRadius:4}}>{r.source}</span>
+                    {r.citations > 0 && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{r.citations} citações</span>}
+                    {r.isOpenAccess && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--emerald)",background:"rgba(16,185,129,.1)",padding:"2px 8px",borderRadius:4}}>Acesso aberto</span>}
+                    {r.url && <a href={r.url} target="_blank" className="btn btn-ghost btn-sm" style={{marginLeft:"auto",fontSize:".6875rem"}}>Abrir</a>}
+                    {project && <button className="btn btn-violet btn-sm" style={{fontSize:".6875rem"}} onClick={() => savePaper(r)}>Salvar</button>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{marginBottom:20}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+              <div className="mono-label">Artigos salvos ({savedPapers.length})</div>
+            </div>
+            {savedPapers.length === 0 && <div style={{color:"var(--muted)",fontSize:".875rem",padding:16,textAlign:"center",background:"var(--bg-2)",borderRadius:12,border:"1px dashed var(--line)"}}>Nenhum artigo salvo ainda. Faça uma busca para encontrar artigos.</div>}
+            {savedPapers.map(p => (
+              <div key={p.id} className="article-card">
+                <div style={{fontWeight:600,fontSize:".9375rem",marginBottom:4}}>{p.title}</div>
+                <div style={{fontSize:".8125rem",color:"var(--muted)",marginBottom:4}}>{p.authors} · {p.year}</div>
+                {p.abstract && <div style={{fontSize:".8125rem",color:"var(--ink-2)",lineHeight:1.5,marginBottom:8}}>{p.abstract}</div>}
+                <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                  {p.source && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)",background:"var(--bg-2)",padding:"2px 8px",borderRadius:4}}>{p.source}</span>}
+                  {p.citations > 0 && <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{p.citations} citações</span>}
+                  {p.url && <a href={p.url} target="_blank" className="btn btn-ghost btn-sm" style={{marginLeft:"auto",fontSize:".6875rem"}}>Abrir</a>}
+                  <button className="btn btn-ghost btn-sm" style={{color:"var(--rose)",fontSize:".6875rem"}} onClick={() => removePaper(p.id)}>Remover</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<PesquisaPage/>);
+</script>
+</body>
+</html>

@@ -115,10 +115,15 @@ const NAV_ITEMS = [
       <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
     </svg>
   )},
-  { id: "ai", label: "I.A.", href: "ai.html", icon: (
+  { id: "ai", label: "TCCFlow AI", href: "ai.html", beta: true, icon: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2a4 4 0 0 1 4 4c0 1.4-.7 2.6-1.8 3.4L16 21H8l1.8-11.6A4 4 0 0 1 8 6a4 4 0 0 1 4-4z"/>
       <path d="M8 21h8"/><circle cx="12" cy="6" r="1"/>
+    </svg>
+  )},
+  { id: "pesquisa", label: "Pesquisa", href: "pesquisa-academica.html", icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
     </svg>
   )},
   { id: "trabalho", label: "Trabalho Escrito", href: "trabalho.html", icon: (
@@ -236,6 +241,7 @@ function Sidebar({ active, userData, project, subscription }) {
             <span className="icon">{item.icon}</span>
             {item.label}
             {item.badge && <span className="badge">{item.badge}</span>}
+            {item.beta && <span style={{marginLeft:'auto',background:'linear-gradient(135deg,#f59e0b,#f97316)',color:'white',padding:'1px 6px',borderRadius:999,fontSize:'.55rem',fontWeight:700,letterSpacing:'.05em',textTransform:'uppercase',flexShrink:0}}>BETA</span>}
           </a>
         ))}
 
