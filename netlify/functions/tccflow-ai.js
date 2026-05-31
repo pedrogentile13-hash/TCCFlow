@@ -95,9 +95,9 @@ exports.handler = async (event) => {
             return { statusCode: 400, headers, body: JSON.stringify({ error: 'Mensagens obrigatórias' }) };
         }
 
-        const apiKey = process.env.GROQ_API_KEY;
+        const apiKey = process.env.GROQ_KEY;
         if (!apiKey) {
-            return { statusCode: 500, headers, body: JSON.stringify({ error: 'GROQ_API_KEY não configurada no servidor' }) };
+            return { statusCode: 500, headers, body: JSON.stringify({ error: 'GROQ_KEY não configurada no servidor' }) };
         }
 
         // Detect if any message has images (use vision model if so)
