@@ -6,4 +6,4 @@ node_modules/
 package-lock.json
 # Remotion video
 video/node_modules/
-video/out/
+# video/out/
