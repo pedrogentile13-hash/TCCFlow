@@ -1,5 +1,16 @@
 [build]
+  publish = "."
   functions = "netlify/functions"
+
+[dev]
+  port = 8080
+  functions_port = 9999
 
 [functions]
   node_bundler = "esbuild"
+
+[[headers]]
+  for = "/.well-known/assetlinks.json"
+  [headers.values]
+    Content-Type = "application/json"
+    Access-Control-Allow-Origin = "*"

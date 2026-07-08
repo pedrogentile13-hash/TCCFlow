@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Banco de Templates — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+.tpl-layout{display:grid;grid-template-columns:220px 1fr 280px;height:calc(100vh - 60px);overflow:hidden}
+.tpl-left{background:var(--bg-2);border-right:1px solid var(--line);padding:14px;overflow-y:auto;scrollbar-width:none}
+.tpl-left::-webkit-scrollbar{display:none}
+.tpl-left .search-box{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:.8125rem;outline:none;transition:border-color .2s}
+.tpl-left .search-box:focus{border-color:var(--violet)}
+.tpl-left .section-label{font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:16px 0 6px;padding:0 4px}
+.filter-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:.8125rem;color:var(--ink-2);cursor:pointer;transition:background .15s,color .15s}
+.filter-item:hover{background:var(--paper);color:var(--ink)}
+.filter-item.active{background:var(--grad);color:white;font-weight:500}
+.filter-item .count{font-family:var(--font-mono);font-size:.625rem;background:rgba(124,58,237,.1);color:var(--violet);padding:1px 7px;border-radius:999px;font-weight:600}
+.filter-item.active .count{background:rgba(255,255,255,.25);color:white}
+.tpl-grid-wrap{overflow-y:auto;padding:20px;scrollbar-width:thin}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.tpl-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px;cursor:pointer;transition:transform .25s cubic-bezier(.2,.9,.3,1),box-shadow .25s;display:flex;flex-direction:column}
+.tpl-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.tpl-card.selected{border-color:var(--violet);box-shadow:0 0 0 2px rgba(124,58,237,.18)}
+.tpl-card .card-icon{font-size:2rem;text-align:center;margin-bottom:10px;line-height:1}
+.tpl-card .card-cat{margin-bottom:6px}
+.tpl-card .card-name{font-family:var(--font-display);font-size:1.05rem;font-weight:700;margin-bottom:4px;color:var(--ink)}
+.tpl-card .card-desc{font-size:.8125rem;color:var(--muted);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:auto}
+.tpl-card .card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;font-size:.75rem;color:var(--muted)}
+.tpl-card .card-footer .stars{color:var(--amber)}
+.tpl-card .card-footer .dl-count{font-family:var(--font-mono);font-size:.6875rem}
+.tpl-right{background:var(--paper);border-left:1px solid var(--line);padding:20px;overflow-y:auto;scrollbar-width:thin;display:flex;flex-direction:column}
+.preview-icon{font-size:3rem;text-align:center;margin-bottom:14px}
+.preview-name{font-family:var(--font-display);font-size:1.25rem;font-weight:700;margin-bottom:8px;color:var(--ink)}
+.preview-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.preview-desc{font-size:.875rem;color:var(--muted);line-height:1.55;margin-bottom:18px}
+.preview-meta{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.preview-meta .meta-row{display:flex;align-items:center;justify-content:space-between;font-size:.8125rem;color:var(--ink-2)}
+.preview-meta .meta-row .meta-label{font-family:var(--font-mono);font-size:.6875rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.preview-meta .meta-row .meta-stars{color:var(--amber)}
+.preview-actions{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.preview-actions .btn{width:100%;justify-content:center}
+.tpl-empty-right{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted)}
+.tpl-empty-right .es-icon{font-size:2rem;margin-bottom:10px;opacity:.35}
+.tpl-empty-right p{font-size:.875rem;max-width:22ch}
+.cat-color-capa{background:rgba(124,58,237,.1);color:var(--violet)}
+.cat-color-folha{background:rgba(6,182,212,.1);color:var(--cyan)}
+.cat-color-sumario{background:rgba(245,158,11,.12);color:var(--amber)}
+.cat-color-introducao{background:rgba(16,185,129,.1);color:var(--emerald)}
+.cat-color-metodologia{background:rgba(59,130,246,.1);color:var(--blue)}
+.cat-color-referencias{background:rgba(244,63,94,.1);color:var(--rose)}
+.cat-color-artigo{background:rgba(249,115,22,.1);color:var(--orange)}
+  </style>
+</head>
+<body><div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const TEMPLATES = [
+  { id:1, name:"Capa ABNT", cat:"Capa", format:"Word", desc:"Modelo de capa padrão ABNT com logotipo da instituição", downloads:487, rating:4.8, icon:"📄" },
+  { id:2, name:"Folha de Rosto", cat:"Folha de Rosto", format:"Word", desc:"Folha de rosto com nota de aprovação e ficha catalográfica", downloads:423, rating:4.7, icon:"📋" },
+  { id:3, name:"Sumário Automático", cat:"Sumário", format:"Word", desc:"Modelo com sumário automático configurado", downloads:356, rating:4.5, icon:"📑" },
+  { id:4, name:"Introdução Modelo", cat:"Introdução", format:"Word", desc:"Estrutura completa de introdução com tema, problema, objetivos", downloads:512, rating:4.9, icon:"✏️" },
+  { id:5, name:"Metodologia Quali", cat:"Metodologia", format:"Word", desc:"Template para metodologia qualitativa com roteiro de entrevista", downloads:289, rating:4.3, icon:"🔬" },
+  { id:6, name:"Metodologia Quanti", cat:"Metodologia", format:"Word", desc:"Template para metodologia quantitativa com tabelas de dados", downloads:267, rating:4.4, icon:"📊" },
+  { id:7, name:"Referências ABNT", cat:"Referências", format:"Word", desc:"Modelo formatado de referências bibliográficas ABNT", downloads:634, rating:4.8, icon:"📖" },
+  { id:8, name:"Artigo Científico", cat:"Artigo Completo", format:"Word", desc:"Modelo completo de artigo com resumo, abstract e seções", downloads:445, rating:4.6, icon:"📝" },
+  { id:9, name:"Capa LaTeX", cat:"Capa", format:"LaTeX", desc:"Capa em LaTeX com formatação ABNT automática", downloads:178, rating:4.2, icon:"🔤" },
+  { id:10, name:"TCC Completo", cat:"Artigo Completo", format:"Word", desc:"Modelo completo de TCC: capa, folha de rosto, sumário, capítulos", downloads:723, rating:4.9, icon:"📚" },
+  { id:11, name:"Apresentação Defesa", cat:"Sumário", format:"PDF", desc:"Slides modelo para apresentação de defesa de TCC", downloads:398, rating:4.7, icon:"🎯" },
+  { id:12, name:"Ficha Catalográfica", cat:"Folha de Rosto", format:"PDF", desc:"Modelo de ficha catalográfica para biblioteca", downloads:201, rating:4.1, icon:"🏷️" },
+];
+
+const CATEGORIES = ["Todas","Capa","Folha de Rosto","Sumário","Introdução","Metodologia","Referências","Artigo Completo"];
+const FORMATS = ["Word (.docx)","PDF","LaTeX"];
+const SORT_OPTIONS = ["Recentes","Popular","A-Z"];
+
+const CAT_COLOR_MAP = {
+  "Capa":"cat-color-capa",
+  "Folha de Rosto":"cat-color-folha",
+  "Sumário":"cat-color-sumario",
+  "Introdução":"cat-color-introducao",
+  "Metodologia":"cat-color-metodologia",
+  "Referências":"cat-color-referencias",
+  "Artigo Completo":"cat-color-artigo",
+};
+
+function renderStars(rating) {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  let s = "";
+  for (let i = 0; i < full; i++) s += "★";
+  if (half) s += "½";
+  return s;
+}
+
+function TemplatesPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [search, setSearch] = useState("");
+  const [activeCat, setActiveCat] = useState("Todas");
+  const [activeFormat, setActiveFormat] = useState(null);
+  const [sortBy, setSortBy] = useState("Recentes");
+  const [selected, setSelected] = useState(null);
+
+  const catCounts = useMemo(() => {
+    const m = {};
+    CATEGORIES.forEach(c => m[c] = c === "Todas" ? TEMPLATES.length : TEMPLATES.filter(t => t.cat === c).length);
+    return m;
+  }, []);
+
+  const filtered = useMemo(() => {
+    let list = [...TEMPLATES];
+    if (activeCat !== "Todas") list = list.filter(t => t.cat === activeCat);
+    if (activeFormat) {
+      const fmtKey = activeFormat.startsWith("Word") ? "Word" : activeFormat;
+      list = list.filter(t => t.format === fmtKey);
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(t => t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q));
+    }
+    if (sortBy === "Popular") list.sort((a, b) => b.downloads - a.downloads);
+    else if (sortBy === "A-Z") list.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    return list;
+  }, [activeCat, activeFormat, search, sortBy]);
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="tools" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Banco de Templates" user={user}/>
+        <div className="tpl-layout">
+          <div className="tpl-left">
+            <input className="search-box" placeholder="Buscar template..." value={search} onChange={e => setSearch(e.target.value)}/>
+            <div className="section-label">Categoria</div>
+            {CATEGORIES.map(c => (
+              <div key={c} className={"filter-item" + (activeCat === c ? " active" : "")} onClick={() => setActiveCat(c)}>
+                <span>{c}</span>
+                <span className="count">{catCounts[c]}</span>
+              </div>
+            ))}
+            <div className="section-label">Formato</div>
+            {FORMATS.map(f => (
+              <div key={f} className={"filter-item" + (activeFormat === f ? " active" : "")} onClick={() => setActiveFormat(activeFormat === f ? null : f)}>
+                <span>{f}</span>
+              </div>
+            ))}
+            <div className="section-label">Ordenar</div>
+            {SORT_OPTIONS.map(s => (
+              <div key={s} className={"filter-item" + (sortBy === s ? " active" : "")} onClick={() => setSortBy(s)}>
+                <span>{s}</span>
+              </div>
+            ))}
+          </div>
+          <div className="tpl-grid-wrap">
+            {filtered.length === 0 ? (
+              <div className="empty-state">
+                <div className="es-icon">{"📂"}</div>
+                <h3>Nenhum template encontrado</h3>
+                <p>Tente ajustar os filtros ou a busca.</p>
+              </div>
+            ) : (
+              <div className="tpl-grid">
+                {filtered.map(t => (
+                  <div key={t.id} className={"tpl-card" + (selected && selected.id === t.id ? " selected" : "")} onClick={() => setSelected(t)}>
+                    <div className="card-icon">{t.icon}</div>
+                    <div className="card-cat"><span className={"tag " + (CAT_COLOR_MAP[t.cat] || "tag-slate")}>{t.cat}</span></div>
+                    <div className="card-name">{t.name}</div>
+                    <div className="card-desc">{t.desc}</div>
+                    <div className="card-footer">
+                      <span className="stars">{renderStars(t.rating)} {t.rating}</span>
+                      <span className="dl-count">{t.downloads} downloads</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="tpl-right">
+            {selected ? (
+              <>
+                <div className="preview-icon">{selected.icon}</div>
+                <div className="preview-name">{selected.name}</div>
+                <div className="preview-tags">
+                  <span className={"tag " + (CAT_COLOR_MAP[selected.cat] || "tag-slate")}>{selected.cat}</span>
+                  <span className="tag tag-slate">{selected.format}</span>
+                </div>
+                <div className="preview-desc">{selected.desc}</div>
+                <div className="preview-meta">
+                  <div className="meta-row">
+                    <span className="meta-label">Avaliação</span>
+                    <span><span className="meta-stars">{renderStars(selected.rating)}</span> {selected.rating}/5</span>
+                  </div>
+                  <div className="meta-row">
+                    <span className="meta-label">Downloads</span>
+                    <span>{selected.downloads}</span>
+                  </div>
+                </div>
+                <div className="preview-actions">
+                  <button className="btn btn-violet" onClick={() => alert("Template \"" + selected.name + "\" aplicado!")}>Usar template</button>
+                  <button className="btn btn-ghost" onClick={() => { navigator.clipboard.writeText(selected.name + "\n" + selected.desc); }}>Copiar conteúdo</button>
+                </div>
+              </>
+            ) : (
+              <div className="tpl-empty-right">
+                <div className="es-icon">{"👈"}</div>
+                <p>Selecione um template para ver detalhes</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<TemplatesPage/>);
+</script>
+</body>
+</html>

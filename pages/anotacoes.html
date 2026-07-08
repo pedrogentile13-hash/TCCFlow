@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Anotações e Fichamentos — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <link rel="stylesheet" href="../css/rich-text-editor.css"/>
+  <script src="../js/darkmode.js"></script>
+  <script src="../js/citations.js"></script>
+  <script src="../js/keyboard-shortcuts.js"></script>
+  <script src="../js/rich-text-editor.js"></script>
+  <script src="../js/editor-toolbar.js"></script>
+  <style>
+    .notes-grid{display:grid;grid-template-columns:260px 1fr 280px;height:calc(100vh - 60px);overflow:hidden;}
+    .notes-left{background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
+    .notes-left-header{padding:16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
+    .notes-search{width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:.8125rem;outline:none;font-family:var(--font-body);}
+    .notes-search:focus{border-color:var(--violet);}
+    .notes-filters{display:flex;gap:6px;}
+    .filter-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:.6875rem;font-weight:500;cursor:pointer;transition:all .15s;font-family:var(--font-body);}
+    .filter-btn.active{background:var(--violet);color:#fff;border-color:var(--violet);}
+    .filter-btn:hover:not(.active){background:var(--bg-2);color:var(--ink);}
+    .cat-select{width:100%;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);font-size:.75rem;font-family:var(--font-body);cursor:pointer;outline:none;}
+    .notes-list{flex:1;overflow-y:auto;padding:0;}
+    .note-item{padding:14px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s;position:relative;}
+    .note-item:hover{background:rgba(124,58,237,.04);}
+    .note-item.active{border-left:3px solid var(--violet);background:rgba(124,58,237,.06);}
+    .note-item-star{position:absolute;top:14px;right:12px;background:none;border:none;cursor:pointer;font-size:.875rem;color:var(--muted);transition:color .15s;}
+    .note-item-star.fav{color:var(--amber);}
+    .note-item-title{font-weight:600;font-size:.8125rem;color:var(--ink);margin-bottom:2px;padding-right:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .note-item-preview{font-size:.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+    .note-item-date{font-family:var(--font-mono);font-size:.625rem;color:var(--muted);}
+    .notes-left-footer{padding:12px 16px;border-top:1px solid var(--line);}
+    .notes-main{display:flex;flex-direction:column;overflow:hidden;background:var(--paper);}
+    .notes-main-title{width:100%;border:none;outline:none;padding:20px 24px 0;font-family:var(--font-display);font-size:1.5rem;background:transparent;color:var(--ink);}
+    .notes-main-textarea{flex:1;width:100%;border:none;outline:none;padding:16px 24px;font-size:.9375rem;line-height:1.8;resize:none;min-height:400px;background:transparent;color:var(--ink);font-family:var(--font-body);}
+    .notes-main-footer{padding:10px 24px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;font-size:.6875rem;color:var(--muted);font-family:var(--font-mono);}
+    .save-indicator{font-size:.75rem;color:var(--emerald);font-weight:500;font-family:var(--font-body);}
+    .save-indicator.saving{color:var(--amber);}
+    .notes-right{border-left:1px solid var(--line);background:var(--paper);padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;}
+    .meta-label{font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;}
+    .meta-value{font-size:.8125rem;color:var(--ink);}
+    .meta-select{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:.8125rem;font-family:var(--font-body);outline:none;cursor:pointer;}
+    .meta-select:focus{border-color:var(--violet);}
+    .tags-input-wrap{display:flex;flex-wrap:wrap;gap:4px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);min-height:36px;align-items:center;cursor:text;}
+    .tags-input-wrap:focus-within{border-color:var(--violet);}
+    .tags-input{border:none;outline:none;font-size:.75rem;flex:1;min-width:60px;background:transparent;color:var(--ink);font-family:var(--font-body);}
+    .tag-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:.6875rem;font-weight:500;background:rgba(124,58,237,.1);color:var(--violet);}
+    .tag-chip button{background:none;border:none;cursor:pointer;color:inherit;font-size:.75rem;line-height:1;padding:0;margin-left:2px;}
+    .meta-dates{font-size:.75rem;color:var(--muted);line-height:1.8;}
+    @media(max-width:900px){.notes-grid{grid-template-columns:1fr;}.notes-left,.notes-right{display:none;}}
+  </style>
+</head>
+<body><div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+function AnotacoesPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [notes, setNotes] = useState([]);
+  const [activeId, setActiveId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("todas");
+  const [catFilter, setCatFilter] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("Leitura");
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
+  const [status, setStatus] = useState("Rascunho");
+  const [saveState, setSaveState] = useState("");
+  const debounceRef = useRef(null);
+  const [meta, setMeta] = useState({ created_at: null, updated_at: null });
+  const notesEditorRef = useRef(null);
+  const notesToolbarRef = useRef(null);
+
+  const projectId = project?.id;
+
+  async function loadNotes() {
+    if (!projectId) return;
+    try {
+      const { data, error } = await _supa.from("notes").select("*").eq("project_id", projectId).order("updated_at", { ascending: false });
+      if (error) throw error;
+      setNotes(data || []);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    if (projectId) loadNotes();
+  }, [projectId]);
+
+  useEffect(() => {
+    // Initialize editor after DOM is ready and note is selected
+    if (activeId && !notesEditorRef.current) {
+      setTimeout(() => {
+        const editorElement = document.getElementById('notes-editor-content');
+        if (editorElement) {
+          notesEditorRef.current = new RichTextEditor('notes-editor-content', {
+            storageKey: `note_${activeId}`,
+            autoSaveInterval: 30000,
+            onSave: (data) => {
+              setSaveState('saved');
+              setTimeout(() => setSaveState(''), 2000);
+            }
+          });
+
+          // Initialize toolbar
+          const toolbarContainer = document.getElementById('notes-editor-toolbar');
+          if (toolbarContainer) {
+            notesToolbarRef.current = new EditorToolbar(notesEditorRef.current, 'notes-editor-toolbar');
+            notesToolbarRef.current.build();
+          }
+
+          // Set initial content
+          notesEditorRef.current.setContent(content);
+          updateNotesStatusBar();
+        }
+      }, 100);
+    }
+  }, [activeId]);
+
+  useEffect(() => {
+    // Update editor content when note changes
+    if (notesEditorRef.current && activeId) {
+      notesEditorRef.current.setContent(content);
+      updateNotesStatusBar();
+    }
+  }, [content, activeId]);
+
+  function updateNotesStatusBar() {
+    if (notesEditorRef.current) {
+      const wordCount = notesEditorRef.current.getWordCount();
+      const charCount = notesEditorRef.current.getCharCount();
+      const wordCountEl = document.getElementById('notes-word-count');
+      const charCountEl = document.getElementById('notes-char-count');
+      if (wordCountEl) wordCountEl.textContent = wordCount;
+      if (charCountEl) charCountEl.textContent = charCount;
+    }
+  }
+
+  // Update editor content on input
+  useEffect(() => {
+    const contentElement = document.getElementById('notes-editor-content');
+    if (contentElement && notesEditorRef.current && activeId) {
+      const updateContent = () => {
+        const newContent = notesEditorRef.current.getContent();
+        setContent(newContent);
+        scheduleSave({ content: newContent });
+        updateNotesStatusBar();
+      };
+
+      contentElement.addEventListener('input', updateContent);
+      contentElement.addEventListener('paste', updateContent);
+
+      return () => {
+        contentElement.removeEventListener('input', updateContent);
+        contentElement.removeEventListener('paste', updateContent);
+      };
+    }
+  }, [activeId]);
+
+  const activeNote = notes.find(n => n.id === activeId);
+
+  function selectNote(note) {
+    setActiveId(note.id);
+    setTitle(note.title || "");
+    setContent(note.content || "");
+    setCategory(note.category || "Leitura");
+    setTags(Array.isArray(note.tags) ? note.tags : []);
+    setStatus(note.status || "Rascunho");
+    setMeta({ created_at: note.created_at, updated_at: note.updated_at });
+    setSaveState("");
+  }
+
+  async function createNote() {
+    if (!projectId) return;
+    try {
+      const { data, error } = await _supa.from("notes").insert({
+        project_id: projectId,
+        user_id: user.uid,
+        title: "",
+        content: "",
+        category: "Leitura",
+        status: "Rascunho",
+        tags: [],
+        is_favorite: false,
+        word_count: 0,
+        created_by: user.uid
+      }).select().maybeSingle();
+      if (error) throw error;
+      if (data) {
+        setNotes(prev => [data, ...prev]);
+        selectNote(data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const saveNote = useCallback(async (fields) => {
+    if (!activeId) return;
+    setSaveState("saving");
+    const wordCount = (fields.content || content).trim().split(/\s+/).filter(Boolean).length;
+    try {
+      const updateData = {
+        title: fields.title !== undefined ? fields.title : title,
+        content: fields.content !== undefined ? fields.content : content,
+        category: fields.category !== undefined ? fields.category : category,
+        status: fields.status !== undefined ? fields.status : status,
+        tags: fields.tags !== undefined ? fields.tags : tags,
+        word_count: wordCount,
+        updated_at: new Date().toISOString()
+      };
+      const { error } = await _supa.from("notes").update(updateData).eq("id", activeId);
+      if (error) throw error;
+      setNotes(prev => prev.map(n => n.id === activeId ? { ...n, ...updateData } : n));
+      setMeta(prev => ({ ...prev, updated_at: updateData.updated_at }));
+      setSaveState("saved");
+    } catch (e) {
+      console.error(e);
+      setSaveState("");
+    }
+  }, [activeId, title, content, category, status, tags]);
+
+  function scheduleSave(fields) {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => saveNote(fields), 2000);
+  }
+
+  function handleTitleChange(val) {
+    setTitle(val);
+    scheduleSave({ title: val });
+  }
+
+  function handleContentChange(val) {
+    setContent(val);
+    scheduleSave({ content: val });
+  }
+
+  async function toggleFavorite(e, note) {
+    e.stopPropagation();
+    try {
+      const { error } = await _supa.from("notes").update({ is_favorite: !note.is_favorite }).eq("id", note.id);
+      if (error) throw error;
+      setNotes(prev => prev.map(n => n.id === note.id ? { ...n, is_favorite: !n.is_favorite } : n));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function archiveNote() {
+    if (!activeId) return;
+    setStatus("Arquivada");
+    await saveNote({ status: "Arquivada" });
+  }
+
+  async function deleteNote() {
+    if (!activeId || !confirm("Excluir esta anotação permanentemente?")) return;
+    try {
+      const { error } = await _supa.from("notes").delete().eq("id", activeId);
+      if (error) throw error;
+      setNotes(prev => prev.filter(n => n.id !== activeId));
+      setActiveId(null);
+      setTitle("");
+      setContent("");
+      setSaveState("");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function handleTagKeyDown(e) {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const raw = tagInput.split(",").map(t => t.trim()).filter(Boolean);
+      if (raw.length) {
+        const next = [...new Set([...tags, ...raw])];
+        setTags(next);
+        setTagInput("");
+        scheduleSave({ tags: next });
+      }
+    }
+  }
+
+  function removeTag(idx) {
+    const next = tags.filter((_, i) => i !== idx);
+    setTags(next);
+    scheduleSave({ tags: next });
+  }
+
+  function handleCategoryChange(val) {
+    setCategory(val);
+    scheduleSave({ category: val });
+  }
+
+  function handleStatusChange(val) {
+    setStatus(val);
+    scheduleSave({ status: val });
+  }
+
+  let filtered = notes;
+  if (filter === "favoritas") filtered = filtered.filter(n => n.is_favorite);
+  if (catFilter) filtered = filtered.filter(n => n.category === catFilter);
+  if (search) {
+    const q = search.toLowerCase();
+    filtered = filtered.filter(n => (n.title || "").toLowerCase().includes(q) || (n.content || "").toLowerCase().includes(q));
+  }
+
+  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
+  const charCount = content.length;
+
+  function fmtDate(d) {
+    if (!d) return "-";
+    return new Date(d).toLocaleDateString("pt-BR", { day:"2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" });
+  }
+
+  if (loading) return <AppSplash />;
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="tools" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Anotações e Fichamentos" user={user}/>
+        <div className="notes-grid">
+
+          <div className="notes-left">
+            <div className="notes-left-header">
+              <input className="notes-search" placeholder="Buscar anotações..." value={search} onChange={e => setSearch(e.target.value)}/>
+              <div className="notes-filters">
+                <button className={"filter-btn" + (filter === "todas" ? " active" : "")} onClick={() => setFilter("todas")}>Todas</button>
+                <button className={"filter-btn" + (filter === "favoritas" ? " active" : "")} onClick={() => setFilter("favoritas")}>Favoritas</button>
+              </div>
+              <select className="cat-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
+                <option value="">Todas categorias</option>
+                <option value="Leitura">Leitura</option>
+                <option value="Análise">Análise</option>
+                <option value="Pesquisa">Pesquisa</option>
+                <option value="Pessoal">Pessoal</option>
+              </select>
+            </div>
+            <div className="notes-list">
+              {filtered.length === 0 && (
+                <div className="empty-state" style={{padding:"40px 16px",textAlign:"center"}}>
+                  <div style={{fontSize:"1.5rem",marginBottom:8,opacity:.4}}>📝</div>
+                  <div style={{fontSize:".8125rem",color:"var(--muted)"}}>Nenhuma anotação encontrada</div>
+                </div>
+              )}
+              {filtered.map(note => (
+                <div key={note.id} className={"note-item" + (note.id === activeId ? " active" : "")} onClick={() => selectNote(note)}>
+                  <button className={"note-item-star" + (note.is_favorite ? " fav" : "")} onClick={e => toggleFavorite(e, note)}>{note.is_favorite ? "★" : "☆"}</button>
+                  <div className="note-item-title">{note.title || "Sem título"}</div>
+                  <div className="note-item-preview">{(note.content || "").split("\n")[0].substring(0, 60) || "Sem conteúdo"}</div>
+                  <div className="note-item-date">{fmtDate(note.updated_at)}</div>
+                </div>
+              ))}
+            </div>
+            <div className="notes-left-footer">
+              <button className="btn btn-violet" style={{width:"100%"}} onClick={createNote}>+ Nova anotação</button>
+            </div>
+          </div>
+
+          <div className="notes-main">
+            {!activeId ? (
+              <div className="empty-state" style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:8}}>
+                <div style={{fontSize:"2rem",opacity:.3}}>📝</div>
+                <div style={{fontSize:".9375rem",color:"var(--muted)",fontWeight:500}}>Selecione ou crie uma anotação</div>
+                <div style={{fontSize:".75rem",color:"var(--muted)"}}>Use o botão "+ Nova anotação" para começar</div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0, flex: 1, overflow: 'hidden' }}>
+                <div id="notes-editor-toolbar" style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--line)', padding: '0', margin: '0', overflowX: 'auto' }}></div>
+                <input className="notes-main-title" placeholder="Título da anotação..." value={title} onChange={e => handleTitleChange(e.target.value)} spellCheck="true"/>
+                <div id="notes-editor-content" className="editor-content" style={{ flex: 1, outline: 'none' }}/>
+                <div className="notes-main-footer">
+                  <span><span id="notes-word-count">{wordCount}</span> palavras &middot; <span id="notes-char-count">{charCount}</span> caracteres</span>
+                  <span className={"save-indicator" + (saveState === "saving" ? " saving" : "")}>{saveState === "saving" ? "Salvando..." : saveState === "saved" ? "Salvo" : ""}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="notes-right">
+            {activeId ? (
+              <>
+                <div>
+                  <div className="meta-label">Categoria</div>
+                  <select className="meta-select" value={category} onChange={e => handleCategoryChange(e.target.value)}>
+                    <option value="Leitura">Leitura</option>
+                    <option value="Análise">Análise</option>
+                    <option value="Pesquisa">Pesquisa</option>
+                    <option value="Pessoal">Pessoal</option>
+                  </select>
+                </div>
+                <div>
+                  <div className="meta-label">Tags</div>
+                  <div className="tags-input-wrap" onClick={() => document.getElementById("tag-input-field")?.focus()}>
+                    {tags.map((t, i) => (
+                      <span key={i} className="tag-chip">{t}<button onClick={() => removeTag(i)}>&times;</button></span>
+                    ))}
+                    <input id="tag-input-field" className="tags-input" placeholder="Adicionar tag..." value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={handleTagKeyDown}/>
+                  </div>
+                  <div style={{fontSize:".6875rem",color:"var(--muted)",marginTop:4}}>Separadas por vírgula</div>
+                </div>
+                <div>
+                  <div className="meta-label">Status</div>
+                  <select className="meta-select" value={status} onChange={e => handleStatusChange(e.target.value)}>
+                    <option value="Rascunho">Rascunho</option>
+                    <option value="Publicada">Publicada</option>
+                    <option value="Arquivada">Arquivada</option>
+                  </select>
+                </div>
+                <div>
+                  <div className="meta-label">Criado em</div>
+                  <div className="meta-dates">{fmtDate(meta.created_at)}</div>
+                </div>
+                <div>
+                  <div className="meta-label">Atualizado em</div>
+                  <div className="meta-dates">{fmtDate(meta.updated_at)}</div>
+                </div>
+                <div style={{marginTop:"auto",display:"flex",flexDirection:"column",gap:8}}>
+                  <button className="btn btn-ghost" onClick={archiveNote}>Arquivar</button>
+                  <button className="btn" style={{color:"var(--rose)",background:"transparent",border:"1px solid var(--line)"}} onClick={deleteNote}>Excluir</button>
+                </div>
+              </>
+            ) : (
+              <div className="empty-state" style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <div style={{fontSize:".8125rem",color:"var(--muted)",textAlign:"center"}}>Selecione uma anotação para ver os detalhes</div>
+              </div>
+            )}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<AnotacoesPage/>);
+</script>
+</body></html>

@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I.A. Pesquisa - TCCFlow</title>
     <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -42,39 +58,58 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
-                    </div>
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
                     <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
-                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas</a>
-                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">I.A.</a>
-                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
-                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
-                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
-                </div>
-                <div class="flex items-center gap-2">
+                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.dashboard">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.project">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm" data-i18n="nav.ia">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.calendar">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.tools"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
+                    <div class="relative" id="moreDropdown">
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1" data-i18n="nav.more">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.tasks">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.team">Equipe</a>
+                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.plans"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
+                        </div>
+                    </div>
+                </div><div class="flex items-center gap-2">
                     <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-gear text-sm"></i></a>
+                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
                     <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-sm"></i></button>
                     <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-bars text-sm"></i></button>
                 </div>
             </div>
         </div>
         <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.dashboard">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.project">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tasks">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50" data-i18n="nav.ia">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.calendar">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.team">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tools">Ferramentas</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.plans">Planos</a>
         </div>
+    
+    <script>
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('moreDropdown');
+        const menu = document.getElementById('moreMenu');
+        if (dropdown && menu && !dropdown.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+    </script>
     </nav>
 
     <!-- Main Content -->
@@ -86,8 +121,8 @@
                 <div class="w-16 h-16 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
                     <i class="fa-solid fa-robot text-white text-2xl"></i>
                 </div>
-                <h1 class="text-3xl font-bold mb-2">Assistente de Pesquisa I.A.</h1>
-                <p class="text-slate-500 max-w-lg mx-auto">Pesquise artigos acadêmicos, encontre fontes confiáveis e explore referências para o seu TCC usando inteligência artificial.</p>
+                <h1 class="text-2xl sm:text-3xl font-bold mb-2" data-i18n="ai.title">Assistente de Pesquisa I.A.</h1>
+                <p class="text-slate-500 max-w-lg mx-auto" data-i18n="ai.subtitle">Pesquise artigos acadêmicos, encontre fontes confiáveis e explore referências para o seu TCC usando inteligência artificial.</p>
             </div>
 
             <!-- Search Bar -->
@@ -95,44 +130,76 @@
                 <form id="searchForm" class="flex gap-3">
                     <div class="flex-1 relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" id="searchInput" placeholder="Ex: impacto das redes sociais na saúde mental de adolescentes"
+                        <input type="text" id="searchInput" placeholder="Ex: impacto das redes sociais na saúde mental de adolescentes" data-i18n-placeholder="ai.searchPlaceholder"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition" required>
                     </div>
                     <button type="submit" id="searchBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-6 py-3.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm whitespace-nowrap">
-                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Pesquisar
+                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i><span data-i18n="ai.search">Pesquisar</span>
                     </button>
                 </form>
 
                 <!-- Quick Suggestions -->
                 <div class="flex flex-wrap gap-2 mt-4">
-                    <span class="text-xs text-slate-400 mr-1 pt-1">Sugestões:</span>
-                    <button onclick="quickSearch('inteligência artificial na educação')" class="text-xs bg-violet-50 text-violet-600 px-3 py-1.5 rounded-full hover:bg-violet-100 transition">inteligência artificial na educação</button>
-                    <button onclick="quickSearch('sustentabilidade ambiental nas empresas')" class="text-xs bg-cyan-50 text-cyan-600 px-3 py-1.5 rounded-full hover:bg-cyan-100 transition">sustentabilidade nas empresas</button>
-                    <button onclick="quickSearch('saúde mental de jovens')" class="text-xs bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full hover:bg-emerald-100 transition">saúde mental de jovens</button>
-                    <button onclick="quickSearch('tecnologia e inclusão social')" class="text-xs bg-amber-50 text-amber-600 px-3 py-1.5 rounded-full hover:bg-amber-100 transition">tecnologia e inclusão social</button>
+                    <span class="text-xs text-slate-400 mr-1 pt-1" data-i18n="ai.suggestions">Sugestões:</span>
+                    <button onclick="quickSearch('inteligência artificial na educação')" class="text-xs bg-violet-50 text-violet-600 px-3 py-1.5 rounded-full hover:bg-violet-100 transition" data-i18n="ai.suggestionAI">inteligência artificial na educação</button>
+                    <button onclick="quickSearch('sustentabilidade ambiental nas empresas')" class="text-xs bg-cyan-50 text-cyan-600 px-3 py-1.5 rounded-full hover:bg-cyan-100 transition" data-i18n="ai.suggestionSustainability">sustentabilidade nas empresas</button>
+                    <button onclick="quickSearch('saúde mental de jovens')" class="text-xs bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full hover:bg-emerald-100 transition" data-i18n="ai.suggestionMentalHealth">saúde mental de jovens</button>
+                    <button onclick="quickSearch('tecnologia e inclusão social')" class="text-xs bg-amber-50 text-amber-600 px-3 py-1.5 rounded-full hover:bg-amber-100 transition" data-i18n="ai.suggestionTechInclusion">tecnologia e inclusão social</button>
                 </div>
             </div>
 
             <!-- Filter Options -->
             <div class="flex flex-wrap gap-3 mb-6">
                 <select id="filterYear" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                    <option value="">Qualquer ano</option>
+                    <option value="" data-i18n="ai.anyYear">Qualquer ano</option>
                     <option value="2024-2026">2024-2026</option>
                     <option value="2020-2023">2020-2023</option>
                     <option value="2015-2019">2015-2019</option>
                     <option value="2010-2014">2010-2014</option>
+                    <option value="2000-2009">2000-2009</option>
                 </select>
                 <select id="filterType" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                    <option value="all">Todos os tipos</option>
-                    <option value="article">Artigos</option>
-                    <option value="book">Livros</option>
-                    <option value="thesis">Teses e Dissertações</option>
+                    <option value="all" data-i18n="ai.allTypes">Todos os tipos</option>
+                    <option value="article" data-i18n="ai.articles">Artigos</option>
+                    <option value="review" data-i18n="ai.reviewArticles">Artigos de Revisão</option>
+                    <option value="book" data-i18n="ai.books">Livros</option>
+                    <option value="thesis" data-i18n="ai.theses">Teses e Dissertações</option>
+                    <option value="conference" data-i18n="ai.conferences">Conferências</option>
                 </select>
                 <select id="filterLang" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                    <option value="pt">Português</option>
-                    <option value="en">Inglês</option>
-                    <option value="all">Todos os idiomas</option>
+                    <option value="pt" data-i18n="ai.portuguese">Português</option>
+                    <option value="en" data-i18n="ai.english">Inglês</option>
+                    <option value="es" data-i18n="ai.spanish">Espanhol</option>
+                    <option value="all" data-i18n="ai.allLanguages">Todos os idiomas</option>
                 </select>
+                <select id="filterArea" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <option value="" data-i18n="ai.allAreas">Todas as áreas</option>
+                    <option value="Computer Science" data-i18n="ai.computerScience">Ciência da Computação</option>
+                    <option value="Education" data-i18n="ai.education">Educação</option>
+                    <option value="Psychology" data-i18n="ai.psychology">Psicologia</option>
+                    <option value="Medicine" data-i18n="ai.medicine">Medicina/Saúde</option>
+                    <option value="Business" data-i18n="ai.business">Administração/Negócios</option>
+                    <option value="Engineering" data-i18n="ai.engineering">Engenharia</option>
+                    <option value="Sociology" data-i18n="ai.sociology">Sociologia</option>
+                    <option value="Environmental Science" data-i18n="ai.environmentalScience">Ciências Ambientais</option>
+                    <option value="Economics" data-i18n="ai.economics">Economia</option>
+                    <option value="Law" data-i18n="ai.law">Direito</option>
+                </select>
+                <select id="filterSort" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <option value="relevance" data-i18n="ai.mostRelevant">Mais relevantes</option>
+                    <option value="citations" data-i18n="ai.mostCited">Mais citados</option>
+                    <option value="year" data-i18n="ai.mostRecent">Mais recentes</option>
+                </select>
+                <label id="filterOpenAccess" class="hidden items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm cursor-pointer hover:bg-slate-50 transition">
+                    <input type="checkbox" id="openAccessCheck" class="accent-violet-600">
+                    <span data-i18n="ai.openAccess">Acesso aberto</span>
+                </label>
+            </div>
+
+            <!-- Pro Search Info Banner -->
+            <div id="proSearchBanner" class="hidden mb-6 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-xl px-4 py-3 flex items-center gap-3">
+                <i class="fa-solid fa-crown text-amber-500"></i>
+                <p class="text-xs text-slate-600"><span class="font-bold text-violet-700" data-i18n="ai.proActive">Pro ativo</span> — <span data-i18n="ai.proBannerDesc">Até 50 artigos por seção, 1.000 buscas/mês com filtros avançados</span></p>
             </div>
 
             <!-- Results Area -->
@@ -141,27 +208,27 @@
                 <div id="welcomeState" class="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 shadow-sm text-center">
                     <div class="max-w-md mx-auto">
                         <i class="fa-solid fa-brain text-4xl text-violet-300 mb-4"></i>
-                        <h3 class="text-lg font-bold mb-2">Como funciona?</h3>
-                        <p class="text-sm text-slate-500 mb-6">Digite um tema e o assistente buscará artigos acadêmicos em bases de dados como Semantic Scholar, CrossRef e Google Scholar.</p>
+                        <h3 class="text-lg font-bold mb-2" data-i18n="ai.howItWorks">Como funciona?</h3>
+                        <p class="text-sm text-slate-500 mb-6" data-i18n="ai.howItWorksDesc">Digite um tema e o assistente buscará artigos acadêmicos em bases como Google Acadêmico, SciELO e CrossRef.</p>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
                             <div class="bg-violet-50 rounded-xl p-4">
                                 <div class="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center mb-2">
                                     <i class="fa-solid fa-1 text-violet-600 text-xs font-bold"></i>
                                 </div>
-                                <p class="text-xs font-medium">Digite o tema da sua pesquisa</p>
+                                <p class="text-xs font-medium" data-i18n="ai.step1">Digite o tema da sua pesquisa</p>
                             </div>
                             <div class="bg-cyan-50 rounded-xl p-4">
                                 <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center mb-2">
                                     <i class="fa-solid fa-2 text-cyan-600 text-xs font-bold"></i>
                                 </div>
-                                <p class="text-xs font-medium">Veja artigos e fontes encontrados</p>
+                                <p class="text-xs font-medium" data-i18n="ai.step2">Veja artigos e fontes encontrados</p>
                             </div>
                             <div class="bg-emerald-50 rounded-xl p-4">
                                 <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mb-2">
                                     <i class="fa-solid fa-3 text-emerald-600 text-xs font-bold"></i>
                                 </div>
-                                <p class="text-xs font-medium">Salve os que forem úteis para o TCC</p>
+                                <p class="text-xs font-medium" data-i18n="ai.step3">Salve os que forem úteis para o TCC</p>
                             </div>
                         </div>
                     </div>
@@ -174,14 +241,14 @@
                         <div class="typing-dot w-3 h-3 bg-cyan-500 rounded-full"></div>
                         <div class="typing-dot w-3 h-3 bg-emerald-500 rounded-full"></div>
                     </div>
-                    <p class="text-sm text-slate-500" id="loadingText">Buscando artigos acadêmicos...</p>
-                    <p class="text-xs text-slate-400 mt-1">Consultando Semantic Scholar e CrossRef</p>
+                    <p class="text-sm text-slate-500" id="loadingText" data-i18n="ai.searching">Buscando artigos acadêmicos...</p>
+                    <p class="text-xs text-slate-400 mt-1" data-i18n="ai.consultingSS">Consultando Google Acadêmico, SciELO e CrossRef</p>
                 </div>
 
                 <!-- Results -->
                 <div id="resultsList" class="hidden space-y-4">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-bold" id="resultsTitle">Resultados</h3>
+                        <h3 class="text-lg font-bold" id="resultsTitle" data-i18n="ai.results">Resultados</h3>
                         <span class="text-sm text-slate-400" id="resultsCount"></span>
                     </div>
                     <div id="resultsContainer" class="space-y-3"></div>
@@ -190,20 +257,20 @@
                 <!-- Error State -->
                 <div id="errorState" class="hidden bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
                     <i class="fa-solid fa-circle-exclamation text-red-400 text-2xl mb-2"></i>
-                    <p class="text-sm text-red-600" id="errorText">Erro ao buscar resultados</p>
+                    <p class="text-sm text-red-600" id="errorText" data-i18n="ai.searchError">Erro ao buscar resultados</p>
                 </div>
             </div>
 
             <!-- Saved Papers -->
             <div class="mt-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-bold"><i class="fa-solid fa-bookmark mr-2 text-amber-600"></i>Fontes Salvas</h2>
-                    <span class="text-xs text-slate-400" id="savedCount">0 salvos</span>
+                    <h2 class="text-lg font-bold"><i class="fa-solid fa-bookmark mr-2 text-amber-600"></i><span data-i18n="ai.savedSources">Fontes Salvas</span></h2>
+                    <span class="text-xs text-slate-400" id="savedCount">0 <span data-i18n="ai.saved">salvos</span></span>
                 </div>
                 <div id="savedList" class="space-y-3">
                     <div class="text-center py-6 text-slate-400">
                         <i class="fa-solid fa-bookmark text-2xl mb-2 block opacity-30"></i>
-                        <p class="text-sm">Nenhuma fonte salva ainda. Pesquise e salve artigos relevantes!</p>
+                        <p class="text-sm" data-i18n="ai.noSavedSources">Nenhuma fonte salva ainda. Pesquise e salve artigos relevantes!</p>
                     </div>
                 </div>
             </div>
@@ -211,28 +278,28 @@
             <!-- AI Usage Counter -->
             <div id="usageBanner" class="hidden mt-6 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-semibold"><i class="fa-solid fa-chart-simple text-violet-600 mr-2"></i>Pesquisas este mês</span>
-                    <span class="text-xs font-bold" id="usageText">0 / 10</span>
+                    <span class="text-sm font-semibold"><i class="fa-solid fa-chart-simple text-violet-600 mr-2"></i><span data-i18n="ai.searchesThisMonth">Pesquisas este mês</span></span>
+                    <span class="text-xs font-bold" id="usageText">0 / 20</span>
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-2">
                     <div id="usageBar" class="h-2 rounded-full bg-gradient-to-r from-violet-500 to-cyan-500 transition-all duration-500" style="width: 0%"></div>
                 </div>
-                <p class="text-xs text-slate-400 mt-2" id="usageHint">Plano gratuito: 10 pesquisas/mês. <a href="planos.html" class="text-violet-600 hover:underline font-medium">Upgrade para Pro →</a></p>
+                <p class="text-xs text-slate-400 mt-2" id="usageHint"><span data-i18n="ai.freePlanUsage">Plano gratuito: 20 pesquisas/mês.</span> <a href="planos.html" class="text-violet-600 hover:underline font-medium" data-i18n="ai.upgradeToProLink">Upgrade para Pro →</a></p>
             </div>
 
             <!-- Rate Limit Reached -->
             <div id="rateLimitBanner" class="hidden mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
                 <i class="fa-solid fa-lock text-amber-500 text-2xl mb-2"></i>
-                <h3 class="text-sm font-bold text-amber-800 mb-1">Limite de pesquisas atingido</h3>
-                <p class="text-xs text-amber-600 mb-3">Você usou todas as pesquisas do plano gratuito este mês.</p>
+                <h3 class="text-sm font-bold text-amber-800 mb-1" data-i18n="ai.searchLimitReached">Limite de pesquisas atingido</h3>
+                <p class="text-xs text-amber-600 mb-3" data-i18n="ai.searchLimitDesc">Você usou todas as pesquisas do plano gratuito este mês.</p>
                 <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:shadow-lg transition">
-                    <i class="fa-solid fa-crown mr-2"></i>Fazer upgrade para Pro
+                    <i class="fa-solid fa-crown mr-2"></i><span data-i18n="ai.upgradeToPro">Fazer upgrade para Pro</span>
                 </a>
             </div>
 
             <!-- Quick Access to Academic Databases -->
             <div class="mt-6 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6">
-                <h3 class="font-bold mb-4"><i class="fa-solid fa-database mr-2 text-violet-600"></i>Bases Acadêmicas</h3>
+                <h3 class="font-bold mb-4"><i class="fa-solid fa-database mr-2 text-violet-600"></i><span data-i18n="ai.academicDatabases">Bases Acadêmicas</span></h3>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <a href="https://scholar.google.com" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
                         <i class="fa-solid fa-graduation-cap text-lg text-blue-600 mb-1"></i>
@@ -242,9 +309,9 @@
                         <i class="fa-solid fa-flask text-lg text-emerald-600 mb-1"></i>
                         <p class="text-xs font-medium">SciELO</p>
                     </a>
-                    <a href="https://www.semanticscholar.org" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
+                    <a href="https://openalex.org" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
                         <i class="fa-solid fa-brain text-lg text-violet-600 mb-1"></i>
-                        <p class="text-xs font-medium">Semantic Scholar</p>
+                        <p class="text-xs font-medium">OpenAlex</p>
                     </a>
                     <a href="https://bdtd.ibict.br" target="_blank" class="bg-white border border-slate-200 rounded-xl p-3 text-center hover:shadow-md transition">
                         <i class="fa-solid fa-book text-lg text-amber-600 mb-1"></i>
@@ -253,17 +320,81 @@
                 </div>
             </div>
 
+            <!-- Orientador Virtual (beta only) -->
+            <div id="orientadorSection" class="mt-8 hidden">
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
+                                <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold" data-i18n="ai.virtualAdvisor">Orientador Virtual</h2>
+                                <p class="text-xs text-slate-400" data-i18n="ai.virtualAdvisorDesc">Assistente para revisão, objetivos, metodologia e mais</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="px-6 py-3 border-b border-slate-100 flex flex-wrap gap-2">
+                        <button onclick="orientadorAction('objetivo')" class="text-xs bg-violet-50 text-violet-600 px-3 py-1.5 rounded-full hover:bg-violet-100 transition"><i class="fa-solid fa-bullseye mr-1"></i><span data-i18n="ai.objectives">Objetivos</span></button>
+                        <button onclick="orientadorAction('metodologia')" class="text-xs bg-cyan-50 text-cyan-600 px-3 py-1.5 rounded-full hover:bg-cyan-100 transition"><i class="fa-solid fa-microscope mr-1"></i><span data-i18n="ai.methodology">Metodologia</span></button>
+                        <button onclick="orientadorAction('introducao')" class="text-xs bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full hover:bg-emerald-100 transition"><i class="fa-solid fa-pen-fancy mr-1"></i><span data-i18n="ai.introduction">Introdução</span></button>
+                        <button onclick="orientadorAction('revisao')" class="text-xs bg-amber-50 text-amber-600 px-3 py-1.5 rounded-full hover:bg-amber-100 transition"><i class="fa-solid fa-spell-check mr-1"></i><span data-i18n="ai.review">Revisão</span></button>
+                        <button onclick="orientadorAction('resumo')" class="text-xs bg-rose-50 text-rose-600 px-3 py-1.5 rounded-full hover:bg-rose-100 transition"><i class="fa-solid fa-file-lines mr-1"></i><span data-i18n="ai.abstract">Resumo</span></button>
+                        <button onclick="orientadorAction('referencia')" class="text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full hover:bg-blue-100 transition"><i class="fa-solid fa-quote-right mr-1"></i><span data-i18n="ai.references">Referências</span></button>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="orientadorMessages" class="h-80 overflow-y-auto p-4 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-robot text-white text-xs"></i>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3 max-w-[85%]">
+                                <p class="text-sm text-slate-700 leading-relaxed" data-i18n="ai.advisorWelcome">Olá! Sou seu orientador virtual. Posso ajudar com revisão de texto, objetivos, metodologia, introdução e mais. Use os botões acima ou me faça uma pergunta!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="orientadorTyping" class="hidden px-4 pb-2">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-robot text-white text-xs"></i>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3">
+                                <div class="flex items-center gap-1.5">
+                                    <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+                                    <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+                                    <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input -->
+                    <div class="border-t border-slate-200 p-3 flex gap-3">
+                        <input type="text" id="orientadorInput" placeholder="Pergunte sobre seu TCC..." data-i18n-placeholder="ai.advisorPlaceholder"
+                            class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
+                            onkeydown="if(event.key==='Enter'){event.preventDefault();sendOrientadorMsg();}">
+                        <button onclick="sendOrientadorMsg()" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-4 py-2.5 rounded-xl font-semibold text-sm hover:shadow-lg transition">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-init.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
     <script src="../js/db-service.js"></script>
     <script>
         let currentUserId = null;
         let projectId = null;
+        let userIsPro = false;
         let cachedSavedPapers = [];
 
         document.getElementById('mobileNavBtn').addEventListener('click', () => {
@@ -277,18 +408,36 @@
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
             currentUserId = user.uid;
-            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+            document.getElementById('userName').textContent = user.displayName || i18n.t('common.user');
 
-            // Update navbar for PRO users
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
+            // Check PRO status and beta testers
             try {
                 const pid = await DB.getProjectId();
                 if (pid) {
                     const isPro = await DB.isProByProject(pid);
                     if (isPro) {
-                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
-                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
-                        });
+                        userIsPro = true;
+                        document.getElementById('proSearchBanner').classList.remove('hidden');
+                        document.getElementById('proSearchBanner').classList.add('flex');
+                        document.getElementById('filterOpenAccess').classList.remove('hidden');
+                        document.getElementById('filterOpenAccess').classList.add('flex');
                     }
+                }
+                // Show Orientador Virtual only for beta testers
+                const isBeta = await DB.isBetaTester(user.uid);
+                if (isBeta) {
+                    document.getElementById('orientadorSection').classList.remove('hidden');
                 }
             } catch(e) { console.log(e); }
 
@@ -310,6 +459,29 @@
         window.quickSearch = function(query) {
             document.getElementById('searchInput').value = query;
             document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+        };
+
+        // OpenAlex type mapping for filter
+        const TYPE_MAP = {
+            'article': 'article',
+            'review': 'review',
+            'book': 'book',
+            'thesis': 'dissertation',
+            'conference': 'proceedings-article'
+        };
+
+        // OpenAlex area/topic mapping
+        const AREA_MAP = {
+            'Computer Science': 'Computer Science',
+            'Education': 'Education',
+            'Psychology': 'Psychology',
+            'Medicine': 'Medicine',
+            'Business': 'Business',
+            'Engineering': 'Engineering',
+            'Sociology': 'Sociology',
+            'Environmental Science': 'Environmental Science',
+            'Economics': 'Economics',
+            'Law': 'Law'
         };
 
         document.getElementById('searchForm').addEventListener('submit', async (e) => {
@@ -334,30 +506,45 @@
 
             const lang = document.getElementById('filterLang').value;
             const yearRange = document.getElementById('filterYear').value;
-
-            // Build search query
-            let searchQuery = query;
-            if (lang === 'pt') searchQuery = query;
-            else if (lang === 'en') searchQuery = query;
+            const area = document.getElementById('filterArea').value;
+            const docType = document.getElementById('filterType').value;
+            const sortBy = document.getElementById('filterSort').value;
+            const openAccess = document.getElementById('openAccessCheck').checked;
+            const maxResults = userIsPro ? 50 : 20;
 
             try {
-                // Fetch from Semantic Scholar API (free, no key needed)
-                const results = await searchSemanticScholar(searchQuery, yearRange);
+                let allResults = [];
 
-                // Also search CrossRef for additional results
-                const crossrefResults = await searchCrossRef(searchQuery, yearRange);
+                // Search based on document type
+                if (docType === 'book' || docType === 'all') {
+                    // Search for books
+                    const bookResults = await searchBooks(query, yearRange, lang, area, sortBy);
+                    allResults = allResults.concat(bookResults);
+                }
 
-                // Merge and deduplicate
-                const allResults = [...results, ...crossrefResults];
-                const unique = allResults.filter((v, i, a) =>
-                    a.findIndex(t => t.title.toLowerCase() === v.title.toLowerCase()) === i
+                if (docType !== 'book') {
+                    // Search OpenAlex (primary - indexes Google Scholar + SciELO content)
+                    const openAlexResults = await searchOpenAlex(query, yearRange, lang, area, docType, openAccess, sortBy);
+                    allResults = allResults.concat(openAlexResults);
+
+                    // Search CrossRef as secondary source
+                    const crossrefResults = await searchCrossRef(query, yearRange, lang, docType, openAccess);
+                    allResults = allResults.concat(crossrefResults);
+                }
+
+                // Merge and deduplicate by title
+                let unique = allResults.filter((v, i, a) =>
+                    a.findIndex(t => t.title.toLowerCase().trim() === v.title.toLowerCase().trim()) === i
                 );
 
-                if (unique.length === 0) {
-                    showResults([], query);
-                } else {
-                    showResults(unique.slice(0, 20), query);
+                // Sort results
+                if (sortBy === 'citations') {
+                    unique.sort((a, b) => (b.citations || 0) - (a.citations || 0));
+                } else if (sortBy === 'year') {
+                    unique.sort((a, b) => (b.year || 0) - (a.year || 0));
                 }
+
+                showResults(unique.length > 0 ? unique.slice(0, maxResults) : [], query);
 
                 // Increment usage counter
                 if (projectId && isFirebaseConfigured()) {
@@ -370,62 +557,170 @@
                 }
             } catch (err) {
                 console.error('Search error:', err);
-                showError('Erro na busca. Verifique sua conexão e tente novamente.');
+                showError(i18n.t('ai.searchErrorMsg'));
             }
         });
 
-        async function searchSemanticScholar(query, yearRange) {
+        async function searchOpenAlex(query, yearRange, lang, area, docType, openAccess, sortBy) {
             try {
-                let url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=10&fields=title,authors,year,abstract,url,citationCount,externalIds`;
+                const perPage = userIsPro ? 35 : 15;
+                let filters = [];
 
+                // Year filter
                 if (yearRange) {
                     const [start, end] = yearRange.split('-');
-                    url += `&year=${start}-${end}`;
+                    filters.push(`publication_year:${start}-${end}`);
+                }
+
+                // Language filter
+                if (lang && lang !== 'all') {
+                    filters.push(`language:${lang}`);
+                }
+
+                // Document type filter
+                if (docType && docType !== 'all') {
+                    const mappedType = TYPE_MAP[docType];
+                    if (mappedType) filters.push(`type:${mappedType}`);
+                }
+
+                // Open access filter
+                if (openAccess) {
+                    filters.push('is_oa:true');
+                }
+
+                // Build URL
+                let url = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per_page=${perPage}&mailto=tccflow.contato@gmail.com`;
+
+                if (filters.length > 0) {
+                    url += `&filter=${filters.join(',')}`;
+                }
+
+                // Sort
+                if (sortBy === 'citations') {
+                    url += '&sort=cited_by_count:desc';
+                } else if (sortBy === 'year') {
+                    url += '&sort=publication_year:desc';
+                } else {
+                    url += '&sort=relevance_score:desc';
                 }
 
                 const response = await fetch(url);
-                if (!response.ok) throw new Error('Semantic Scholar error');
+                if (!response.ok) throw new Error('OpenAlex error: ' + response.status);
                 const data = await response.json();
 
-                return (data.data || []).map(paper => ({
-                    title: paper.title || 'Sem título',
-                    authors: (paper.authors || []).map(a => a.name).join(', '),
-                    year: paper.year || '',
-                    abstract: paper.abstract || '',
-                    url: paper.url || '',
-                    citations: paper.citationCount || 0,
-                    source: 'Semantic Scholar',
-                    doi: paper.externalIds?.DOI || ''
-                }));
+                let results = (data.results || []).map(work => {
+                    const authors = (work.authorships || [])
+                        .map(a => a.author?.display_name || '')
+                        .filter(Boolean)
+                        .join(', ');
+
+                    const doi = work.doi ? work.doi.replace('https://doi.org/', '') : '';
+                    const bestUrl = work.primary_location?.landing_page_url || work.doi || '';
+                    const oaUrl = work.open_access?.oa_url || '';
+                    const isScielo = bestUrl.includes('scielo') || (work.primary_location?.source?.display_name || '').toLowerCase().includes('scielo');
+
+                    return {
+                        title: work.display_name || work.title || i18n.t('ai.noTitle'),
+                        authors: authors,
+                        year: work.publication_year || '',
+                        abstract: work.abstract_inverted_index ? reconstructAbstract(work.abstract_inverted_index) : '',
+                        url: oaUrl || bestUrl,
+                        citations: work.cited_by_count || 0,
+                        source: isScielo ? 'SciELO' : 'Google Acadêmico',
+                        doi: doi,
+                        isOpenAccess: work.open_access?.is_oa || false,
+                        fields: (work.concepts || []).slice(0, 3).map(c => c.display_name).join(', ')
+                    };
+                });
+
+                // Area filter (post-filter using concepts if not handled by API)
+                if (area && results.length > 0) {
+                    const areaLower = area.toLowerCase();
+                    const filtered = results.filter(r =>
+                        (r.fields || '').toLowerCase().includes(areaLower)
+                    );
+                    if (filtered.length >= 3) results = filtered;
+                }
+
+                return results;
             } catch (err) {
-                console.warn('Semantic Scholar failed:', err);
+                console.warn('OpenAlex failed:', err);
                 return [];
             }
         }
 
-        async function searchCrossRef(query, yearRange) {
+        // OpenAlex returns abstracts as inverted index - reconstruct to text
+        function reconstructAbstract(invertedIndex) {
+            if (!invertedIndex) return '';
             try {
-                let url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=10&sort=relevance`;
+                const wordPositions = [];
+                for (const [word, positions] of Object.entries(invertedIndex)) {
+                    for (const pos of positions) {
+                        wordPositions.push({ word, pos });
+                    }
+                }
+                wordPositions.sort((a, b) => a.pos - b.pos);
+                return wordPositions.map(wp => wp.word).join(' ').substring(0, 400);
+            } catch(e) {
+                return '';
+            }
+        }
 
+        async function searchCrossRef(query, yearRange, lang, docType, openAccess) {
+            try {
+                const rows = userIsPro ? 20 : 8;
+                let url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=${rows}&sort=relevance`;
+
+                let filters = [];
                 if (yearRange) {
                     const [start, end] = yearRange.split('-');
-                    url += `&filter=from-pub-date:${start},until-pub-date:${end}`;
+                    filters.push(`from-pub-date:${start}`, `until-pub-date:${end}`);
+                }
+                if (openAccess) {
+                    filters.push('is-open-access:true');
+                }
+                // CrossRef document type filter
+                if (docType && docType !== 'all') {
+                    const crossRefTypes = {
+                        'article': 'journal-article',
+                        'review': 'journal-article',
+                        'book': 'book',
+                        'thesis': 'dissertation',
+                        'conference': 'proceedings-article'
+                    };
+                    if (crossRefTypes[docType]) filters.push(`type:${crossRefTypes[docType]}`);
+                }
+                if (filters.length > 0) {
+                    url += `&filter=${filters.join(',')}`;
                 }
 
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('CrossRef error');
                 const data = await response.json();
 
-                return (data.message?.items || []).map(item => ({
-                    title: Array.isArray(item.title) ? item.title[0] : (item.title || 'Sem título'),
-                    authors: (item.author || []).map(a => `${a.given || ''} ${a.family || ''}`).join(', '),
-                    year: item.published?.['date-parts']?.[0]?.[0] || '',
-                    abstract: (item.abstract || '').replace(/<[^>]*>/g, '').substring(0, 300),
-                    url: item.URL || '',
-                    citations: item['is-referenced-by-count'] || 0,
-                    source: 'CrossRef',
-                    doi: item.DOI || ''
-                }));
+                let results = (data.message?.items || []).map(item => {
+                    const itemLang = item.language || '';
+                    return {
+                        title: Array.isArray(item.title) ? item.title[0] : (item.title || i18n.t('ai.noTitle')),
+                        authors: (item.author || []).map(a => `${a.given || ''} ${a.family || ''}`).join(', '),
+                        year: item.published?.['date-parts']?.[0]?.[0] || '',
+                        abstract: (item.abstract || '').replace(/<[^>]*>/g, '').substring(0, 300),
+                        url: item.URL || '',
+                        citations: item['is-referenced-by-count'] || 0,
+                        source: 'CrossRef',
+                        doi: item.DOI || '',
+                        isOpenAccess: item['is-open-access'] || false,
+                        lang: itemLang
+                    };
+                });
+
+                // Client-side language filter for CrossRef (API doesn't support it well)
+                if (lang && lang !== 'all') {
+                    const filtered = results.filter(r => !r.lang || r.lang === lang);
+                    if (filtered.length > 0) results = filtered;
+                }
+
+                return results;
             } catch (err) {
                 console.warn('CrossRef failed:', err);
                 return [];
@@ -448,14 +743,82 @@
             document.getElementById('errorState').classList.remove('hidden');
         }
 
+        async function searchBooks(query, yearRange, lang, area, sortBy) {
+            try {
+                // Search Google Books API
+                const langCode = lang === 'pt' ? 'pt-BR' : lang === 'es' ? 'es' : 'en';
+                const maxResults = userIsPro ? 20 : 10;
+
+                let url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${maxResults}&langRestrict=${lang === 'all' ? '' : lang}`;
+
+                if (lang !== 'all') {
+                    url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${maxResults}&langRestrict=${lang}`;
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Google Books error');
+                const data = await response.json();
+
+                let books = (data.items || []).map(item => {
+                    const info = item.volumeInfo || {};
+                    const saleInfo = item.saleInfo || {};
+                    const year = parseInt(info.publishedDate?.substring(0, 4)) || 0;
+
+                    // Filter by year if specified
+                    if (yearRange) {
+                        const [start, end] = yearRange.split('-').map(Number);
+                        if (year < start || year > end) return null;
+                    }
+
+                    const price = saleInfo.listPrice?.amount || saleInfo.retailPrice?.amount || null;
+                    const currency = saleInfo.listPrice?.currencyCode || saleInfo.retailPrice?.currencyCode || 'USD';
+                    const buyLink = saleInfo.buyLink || `https://www.google.com/search?q=${encodeURIComponent(info.title)} buy`;
+                    const previewLink = info.previewLink || '';
+
+                    return {
+                        title: info.title || 'Sem título',
+                        authors: (info.authors || []).join(', '),
+                        year: year,
+                        abstract: info.description || '',
+                        url: previewLink || buyLink,
+                        buyLink: buyLink,
+                        price: price,
+                        currency: currency,
+                        source: 'Google Books',
+                        citations: 0,
+                        image: info.imageLinks?.thumbnail || '',
+                        publisher: info.publisher || '',
+                        pageCount: info.pageCount || 0,
+                        isBook: true,
+                        fields: (info.categories || []).join(', ')
+                    };
+                }).filter(Boolean);
+
+                // Area filter
+                if (area && books.length > 0) {
+                    const areaLower = area.toLowerCase();
+                    const filtered = books.filter(b =>
+                        (b.fields || '').toLowerCase().includes(areaLower) ||
+                        (b.title.toLowerCase()).includes(areaLower)
+                    );
+                    if (filtered.length >= 2) books = filtered;
+                }
+
+                return books;
+            } catch (err) {
+                console.warn('Google Books search error:', err);
+                return [];
+            }
+        }
+
         function showResults(results, query) {
             document.getElementById('loadingState').classList.add('hidden');
             document.getElementById('welcomeState').classList.add('hidden');
             document.getElementById('errorState').classList.add('hidden');
             document.getElementById('resultsList').classList.remove('hidden');
 
-            document.getElementById('resultsTitle').innerHTML = `<i class="fa-solid fa-sparkles text-violet-600 mr-2"></i>Resultados para "${escapeHtml(query)}"`;
-            document.getElementById('resultsCount').textContent = `${results.length} artigos encontrados`;
+            document.getElementById('resultsTitle').innerHTML = `<i class="fa-solid fa-sparkles text-violet-600 mr-2"></i>${i18n.t('ai.resultsFor')} "${escapeHtml(query)}"`;
+            document.getElementById('resultsCount').textContent = `${results.length} ${i18n.t('ai.articlesFound')}`;
 
             const container = document.getElementById('resultsContainer');
 
@@ -463,10 +826,10 @@
                 container.innerHTML = `
                     <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
                         <i class="fa-solid fa-search text-amber-400 text-2xl mb-2"></i>
-                        <p class="text-sm text-amber-700">Nenhum resultado encontrado. Tente usar palavras-chave diferentes ou mude os filtros.</p>
+                        <p class="text-sm text-amber-700">${i18n.t('ai.noResults')}</p>
                         <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(query)}" target="_blank"
                             class="inline-block mt-3 text-xs bg-amber-100 text-amber-700 px-4 py-2 rounded-lg hover:bg-amber-200 transition">
-                            <i class="fa-solid fa-external-link-alt mr-1"></i>Tentar no Google Scholar
+                            <i class="fa-solid fa-external-link-alt mr-1"></i>${i18n.t('ai.tryGoogleScholar')}
                         </a>
                     </div>`;
                 return;
@@ -476,14 +839,47 @@
                 const isSaved = getSavedPapers().some(s => s.title.toLowerCase() === paper.title.toLowerCase());
                 const abstractPreview = paper.abstract ? paper.abstract.substring(0, 200) + (paper.abstract.length > 200 ? '...' : '') : '';
 
+                // Special template for books
+                if (paper.isBook) {
+                    const priceDisplay = paper.price ? `${paper.currency === 'BRL' ? 'R$' : '$'} ${paper.price.toFixed(2)}` : 'Preço não informado';
+                    return `
+                    <div class="result-card bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5 hover:shadow-md transition group" style="animation-delay: ${i * 0.05}s">
+                        <div class="flex gap-4">
+                            ${paper.image ? `<img src="${escapeHtml(paper.image)}" alt="${escapeHtml(paper.title)}" class="w-16 h-24 object-cover rounded-lg flex-shrink-0">` : ''}
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">📚 ${paper.source}</span>
+                                    ${paper.year ? `<span class="text-[10px] text-slate-400">${paper.year}</span>` : ''}
+                                </div>
+                                <h4 class="text-sm font-bold mb-1 leading-snug">${escapeHtml(paper.title)}</h4>
+                                ${paper.authors ? `<p class="text-xs text-slate-600 mb-1"><strong>Autor:</strong> ${escapeHtml(paper.authors)}</p>` : ''}
+                                ${paper.publisher ? `<p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-building mr-1"></i>${escapeHtml(paper.publisher)}</p>` : ''}
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="text-sm font-bold text-amber-700">${priceDisplay}</span>
+                                    ${paper.pageCount ? `<span class="text-xs text-slate-500">• ${paper.pageCount} páginas</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-3 pt-3 border-t border-amber-200">
+                            ${paper.buyLink ? `<a href="${escapeHtml(paper.buyLink)}" target="_blank" class="text-xs bg-amber-200 text-amber-900 px-3 py-1.5 rounded-lg hover:bg-amber-300 transition font-bold"><i class="fa-solid fa-shopping-cart mr-1"></i>Comprar</a>` : ''}
+                            ${paper.url ? `<a href="${escapeHtml(paper.url)}" target="_blank" class="text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition"><i class="fa-solid fa-eye mr-1"></i>Visualizar</a>` : ''}
+                            <button onclick='savePaper(${JSON.stringify(paper).replace(/'/g, "&apos;")})' class="text-xs ${isSaved ? 'bg-amber-100 text-amber-700' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'} px-3 py-1.5 rounded-lg transition ml-auto">
+                                <i class="fa-solid ${isSaved ? 'fa-check' : 'fa-bookmark'} mr-1"></i>${isSaved ? i18n.t('ai.alreadySaved') : i18n.t('ai.save')}
+                            </button>
+                        </div>
+                    </div>`;
+                }
+
+                // Regular template for articles/papers
                 return `
                 <div class="result-card bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md transition group" style="animation-delay: ${i * 0.05}s">
                     <div class="flex items-start justify-between gap-3">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${paper.source === 'Semantic Scholar' ? 'bg-violet-100 text-violet-600' : 'bg-cyan-100 text-cyan-600'}">${paper.source}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${paper.source === 'SciELO' ? 'bg-emerald-100 text-emerald-700' : paper.source === 'Google Acadêmico' ? 'bg-blue-100 text-blue-600' : 'bg-cyan-100 text-cyan-600'}">${paper.source}</span>
                                 ${paper.year ? `<span class="text-[10px] text-slate-400">${paper.year}</span>` : ''}
-                                ${paper.citations > 0 ? `<span class="text-[10px] text-slate-400"><i class="fa-solid fa-quote-right mr-0.5"></i>${paper.citations} citações</span>` : ''}
+                                ${paper.citations > 0 ? `<span class="text-[10px] text-slate-400"><i class="fa-solid fa-quote-right mr-0.5"></i>${paper.citations} ${i18n.t('ai.citations')}</span>` : ''}
+                                ${paper.isOpenAccess ? `<span class="text-[10px] bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded-full font-medium"><i class="fa-solid fa-lock-open mr-0.5"></i>${i18n.t('ai.openAccess')}</span>` : ''}
                             </div>
                             <h4 class="text-sm font-bold mb-1 leading-snug">${escapeHtml(paper.title)}</h4>
                             ${paper.authors ? `<p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-users text-slate-300 mr-1"></i>${escapeHtml(paper.authors.substring(0, 100))}${paper.authors.length > 100 ? '...' : ''}</p>` : ''}
@@ -491,11 +887,11 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
-                        ${paper.url ? `<a href="${escapeHtml(paper.url)}" target="_blank" class="text-xs bg-violet-50 text-violet-600 px-3 py-1.5 rounded-lg hover:bg-violet-100 transition"><i class="fa-solid fa-external-link-alt mr-1"></i>Abrir</a>` : ''}
+                        ${paper.url ? `<a href="${escapeHtml(paper.url)}" target="_blank" class="text-xs bg-violet-50 text-violet-600 px-3 py-1.5 rounded-lg hover:bg-violet-100 transition"><i class="fa-solid fa-external-link-alt mr-1"></i>${i18n.t('ai.open')}</a>` : ''}
                         ${paper.doi ? `<a href="https://doi.org/${escapeHtml(paper.doi)}" target="_blank" class="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-200 transition"><i class="fa-solid fa-link mr-1"></i>DOI</a>` : ''}
                         <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(paper.title)}" target="_blank" class="text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition"><i class="fa-solid fa-graduation-cap mr-1"></i>Scholar</a>
                         <button onclick='savePaper(${JSON.stringify(paper).replace(/'/g, "&apos;")})' class="text-xs ${isSaved ? 'bg-amber-100 text-amber-700' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'} px-3 py-1.5 rounded-lg transition ml-auto">
-                            <i class="fa-solid ${isSaved ? 'fa-check' : 'fa-bookmark'} mr-1"></i>${isSaved ? 'Salvo' : 'Salvar'}
+                            <i class="fa-solid ${isSaved ? 'fa-check' : 'fa-bookmark'} mr-1"></i>${isSaved ? i18n.t('ai.alreadySaved') : i18n.t('ai.save')}
                         </button>
                     </div>
                 </div>`;
@@ -560,8 +956,8 @@
                     document.getElementById('usageBar').classList.remove('from-violet-500', 'to-cyan-500');
                 }
 
-                if (usage.limit === 100) {
-                    document.getElementById('usageHint').innerHTML = 'Plano Pro: 100 pesquisas/mês. <span class="text-emerald-600 font-medium"><i class="fa-solid fa-crown mr-1"></i>Ativo</span>';
+                if (usage.limit === 1000) {
+                    document.getElementById('usageHint').innerHTML = 'Plano Pro: 1.000 pesquisas/mês · até 50 artigos por seção. <span class="text-emerald-600 font-medium"><i class="fa-solid fa-crown mr-1"></i>Ativo</span>';
                 }
             } catch (err) {
                 console.warn('Failed to load usage:', err);
@@ -601,6 +997,82 @@
                 </div>
             `).join('');
         }
+        // ========== Orientador Virtual ==========
+        const orientadorResponses = {
+            objetivo: `Dicas para definir os objetivos do TCC:\n\n**Objetivo Geral:**\n- Deve expressar a finalidade principal do trabalho\n- Use verbos como: analisar, investigar, compreender, avaliar\n- Exemplo: "Analisar o impacto das redes sociais na comunicação entre jovens"\n\n**Objetivos Específicos (3 a 5):**\n- Use verbos mais específicos: identificar, descrever, comparar, mapear\n- Cada um deve ser mensurável e alcançável\n- Juntos devem dar conta de atingir o objetivo geral\n\nCole seu tema e eu ajudo a elaborar!`,
+            metodologia: `Sobre metodologia:\n\n**Tipos de Pesquisa:**\n- **Qualitativa:** Entrevistas, análise de conteúdo, estudos de caso\n- **Quantitativa:** Questionários, análise estatística\n- **Mista:** Combina ambas\n\n**Procedimentos:**\n- Pesquisa bibliográfica, Estudo de caso, Pesquisa de campo\n\n**Instrumentos:** Questionários, Entrevistas, Observação\n\n**Dica:** Justifique cada escolha metodológica!`,
+            introducao: `Estrutura de uma boa introdução:\n\n**1. Contextualização** (1-2 parágrafos)\nApresente o tema, use dados relevantes\n\n**2. Problematização** (1 parágrafo)\nApresente o problema e a pergunta de pesquisa\n\n**3. Justificativa** (1 parágrafo)\nExplique a importância da pesquisa\n\n**4. Objetivos** (1 parágrafo)\nObjetivo geral e específicos\n\n**5. Estrutura** (1 parágrafo)\nDescreva os capítulos\n\n**Dica:** Evite começar com "O presente trabalho..."`,
+            revisao: `Dicas de escrita acadêmica:\n\n**Evite:**\n- Linguagem informal e gírias\n- Parágrafos muito curtos (mínimo 3-4 linhas)\n- Repetição de palavras\n\n**Boas práticas:**\n- Use terceira pessoa ou primeira do plural\n- Cite fontes corretamente (ABNT)\n- Cada parágrafo = uma ideia central\n\n**Conectivos úteis:**\n- Adicionar: além disso, ademais\n- Contrastar: contudo, no entanto\n- Concluir: portanto, em suma`,
+            resumo: `Estrutura do Resumo ABNT (150-500 palavras):\n\n1. **Contextualização** (1-2 frases)\n2. **Objetivo** (1 frase)\n3. **Metodologia** (1-2 frases)\n4. **Resultados** (2-3 frases)\n5. **Conclusão** (1-2 frases)\n\n**Palavras-chave:** 3 a 5 termos separados por ponto\n\n**Dica:** Escreva o resumo por ÚLTIMO, depois que o TCC estiver pronto!`,
+            referencia: `Formatos ABNT:\n\n**Citação Direta Curta (até 3 linhas):**\nSegundo Silva (2020, p. 45), "texto aqui".\n\n**Citação Direta Longa (mais de 3 linhas):**\nRecuo 4cm, fonte 10pt, sem aspas\n\n**Citação Indireta:**\nDe acordo com Silva (2020), texto parafraseado.\n\n**Livro:** SOBRENOME, Nome. **Título.** Ed. Cidade: Editora, Ano.\n**Artigo:** SOBRENOME, Nome. Título. **Revista**, v. X, n. X, p. XX-XX, ano.\n**Site:** AUTOR. **Título.** Ano. Disponível em: URL. Acesso em: data.`,
+            default: `Como orientador virtual, posso ajudar com:\n\n- **Objetivos** - definir objetivo geral e específicos\n- **Metodologia** - sugerir abordagens\n- **Introdução** - estrutura e escrita\n- **Revisão** - melhorar a escrita acadêmica\n- **Resumo** - estruturar o abstract\n- **Referências** - formato ABNT\n\nUse os botões ou me faça uma pergunta!`
+        };
+
+        function getOrientadorResponse(msg) {
+            const l = msg.toLowerCase();
+            if (l.includes('objetivo')) return orientadorResponses.objetivo;
+            if (l.includes('metodologia') || l.includes('método')) return orientadorResponses.metodologia;
+            if (l.includes('introdução') || l.includes('introducao')) return orientadorResponses.introducao;
+            if (l.includes('revisar') || l.includes('revisão') || l.includes('escrita')) return orientadorResponses.revisao;
+            if (l.includes('resumo') || l.includes('abstract')) return orientadorResponses.resumo;
+            if (l.includes('referência') || l.includes('citação') || l.includes('abnt')) return orientadorResponses.referencia;
+            return orientadorResponses.default;
+        }
+
+        function formatOrientadorText(text) {
+            let html = escapeHtml(text);
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\n/g, '<br>');
+            html = html.replace(/^- /gm, '&bull; ');
+            return html;
+        }
+
+        function appendOrientadorMsg(role, content) {
+            const container = document.getElementById('orientadorMessages');
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex items-start gap-3 ${role === 'user' ? 'flex-row-reverse' : ''}`;
+
+            if (role === 'user') {
+                wrapper.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-user text-white text-xs"></i></div>
+                    <div class="bg-violet-600 text-white rounded-2xl rounded-tr-md px-4 py-3 max-w-[85%]"><p class="text-sm leading-relaxed">${escapeHtml(content)}</p></div>`;
+            } else {
+                wrapper.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot text-white text-xs"></i></div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3 max-w-[85%]"><p class="text-sm text-slate-700 leading-relaxed">${formatOrientadorText(content)}</p></div>`;
+            }
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        window.sendOrientadorMsg = function() {
+            const input = document.getElementById('orientadorInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            appendOrientadorMsg('user', msg);
+            input.value = '';
+
+            document.getElementById('orientadorTyping').classList.remove('hidden');
+            const container = document.getElementById('orientadorMessages');
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                document.getElementById('orientadorTyping').classList.add('hidden');
+                appendOrientadorMsg('ai', getOrientadorResponse(msg));
+            }, 800 + Math.random() * 800);
+        };
+
+        window.orientadorAction = function(type) {
+            const prompts = {
+                objetivo: 'Me ajude a definir os objetivos do meu TCC',
+                metodologia: 'Preciso de ajuda com a metodologia',
+                introducao: 'Como escrever uma boa introdução?',
+                revisao: 'Quero dicas para revisar meu texto',
+                resumo: 'Me ajude a escrever o resumo/abstract',
+                referencia: 'Como formatar referências ABNT?'
+            };
+            document.getElementById('orientadorInput').value = prompts[type] || '';
+            sendOrientadorMsg();
+        };
     </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>

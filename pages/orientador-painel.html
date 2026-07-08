@@ -1,0 +1,1369 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Painel do Orientador — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    body,html,#root{width:100%;height:100%;margin:0;padding:0}
+    .ori-layout{display:grid;grid-template-columns:240px 1fr;height:100vh;overflow:hidden;width:100%}
+    .ori-sidebar{background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:0;overflow:hidden;height:100vh;width:240px}
+    .ori-sidebar-header{padding:20px 16px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+    .ori-sidebar-logo{width:36px;height:36px;border-radius:10px}
+    .ori-sidebar-brand{font-family:var(--font-display);font-size:1.15rem;color:var(--ink)}
+    .ori-sidebar-brand span{color:var(--emerald)}
+    .ori-sidebar-badge{font-family:var(--font-mono);font-size:.55rem;background:var(--emerald);color:#fff;padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:.08em}
+    .ori-nav{flex:1;overflow-y:auto;padding:12px 8px;display:flex;flex-direction:column;gap:2px}
+    .ori-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85rem;color:var(--muted);transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:var(--font-body)}
+    .ori-nav-item:hover{background:var(--line);color:var(--ink)}
+    .ori-nav-item.active{background:var(--emerald);color:#fff;font-weight:600}
+    .ori-nav-item i{width:18px;text-align:center;font-size:.8rem}
+    .ori-nav-divider{height:1px;background:var(--line);margin:8px 4px}
+    .ori-sidebar-footer{padding:12px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+    .ori-sidebar-footer .avatar{width:32px;height:32px;border-radius:50%;background:var(--emerald);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+    .ori-sidebar-footer .user-info{flex:1;min-width:0}
+    .ori-sidebar-footer .user-name{font-size:.8rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ori-sidebar-footer .user-role{font-size:.65rem;color:var(--muted);font-family:var(--font-mono)}
+    .ori-main{overflow-y:auto;padding:0;background:var(--paper)}
+    .ori-topbar{padding:16px 28px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:var(--paper);position:sticky;top:0;z-index:10}
+    .ori-topbar h1{font-family:var(--font-display);font-size:1.4rem;color:var(--ink)}
+    .ori-topbar-actions{display:flex;align-items:center;gap:8px}
+    .ori-content{padding:28px}
+    .ori-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+    .ori-stat-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:8px}
+    .ori-stat-card .stat-label{font-family:var(--font-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+    .ori-stat-card .stat-value{font-size:1.8rem;font-weight:700;color:var(--ink)}
+    .ori-stat-card .stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .card-title{font-family:var(--font-display);font-size:1.1rem;color:var(--ink)}
+    .tag{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:.65rem;padding:3px 8px;border-radius:6px;font-weight:600}
+    .tag-emerald{background:color-mix(in srgb,var(--emerald) 15%,transparent);color:var(--emerald)}
+    .tag-violet{background:color-mix(in srgb,var(--violet) 15%,transparent);color:var(--violet)}
+    .tag-amber{background:color-mix(in srgb,var(--amber) 15%,transparent);color:var(--amber)}
+    .tag-rose{background:color-mix(in srgb,var(--rose) 15%,transparent);color:var(--rose)}
+    .tag-cyan{background:color-mix(in srgb,var(--cyan) 15%,transparent);color:var(--cyan)}
+    .tag-blue{background:color-mix(in srgb,var(--blue) 15%,transparent);color:var(--blue)}
+    .tag-muted{background:var(--bg-2);color:var(--muted)}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);transition:all .15s;font-family:var(--font-body)}
+    .btn:hover{border-color:var(--muted)}
+    .btn-emerald{background:var(--emerald);color:#fff;border-color:var(--emerald)}
+    .btn-emerald:hover{opacity:.9;border-color:var(--emerald)}
+    .btn-sm{padding:5px 10px;font-size:.72rem}
+    .btn-ghost{background:transparent;border-color:transparent}
+    .btn-ghost:hover{background:var(--bg-2)}
+    .field{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius);font-size:.85rem;background:var(--paper);color:var(--ink);font-family:var(--font-body);outline:none;transition:border .15s}
+    .field:focus{border-color:var(--emerald)}
+    .field-label{font-family:var(--font-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px;display:block}
+    .progress-bar{height:6px;background:var(--bg-2);border-radius:99px;overflow:hidden}
+    .progress-bar-fill{height:100%;border-radius:99px;transition:width .4s}
+    .project-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+    .project-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .15s}
+    .project-card:hover{border-color:var(--emerald);box-shadow:var(--shadow-sm)}
+    .empty-state{text-align:center;padding:48px 20px;color:var(--muted)}
+    .empty-state i{font-size:2rem;margin-bottom:12px;opacity:.4}
+    .empty-state p{font-size:.85rem}
+    .timeline-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+    .timeline-item:last-child{border-bottom:none}
+    .timeline-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+    .comment-bubble{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+    .section-grid{display:grid;grid-template-columns:260px 1fr 280px;height:calc(100vh - 120px);overflow:hidden}
+    .section-left{background:var(--bg-2);border-right:1px solid var(--line);padding:16px;overflow-y:auto}
+    .section-main{padding:24px;overflow-y:auto;display:flex;flex-direction:column}
+    .section-right{background:var(--bg-2);border-left:1px solid var(--line);padding:16px;overflow-y:auto}
+    .chapter-item{padding:8px 12px;border-radius:var(--radius);cursor:pointer;font-size:.82rem;color:var(--muted);transition:all .15s;margin-bottom:2px}
+    .chapter-item:hover{background:var(--line);color:var(--ink)}
+    .chapter-item.active{background:var(--emerald);color:#fff;font-weight:600}
+    .grade-input{width:60px;padding:6px 8px;border:1px solid var(--line);border-radius:var(--radius);font-size:.85rem;text-align:center;background:var(--paper);color:var(--ink);font-family:var(--font-mono)}
+    .grade-input:focus{border-color:var(--emerald);outline:none}
+    .task-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--line);border-radius:var(--radius);margin-bottom:8px;transition:all .15s}
+    .task-row:hover{border-color:var(--emerald)}
+    .bar-chart{display:flex;align-items:flex-end;gap:8px;height:160px;padding-top:8px}
+    .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+    .bar-col .bar{width:100%;border-radius:4px 4px 0 0;transition:height .4s;min-height:4px}
+    .bar-col .bar-label{font-size:.6rem;color:var(--muted);font-family:var(--font-mono);text-align:center;word-break:break-all}
+    .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:20px}
+    .tab{padding:10px 16px;font-size:.82rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font-body)}
+    .tab:hover{color:var(--ink)}
+    .tab.active{color:var(--emerald);border-bottom-color:var(--emerald);font-weight:600}
+    @media(max-width:768px){
+      .ori-layout{grid-template-columns:1fr}
+      .ori-sidebar{position:fixed;left:-260px;top:0;width:260px;z-index:200;transition:left .3s;height:100vh}
+      .ori-sidebar.open{left:0}
+      .mobile-menu-btn{display:flex!important}
+      .section-grid{grid-template-columns:1fr;height:auto}
+      .section-left,.section-right{display:none}
+      .ori-stats{grid-template-columns:1fr 1fr}
+      .project-grid{grid-template-columns:1fr}
+    }
+    @media(min-width:769px){.mobile-menu-btn{display:none!important}}
+  </style>
+</head>
+<body>
+  <div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-init.js"></script>
+  <script src="../js/db-service.js"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    function AppSplash() {
+      return (
+        <div className="app-splash">
+          <div className="splash-logo"><img src="../assets/logo.png" alt="" /></div>
+          <div className="splash-name">TCC<em>Flow</em></div>
+          <div className="splash-dots"><span/><span/><span/></div>
+        </div>
+      );
+    }
+
+    /* ──── Auth Hook ──── */
+    function useOrientadorAuth() {
+      const [user, setUser] = useState(null);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        auth.onAuthStateChanged(async u => {
+          if (!u) { window.location.href = 'login.html?redirect=orientador-painel.html'; return; }
+          try {
+            const { data: ud } = await _supa.from('users').select('role').eq('id', u.uid).maybeSingle();
+            if (ud && ud.role !== 'orientador') {
+              await DB.orientador.setUserRole(u.uid, 'orientador');
+            }
+          } catch(e) { console.warn(e); }
+          setUser(u);
+          setLoading(false);
+        });
+      }, []);
+
+      return { user, loading };
+    }
+
+    /* ──── Sidebar ──── */
+    const NAV_ITEMS = [
+      { id: 'dashboard', icon: 'fa-house', label: 'Visão Geral' },
+      { id: 'projetos', icon: 'fa-folder-open', label: 'Meus Projetos' },
+      { id: 'trabalho', icon: 'fa-book', label: 'Trabalho Escrito' },
+      { id: 'tarefas', icon: 'fa-list-check', label: 'Tarefas' },
+      { id: 'feedback', icon: 'fa-comments', label: 'Feedback' },
+      { id: 'relatorios', icon: 'fa-file-lines', label: 'Relatórios' },
+      { id: 'estatisticas', icon: 'fa-chart-bar', label: 'Estatísticas' },
+    ];
+
+    function OrientadorSidebar({ activeView, onNavigate, user, mobileOpen, onCloseMobile }) {
+      return (
+        <>
+          {mobileOpen && <div onClick={onCloseMobile} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.4)',zIndex:150}}/>}
+          <aside className={`ori-sidebar ${mobileOpen ? 'open' : ''}`}>
+            <div className="ori-sidebar-header">
+              <img src="../assets/logo.png" className="ori-sidebar-logo" alt=""/>
+              <span className="ori-sidebar-brand">TCC<span>Flow</span></span>
+              <span className="ori-sidebar-badge">Orientador</span>
+            </div>
+            <nav className="ori-nav">
+              {NAV_ITEMS.map(item => (
+                <button key={item.id}
+                  className={`ori-nav-item ${activeView === item.id ? 'active' : ''}`}
+                  onClick={() => { onNavigate(item.id); onCloseMobile(); }}>
+                  <i className={`fa-solid ${item.icon}`}/>
+                  {item.label}
+                </button>
+              ))}
+              <div className="ori-nav-divider"/>
+              <button className="ori-nav-item" onClick={() => window.location.href='orientador-settings.html'}>
+                <i className="fa-solid fa-gear"/> Configurações
+              </button>
+              <button className="ori-nav-item" onClick={() => window.location.href='dashboard.html'}>
+                <i className="fa-solid fa-arrow-left"/> Voltar ao Aluno
+              </button>
+            </nav>
+            <div className="ori-sidebar-footer">
+              <div className="avatar">{(user?.displayName || 'O')[0].toUpperCase()}</div>
+              <div className="user-info">
+                <div className="user-name">{user?.displayName || 'Orientador'}</div>
+                <div className="user-role">orientador</div>
+              </div>
+              <button className="btn-ghost" style={{padding:6,borderRadius:8,border:'none',background:'none',cursor:'pointer',color:'var(--muted)'}}
+                onClick={async () => { await auth.signOut(); window.location.href='../index.html'; }}>
+                <i className="fa-solid fa-right-from-bracket" style={{fontSize:'.8rem'}}/>
+              </button>
+            </div>
+          </aside>
+        </>
+      );
+    }
+
+    /* ──── Dashboard View ──── */
+    function DashboardView({ user, projects, onNavigate, onSelectProject }) {
+      const [activity, setActivity] = useState([]);
+
+      const totalStudents = projects.reduce((sum, p) => sum + (p._memberCount || 0), 0);
+      const totalComments = projects.reduce((sum, p) => sum + (p._commentCount || 0), 0);
+      const avgProgress = projects.length > 0
+        ? Math.round(projects.reduce((sum, p) => sum + (p._progress || 0), 0) / projects.length)
+        : 0;
+
+      useEffect(() => {
+        (async () => {
+          try {
+            const notifs = await DB.orientador.getNotifications(user.uid, 10);
+            setActivity(notifs);
+          } catch(e) {}
+        })();
+      }, [user]);
+
+      return (
+        <div className="ori-content">
+          <div className="ori-stats">
+            <div className="ori-stat-card">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div className="stat-label">Projetos</div>
+                <div className="stat-icon" style={{background:'color-mix(in srgb,var(--emerald) 12%,transparent)',color:'var(--emerald)'}}><i className="fa-solid fa-folder-open"/></div>
+              </div>
+              <div className="stat-value">{projects.length}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div className="stat-label">Alunos</div>
+                <div className="stat-icon" style={{background:'color-mix(in srgb,var(--violet) 12%,transparent)',color:'var(--violet)'}}><i className="fa-solid fa-users"/></div>
+              </div>
+              <div className="stat-value">{totalStudents}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div className="stat-label">Comentários</div>
+                <div className="stat-icon" style={{background:'color-mix(in srgb,var(--cyan) 12%,transparent)',color:'var(--cyan)'}}><i className="fa-solid fa-comments"/></div>
+              </div>
+              <div className="stat-value">{totalComments}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div className="stat-label">Progresso Médio</div>
+                <div className="stat-icon" style={{background:'color-mix(in srgb,var(--amber) 12%,transparent)',color:'var(--amber)'}}><i className="fa-solid fa-chart-pie"/></div>
+              </div>
+              <div className="stat-value">{avgProgress}%</div>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Projetos Recentes</div>
+              <button className="btn btn-sm" onClick={() => onNavigate('projetos')}>Ver todos <i className="fa-solid fa-arrow-right" style={{fontSize:'.65rem'}}/></button>
+            </div>
+            {projects.length === 0 ? (
+              <div className="empty-state">
+                <i className="fa-solid fa-folder-open" style={{display:'block'}}/><p>Nenhum projeto vinculado.</p>
+                <p style={{fontSize:'.75rem',marginTop:4}}>Peça o código de convite ao orientando.</p>
+              </div>
+            ) : (
+              <div className="project-grid">
+                {projects.slice(0, 4).map(p => (
+                  <div key={p.id} className="project-card" onClick={() => { onSelectProject(p); onNavigate('projetos'); }}>
+                    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:12}}>
+                      <div style={{width:36,height:36,borderRadius:10,background:'var(--emerald)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.8rem'}}>
+                        <i className="fa-solid fa-folder"/>
+                      </div>
+                      <div>
+                        <div style={{fontWeight:600,fontSize:'.9rem',color:'var(--ink)'}}>{p.name}</div>
+                        <div style={{fontFamily:'var(--font-mono)',fontSize:'.65rem',color:'var(--muted)'}}>{p.code}</div>
+                      </div>
+                    </div>
+                    <div className="progress-bar">
+                      <div className="progress-bar-fill" style={{width:`${p._progress||0}%`,background:'var(--emerald)'}}/>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'space-between',marginTop:8,fontSize:'.7rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>
+                      <span>{p._memberCount || 0} alunos</span>
+                      <span>{p._progress || 0}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {activity.length > 0 && (
+            <div className="card">
+              <div className="card-title" style={{marginBottom:16}}>Atividade Recente</div>
+              {activity.slice(0, 8).map(a => (
+                <div key={a.id} className="timeline-item">
+                  <div className="timeline-dot" style={{background: a.type === 'new_comment' ? 'var(--cyan)' : 'var(--violet)'}}/>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:'.82rem',color:'var(--ink)'}}>
+                      {a.type === 'new_comment' ? 'Novo comentário' : a.type === 'invite_accepted' ? 'Convite aceito' : a.type}
+                      {a.section && <span className="tag tag-muted" style={{marginLeft:6}}>{a.section}</span>}
+                    </div>
+                    <div style={{fontSize:'.7rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>
+                      {new Date(a.created_at).toLocaleDateString('pt-BR')}
+                    </div>
+                  </div>
+                  {!a.read && <div style={{width:8,height:8,borderRadius:'50%',background:'var(--emerald)',flexShrink:0}}/>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ──── Projetos View ──── */
+    function ProjetosView({ user, projects, selectedProject, onSelectProject, onRefresh }) {
+      const [inviteCode, setInviteCode] = useState('');
+      const [inviteMsg, setInviteMsg] = useState(null);
+      const [detail, setDetail] = useState(null);
+      const [members, setMembers] = useState([]);
+
+      useEffect(() => {
+        if (selectedProject) loadDetail(selectedProject);
+      }, [selectedProject]);
+
+      async function loadDetail(proj) {
+        setDetail(proj);
+        try {
+          const { data } = await _supa.from('users').select('id, name, email').eq('project_id', proj.id);
+          setMembers(data || []);
+        } catch(e) {}
+      }
+
+      async function handleLeaveProject(projectId) {
+        if (!confirm('Tem certeza que deseja sair deste projeto? Seus comentários serão mantidos, mas você perderá o acesso.')) return;
+        try {
+          const { error } = await _supa.from('orientador_projects')
+            .delete()
+            .eq('orientador_id', user.uid)
+            .eq('project_id', projectId);
+          if (error) throw error;
+          alert('Você saiu do projeto. Voltando ao dashboard...');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+            setTimeout(() => window.location.reload(), 100);
+          }, 500);
+        } catch(e) {
+          alert('Erro ao sair: ' + (e.message || e));
+        }
+      }
+
+      async function handleAcceptInvite() {
+        if (!inviteCode.trim()) return;
+        try {
+          await DB.orientador.acceptInvite(user.uid, inviteCode.trim());
+          setInviteMsg({ type: 'success', text: 'Convite aceito com sucesso!' });
+          setInviteCode('');
+          onRefresh();
+        } catch(e) {
+          setInviteMsg({ type: 'error', text: e.message || 'Erro ao aceitar convite.' });
+        }
+        setTimeout(() => setInviteMsg(null), 4000);
+      }
+
+      return (
+        <div className="ori-content">
+          <div className="card">
+            <div className="card-title" style={{marginBottom:12}}>Entrar em Projeto</div>
+            <p style={{fontSize:'.78rem',color:'var(--muted)',marginBottom:12}}>Insira o código de convite compartilhado pelo aluno.</p>
+            <div style={{display:'flex',gap:10}}>
+              <input className="field" style={{flex:1,textTransform:'uppercase'}} placeholder="Ex: ORI-A3KR5N"
+                value={inviteCode} onChange={e => setInviteCode(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAcceptInvite()}/>
+              <button className="btn btn-emerald" onClick={handleAcceptInvite}>
+                <i className="fa-solid fa-check"/> Aceitar
+              </button>
+            </div>
+            {inviteMsg && (
+              <div style={{marginTop:10,fontSize:'.78rem',padding:'8px 12px',borderRadius:'var(--radius)',
+                background: inviteMsg.type === 'success' ? 'color-mix(in srgb,var(--emerald) 10%,transparent)' : 'color-mix(in srgb,var(--rose) 10%,transparent)',
+                color: inviteMsg.type === 'success' ? 'var(--emerald)' : 'var(--rose)'}}>
+                {inviteMsg.text}
+              </div>
+            )}
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Projetos que Oriento</div>
+              <span className="tag tag-emerald">{projects.length}</span>
+            </div>
+            {projects.length === 0 ? (
+              <div className="empty-state">
+                <i className="fa-solid fa-folder-open" style={{display:'block'}}/><p>Nenhum projeto vinculado.</p>
+              </div>
+            ) : (
+              <div className="project-grid">
+                {projects.map(p => (
+                  <div key={p.id} className="project-card" onClick={() => loadDetail(p)}
+                    style={{borderColor: detail?.id === p.id ? 'var(--emerald)' : undefined}}>
+                    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+                      <div style={{width:36,height:36,borderRadius:10,background:'var(--emerald)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        <i className="fa-solid fa-folder" style={{fontSize:'.8rem'}}/>
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontWeight:600,fontSize:'.88rem',color:'var(--ink)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{p.name}</div>
+                        <div style={{fontFamily:'var(--font-mono)',fontSize:'.62rem',color:'var(--muted)'}}>{p.code}</div>
+                      </div>
+                    </div>
+                    <div className="progress-bar">
+                      <div className="progress-bar-fill" style={{width:`${p._progress||0}%`,background:'var(--emerald)'}}/>
+                    </div>
+                    <div style={{display:'flex',gap:8,marginTop:8,fontSize:'.68rem',color:'var(--muted)'}}>
+                      <span><i className="fa-solid fa-users" style={{marginRight:3}}/>{p._memberCount||0}</span>
+                      <span><i className="fa-solid fa-list-check" style={{marginRight:3}}/>{p._taskCount||0}</span>
+                      <span>{p._progress||0}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {detail && (
+            <div className="card" style={{borderColor:'var(--emerald)'}}>
+              <div className="card-header">
+                <div className="card-title">{detail.name}</div>
+                <button className="btn btn-sm btn-ghost" onClick={() => setDetail(null)}>
+                  <i className="fa-solid fa-xmark"/>
+                </button>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
+                <div><span className="field-label">Código</span><div style={{fontFamily:'var(--font-mono)',color:'var(--emerald)',fontWeight:600}}>{detail.code}</div></div>
+                <div><span className="field-label">Progresso</span><div style={{fontWeight:600}}>{detail._progress || 0}%</div></div>
+              </div>
+              <span className="field-label">Membros da Equipe</span>
+              <div style={{display:'flex',flexWrap:'wrap',gap:8,marginTop:6}}>
+                {members.map(m => (
+                  <div key={m.id} style={{display:'flex',alignItems:'center',gap:6,background:'var(--bg-2)',border:'1px solid var(--line)',borderRadius:'var(--radius)',padding:'6px 10px'}}>
+                    <div style={{width:24,height:24,borderRadius:'50%',background:'var(--violet)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.65rem',fontWeight:700}}>
+                      {(m.name || '?')[0].toUpperCase()}
+                    </div>
+                    <span style={{fontSize:'.8rem'}}>{m.name || 'Sem nome'}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{marginTop:20,paddingTop:16,borderTop:'1px solid var(--line)',display:'flex',justifyContent:'flex-end'}}>
+                <button className="btn btn-sm" onClick={() => handleLeaveProject(detail.id)}
+                  style={{color:'var(--rose)',borderColor:'rgba(244,63,94,.3)'}}>
+                  <i className="fa-solid fa-right-from-bracket"/> Sair deste Projeto
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ──── Trabalho Escrito View ──── */
+    function TrabalhoView({ user, projects }) {
+      const [selProject, setSelProject] = useState(null);
+      const [chapters, setChapters] = useState([]);
+      const [sections, setSections] = useState([]);
+      const [selSection, setSelSection] = useState(null);
+      const [grade, setGrade] = useState('');
+      const [feedbackText, setFeedbackText] = useState('');
+      const [existingFeedback, setExistingFeedback] = useState([]);
+      const [loadingData, setLoadingData] = useState(false);
+
+      useEffect(() => {
+        if (projects.length > 0 && !selProject) setSelProject(projects[0]);
+      }, [projects]);
+
+      useEffect(() => {
+        if (selProject) loadChapters();
+      }, [selProject]);
+
+      async function loadChapters() {
+        setLoadingData(true);
+        setChapters([]);
+        setSections([]);
+        setSelSection(null);
+        try {
+          const { data: ch, error: chErr } = await _supa.from('thesis_chapters')
+            .select('*').eq('project_id', selProject.id)
+            .order('sort_order', { ascending: true });
+          if (chErr) { console.error('chapters error:', chErr); setLoadingData(false); return; }
+          setChapters(ch || []);
+
+          const { data: sec, error: secErr } = await _supa.from('thesis_sections')
+            .select('*').eq('project_id', selProject.id)
+            .order('sort_order', { ascending: true });
+          if (secErr) console.error('sections error:', secErr);
+          setSections(sec || []);
+        } catch(e) { console.error(e); }
+        setLoadingData(false);
+      }
+
+      function getSectionsForChapter(chId) {
+        return sections.filter(s => s.chapter_id === chId);
+      }
+
+      async function selectSection(sec) {
+        setSelSection(sec);
+        setGrade('');
+        setFeedbackText('');
+        try {
+          const { data } = await _supa.from('thesis_feedback').select('*')
+            .eq('section_id', sec.id).eq('orientador_id', user.uid)
+            .order('created_at', { ascending: false });
+          setExistingFeedback(data || []);
+          if (data && data.length > 0) setGrade(data[0].grade?.toString() || '');
+        } catch(e) { setExistingFeedback([]); }
+      }
+
+      async function submitFeedback() {
+        if (!selSection || !feedbackText.trim()) return;
+        try {
+          await _supa.from('thesis_feedback').insert({
+            section_id: selSection.id,
+            project_id: selProject.id,
+            orientador_id: user.uid,
+            comment: feedbackText.trim(),
+            grade: grade ? parseFloat(grade) : null,
+            status: grade && parseFloat(grade) >= 6 ? 'approved' : 'revision'
+          });
+          setFeedbackText('');
+          await selectSection(selSection);
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
+
+      const totalSections = sections.length;
+      const hasContent = sections.filter(s => s.content && s.content.trim()).length;
+
+      return (
+        <div className="ori-content" style={{padding:0}}>
+          <div style={{padding:'16px 28px',borderBottom:'1px solid var(--line)',display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+            <span className="field-label" style={{margin:0}}>Projeto:</span>
+            <select className="field" style={{width:'auto',maxWidth:300}} value={selProject?.id || ''}
+              onChange={e => { setSelProject(projects.find(p => p.id === e.target.value)); }}>
+              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+            {!loadingData && chapters.length > 0 && (
+              <div style={{display:'flex',gap:12,marginLeft:'auto',fontSize:'.7rem',fontFamily:'var(--font-mono)',color:'var(--muted)'}}>
+                <span>{chapters.length} capítulos</span>
+                <span>{totalSections} seções</span>
+                <span>{hasContent} com conteúdo</span>
+              </div>
+            )}
+          </div>
+
+          {loadingData ? (
+            <div className="empty-state" style={{marginTop:40}}>
+              <i className="fa-solid fa-spinner fa-spin" style={{display:'block'}}/><p>Carregando trabalho...</p>
+            </div>
+          ) : chapters.length === 0 ? (
+            <div className="empty-state" style={{marginTop:40}}>
+              <i className="fa-solid fa-book" style={{display:'block'}}/><p>Nenhum capítulo encontrado neste projeto.</p>
+              <p style={{fontSize:'.72rem',marginTop:4}}>O aluno precisa criar capítulos na página Trabalho Escrito.</p>
+            </div>
+          ) : (
+            <div className="section-grid">
+              <div className="section-left">
+                <div style={{fontFamily:'var(--font-mono)',fontSize:'.62rem',textTransform:'uppercase',letterSpacing:'.1em',color:'var(--muted)',marginBottom:10}}>Capítulos</div>
+                {chapters.map(ch => {
+                  const chSections = getSectionsForChapter(ch.id);
+                  return (
+                    <div key={ch.id}>
+                      <div style={{fontSize:'.72rem',fontWeight:600,color:'var(--ink)',padding:'6px 8px',marginTop:4,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                        {ch.title}
+                        <span style={{fontSize:'.6rem',color:'var(--muted)',fontWeight:400}}>{chSections.length}</span>
+                      </div>
+                      {chSections.map(sec => (
+                        <div key={sec.id}
+                          className={`chapter-item ${selSection?.id === sec.id ? 'active' : ''}`}
+                          onClick={() => selectSection(sec)}
+                          style={{paddingLeft:20,display:'flex',alignItems:'center',gap:6}}>
+                          <span style={{flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{sec.title}</span>
+                          {sec.content && sec.content.trim() && <span style={{width:6,height:6,borderRadius:'50%',background:'var(--emerald)',flexShrink:0}}/>}
+                        </div>
+                      ))}
+                      {chSections.length === 0 && (
+                        <div style={{paddingLeft:20,fontSize:'.7rem',color:'var(--muted)',fontStyle:'italic',padding:'4px 20px'}}>Sem seções</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="section-main">
+                {selSection ? (
+                  <>
+                    <h2 style={{fontFamily:'var(--font-display)',fontSize:'1.2rem',marginBottom:16}}>{selSection.title}</h2>
+                    <div style={{background:'var(--bg-2)',border:'1px solid var(--line)',borderRadius:'var(--radius)',padding:20,marginBottom:20,
+                      fontFamily:'var(--font-body)',fontSize:'.88rem',lineHeight:1.7,whiteSpace:'pre-wrap',maxHeight:400,overflowY:'auto',color:'var(--ink)'}}>
+                      {selSection.content && selSection.content.trim() ? selSection.content : (
+                        <span style={{color:'var(--muted)',fontStyle:'italic'}}>Seção ainda sem conteúdo.</span>
+                      )}
+                    </div>
+                    {selSection.content && selSection.content.trim() && (
+                      <div style={{fontSize:'.68rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginBottom:16}}>
+                        {selSection.content.trim().split(/\s+/).length} palavras
+                      </div>
+                    )}
+
+                    <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
+                      <span className="field-label" style={{margin:0}}>Nota:</span>
+                      <input type="number" min="0" max="10" step="0.5" className="grade-input" value={grade} onChange={e => setGrade(e.target.value)} placeholder="0-10"/>
+                      {grade && <span className="tag" style={{background: parseFloat(grade) >= 6 ? 'color-mix(in srgb,var(--emerald) 15%,transparent)' : 'color-mix(in srgb,var(--rose) 15%,transparent)',
+                        color: parseFloat(grade) >= 6 ? 'var(--emerald)' : 'var(--rose)'}}>
+                        {parseFloat(grade) >= 6 ? 'Aprovado' : 'Revisão necessária'}
+                      </span>}
+                    </div>
+
+                    <textarea className="field" rows={4} placeholder="Escreva seu feedback para esta seção..."
+                      value={feedbackText} onChange={e => setFeedbackText(e.target.value)}
+                      style={{marginBottom:12,resize:'vertical'}}/>
+                    <button className="btn btn-emerald" onClick={submitFeedback} disabled={!feedbackText.trim()}>
+                      <i className="fa-solid fa-paper-plane"/> Enviar Feedback
+                    </button>
+                  </>
+                ) : (
+                  <div className="empty-state">
+                    <i className="fa-solid fa-arrow-left" style={{display:'block'}}/><p>Selecione uma seção para avaliar.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="section-right">
+                <div style={{fontFamily:'var(--font-mono)',fontSize:'.62rem',textTransform:'uppercase',letterSpacing:'.1em',color:'var(--muted)',marginBottom:10}}>Feedback Anterior</div>
+                {existingFeedback.length === 0 ? (
+                  <p style={{fontSize:'.78rem',color:'var(--muted)',textAlign:'center',marginTop:20}}>
+                    {selSection ? 'Nenhum feedback nesta seção.' : 'Selecione uma seção.'}
+                  </p>
+                ) : existingFeedback.map(fb => (
+                  <div key={fb.id} className="comment-bubble">
+                    <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                      {fb.grade != null && <span className="tag" style={{background: fb.grade >= 6 ? 'color-mix(in srgb,var(--emerald) 15%,transparent)' : 'color-mix(in srgb,var(--rose) 15%,transparent)',
+                        color: fb.grade >= 6 ? 'var(--emerald)' : 'var(--rose)'}}>{fb.grade}/10</span>}
+                      <span style={{fontSize:'.62rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>
+                        {new Date(fb.created_at).toLocaleDateString('pt-BR')}
+                      </span>
+                    </div>
+                    <p style={{fontSize:'.8rem',color:'var(--ink)',lineHeight:1.5}}>{fb.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ──── Tarefas View ──── */
+    function TarefasView({ user, projects }) {
+      const [selProject, setSelProject] = useState(null);
+      const [tasks, setTasks] = useState([]);
+      const [showForm, setShowForm] = useState(false);
+      const [newTitle, setNewTitle] = useState('');
+      const [newDesc, setNewDesc] = useState('');
+      const [newDue, setNewDue] = useState('');
+      const [newPriority, setNewPriority] = useState('medium');
+      const [creating, setCreating] = useState(false);
+      const [members, setMembers] = useState([]);
+      const [newAssigned, setNewAssigned] = useState('');
+
+      useEffect(() => {
+        if (projects.length > 0 && !selProject) setSelProject(projects[0]);
+      }, [projects]);
+
+      useEffect(() => {
+        if (selProject) { loadTasks(); loadMembers(); }
+      }, [selProject]);
+
+      async function loadTasks() {
+        try {
+          const { data } = await _supa.from('tasks').select('*').eq('project_id', selProject.id).order('due_date', { ascending: true });
+          setTasks(data || []);
+        } catch(e) {}
+      }
+
+      async function loadMembers() {
+        try {
+          const { data } = await _supa.from('users').select('id, name, email').eq('project_id', selProject.id);
+          setMembers(data || []);
+        } catch(e) {}
+      }
+
+      async function createTask() {
+        if (!newTitle.trim() || !selProject) return;
+        setCreating(true);
+        try {
+          await _supa.from('tasks').insert({
+            project_id: selProject.id,
+            title: newTitle.trim(),
+            description: newDesc.trim() || null,
+            due_date: newDue || null,
+            priority: newPriority,
+            status: 'todo',
+            assigned_to: newAssigned || null,
+            created_by: user.uid
+          });
+          setNewTitle(''); setNewDesc(''); setNewDue(''); setNewPriority('medium'); setNewAssigned('');
+          setShowForm(false);
+          await loadTasks();
+        } catch(e) { alert('Erro: ' + e.message); }
+        setCreating(false);
+      }
+
+      const done = tasks.filter(t => t.status === 'done').length;
+      const progress = tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0;
+      const overdue = tasks.filter(t => t.due_date && t.status !== 'done' && new Date(t.due_date + 'T00:00:00') < new Date()).length;
+      const statusMap = { todo: { label: 'A Fazer', cls: 'tag-muted' }, progress: { label: 'Em Andamento', cls: 'tag-amber' }, done: { label: 'Concluída', cls: 'tag-emerald' } };
+      const nameMap = {};
+      members.forEach(m => nameMap[m.id] = m.name || m.email);
+
+      return (
+        <div className="ori-content">
+          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20,flexWrap:'wrap'}}>
+            <span className="field-label" style={{margin:0}}>Projeto:</span>
+            <select className="field" style={{width:'auto',maxWidth:300}} value={selProject?.id || ''}
+              onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
+              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+            <button className="btn btn-emerald" style={{marginLeft:'auto'}} onClick={() => setShowForm(!showForm)}>
+              <i className={`fa-solid ${showForm ? 'fa-xmark' : 'fa-plus'}`}/> {showForm ? 'Cancelar' : 'Nova Tarefa'}
+            </button>
+          </div>
+
+          {showForm && (
+            <div className="card" style={{borderColor:'var(--emerald)'}}>
+              <div className="card-title" style={{marginBottom:12}}>Criar Tarefa para o Grupo</div>
+              <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                <div>
+                  <label className="field-label">Título *</label>
+                  <input className="field" placeholder="Ex: Revisar capítulo de metodologia" value={newTitle} onChange={e => setNewTitle(e.target.value)}/>
+                </div>
+                <div>
+                  <label className="field-label">Descrição</label>
+                  <textarea className="field" rows={2} placeholder="Detalhes da tarefa..." value={newDesc} onChange={e => setNewDesc(e.target.value)} style={{resize:'vertical'}}/>
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}>
+                  <div>
+                    <label className="field-label">Prazo</label>
+                    <input type="date" className="field" value={newDue} onChange={e => setNewDue(e.target.value)}/>
+                  </div>
+                  <div>
+                    <label className="field-label">Prioridade</label>
+                    <select className="field" value={newPriority} onChange={e => setNewPriority(e.target.value)}>
+                      <option value="low">Baixa</option>
+                      <option value="medium">Média</option>
+                      <option value="high">Alta</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="field-label">Atribuir a</label>
+                    <select className="field" value={newAssigned} onChange={e => setNewAssigned(e.target.value)}>
+                      <option value="">Ninguém</option>
+                      {members.map(m => <option key={m.id} value={m.id}>{m.name || m.email}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <button className="btn btn-emerald" onClick={createTask} disabled={creating || !newTitle.trim()} style={{alignSelf:'flex-start'}}>
+                  {creating ? <><i className="fa-solid fa-spinner fa-spin"/> Criando...</> : <><i className="fa-solid fa-check"/> Criar Tarefa</>}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="ori-stats" style={{gridTemplateColumns:'repeat(4,1fr)'}}>
+            <div className="ori-stat-card">
+              <div className="stat-label">Total</div>
+              <div className="stat-value">{tasks.length}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Concluídas</div>
+              <div className="stat-value" style={{color:'var(--emerald)'}}>{done}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Atrasadas</div>
+              <div className="stat-value" style={{color: overdue > 0 ? 'var(--rose)' : 'var(--ink)'}}>{overdue}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Progresso</div>
+              <div className="stat-value">{progress}%</div>
+            </div>
+          </div>
+
+          {tasks.length === 0 ? (
+            <div className="empty-state"><i className="fa-solid fa-list-check" style={{display:'block'}}/><p>Nenhuma tarefa encontrada.</p></div>
+          ) : tasks.map(t => {
+            const st = statusMap[t.status] || statusMap.todo;
+            const isOverdue = t.due_date && t.status !== 'done' && new Date(t.due_date + 'T00:00:00') < new Date();
+            const priorityColors = { high: 'var(--rose)', medium: 'var(--amber)', low: 'var(--cyan)' };
+            return (
+              <div key={t.id} className="task-row" style={{borderColor: isOverdue ? 'var(--rose)' : undefined}}>
+                <div style={{width:4,height:28,borderRadius:2,background:priorityColors[t.priority] || 'var(--line)',flexShrink:0}}/>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'.88rem',fontWeight:500,color: t.status === 'done' ? 'var(--muted)' : 'var(--ink)',
+                    textDecoration: t.status === 'done' ? 'line-through' : 'none'}}>{t.title}</div>
+                  <div style={{fontSize:'.7rem',color:'var(--muted)',marginTop:2,fontFamily:'var(--font-mono)',display:'flex',gap:8,flexWrap:'wrap'}}>
+                    <span>{t.due_date ? new Date(t.due_date + 'T00:00:00').toLocaleDateString('pt-BR') : 'Sem prazo'}</span>
+                    {nameMap[t.assigned_to] && <span>• {nameMap[t.assigned_to]}</span>}
+                    {t.created_by === user.uid && <span style={{color:'var(--emerald)'}}>• Criada por você</span>}
+                    {isOverdue && <span style={{color:'var(--rose)',fontWeight:700}}>ATRASADA</span>}
+                  </div>
+                </div>
+                <span className={`tag ${st.cls}`}>{st.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    /* ──── Feedback View ──── */
+    function FeedbackView({ user, projects }) {
+      const [selProject, setSelProject] = useState(null);
+      const [comments, setComments] = useState([]);
+      const [newComment, setNewComment] = useState('');
+      const [section, setSection] = useState('geral');
+      const [filter, setFilter] = useState('all');
+
+      const sections = [
+        { value: 'geral', label: 'Geral' },
+        { value: 'introducao', label: 'Introdução' },
+        { value: 'metodologia', label: 'Metodologia' },
+        { value: 'resultados', label: 'Resultados' },
+        { value: 'conclusao', label: 'Conclusão' },
+        { value: 'referencias', label: 'Referências' },
+        { value: 'formatacao', label: 'Formatação' },
+      ];
+
+      const sectionColors = {
+        geral: 'tag-muted', introducao: 'tag-violet', metodologia: 'tag-cyan',
+        resultados: 'tag-emerald', conclusao: 'tag-amber', referencias: 'tag-rose', formatacao: 'tag-blue'
+      };
+
+      useEffect(() => {
+        if (projects.length > 0 && !selProject) setSelProject(projects[0]);
+      }, [projects]);
+
+      useEffect(() => {
+        if (selProject) loadComments();
+      }, [selProject]);
+
+      async function loadComments() {
+        try {
+          const data = await DB.orientador.getComments(selProject.id);
+          setComments(data);
+        } catch(e) {}
+      }
+
+      async function submitComment() {
+        if (!newComment.trim() || !selProject) return;
+        try {
+          await DB.orientador.addComment(selProject.id, user.uid, newComment.trim(), section);
+          setNewComment('');
+          await loadComments();
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
+
+      async function handleDelete(id) {
+        if (!confirm('Excluir este comentário?')) return;
+        await DB.orientador.deleteComment(id);
+        await loadComments();
+      }
+
+      const filtered = filter === 'all' ? comments : comments.filter(c => c.section === filter);
+
+      return (
+        <div className="ori-content">
+          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20,flexWrap:'wrap'}}>
+            <span className="field-label" style={{margin:0}}>Projeto:</span>
+            <select className="field" style={{width:'auto',maxWidth:300}} value={selProject?.id || ''}
+              onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
+              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
+
+          <div className="card">
+            <div className="card-title" style={{marginBottom:12}}>Novo Comentário</div>
+            <div style={{display:'flex',gap:10,marginBottom:10}}>
+              <select className="field" style={{width:'auto'}} value={section} onChange={e => setSection(e.target.value)}>
+                {sections.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+            </div>
+            <div style={{display:'flex',gap:10}}>
+              <textarea className="field" rows={3} placeholder="Escreva seu comentário ou correção..."
+                value={newComment} onChange={e => setNewComment(e.target.value)} style={{flex:1,resize:'vertical'}}/>
+              <button className="btn btn-emerald" style={{alignSelf:'flex-end'}} onClick={submitComment}>
+                <i className="fa-solid fa-paper-plane"/>
+              </button>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Comentários ({filtered.length})</div>
+              <select className="field" style={{width:'auto',fontSize:'.75rem',padding:'5px 8px'}} value={filter} onChange={e => setFilter(e.target.value)}>
+                <option value="all">Todas seções</option>
+                {sections.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+            </div>
+
+            {filtered.length === 0 ? (
+              <div className="empty-state"><i className="fa-solid fa-comments" style={{display:'block'}}/><p>Nenhum comentário encontrado.</p></div>
+            ) : filtered.map(c => (
+              <div key={c.id} className="comment-bubble">
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                  <span className={`tag ${sectionColors[c.section] || 'tag-muted'}`}>
+                    {sections.find(s => s.value === c.section)?.label || c.section}
+                  </span>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <span style={{fontSize:'.62rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>
+                      {new Date(c.created_at).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })}
+                    </span>
+                    {c.orientador_id === user.uid && (
+                      <button className="btn-ghost" style={{padding:4,border:'none',background:'none',cursor:'pointer',color:'var(--muted)',fontSize:'.7rem'}}
+                        onClick={() => handleDelete(c.id)}>
+                        <i className="fa-solid fa-trash"/>
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p style={{fontSize:'.82rem',color:'var(--ink)',lineHeight:1.5,whiteSpace:'pre-wrap'}}>{c.comment}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    /* ──── Relatórios View ──── */
+    function RelatoriosView({ user, projects }) {
+      const [selProject, setSelProject] = useState(null);
+      const [reports, setReports] = useState([]);
+      const [generating, setGenerating] = useState(false);
+      const [preview, setPreview] = useState(null);
+
+      useEffect(() => { loadReports(); }, [user]);
+      useEffect(() => {
+        if (projects.length > 0 && !selProject) setSelProject(projects[0]);
+      }, [projects]);
+
+      async function loadReports() {
+        try {
+          const data = await DB.orientador.getReports(user.uid);
+          setReports(data);
+        } catch(e) {}
+      }
+
+      async function handleGenerate() {
+        if (!selProject) { alert('Selecione um projeto.'); return; }
+        setGenerating(true);
+        try {
+          await DB.orientador.generateReport(user.uid, selProject.id);
+          await loadReports();
+        } catch(e) { alert('Erro: ' + e.message); }
+        setGenerating(false);
+      }
+
+      async function getReportContent(reportId) {
+        const content = await DB.orientador.exportReportAsPDF(reportId);
+        return content;
+      }
+
+      function buildReportHTML(content) {
+        const sectionLabels = { geral:'Geral', introducao:'Introdução', metodologia:'Metodologia', resultados:'Resultados', conclusao:'Conclusão', referencias:'Referências', formatacao:'Formatação' };
+        let html = `
+          <html><head><meta charset="utf-8"><style>
+            body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:40px;color:#1a1a2e;line-height:1.6}
+            h1{font-size:1.8rem;color:#10b981;border-bottom:3px solid #10b981;padding-bottom:8px;margin-bottom:24px}
+            h2{font-size:1.2rem;color:#333;margin-top:28px;border-left:4px solid #10b981;padding-left:12px}
+            .meta{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:24px}
+            .meta p{margin:4px 0;font-size:.9rem;color:#555}
+            .meta strong{color:#1a1a2e}
+            .comment{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:8px}
+            .comment .date{font-size:.75rem;color:#888;margin-bottom:4px}
+            .comment .text{font-size:.9rem}
+            .empty{color:#999;font-style:italic;font-size:.85rem}
+            .footer{margin-top:40px;border-top:1px solid #e2e8f0;padding-top:16px;font-size:.75rem;color:#999;text-align:center}
+            .stats{display:flex;gap:16px;margin:16px 0}
+            .stat-box{flex:1;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;text-align:center}
+            .stat-box .val{font-size:1.5rem;font-weight:700;color:#10b981}
+            .stat-box .lbl{font-size:.7rem;color:#888;text-transform:uppercase;letter-spacing:.05em}
+          </style></head><body>
+          <h1>Relatório de Orientação</h1>
+          <div class="meta">
+            <p><strong>Projeto:</strong> ${content.project || 'N/A'}</p>
+            <p><strong>Código:</strong> ${content.code || 'N/A'}</p>
+            <p><strong>Gerado em:</strong> ${new Date(content.generatedAt).toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})}</p>
+            <p><strong>Alunos:</strong> ${(content.students||[]).map(s=>s.name||s.email).join(', ') || 'N/A'}</p>
+          </div>`;
+
+        const allComments = Object.values(content.sections || {}).flat();
+        const sectionCount = Object.keys(content.sections || {}).length;
+        html += `<div class="stats">
+          <div class="stat-box"><div class="val">${allComments.length}</div><div class="lbl">Comentários</div></div>
+          <div class="stat-box"><div class="val">${sectionCount}</div><div class="lbl">Seções</div></div>
+          <div class="stat-box"><div class="val">${(content.students||[]).length}</div><div class="lbl">Alunos</div></div>
+        </div>`;
+
+        const secs = content.sections || {};
+        if (Object.keys(secs).length === 0) {
+          html += '<p class="empty">Nenhum comentário registrado.</p>';
+        } else {
+          for (const [key, comments] of Object.entries(secs)) {
+            html += `<h2>${sectionLabels[key] || key}</h2>`;
+            for (const c of comments) {
+              html += `<div class="comment">
+                <div class="date">${new Date(c.date).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+                <div class="text">${(c.comment||'').replace(/\n/g,'<br>')}</div>
+              </div>`;
+            }
+          }
+        }
+
+        html += `<div class="footer">Gerado por TCCFlow — Painel do Orientador</div></body></html>`;
+        return html;
+      }
+
+      async function handleDownloadPDF(reportId) {
+        try {
+          const content = await getReportContent(reportId);
+          const html = buildReportHTML(content);
+          const printWin = window.open('', '_blank');
+          printWin.document.write(html);
+          printWin.document.close();
+          setTimeout(() => { printWin.print(); }, 500);
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
+
+      async function handleDownloadDOCX(reportId) {
+        try {
+          const content = await getReportContent(reportId);
+          const sectionLabels = { geral:'Geral', introducao:'Introdução', metodologia:'Metodologia', resultados:'Resultados', conclusao:'Conclusão', referencias:'Referências', formatacao:'Formatação' };
+
+          let docContent = `RELATÓRIO DE ORIENTAÇÃO\n${'='.repeat(40)}\n\n`;
+          docContent += `Projeto: ${content.project || 'N/A'}\n`;
+          docContent += `Código: ${content.code || 'N/A'}\n`;
+          docContent += `Gerado em: ${new Date(content.generatedAt).toLocaleDateString('pt-BR')}\n`;
+          docContent += `Alunos: ${(content.students||[]).map(s=>s.name||s.email).join(', ') || 'N/A'}\n\n`;
+          docContent += `${'─'.repeat(40)}\n\n`;
+
+          const secs = content.sections || {};
+          for (const [key, comments] of Object.entries(secs)) {
+            docContent += `${(sectionLabels[key] || key).toUpperCase()}\n${'-'.repeat(20)}\n\n`;
+            for (const c of comments) {
+              const d = new Date(c.date).toLocaleDateString('pt-BR');
+              docContent += `[${d}]\n${c.comment}\n\n`;
+            }
+          }
+          if (Object.keys(secs).length === 0) {
+            docContent += 'Nenhum comentário registrado.\n';
+          }
+
+          docContent += `\n${'─'.repeat(40)}\nGerado por TCCFlow — Painel do Orientador\n`;
+
+          const blob = new Blob(['﻿' + docContent], { type: 'application/msword;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `relatorio-${content.project || 'projeto'}-${new Date().toISOString().split('T')[0]}.doc`;
+          a.click();
+          URL.revokeObjectURL(url);
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
+
+      async function handlePreview(reportId) {
+        try {
+          const content = await getReportContent(reportId);
+          setPreview(content);
+        } catch(e) { alert('Erro: ' + e.message); }
+      }
+
+      const sectionLabels = { geral:'Geral', introducao:'Introdução', metodologia:'Metodologia', resultados:'Resultados', conclusao:'Conclusão', referencias:'Referências', formatacao:'Formatação' };
+
+      return (
+        <div className="ori-content">
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Gerar Novo Relatório</div>
+            </div>
+            <p style={{fontSize:'.78rem',color:'var(--muted)',marginBottom:12}}>Gera um relatório completo com todos os comentários e correções do projeto selecionado.</p>
+            <div style={{display:'flex',gap:10,alignItems:'center'}}>
+              <select className="field" style={{width:'auto',flex:1}} value={selProject?.id || ''}
+                onChange={e => setSelProject(projects.find(p => p.id === e.target.value))}>
+                {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+              <button className="btn btn-emerald" onClick={handleGenerate} disabled={generating}>
+                {generating ? <><i className="fa-solid fa-spinner fa-spin"/> Gerando...</> : <><i className="fa-solid fa-plus"/> Gerar</>}
+              </button>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Relatórios Gerados</div>
+              <span className="tag tag-emerald">{reports.length}</span>
+            </div>
+            {reports.length === 0 ? (
+              <div className="empty-state"><i className="fa-solid fa-file-lines" style={{display:'block'}}/><p>Nenhum relatório gerado ainda.</p></div>
+            ) : reports.map(r => (
+              <div key={r.id} style={{border:'1px solid var(--line)',borderRadius:'var(--radius)',marginBottom:10,overflow:'hidden'}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px'}}>
+                  <div>
+                    <div style={{fontSize:'.88rem',fontWeight:600,color:'var(--ink)'}}>{r.title}</div>
+                    <div style={{fontSize:'.68rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>
+                      {new Date(r.generated_at).toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})} &bull; {r.download_count || 0} downloads
+                    </div>
+                  </div>
+                  <div style={{display:'flex',gap:6}}>
+                    <button className="btn btn-sm btn-ghost" onClick={() => handlePreview(r.id)} title="Visualizar">
+                      <i className="fa-solid fa-eye"/>
+                    </button>
+                    <button className="btn btn-sm" onClick={() => handleDownloadPDF(r.id)} title="Exportar como PDF">
+                      <i className="fa-solid fa-file-pdf" style={{color:'var(--rose)'}}/> PDF
+                    </button>
+                    <button className="btn btn-sm" onClick={() => handleDownloadDOCX(r.id)} title="Exportar como DOC">
+                      <i className="fa-solid fa-file-word" style={{color:'var(--blue)'}}/> DOC
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {preview && (
+            <div className="card" style={{borderColor:'var(--emerald)'}}>
+              <div className="card-header">
+                <div className="card-title">Pré-visualização: {preview.project}</div>
+                <button className="btn btn-sm btn-ghost" onClick={() => setPreview(null)}><i className="fa-solid fa-xmark"/></button>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12,marginBottom:20}}>
+                <div style={{background:'var(--bg-2)',borderRadius:'var(--radius)',padding:12,textAlign:'center'}}>
+                  <div style={{fontSize:'1.3rem',fontWeight:700,color:'var(--emerald)'}}>{Object.values(preview.sections||{}).flat().length}</div>
+                  <div style={{fontSize:'.65rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>COMENTÁRIOS</div>
+                </div>
+                <div style={{background:'var(--bg-2)',borderRadius:'var(--radius)',padding:12,textAlign:'center'}}>
+                  <div style={{fontSize:'1.3rem',fontWeight:700,color:'var(--violet)'}}>{Object.keys(preview.sections||{}).length}</div>
+                  <div style={{fontSize:'.65rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>SEÇÕES</div>
+                </div>
+                <div style={{background:'var(--bg-2)',borderRadius:'var(--radius)',padding:12,textAlign:'center'}}>
+                  <div style={{fontSize:'1.3rem',fontWeight:700,color:'var(--cyan)'}}>{(preview.students||[]).length}</div>
+                  <div style={{fontSize:'.65rem',color:'var(--muted)',fontFamily:'var(--font-mono)'}}>ALUNOS</div>
+                </div>
+              </div>
+
+              <div style={{marginBottom:12}}>
+                <span className="field-label">Alunos</span>
+                <div style={{fontSize:'.85rem',color:'var(--ink)'}}>{(preview.students||[]).map(s=>s.name||s.email).join(', ') || 'N/A'}</div>
+              </div>
+
+              {Object.entries(preview.sections || {}).map(([key, comments]) => (
+                <div key={key} style={{marginBottom:16}}>
+                  <div style={{fontSize:'.85rem',fontWeight:600,color:'var(--ink)',marginBottom:8,paddingBottom:4,borderBottom:'1px solid var(--line)'}}>
+                    {sectionLabels[key] || key} <span style={{color:'var(--muted)',fontWeight:400}}>({comments.length})</span>
+                  </div>
+                  {comments.map((c, i) => (
+                    <div key={i} className="comment-bubble" style={{marginBottom:6}}>
+                      <div style={{fontSize:'.62rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginBottom:4}}>
+                        {new Date(c.date).toLocaleDateString('pt-BR')}
+                      </div>
+                      <div style={{fontSize:'.82rem',color:'var(--ink)',whiteSpace:'pre-wrap'}}>{c.comment}</div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+              {Object.keys(preview.sections || {}).length === 0 && (
+                <p style={{color:'var(--muted)',fontSize:'.85rem',fontStyle:'italic'}}>Nenhum comentário registrado.</p>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ──── Estatísticas View ──── */
+    function EstatisticasView({ user, projects }) {
+      const [stats, setStats] = useState([]);
+
+      useEffect(() => {
+        (async () => {
+          try {
+            const data = await DB.orientador.getOrientadorStats(user.uid);
+            setStats(data);
+          } catch(e) {}
+        })();
+      }, [user]);
+
+      const totalComments = stats.reduce((s, st) => s + (st.total_comments || 0), 0);
+      const totalTasks = stats.reduce((s, st) => s + (st.tasks_count || 0), 0);
+      const totalDone = stats.reduce((s, st) => s + (st.tasks_completed || 0), 0);
+      const maxComments = Math.max(...stats.map(s => s.total_comments || 0), 1);
+
+      return (
+        <div className="ori-content">
+          <div className="ori-stats">
+            <div className="ori-stat-card">
+              <div className="stat-label">Total Comentários</div>
+              <div className="stat-value">{totalComments}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Total Tarefas</div>
+              <div className="stat-value">{totalTasks}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Tarefas Concluídas</div>
+              <div className="stat-value" style={{color:'var(--emerald)'}}>{totalDone}</div>
+            </div>
+            <div className="ori-stat-card">
+              <div className="stat-label">Projetos Ativos</div>
+              <div className="stat-value">{stats.length}</div>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-title" style={{marginBottom:20}}>Comentários por Projeto</div>
+            {stats.length === 0 ? (
+              <div className="empty-state"><i className="fa-solid fa-chart-bar" style={{display:'block'}}/><p>Sem dados ainda. Interaja com projetos para gerar estatísticas.</p></div>
+            ) : (
+              <div className="bar-chart">
+                {stats.map((s, i) => {
+                  const proj = projects.find(p => p.id === s.project_id);
+                  const height = Math.max(((s.total_comments || 0) / maxComments) * 100, 4);
+                  return (
+                    <div key={s.id || i} className="bar-col">
+                      <div style={{fontSize:'.65rem',color:'var(--ink)',fontWeight:600,fontFamily:'var(--font-mono)'}}>{s.total_comments || 0}</div>
+                      <div className="bar" style={{height:`${height}%`,background:'var(--emerald)'}}/>
+                      <div className="bar-label">{proj?.name?.substring(0, 10) || 'Projeto'}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="card">
+            <div className="card-title" style={{marginBottom:16}}>Desempenho por Projeto</div>
+            {stats.map((s, i) => {
+              const proj = projects.find(p => p.id === s.project_id);
+              const prog = s.tasks_count > 0 ? Math.round((s.tasks_completed / s.tasks_count) * 100) : 0;
+              return (
+                <div key={s.id || i} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 0',borderBottom:'1px solid var(--line)'}}>
+                  <div style={{width:32,height:32,borderRadius:8,background:'var(--emerald)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.7rem',flexShrink:0}}>
+                    <i className="fa-solid fa-folder"/>
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:'.85rem',fontWeight:600,color:'var(--ink)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{proj?.name || 'Projeto'}</div>
+                    <div style={{display:'flex',gap:10,fontSize:'.65rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>
+                      <span>{s.students_count || 0} alunos</span>
+                      <span>{s.total_comments || 0} coment.</span>
+                      <span>{s.tasks_completed || 0}/{s.tasks_count || 0} tarefas</span>
+                    </div>
+                  </div>
+                  <div style={{width:80}}>
+                    <div className="progress-bar">
+                      <div className="progress-bar-fill" style={{width:`${prog}%`,background: prog >= 70 ? 'var(--emerald)' : prog >= 40 ? 'var(--amber)' : 'var(--rose)'}}/>
+                    </div>
+                    <div style={{textAlign:'center',fontSize:'.62rem',color:'var(--muted)',fontFamily:'var(--font-mono)',marginTop:2}}>{prog}%</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ──── Main App ──── */
+    function OrientadorApp() {
+      const { user, loading } = useOrientadorAuth();
+      const [view, setView] = useState('dashboard');
+      const [projects, setProjects] = useState([]);
+      const [selectedProject, setSelectedProject] = useState(null);
+      const [mobileOpen, setMobileOpen] = useState(false);
+
+      const viewTitles = {
+        dashboard: 'Visão Geral',
+        projetos: 'Meus Projetos',
+        trabalho: 'Trabalho Escrito',
+        tarefas: 'Tarefas',
+        feedback: 'Feedback',
+        relatorios: 'Relatórios',
+        estatisticas: 'Estatísticas',
+      };
+
+      useEffect(() => {
+        if (user) loadProjects();
+      }, [user]);
+
+      async function loadProjects() {
+        try {
+          const raw = await DB.orientador.getMyProjects(user.uid);
+          const enriched = [];
+          for (const item of raw) {
+            const proj = item.projects;
+            if (!proj) continue;
+
+            const { data: members } = await _supa.from('users').select('id').eq('project_id', proj.id);
+            const { data: comments } = await _supa.from('orientador_comments').select('id').eq('project_id', proj.id).eq('orientador_id', user.uid);
+            const { data: tasks } = await _supa.from('tasks').select('status').eq('project_id', proj.id);
+
+            const taskCount = (tasks || []).length;
+            const doneCount = (tasks || []).filter(t => t.status === 'done').length;
+
+            enriched.push({
+              ...proj,
+              _memberCount: (members || []).length,
+              _commentCount: (comments || []).length,
+              _taskCount: taskCount,
+              _progress: taskCount > 0 ? Math.round((doneCount / taskCount) * 100) : 0,
+            });
+          }
+          setProjects(enriched);
+        } catch(e) { console.error(e); }
+      }
+
+      if (loading || !user) return <AppSplash />;
+
+      return (
+        <div className="ori-layout">
+          <OrientadorSidebar activeView={view} onNavigate={setView} user={user}
+            mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)}/>
+
+          <div className="ori-main">
+            <div className="ori-topbar">
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <button className="mobile-menu-btn btn btn-sm btn-ghost" onClick={() => setMobileOpen(true)}>
+                  <i className="fa-solid fa-bars"/>
+                </button>
+                <h1>{viewTitles[view]}</h1>
+              </div>
+              <div className="ori-topbar-actions">
+                <button className="btn btn-sm btn-ghost" onClick={loadProjects} title="Atualizar">
+                  <i className="fa-solid fa-arrows-rotate"/>
+                </button>
+              </div>
+            </div>
+
+            {view === 'dashboard' && <DashboardView user={user} projects={projects} onNavigate={setView} onSelectProject={setSelectedProject}/>}
+            {view === 'projetos' && <ProjetosView user={user} projects={projects} selectedProject={selectedProject} onSelectProject={setSelectedProject} onRefresh={loadProjects}/>}
+            {view === 'trabalho' && <TrabalhoView user={user} projects={projects}/>}
+            {view === 'tarefas' && <TarefasView user={user} projects={projects}/>}
+            {view === 'feedback' && <FeedbackView user={user} projects={projects}/>}
+            {view === 'relatorios' && <RelatoriosView user={user} projects={projects}/>}
+            {view === 'estatisticas' && <EstatisticasView user={user} projects={projects}/>}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<OrientadorApp/>);
+  </script>
+  <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

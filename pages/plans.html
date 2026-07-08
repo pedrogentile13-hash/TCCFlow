@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Planos — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+</head>
+<body><div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const OFFER_KEY = "tccflow_offer_start";
+const OFFER_DAYS = 7;
+function getOfferEnd() {
+  let start = localStorage.getItem(OFFER_KEY);
+  if (!start) { start = Date.now().toString(); localStorage.setItem(OFFER_KEY, start); }
+  return parseInt(start) + OFFER_DAYS * 86400000;
+}
+
+function useOfferCountdown() {
+  const [timeLeft, setTimeLeft] = useState(() => Math.max(0, getOfferEnd() - Date.now()));
+  useEffect(() => {
+    const id = setInterval(() => setTimeLeft(Math.max(0, getOfferEnd() - Date.now())), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const d = Math.floor(timeLeft / 86400000);
+  const h = Math.floor((timeLeft % 86400000) / 3600000);
+  const m = Math.floor((timeLeft % 3600000) / 60000);
+  const s = Math.floor((timeLeft % 60000) / 1000);
+  return { d, h, m, s, expired: timeLeft <= 0 };
+}
+
+function OfferCountdown({ compact }) {
+  const { d, h, m, s, expired } = useOfferCountdown();
+  if (expired) return null;
+  if (compact) return (
+    <span style={{ display:"inline-flex",alignItems:"center",gap:6,background:"rgba(244,63,94,.1)",padding:"4px 10px",borderRadius:8,fontSize:".75rem",fontWeight:600,color:"#f43f5e" }}>
+      <span>{"⏱"}</span>
+      <span style={{ fontVariantNumeric:"tabular-nums" }}>{d}d {String(h).padStart(2,"0")}:{String(m).padStart(2,"0")}:{String(s).padStart(2,"0")}</span>
+    </span>
+  );
+  return (
+    <div style={{ display:"flex",justifyContent:"center",gap:8,margin:"12px 0",flexWrap:"wrap" }}>
+      {[[d,"dias"],[h,"horas"],[m,"min"],[s,"seg"]].map(([v,l],i) => (
+        <div key={i} style={{ display:"flex",flexDirection:"column",alignItems:"center",background:"rgba(255,255,255,.2)",borderRadius:10,padding:"6px 10px",minWidth:48 }}>
+          <span style={{ fontSize:"clamp(1rem, 4vw, 1.5rem)",fontWeight:700,color:"white",fontVariantNumeric:"tabular-nums" }}>{String(v).padStart(2,"0")}</span>
+          <span style={{ fontSize:".55rem",textTransform:"uppercase",letterSpacing:".08em",color:"rgba(255,255,255,.8)" }}>{l}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PlansPage() {
+  const { user, userData, subscription, loading } = useTCCData();
+  const [billing, setBilling] = useState("annual");
+  const [coupon, setCoupon] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponType, setCouponType] = useState("discount");
+  const [activatingPro, setActivatingPro] = useState(false);
+  const [processingPlan, setProcessingPlan] = useState(null);
+  const { expired: offerExpired } = useOfferCountdown();
+
+  const ORIGINAL_M = 39.90;
+  const OFFER_M = 14.90;
+  const ORIGINAL_Y = 334.90;
+  const OFFER_Y = 124.90;
+
+  if (loading) {
+    return <AppSplash />;
+  }
+
+  const currentPlan = subscription?.plan || "free";
+
+  const proMonthly = offerExpired ? ORIGINAL_M : OFFER_M;
+  const proAnnual = offerExpired ? ORIGINAL_Y : OFFER_Y;
+
+  const plans = [
+    {
+      id: "free",
+      name: "Gratuito",
+      sub: "Para começar",
+      monthlyPrice: 0,
+      annualPrice: 0,
+      originalMonthly: null,
+      originalAnnual: null,
+      trial: null,
+      features: ["Dashboard e Projeto","Até 5 tarefas","Calendário básico","20 buscas I.A./mês","Equipe: 1 integrante"],
+      inactive: ["Painel do Orientador","Revisão do Trabalho Escrito","Suporte prioritário","Integração Google","Ferramentas PRO"]
+    },
+    {
+      id: "pro",
+      name: "Pro",
+      sub: "Para equipes sérias",
+      monthlyPrice: proMonthly,
+      annualPrice: proAnnual,
+      originalMonthly: offerExpired ? null : ORIGINAL_M,
+      originalAnnual: offerExpired ? null : ORIGINAL_Y,
+      trial: billing === "annual" ? "14 dias grátis" : "7 dias grátis",
+      features: [
+        "Tudo do Gratuito",
+        "Até 5 projetos · 8 membros",
+        "Tarefas ilimitadas",
+        "1.000 buscas I.A./mês",
+        "Painel do Orientador completo",
+        "Trabalho Escrito com revisão",
+        "Integração Google",
+        "Suporte prioritário"
+      ],
+      inactive: [],
+      popular: true
+    },
+    {
+      id: "inst",
+      name: "Instituição",
+      sub: "Para coordenadores",
+      monthlyPrice: null,
+      annualPrice: null,
+      originalMonthly: null,
+      originalAnnual: null,
+      trial: null,
+      features: ["Tudo do Pro","Múltiplos grupos","Painel do coordenador","Relatórios de turma","Integração com SIGAA","Suporte dedicado"],
+      inactive: []
+    }
+  ];
+
+  async function validateCoupon() {
+    if (!coupon.trim()) {
+      setCouponDiscount(0);
+      setCouponType("discount");
+      return;
+    }
+
+    try {
+      const response = await fetch("/.netlify/functions/validate-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: coupon.toUpperCase() })
+      });
+
+      const data = await response.json();
+      if (data.valid) {
+        if (data.coupon_type === 'instant_pro') {
+          setCouponType('instant_pro');
+          setCouponDiscount(100);
+          alert("👑 Cupom PRO Direto! Clique em 'Ativar PRO Grátis' para ganhar acesso imediato.");
+        } else {
+          setCouponType('discount');
+          setCouponDiscount(data.discount_percent);
+          alert(`Cupom válido! ${data.discount_percent}% de desconto aplicado.`);
+        }
+      } else {
+        setCouponDiscount(0);
+        setCouponType("discount");
+        alert(data.error || "Cupom inválido ou expirado.");
+      }
+    } catch (e) {
+      console.error("Erro ao validar cupom:", e);
+      alert("Erro ao validar cupom.");
+    }
+  }
+
+  async function activateProCoupon() {
+    if (!user) { alert("Faça login para continuar"); return; }
+    if (!coupon.trim()) { alert("Digite um cupom válido"); return; }
+    setActivatingPro(true);
+    try {
+      console.log("Ativando PRO com cupom:", coupon);
+      const { data: { session } } = await _supa.auth.getSession();
+      const response = await fetch("/.netlify/functions/activate-pro-coupon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token || ''}`
+        },
+        body: JSON.stringify({ code: coupon.toUpperCase() })
+      });
+      const data = await response.json();
+      console.log("Response:", data);
+      if (response.ok && data.success) {
+        alert("👑 Parabéns! Seu plano PRO foi ativado com sucesso!\nVálido até: " + new Date(data.expires_at).toLocaleDateString('pt-BR'));
+        setTimeout(() => window.location.href = "dashboard.html", 1000);
+      } else if (response.status === 500) {
+        alert("❌ ERRO 500 - Problema no servidor:\n" + (data.error || data.details || "Erro desconhecido"));
+        console.error("Server error:", data);
+      } else {
+        alert("❌ Erro ao ativar PRO:\n" + (data.error || "Não foi possível ativar o PRO."));
+        console.error("Activation error:", data);
+      }
+    } catch (e) {
+      console.error("Erro:", e);
+      alert("❌ Erro de conexão:\n" + e.message);
+    }
+    setActivatingPro(false);
+  }
+
+  async function handleSelectPlan(planId, amount) {
+    if (!user) {
+      alert("Faça login para continuar");
+      return;
+    }
+
+    if (planId === "free") {
+      window.location.href = "dashboard.html";
+      return;
+    }
+
+    if (planId === "inst") {
+      window.location.href = "mailto:tccflow.contato@gmail.com";
+      return;
+    }
+
+    setProcessingPlan(planId);
+
+    try {
+      const { data: { session } } = await _supa.auth.getSession();
+      const response = await fetch("/.netlify/functions/create-preapproval", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token || ''}`
+        },
+        body: JSON.stringify({
+          userName: userData?.name || user.displayName || "Usuário",
+          planType: billing === "annual" ? "pro_annual" : "pro_monthly",
+          couponCode: coupon.toUpperCase() || null,
+          originalAmount: amount
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        alert("Erro: " + data.error);
+        setProcessingPlan(null);
+        return;
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (e) {
+      console.error("Erro:", e);
+      alert("Erro ao processar pagamento: " + e.message);
+      setProcessingPlan(null);
+    }
+  }
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="plans" userData={userData} subscription={subscription} />
+      <div className="main-area">
+        <Topbar page="Planos" user={user} />
+        <div className="page-content" style={{ maxWidth: "1400px", margin: "0 auto", paddingTop: 20 }}>
+
+          {!offerExpired && (
+            <div style={{
+              background:"linear-gradient(135deg,#f43f5e 0%,#e11d48 100%)",
+              borderRadius:16,padding:"16px 20px",marginBottom:28,textAlign:"center",color:"white",
+              boxShadow:"0 8px 32px rgba(244,63,94,.25)"
+            }}>
+              <div style={{fontSize:".75rem",fontWeight:700,textTransform:"uppercase",letterSpacing:".12em",marginBottom:6,opacity:.9}}>
+                {"🔥"} Oferta Limitada {"🔥"}
+              </div>
+              <div style={{fontSize:"clamp(.9rem, 3vw, 1.25rem)",fontWeight:600,marginBottom:4}}>
+                De <span style={{textDecoration:"line-through",opacity:.7}}>R$ {ORIGINAL_M.toFixed(2).replace(".",",")}/mês</span> por apenas <span style={{fontSize:"clamp(1rem, 3.5vw, 1.5rem)"}}>R$ {OFFER_M.toFixed(2).replace(".",",")}/mês</span>
+              </div>
+              <div style={{fontSize:".875rem",opacity:.85,marginBottom:8}}>Economize mais de 60%! A oferta acaba em:</div>
+              <OfferCountdown />
+            </div>
+          )}
+
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2rem", fontWeight: 400, letterSpacing: "-0.02em", marginBottom: 16, color: "var(--ink)" }}>
+              Escolha seu plano
+            </h1>
+            <p style={{ fontSize: "0.9375rem", color: "var(--muted)", marginBottom: 24 }}>
+              Comece grátis. Atualize quando precisar.
+            </p>
+
+            {/* Toggle Mensal/Anual */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 32, flexWrap: "wrap" }}>
+              <button
+                onClick={() => setBilling("monthly")}
+                style={{
+                  padding: "8px 24px",
+                  border: billing === "monthly" ? "2px solid var(--violet)" : "1px solid var(--line)",
+                  background: billing === "monthly" ? "rgba(124, 58, 237, 0.08)" : "transparent",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontSize: "0.9375rem",
+                  fontWeight: billing === "monthly" ? 600 : 400,
+                  color: billing === "monthly" ? "var(--violet)" : "var(--muted)",
+                  transition: "all 0.2s"
+                }}
+              >
+                Mensal
+              </button>
+              <button
+                onClick={() => setBilling("annual")}
+                style={{
+                  padding: "8px 24px",
+                  border: billing === "annual" ? "2px solid var(--violet)" : "1px solid var(--line)",
+                  background: billing === "annual" ? "rgba(124, 58, 237, 0.08)" : "transparent",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontSize: "0.9375rem",
+                  fontWeight: billing === "annual" ? 600 : 400,
+                  color: billing === "annual" ? "var(--violet)" : "var(--muted)",
+                  transition: "all 0.2s"
+                }}
+              >
+                Anual
+                <span style={{ marginLeft: 8, background: "var(--emerald)", color: "white", padding: "2px 8px", borderRadius: 4, fontSize: "0.75rem", fontWeight: 600 }}>
+                  −30%
+                </span>
+              </button>
+            </div>
+
+            {currentPlan !== "free" && (
+              <div style={{ background: "rgba(16, 185, 129, 0.1)", color: "var(--emerald)", padding: "8px 16px", borderRadius: 8, display: "inline-block", fontSize: "0.875rem", fontWeight: 600 }}>
+                ✓ Você está no plano <strong>{currentPlan === "pro" ? "Pro" : "Instituição"}</strong>
+              </div>
+            )}
+          </div>
+
+          {/* Cupom */}
+          <div style={{ maxWidth: 400, margin: "0 auto 40px", display: "flex", gap: 8 }}>
+            <input
+              type="text"
+              placeholder="Digite seu cupom (opcional)"
+              value={coupon}
+              onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+              onKeyPress={(e) => e.key === "Enter" && validateCoupon()}
+              style={{
+                flex: 1,
+                padding: "10px 14px",
+                border: "1px solid var(--line)",
+                borderRadius: 8,
+                fontSize: "0.875rem",
+                background: "var(--paper)",
+                color: "var(--ink)",
+                fontFamily: "var(--font-body)"
+              }}
+            />
+            <button
+              onClick={validateCoupon}
+              className="btn btn-ghost"
+              style={{ whiteSpace: "nowrap" }}
+            >
+              Validar
+            </button>
+          </div>
+
+          {couponDiscount > 0 && couponType === 'discount' && (
+            <div style={{ background: "rgba(16, 185, 129, 0.1)", color: "var(--emerald)", padding: "12px 16px", borderRadius: 8, textAlign: "center", marginBottom: 32, fontSize: "0.9375rem", fontWeight: 600 }}>
+              ✓ Desconto de {couponDiscount}% aplicado!
+            </div>
+          )}
+
+          {couponType === 'instant_pro' && (
+            <div style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.08), rgba(6,182,212,0.08))", border: "2px solid var(--violet)", padding: "24px", borderRadius: 16, textAlign: "center", marginBottom: 32 }}>
+              <div style={{ fontSize: "2rem", marginBottom: 8 }}>👑</div>
+              <div style={{ fontSize: "1.125rem", fontWeight: 700, color: "var(--ink)", marginBottom: 4 }}>Cupom PRO Direto Detectado!</div>
+              <div style={{ fontSize: "0.875rem", color: "var(--muted)", marginBottom: 16 }}>Você ganhou acesso PRO gratuito com o cupom <strong style={{ color: "var(--violet)" }}>{coupon}</strong></div>
+              <button
+                onClick={activateProCoupon}
+                disabled={activatingPro}
+                style={{
+                  padding: "14px 32px",
+                  background: "var(--grad)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 999,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  cursor: activatingPro ? "not-allowed" : "pointer",
+                  opacity: activatingPro ? 0.7 : 1,
+                  fontFamily: "var(--font-body)",
+                  transition: "all 0.2s"
+                }}
+              >
+                {activatingPro ? "Ativando..." : "🚀 Ativar PRO Grátis"}
+              </button>
+            </div>
+          )}
+
+          {/* Grid de planos — responsivo */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, marginBottom: 40 }}>
+            {plans.map(plan => {
+              const price = billing === "annual" ? plan.annualPrice : plan.monthlyPrice;
+              const isCurrent = currentPlan === plan.id;
+              const finalPrice = price && couponDiscount > 0 ? price * (1 - couponDiscount / 100) : price;
+
+              return (
+                <div
+                  key={plan.id}
+                  style={{
+                    background: "var(--paper)",
+                    border: isCurrent ? "2px solid var(--emerald)" : plan.popular ? "2px solid var(--violet)" : "1.5px solid var(--line)",
+                    borderRadius: 12,
+                    padding: 20,
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                    boxShadow: plan.popular && !isCurrent ? "0 8px 24px rgba(124, 58, 237, 0.15)" : "none",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  {isCurrent && (
+                    <div style={{ position: "absolute", top: 10, right: 10, background: "var(--emerald)", color: "white", padding: "2px 8px", borderRadius: 999, fontSize: "0.6rem", fontWeight: 600, textTransform: "uppercase" }}>
+                      ✓ Seu plano
+                    </div>
+                  )}
+                  {plan.popular && !isCurrent && !offerExpired && (
+                    <div style={{ position: "absolute", top: 10, right: 10, background: "linear-gradient(135deg,#f43f5e,#e11d48)", color: "white", padding: "2px 8px", borderRadius: 999, fontSize: "0.6rem", fontWeight: 600, textTransform: "uppercase" }}>
+                      {"🔥"} Oferta Limitada
+                    </div>
+                  )}
+                  {plan.popular && !isCurrent && offerExpired && (
+                    <div style={{ position: "absolute", top: 10, right: 10, background: "var(--violet)", color: "white", padding: "2px 8px", borderRadius: 999, fontSize: "0.6rem", fontWeight: 600, textTransform: "uppercase" }}>
+                      Popular
+                    </div>
+                  )}
+
+                  <div style={{ marginBottom: 12 }}>
+                    <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.4rem", fontWeight: 400, margin: "0 0 4px", color: "var(--ink)" }}>
+                      {plan.name}
+                    </h2>
+                    <p style={{ color: "var(--muted)", fontSize: "0.8125rem", margin: 0 }}>
+                      {plan.sub}
+                    </p>
+                  </div>
+
+                  <div style={{ marginBottom: 16 }}>
+                    {price === null ? (
+                      <>
+                        <div style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--ink)" }}>
+                          Customizado
+                        </div>
+                        <div style={{ fontSize: "0.8125rem", color: "var(--muted)" }}>
+                          Preço por volume
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {plan.id === "pro" && !offerExpired && (
+                          <div style={{ fontSize: "0.875rem", color: "var(--rose)", textDecoration: "line-through", opacity: .7, marginBottom: 2 }}>
+                            R$ {billing === "annual" ? ORIGINAL_Y.toFixed(2).replace(".", ",") : ORIGINAL_M.toFixed(2).replace(".", ",")}
+                          </div>
+                        )}
+                        <div style={{ fontSize: "2rem", fontWeight: 700, color: plan.id === "pro" && !offerExpired ? "var(--rose)" : "var(--ink)", marginBottom: 2 }}>
+                          {price === 0 ? "R$ 0" : `R$ ${finalPrice.toFixed(2).replace(".", ",")}`}
+                        </div>
+                        <div style={{ fontSize: "0.8125rem", color: "var(--muted)" }}>
+                          {price === 0 ? "para sempre" : billing === "annual" ? "/ano" : "/mês"}
+                        </div>
+                        {plan.trial && (
+                          <div style={{ fontSize: "0.875rem", color: "var(--emerald)", fontWeight: 600, marginTop: 8, padding: "6px 10px", background: "rgba(16, 185, 129, 0.1)", borderRadius: 6, textAlign: "center" }}>
+                            {plan.trial}
+                          </div>
+                        )}
+                        {plan.id === "pro" && !offerExpired && (
+                          <div style={{ marginTop: 8 }}><OfferCountdown compact /></div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  <ul style={{ flex: 1, listStyle: "none", padding: 0, margin: "0 0 16px", fontSize: "0.8125rem" }}>
+                    {plan.features.map((feature, i) => (
+                      <li key={i} style={{ padding: "5px 0", color: "var(--ink)", display: "flex", alignItems: "flex-start", gap: 8 }}>
+                        <span style={{ color: "var(--violet)", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                    {plan.inactive && plan.inactive.map((feature, i) => (
+                      <li key={"off"+i} style={{ padding: "5px 0", color: "var(--muted)", display: "flex", alignItems: "flex-start", gap: 8, opacity: .5 }}>
+                        <span style={{ fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✕</span>
+                        <span style={{ textDecoration: "line-through" }}>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {isCurrent ? (
+                    <button className="btn" style={{ width: "100%", justifyContent: "center", opacity: 0.6, cursor: "default" }}>
+                      Seu plano
+                    </button>
+                  ) : plan.id === "free" ? (
+                    <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center" }} onClick={() => handleSelectPlan("free")}>
+                      Usar grátis
+                    </button>
+                  ) : plan.id === "pro" ? (
+                    <button
+                      className="btn btn-primary"
+                      style={{ width: "100%", justifyContent: "center" }}
+                      onClick={() => handleSelectPlan("pro", price)}
+                      disabled={processingPlan === "pro"}
+                    >
+                      {processingPlan === "pro" ? "Processando..." : "Assinar agora"}
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-ghost"
+                      style={{ width: "100%", justifyContent: "center" }}
+                      onClick={() => handleSelectPlan("inst")}
+                    >
+                      Contato
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ padding: "24px", background: "var(--bg-2)", borderRadius: 12, textAlign: "center" }}>
+            <p style={{ color: "var(--muted)", fontSize: "0.875rem", margin: 0 }}>
+              💳 Aceita Pix e cartão de crédito
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<PlansPage/>);
+</script>
+</body>
+</html>

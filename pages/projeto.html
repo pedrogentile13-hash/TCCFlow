@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projeto - TCCFlow</title>
     <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -36,39 +52,58 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
-                    </div>
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
                     <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
-                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Projeto</a>
-                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas</a>
-                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
-                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
-                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
-                </div>
-                <div class="flex items-center gap-2">
+                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.dashboard">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm" data-i18n="nav.project">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.ia">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.calendar">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i><span data-i18n="nav.tools">Ferramentas</span></a>
+                    <div class="relative" id="moreDropdown">
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1"><span data-i18n="nav.more">Mais</span> <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.tasks">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.team">Equipe</a>
+                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i><span data-i18n="nav.plans">Planos</span></a>
+                        </div>
+                    </div>
+                </div><div class="flex items-center gap-2">
                     <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-gear text-sm"></i></a>
+                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
                     <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-sm"></i></button>
                     <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-bars text-sm"></i></button>
                 </div>
             </div>
         </div>
         <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.dashboard">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50" data-i18n="nav.project">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tasks">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.ia">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.calendar">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.team">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tools">Ferramentas</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.plans">Planos</a>
         </div>
+    
+    <script>
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('moreDropdown');
+        const menu = document.getElementById('moreMenu');
+        if (dropdown && menu && !dropdown.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+    </script>
     </nav>
 
     <!-- Main Content -->
@@ -77,103 +112,155 @@
 
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h1 class="text-3xl font-bold">Visão Geral do Projeto</h1>
-                    <p class="text-slate-500 mt-1">Configure os detalhes gerais do seu TCC</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold" data-i18n="proj.title">Visão Geral do Projeto</h1>
+                    <p class="text-slate-500 mt-1" data-i18n="proj.subtitle">Configure os detalhes gerais do seu TCC</p>
                 </div>
                 <button id="saveAllBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-5 py-2.5 rounded-xl font-medium hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
-                    <i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Tudo
+                    <i class="fa-solid fa-floppy-disk mr-2"></i><span data-i18n="proj.saveAll">Salvar Tudo</span>
                 </button>
             </div>
 
             <!-- Project Info Card -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
-                <h2 class="text-lg font-bold mb-6"><i class="fa-solid fa-book mr-2 text-violet-600"></i>Informações do TCC</h2>
+                <h2 class="text-lg font-bold mb-6"><i class="fa-solid fa-book mr-2 text-violet-600"></i><span data-i18n="proj.tccInfo">Informações do TCC</span></h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Título / Tema do TCC</label>
-                        <input type="text" id="tccTitle" placeholder="Ex: A influência das redes sociais na educação"
+                        <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.tccTitle">Título / Tema do TCC</label>
+                        <input type="text" id="tccTitle" data-i18n-placeholder="proj.tccTitlePlaceholder" placeholder="Ex: A influência das redes sociais na educação"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Instituição / Escola</label>
-                        <input type="text" id="tccInstitution" placeholder="Ex: ETEC Prof. Carmelino Corrêa Júnior"
+                        <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.institution">Instituição / Escola</label>
+                        <input type="text" id="tccInstitution" data-i18n-placeholder="proj.institutionPlaceholder" placeholder="Ex: ETEC Prof. Carmelino Corrêa Júnior"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Curso / Turma</label>
-                        <input type="text" id="tccCourse" placeholder="Ex: Desenvolvimento de Sistemas - 3DS"
+                        <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.course">Curso / Turma</label>
+                        <input type="text" id="tccCourse" data-i18n-placeholder="proj.coursePlaceholder" placeholder="Ex: Desenvolvimento de Sistemas - 3DS"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Tipo de Trabalho</label>
+                        <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.workType">Tipo de Trabalho</label>
                         <select id="tccType" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                            <option value="tcc">TCC</option>
-                            <option value="monografia">Monografia</option>
-                            <option value="artigo">Artigo Científico</option>
-                            <option value="relatorio">Relatório Técnico</option>
-                            <option value="projeto">Projeto Integrador</option>
+                            <option value="tcc" data-i18n="proj.typeTcc">TCC</option>
+                            <option value="monografia" data-i18n="proj.typeMonografia">Monografia</option>
+                            <option value="artigo" data-i18n="proj.typeArtigo">Artigo Científico</option>
+                            <option value="relatorio" data-i18n="proj.typeRelatorio">Relatório Técnico</option>
+                            <option value="projeto" data-i18n="proj.typeProjeto">Projeto Integrador</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Metodologia</label>
+                        <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.methodology">Metodologia</label>
                         <select id="tccMethodology" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
-                            <option value="">Selecione...</option>
-                            <option value="qualitativa">Pesquisa Qualitativa</option>
-                            <option value="quantitativa">Pesquisa Quantitativa</option>
-                            <option value="mista">Pesquisa Mista</option>
-                            <option value="bibliografica">Pesquisa Bibliográfica</option>
-                            <option value="experimental">Pesquisa Experimental</option>
-                            <option value="estudo-caso">Estudo de Caso</option>
-                            <option value="pesquisa-acao">Pesquisa-Ação</option>
+                            <option value="" data-i18n="proj.select">Selecione...</option>
+                            <option value="qualitativa" data-i18n="proj.methQualitative">Pesquisa Qualitativa</option>
+                            <option value="quantitativa" data-i18n="proj.methQuantitative">Pesquisa Quantitativa</option>
+                            <option value="mista" data-i18n="proj.methMixed">Pesquisa Mista</option>
+                            <option value="bibliografica" data-i18n="proj.methBibliographic">Pesquisa Bibliográfica</option>
+                            <option value="experimental" data-i18n="proj.methExperimental">Pesquisa Experimental</option>
+                            <option value="estudo-caso" data-i18n="proj.methCaseStudy">Estudo de Caso</option>
+                            <option value="pesquisa-acao" data-i18n="proj.methActionResearch">Pesquisa-Ação</option>
                         </select>
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Resumo / Objetivo Geral</label>
-                        <textarea id="tccAbstract" rows="3" placeholder="Descreva brevemente o objetivo e a proposta do seu TCC..."
+                        <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.summary">Resumo / Objetivo Geral</label>
+                        <textarea id="tccAbstract" rows="3" data-i18n-placeholder="proj.summaryPlaceholder" placeholder="Descreva brevemente o objetivo e a proposta do seu TCC..."
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
                     </div>
+                </div>
+            </div>
+
+            <!-- Objetivos do TCC -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h2 class="text-lg font-bold mb-6"><i class="fa-solid fa-crosshairs mr-2 text-indigo-600"></i><span data-i18n="proj.objectives">Objetivos do TCC</span></h2>
+
+                <!-- Objetivo Geral -->
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">
+                        <i class="fa-solid fa-bullseye mr-1 text-violet-500"></i><span data-i18n="proj.generalObj">Objetivo Geral</span>
+                        <span class="text-xs font-normal text-slate-400 ml-1" data-i18n="proj.generalObjHint">(1 objetivo principal)</span>
+                    </label>
+                    <textarea id="objetivoGeral" rows="3" data-i18n-placeholder="proj.generalObjPlaceholder" placeholder="Ex: Analisar o impacto das redes sociais no desempenho acadêmico de alunos do ensino médio..."
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
+                    <p class="text-xs text-slate-400 mt-1" data-i18n="proj.generalObjHelp">O objetivo geral descreve o propósito principal do seu trabalho.</p>
+                </div>
+
+                <!-- Objetivos Específicos -->
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-3">
+                        <i class="fa-solid fa-list-ol mr-1 text-cyan-500"></i><span data-i18n="proj.specificObj">Objetivos Específicos</span>
+                        <span class="text-xs font-normal text-slate-400 ml-1" data-i18n="proj.specificObjHint">(até 5 objetivos)</span>
+                    </label>
+                    <div class="space-y-3" id="objetivosEspecificos">
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">1</span>
+                            <input type="text" id="objEsp1" data-i18n-placeholder="proj.objEsp1Placeholder" placeholder="Ex: Identificar os principais hábitos de uso de redes sociais entre estudantes..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">2</span>
+                            <input type="text" id="objEsp2" data-i18n-placeholder="proj.objEsp2Placeholder" placeholder="Ex: Mapear a correlação entre tempo de uso e notas escolares..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">3</span>
+                            <input type="text" id="objEsp3" data-i18n-placeholder="proj.objEsp3Placeholder" placeholder="Ex: Comparar o rendimento de alunos que usam e não usam redes durante estudos..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">4</span>
+                            <input type="text" id="objEsp4" data-i18n-placeholder="proj.objEsp4Placeholder" placeholder="Ex: Avaliar a percepção dos professores sobre o uso de redes em sala..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-100 to-violet-200 rounded-lg flex items-center justify-center text-xs font-bold text-violet-600 mt-1">5</span>
+                            <input type="text" id="objEsp5" data-i18n-placeholder="proj.objEsp5Placeholder" placeholder="Ex: Propor estratégias de uso consciente das redes sociais no ambiente escolar..."
+                                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2" data-i18n="proj.specificObjHelp">Os objetivos específicos detalham os passos para alcançar o objetivo geral.</p>
                 </div>
             </div>
 
             <!-- Orientador & Professor -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <h2 class="text-lg font-bold mb-5"><i class="fa-solid fa-chalkboard-user mr-2 text-cyan-600"></i>Orientador</h2>
+                    <h2 class="text-lg font-bold mb-5"><i class="fa-solid fa-chalkboard-user mr-2 text-cyan-600"></i><span data-i18n="proj.advisor">Orientador</span></h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">Nome do Orientador</label>
-                            <input type="text" id="advisorName" placeholder="Prof. Dr. João da Silva"
+                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.advisorName">Nome do Orientador</label>
+                            <input type="text" id="advisorName" data-i18n-placeholder="proj.advisorNamePlaceholder" placeholder="Prof. Dr. João da Silva"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">Email do Orientador</label>
-                            <input type="email" id="advisorEmail" placeholder="orientador@escola.com"
+                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.advisorEmail">Email do Orientador</label>
+                            <input type="email" id="advisorEmail" data-i18n-placeholder="proj.advisorEmailPlaceholder" placeholder="orientador@escola.com"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">Dia de Orientação</label>
-                            <input type="text" id="advisorDay" placeholder="Ex: Terças às 14h"
+                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.advisorDay">Dia de Orientação</label>
+                            <input type="text" id="advisorDay" data-i18n-placeholder="proj.advisorDayPlaceholder" placeholder="Ex: Terças às 14h"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <h2 class="text-lg font-bold mb-5"><i class="fa-solid fa-user-tie mr-2 text-amber-600"></i>Professor Avaliador</h2>
+                    <h2 class="text-lg font-bold mb-5"><i class="fa-solid fa-user-tie mr-2 text-amber-600"></i><span data-i18n="proj.evaluator">Professor Avaliador</span></h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">Nome do Professor</label>
-                            <input type="text" id="professorName" placeholder="Prof. Maria Oliveira"
+                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.professorName">Nome do Professor</label>
+                            <input type="text" id="professorName" data-i18n-placeholder="proj.professorNamePlaceholder" placeholder="Prof. Maria Oliveira"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">Email do Professor</label>
-                            <input type="email" id="professorEmail" placeholder="professor@escola.com"
+                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.professorEmail">Email do Professor</label>
+                            <input type="email" id="professorEmail" data-i18n-placeholder="proj.professorEmailPlaceholder" placeholder="professor@escola.com"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1">Disciplina</label>
-                            <input type="text" id="professorSubject" placeholder="Ex: Metodologia Científica"
+                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.professorSubject">Disciplina</label>
+                            <input type="text" id="professorSubject" data-i18n-placeholder="proj.professorSubjectPlaceholder" placeholder="Ex: Metodologia Científica"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                         </div>
                     </div>
@@ -182,18 +269,18 @@
 
             <!-- Prazos Gerais -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
-                <h2 class="text-lg font-bold mb-6"><i class="fa-solid fa-calendar-check mr-2 text-rose-600"></i>Prazos e Datas Importantes</h2>
+                <h2 class="text-lg font-bold mb-6"><i class="fa-solid fa-calendar-check mr-2 text-rose-600"></i><span data-i18n="proj.deadlines">Prazos e Datas Importantes</span></h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Data de Início</label>
+                        <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.startDate">Data de Início</label>
                         <input type="date" id="dateStart" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Prazo de Entrega Final</label>
+                        <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.finalDeadline">Prazo de Entrega Final</label>
                         <input type="date" id="dateDeadline" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Data da Defesa / Apresentação</label>
+                        <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="proj.defenseDate">Data da Defesa / Apresentação</label>
                         <input type="date" id="dateDefense" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                 </div>
@@ -202,12 +289,12 @@
                 <div id="countdownPanel" class="hidden mt-6 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-xl p-5">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-bold text-violet-700"><i class="fa-solid fa-hourglass-half mr-2"></i>Tempo Restante para Entrega</p>
-                            <p class="text-xs text-slate-500 mt-1" id="countdownText">Calculando...</p>
+                            <p class="text-sm font-bold text-violet-700"><i class="fa-solid fa-hourglass-half mr-2"></i><span data-i18n="proj.timeRemaining">Tempo Restante para Entrega</span></p>
+                            <p class="text-xs text-slate-500 mt-1" id="countdownText" data-i18n="proj.calculating">Calculando...</p>
                         </div>
                         <div class="text-right">
                             <p class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500" id="countdownDays">--</p>
-                            <p class="text-xs text-slate-500">dias restantes</p>
+                            <p class="text-xs text-slate-500" data-i18n="proj.daysRemaining">dias restantes</p>
                         </div>
                     </div>
                 </div>
@@ -216,7 +303,7 @@
             <!-- Fases do TCC (Progress Tracker) -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-lg font-bold"><i class="fa-solid fa-bars-progress mr-2 text-emerald-600"></i>Fases do TCC</h2>
+                    <h2 class="text-lg font-bold"><i class="fa-solid fa-bars-progress mr-2 text-emerald-600"></i><span data-i18n="proj.phases">Fases do TCC</span></h2>
                     <span class="text-sm font-bold text-violet-600" id="overallProgress">0%</span>
                 </div>
 
@@ -230,10 +317,21 @@
 
             <!-- Anotações Gerais -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-sticky-note mr-2 text-amber-600"></i>Anotações & Observações</h2>
-                <textarea id="projectNotes" rows="5" placeholder="Escreva anotações importantes, feedback do orientador, lembranças gerais..."
+                <h2 class="text-lg font-bold mb-4"><i class="fa-solid fa-sticky-note mr-2 text-amber-600"></i><span data-i18n="proj.notes">Anotações & Observações</span></h2>
+                <textarea id="projectNotes" rows="5" data-i18n-placeholder="proj.notesPlaceholder" placeholder="Escreva anotações importantes, feedback do orientador, lembranças gerais..."
                     class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"></textarea>
-                <p class="text-xs text-slate-400 mt-2">As anotações são salvas automaticamente junto com o projeto.</p>
+                <p class="text-xs text-slate-400 mt-2" data-i18n="proj.notesHelp">As anotações são salvas automaticamente junto com o projeto.</p>
+            </div>
+
+            <!-- Orientador Comments (BETA) -->
+            <div id="orientadorCommentsSection" class="hidden bg-white border border-emerald-200 rounded-2xl p-6 sm:p-8 shadow-sm mt-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-lg font-bold"><i class="fa-solid fa-graduation-cap mr-2 text-emerald-600"></i>Comentários do Orientador</h2>
+                    <span class="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">BETA</span>
+                </div>
+                <div id="orientadorCommentsList" class="space-y-3">
+                    <p class="text-sm text-slate-400 text-center py-4">Nenhum comentário do orientador ainda.</p>
+                </div>
             </div>
 
         </div>
@@ -241,13 +339,11 @@
 
     <!-- Save Feedback -->
     <div id="saveFeedback" class="hidden fixed bottom-6 right-6 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-lg z-50 text-sm font-medium">
-        <i class="fa-solid fa-check mr-2"></i>Salvo com sucesso!
+        <i class="fa-solid fa-check mr-2"></i><span data-i18n="proj.savedSuccess">Salvo com sucesso!</span>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-init.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
     <script src="../js/db-service.js"></script>
     <script>
         let currentUser = null;
@@ -255,13 +351,13 @@
 
         // Default TCC phases
         const defaultPhases = [
-            { id: 'escolha-tema', name: 'Escolha do Tema', progress: 0, icon: 'fa-lightbulb', color: 'from-amber-400 to-amber-500' },
-            { id: 'revisao-lit', name: 'Revisão Bibliográfica', progress: 0, icon: 'fa-book-open', color: 'from-violet-400 to-violet-500' },
-            { id: 'metodologia', name: 'Metodologia', progress: 0, icon: 'fa-flask', color: 'from-cyan-400 to-cyan-500' },
-            { id: 'desenvolvimento', name: 'Desenvolvimento / Resultados', progress: 0, icon: 'fa-code', color: 'from-emerald-400 to-emerald-500' },
-            { id: 'conclusao', name: 'Conclusão', progress: 0, icon: 'fa-flag-checkered', color: 'from-rose-400 to-rose-500' },
-            { id: 'formatacao', name: 'Formatação ABNT', progress: 0, icon: 'fa-file-lines', color: 'from-blue-400 to-blue-500' },
-            { id: 'revisao-final', name: 'Revisão Final & Defesa', progress: 0, icon: 'fa-star', color: 'from-purple-400 to-purple-500' }
+            { id: 'escolha-tema', name: i18n.t('proj.phaseTopicChoice'), progress: 0, icon: 'fa-lightbulb', color: 'from-amber-400 to-amber-500' },
+            { id: 'revisao-lit', name: i18n.t('proj.phaseLitReview'), progress: 0, icon: 'fa-book-open', color: 'from-violet-400 to-violet-500' },
+            { id: 'metodologia', name: i18n.t('proj.phaseMethodology'), progress: 0, icon: 'fa-flask', color: 'from-cyan-400 to-cyan-500' },
+            { id: 'desenvolvimento', name: i18n.t('proj.phaseDevelopment'), progress: 0, icon: 'fa-code', color: 'from-emerald-400 to-emerald-500' },
+            { id: 'conclusao', name: i18n.t('proj.phaseConclusion'), progress: 0, icon: 'fa-flag-checkered', color: 'from-rose-400 to-rose-500' },
+            { id: 'formatacao', name: i18n.t('proj.phaseFormatting'), progress: 0, icon: 'fa-file-lines', color: 'from-blue-400 to-blue-500' },
+            { id: 'revisao-final', name: i18n.t('proj.phaseFinalReview'), progress: 0, icon: 'fa-star', color: 'from-purple-400 to-purple-500' }
         ];
 
         document.getElementById('mobileNavBtn').addEventListener('click', () => {
@@ -277,18 +373,16 @@
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
-            // Update navbar for PRO users
-            try {
-                const pid = await DB.getProjectId();
-                if (pid) {
-                    const isPro = await DB.isProByProject(pid);
-                    if (isPro) {
-                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
-                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
-                        });
-                    }
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
                 }
-            } catch(e) { console.log(e); }
+            }
 
             if (isFirebaseConfigured()) {
                 try {
@@ -300,6 +394,42 @@
                 } catch (err) { console.error('Error:', err); }
             }
             renderPhases();
+
+            // Load orientador comments if any
+            if (projectId) {
+                try {
+                    const comments = await DB.orientador.getComments(projectId);
+                    if (comments && comments.length > 0) {
+                        document.getElementById('orientadorCommentsSection').classList.remove('hidden');
+                        const listEl = document.getElementById('orientadorCommentsList');
+                        const sectionLabels = {
+                            'geral': 'Geral', 'introducao': 'Introdução', 'metodologia': 'Metodologia',
+                            'resultados': 'Resultados', 'conclusao': 'Conclusão', 'referencias': 'Referências',
+                            'formatacao': 'Formatação'
+                        };
+                        const sectionColors = {
+                            'geral': 'bg-slate-100 text-slate-600', 'introducao': 'bg-violet-100 text-violet-700',
+                            'metodologia': 'bg-cyan-100 text-cyan-700', 'resultados': 'bg-emerald-100 text-emerald-700',
+                            'conclusao': 'bg-amber-100 text-amber-700', 'referencias': 'bg-pink-100 text-pink-700',
+                            'formatacao': 'bg-indigo-100 text-indigo-700'
+                        };
+                        listEl.innerHTML = '';
+                        for (const c of comments) {
+                            const date = new Date(c.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+                            listEl.innerHTML += `
+                                <div class="p-3 rounded-xl border border-emerald-200 bg-emerald-50/50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${sectionColors[c.section] || sectionColors.geral}">
+                                            ${sectionLabels[c.section] || c.section}
+                                        </span>
+                                        <span class="text-[10px] text-slate-400">${date}</span>
+                                    </div>
+                                    <p class="text-sm text-slate-700">${c.comment.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>
+                                </div>`;
+                        }
+                    }
+                } catch(e) { console.log('Orientador comments:', e); }
+            }
         });
 
         async function loadProjectData() {
@@ -325,6 +455,14 @@
                 document.getElementById('dateDeadline').value = info.dateDeadline || '';
                 document.getElementById('dateDefense').value = info.dateDefense || '';
                 document.getElementById('projectNotes').value = info.projectNotes || '';
+
+                // Load objectives
+                document.getElementById('objetivoGeral').value = info.objetivoGeral || '';
+                document.getElementById('objEsp1').value = info.objEsp1 || '';
+                document.getElementById('objEsp2').value = info.objEsp2 || '';
+                document.getElementById('objEsp3').value = info.objEsp3 || '';
+                document.getElementById('objEsp4').value = info.objEsp4 || '';
+                document.getElementById('objEsp5').value = info.objEsp5 || '';
 
                 if (info.phases && info.phases.length > 0) {
                     info.phases.forEach(saved => {
@@ -425,6 +563,12 @@
                 dateDeadline: document.getElementById('dateDeadline').value,
                 dateDefense: document.getElementById('dateDefense').value,
                 projectNotes: document.getElementById('projectNotes').value,
+                objetivoGeral: document.getElementById('objetivoGeral').value,
+                objEsp1: document.getElementById('objEsp1').value,
+                objEsp2: document.getElementById('objEsp2').value,
+                objEsp3: document.getElementById('objEsp3').value,
+                objEsp4: document.getElementById('objEsp4').value,
+                objEsp5: document.getElementById('objEsp5').value,
                 phases: defaultPhases.map(p => ({ id: p.id, progress: p.progress })),
                 updatedAt: new Date().toISOString()
             };
@@ -439,5 +583,6 @@
             }
         });
     </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>

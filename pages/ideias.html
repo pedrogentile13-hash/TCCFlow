@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Quadro de Ideias — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .cat-dot-tema{background:#8b5cf6;}
+    .cat-dot-metodologia{background:#10b981;}
+    .cat-dot-referencias{background:#f59e0b;}
+    .cat-dot-analise{background:#06b6d4;}
+    .cat-dot-conclusao{background:#f43f5e;}
+    .cat-dot-pessoal{background:#3b82f6;}
+    .cat-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:.8125rem;color:var(--ink-2);transition:background .15s;border-left:3px solid transparent;}
+    .cat-item:hover{background:var(--bg-2);}
+    .cat-item.active{border-left-color:var(--violet);background:rgba(124,58,237,.06);color:var(--violet);font-weight:600;}
+    .cat-item .cat-count{margin-left:auto;font-family:var(--font-mono);font-size:.625rem;color:var(--muted);}
+    .idea-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px;position:relative;transition:transform .2s,box-shadow .2s;cursor:pointer;border-left:4px solid var(--line);}
+    .idea-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+    .idea-card.selected{border-color:var(--violet);box-shadow:0 0 0 2px rgba(124,58,237,.2);}
+    .idea-card.cat-border-tema{border-left-color:#8b5cf6;}
+    .idea-card.cat-border-metodologia{border-left-color:#10b981;}
+    .idea-card.cat-border-referencias{border-left-color:#f59e0b;}
+    .idea-card.cat-border-analise{border-left-color:#06b6d4;}
+    .idea-card.cat-border-conclusao{border-left-color:#f43f5e;}
+    .idea-card.cat-border-pessoal{border-left-color:#3b82f6;}
+    .idea-card .ic-actions{position:absolute;top:12px;right:12px;display:flex;gap:4px;opacity:0;transition:opacity .15s;}
+    .idea-card:hover .ic-actions{opacity:1;}
+    .idea-card .ic-title{font-weight:600;font-size:.9375rem;margin:6px 0 4px;line-height:1.3;}
+    .idea-card .ic-desc{font-size:.8125rem;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4;}
+    .idea-card .ic-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
+    .idea-card .ic-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.6875rem;color:var(--muted);}
+    .tag-pill-input{display:flex;flex-wrap:wrap;gap:4px;padding:8px;background:var(--bg-2);border:1px solid var(--line);border-radius:8px;min-height:38px;align-items:center;}
+    .tag-pill-input input{border:none;background:transparent;outline:none;font-size:.8125rem;flex:1;min-width:80px;color:var(--ink);}
+    .tag-pill-rm{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:.75rem;background:var(--bg-2);border:1px solid var(--line);color:var(--ink-2);}
+    .tag-pill-rm button{font-size:.75rem;color:var(--muted);cursor:pointer;line-height:1;}
+    .tag-pill-rm button:hover{color:var(--rose);}
+    .conn-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--bg-2);font-size:.8125rem;color:var(--ink-2);margin-bottom:6px;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100;}
+    .modal{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px;width:480px;max-width:calc(100vw - 32px);max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+    .fab{position:absolute;bottom:24px;right:24px;z-index:10;}
+    .right-section{margin-bottom:16px;}
+    .right-section h4{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;font-family:var(--font-mono);}
+  </style>
+</head>
+<body><div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const CATEGORIES = [
+  { key:"tema", label:"Tema", emoji:"🎯", color:"violet" },
+  { key:"metodologia", label:"Metodologia", emoji:"🔬", color:"emerald" },
+  { key:"referencias", label:"Referências", emoji:"📖", color:"amber" },
+  { key:"analise", label:"Análise", emoji:"📊", color:"cyan" },
+  { key:"conclusao", label:"Conclusão", emoji:"✅", color:"rose" },
+  { key:"pessoal", label:"Pessoal", emoji:"💭", color:"blue" }
+];
+
+const catMap = {};
+CATEGORIES.forEach(c => catMap[c.key] = c);
+
+function IdeiasPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+  const [ideas, setIdeas] = useState([]);
+  const [selectedCat, setSelectedCat] = useState(null);
+  const [search, setSearch] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [formTitle, setFormTitle] = useState("");
+  const [formCat, setFormCat] = useState("tema");
+  const [formDesc, setFormDesc] = useState("");
+  const [formTags, setFormTags] = useState([]);
+  const [formTagInput, setFormTagInput] = useState("");
+  const [formStatus, setFormStatus] = useState("ativa");
+  const [formConnect, setFormConnect] = useState("");
+  const tagInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!userData?.project_id) return;
+    (async () => {
+      try {
+        const { data, error } = await _supa
+          .from("ideas")
+          .select("*")
+          .eq("project_id", userData.project_id)
+          .order("created_at", { ascending: false });
+        if (!error && data) {
+          setIdeas(data.map(r => ({
+            id: r.id,
+            title: r.title || "",
+            description: r.description || "",
+            category: r.category || "tema",
+            tags: r.tags ? (typeof r.tags === "string" ? JSON.parse(r.tags) : r.tags) : [],
+            status: r.status || "ativa",
+            connected_to: r.connected_to ? (typeof r.connected_to === "string" ? JSON.parse(r.connected_to) : r.connected_to) : [],
+            created_at: r.created_at,
+            updated_at: r.updated_at
+          })));
+        }
+      } catch(e) { console.error(e); }
+    })();
+  }, [userData]);
+
+  const filtered = ideas.filter(i => {
+    if (i.status !== "ativa") return false;
+    if (selectedCat && i.category !== selectedCat) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      if (!i.title.toLowerCase().includes(q) && !i.description.toLowerCase().includes(q) && !(i.tags || []).some(t => t.toLowerCase().includes(q))) return false;
+    }
+    return true;
+  });
+
+  const connectedCount = ideas.filter(i => i.connected_to && i.connected_to.length > 0).length;
+  const selectedIdea = ideas.find(i => i.id === selectedId);
+
+  function resetForm() {
+    setEditId(null);
+    setFormTitle("");
+    setFormCat("tema");
+    setFormDesc("");
+    setFormTags([]);
+    setFormTagInput("");
+    setFormStatus("ativa");
+    setFormConnect("");
+  }
+
+  function openNew() {
+    resetForm();
+    setShowModal(true);
+  }
+
+  function openEdit(idea) {
+    setEditId(idea.id);
+    setFormTitle(idea.title);
+    setFormCat(idea.category);
+    setFormDesc(idea.description);
+    setFormTags([...(idea.tags || [])]);
+    setFormStatus(idea.status);
+    setFormConnect("");
+    setShowModal(true);
+  }
+
+  async function handleSave() {
+    if (!formTitle.trim() || !formCat) return;
+    const pid = userData?.project_id;
+    if (!pid) return;
+
+    if (editId) {
+      const prev = ideas.find(i => i.id === editId);
+      let newConnected = prev ? [...(prev.connected_to || [])] : [];
+      if (formConnect && !newConnected.includes(formConnect)) newConnected.push(formConnect);
+      try {
+        await _supa.from("ideas").update({
+          title: formTitle.trim(),
+          category: formCat,
+          description: formDesc.trim(),
+          tags: formTags,
+          status: formStatus,
+          connected_to: newConnected,
+          updated_at: new Date().toISOString()
+        }).eq("id", editId);
+        setIdeas(ideas.map(i => i.id === editId ? { ...i, title: formTitle.trim(), category: formCat, description: formDesc.trim(), tags: formTags, status: formStatus, connected_to: newConnected, updated_at: new Date().toISOString() } : i));
+        if (formConnect) {
+          const target = ideas.find(i => i.id === formConnect);
+          if (target && !(target.connected_to || []).includes(editId)) {
+            const tc = [...(target.connected_to || []), editId];
+            await _supa.from("ideas").update({ connected_to: tc }).eq("id", formConnect);
+            setIdeas(prev => prev.map(i => i.id === formConnect ? { ...i, connected_to: tc } : i));
+          }
+        }
+      } catch(e) { console.error(e); }
+    } else {
+      let newConnected = formConnect ? [formConnect] : [];
+      try {
+        const { data, error } = await _supa.from("ideas").insert({
+          project_id: pid,
+          user_id: user.uid,
+          title: formTitle.trim(),
+          description: formDesc.trim(),
+          category: formCat,
+          tags: formTags,
+          status: formStatus,
+          connected_to: newConnected,
+          created_by: user.uid
+        }).select().maybeSingle();
+        if (!error && data) {
+          const newIdea = { id: data.id, title: data.title, description: data.description, category: data.category, tags: data.tags || formTags, status: data.status || "ativa", connected_to: data.connected_to || newConnected, created_at: data.created_at, updated_at: data.updated_at };
+          setIdeas([newIdea, ...ideas]);
+          if (formConnect) {
+            const target = ideas.find(i => i.id === formConnect);
+            if (target && !(target.connected_to || []).includes(data.id)) {
+              const tc = [...(target.connected_to || []), data.id];
+              await _supa.from("ideas").update({ connected_to: tc }).eq("id", formConnect);
+              setIdeas(prev => prev.map(i => i.id === formConnect ? { ...i, connected_to: tc } : i));
+            }
+          }
+        }
+      } catch(e) { console.error(e); }
+    }
+    setShowModal(false);
+    resetForm();
+  }
+
+  async function handleDelete(id) {
+    if (!confirm("Tem certeza que deseja excluir esta ideia?")) return;
+    try {
+      await _supa.from("ideas").delete().eq("id", id);
+      setIdeas(ideas.filter(i => i.id !== id));
+      if (selectedId === id) setSelectedId(null);
+    } catch(e) { console.error(e); }
+  }
+
+  function handleTagKeyDown(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const v = formTagInput.trim();
+      if (v && !formTags.includes(v)) setFormTags([...formTags, v]);
+      setFormTagInput("");
+    }
+  }
+
+  function removeFormTag(t) {
+    setFormTags(formTags.filter(x => x !== t));
+  }
+
+  function getConnectedIdeas(idea) {
+    if (!idea || !idea.connected_to || idea.connected_to.length === 0) return [];
+    return idea.connected_to.map(cid => ideas.find(i => i.id === cid)).filter(Boolean);
+  }
+
+  if (loading) return React.createElement(AppSplash);
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="tools" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Quadro de Ideias" user={user} actions={}/>
+        <div style={{display:"grid",gridTemplateColumns:"220px 1fr 260px",height:"calc(100vh - 60px)",overflow:"hidden"}}>
+
+          <div style={{background:"var(--bg-2)",borderRight:"1px solid var(--line)",padding:"16px",overflowY:"auto"}}>
+            <div style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",textTransform:"uppercase",letterSpacing:".1em",color:"var(--muted)",marginBottom:12}}>Categorias</div>
+            <div className={"cat-item" + (selectedCat === null ? " active" : "")} onClick={() => setSelectedCat(null)}>
+              <span>Todas</span>
+              <span className="cat-count">{ideas.filter(i => i.status === "ativa").length}</span>
+            </div>
+            {CATEGORIES.map(c => {
+              const count = ideas.filter(i => i.category === c.key && i.status === "ativa").length;
+              return (
+                <div key={c.key} className={"cat-item" + (selectedCat === c.key ? " active" : "")} onClick={() => setSelectedCat(selectedCat === c.key ? null : c.key)}>
+                  <span className={"cat-dot cat-dot-" + c.key}></span>
+                  <span style={{flex:1}}>{c.emoji} {c.label}</span>
+                  <span className="cat-count">{count}</span>
+                </div>
+              );
+            })}
+            <div style={{marginTop:16}}>
+              <input className="field" type="text" placeholder="Buscar ideias..." value={search} onChange={e => setSearch(e.target.value)} style={{width:"100%",padding:"8px 10px",border:"1px solid var(--line)",borderRadius:8,background:"var(--paper)",fontSize:".8125rem",color:"var(--ink)",outline:"none"}}/>
+            </div>
+            <div style={{marginTop:14,fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>
+              {ideas.filter(i => i.status === "ativa").length} ideias &middot; {connectedCount} conectadas
+            </div>
+          </div>
+
+          <div style={{position:"relative",overflowY:"auto",padding:20}}>
+            {filtered.length === 0 ? (
+              <div className="empty-state">
+                <div className="es-icon">{"💡"}</div>
+                <h3>Nenhuma ideia ainda</h3>
+                <p>Comece a registrar suas ideias!</p>
+                <button className="btn btn-violet" onClick={openNew}>+ Nova ideia</button>
+              </div>
+            ) : (
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(260px, 1fr))",gap:12}}>
+                {filtered.map(idea => {
+                  const cat = catMap[idea.category] || catMap.tema;
+                  return (
+                    <div key={idea.id} className={"idea-card cat-border-" + idea.category + (selectedId === idea.id ? " selected" : "")} onClick={() => setSelectedId(idea.id)}>
+                      <div className="ic-actions">
+                        <button className="btn-ghost btn-sm" style={{padding:"4px 6px",fontSize:".75rem"}} onClick={e => { e.stopPropagation(); openEdit(idea); }}>{"✏️"}</button>
+                        <button className="btn-ghost btn-sm" style={{padding:"4px 6px",fontSize:".75rem",color:"var(--rose)"}} onClick={e => { e.stopPropagation(); handleDelete(idea.id); }}>{"✕"}</button>
+                      </div>
+                      <div style={{display:"flex",alignItems:"center",gap:6}}>
+                        <span className={"cat-dot cat-dot-" + idea.category}></span>
+                        <span className={"tag tag-" + cat.color} style={{fontSize:".5625rem",padding:"2px 6px"}}>{cat.label}</span>
+                      </div>
+                      <div className="ic-title">{idea.title || "Sem título"}</div>
+                      <div className="ic-desc">{idea.description || "Sem descrição"}</div>
+                      {idea.tags && idea.tags.length > 0 && (
+                        <div className="ic-tags">
+                          {idea.tags.slice(0, 4).map((t, i) => (
+                            <span key={i} className="tag tag-slate" style={{fontSize:".5625rem",padding:"2px 6px"}}>{t}</span>
+                          ))}
+                        </div>
+                      )}
+                      <div className="ic-footer">
+                        <span>{new Date(idea.created_at).toLocaleDateString("pt-BR")}</span>
+                        {idea.connected_to && idea.connected_to.length > 0 && <span>{"🔗"} {idea.connected_to.length}</span>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <div className="fab">
+              <button className="btn btn-violet" onClick={openNew}>+ Nova ideia</button>
+            </div>
+          </div>
+
+          <div style={{borderLeft:"1px solid var(--line)",padding:16,overflowY:"auto",background:"var(--paper)"}}>
+            {selectedIdea ? (
+              <div>
+                <div className="right-section">
+                  <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
+                    <span className={"cat-dot cat-dot-" + selectedIdea.category}></span>
+                    <span className={"tag tag-" + (catMap[selectedIdea.category]?.color || "violet")} style={{fontSize:".5625rem"}}>{catMap[selectedIdea.category]?.label}</span>
+                    <span className={"tag " + (selectedIdea.status === "ativa" ? "tag-emerald" : "tag-slate")} style={{fontSize:".5625rem"}}>{selectedIdea.status === "ativa" ? "Ativa" : "Arquivada"}</span>
+                  </div>
+                  <div style={{fontSize:"1rem",fontWeight:600,marginBottom:6}}>{selectedIdea.title}</div>
+                  <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>{selectedIdea.description || "Sem descrição"}</div>
+                </div>
+                {selectedIdea.tags && selectedIdea.tags.length > 0 && (
+                  <div className="right-section">
+                    <h4>Tags</h4>
+                    <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                      {selectedIdea.tags.map((t, i) => <span key={i} className="tag tag-slate" style={{fontSize:".5625rem",padding:"2px 6px"}}>{t}</span>)}
+                    </div>
+                  </div>
+                )}
+                <div className="right-section">
+                  <h4>Criado em</h4>
+                  <div style={{fontSize:".8125rem",color:"var(--muted)"}}>{new Date(selectedIdea.created_at).toLocaleDateString("pt-BR", { day:"2-digit", month:"long", year:"numeric" })}</div>
+                </div>
+                <div className="right-section">
+                  <h4>Conexões</h4>
+                  {getConnectedIdeas(selectedIdea).length > 0 ? getConnectedIdeas(selectedIdea).map(ci => (
+                    <div key={ci.id} className="conn-item" onClick={() => setSelectedId(ci.id)} style={{cursor:"pointer"}}>
+                      <span className={"cat-dot cat-dot-" + ci.category}></span>
+                      <span style={{flex:1,fontSize:".8125rem"}}>{ci.title}</span>
+                    </div>
+                  )) : (
+                    <div style={{fontSize:".8125rem",color:"var(--muted)"}}>Nenhuma conexão</div>
+                  )}
+                </div>
+                <div style={{display:"flex",gap:8,marginTop:16}}>
+                  <button className="btn btn-ghost btn-sm" style={{flex:1}} onClick={() => openEdit(selectedIdea)}>Editar</button>
+                  <button className="btn btn-sm" style={{flex:1,background:"rgba(244,63,94,.1)",color:"var(--rose)"}} onClick={() => handleDelete(selectedIdea.id)}>Excluir</button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="right-section">
+                  <h4>Estatísticas</h4>
+                  <div className="card" style={{padding:14,marginBottom:10}}>
+                    <div style={{fontSize:".8125rem",fontWeight:600,marginBottom:8}}>Total: {ideas.filter(i => i.status === "ativa").length} ideias</div>
+                    {CATEGORIES.map(c => {
+                      const cnt = ideas.filter(i => i.category === c.key && i.status === "ativa").length;
+                      return (
+                        <div key={c.key} style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}>
+                          <span className={"cat-dot cat-dot-" + c.key}></span>
+                          <span style={{flex:1,fontSize:".75rem",color:"var(--ink-2)"}}>{c.label}</span>
+                          <span style={{fontFamily:"var(--font-mono)",fontSize:".6875rem",color:"var(--muted)"}}>{cnt}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div style={{padding:"14px",background:"var(--grad-soft)",borderRadius:10,fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>
+                  Dica: Conecte ideias relacionadas para criar um mapa mental
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {showModal && (
+        <div className="modal-overlay" onClick={() => { setShowModal(false); resetForm(); }}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+              <div style={{fontSize:"1.125rem",fontWeight:600}}>{editId ? "Editar Ideia" : "Nova Ideia"}</div>
+              <button style={{fontSize:"1rem",color:"var(--muted)"}} onClick={() => { setShowModal(false); resetForm(); }}>{"✕"}</button>
+            </div>
+            <div className="field">
+              <label>Título</label>
+              <input type="text" placeholder="Título da ideia..." value={formTitle} onChange={e => setFormTitle(e.target.value)} autoFocus/>
+            </div>
+            <div className="field">
+              <label>Categoria</label>
+              <select value={formCat} onChange={e => setFormCat(e.target.value)}>
+                {CATEGORIES.map(c => <option key={c.key} value={c.key}>{c.emoji} {c.label}</option>)}
+              </select>
+            </div>
+            <div className="field">
+              <label>Descrição</label>
+              <textarea placeholder="Descreva sua ideia..." value={formDesc} onChange={e => setFormDesc(e.target.value)} style={{minHeight:150}}/>
+            </div>
+            <div className="field">
+              <label>Tags</label>
+              <div className="tag-pill-input">
+                {formTags.map((t, i) => (
+                  <span key={i} className="tag-pill-rm">
+                    {t}
+                    <button type="button" onClick={() => removeFormTag(t)}>{"✕"}</button>
+                  </span>
+                ))}
+                <input ref={tagInputRef} type="text" placeholder="Digite e pressione Enter..." value={formTagInput} onChange={e => setFormTagInput(e.target.value)} onKeyDown={handleTagKeyDown}/>
+              </div>
+            </div>
+            <div className="field">
+              <label>Status</label>
+              <select value={formStatus} onChange={e => setFormStatus(e.target.value)}>
+                <option value="ativa">Ativa</option>
+                <option value="arquivada">Arquivada</option>
+              </select>
+            </div>
+            <div className="field">
+              <label>Conectar com outra ideia</label>
+              <select value={formConnect} onChange={e => setFormConnect(e.target.value)}>
+                <option value="">Nenhuma</option>
+                {ideas.filter(i => i.id !== editId).map(i => <option key={i.id} value={i.id}>{i.title || "Sem título"}</option>)}
+              </select>
+            </div>
+            <div style={{display:"flex",gap:10,marginTop:8}}>
+              <button className="btn btn-ghost" style={{flex:1}} onClick={() => { setShowModal(false); resetForm(); }}>Cancelar</button>
+              <button className="btn btn-violet" style={{flex:1}} onClick={handleSave}>Salvar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<IdeiasPage/>);
+</script>
+</body></html>

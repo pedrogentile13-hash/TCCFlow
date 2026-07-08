@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Projeto — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100;}
+    .modal{background:var(--paper);border-radius:16px;padding:28px;width:480px;max-width:90vw;box-shadow:var(--shadow);}
+  </style>
+</head>
+<body>
+<div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function InfoField({ label, value, editing, onChange }) {
+  return (
+    <div>
+      <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", textTransform:"uppercase", letterSpacing:"0.1em", color:"var(--muted)", marginBottom:6 }}>{label}</div>
+      {editing ? (
+        <input type="text" value={value || ''} onChange={e => onChange(e.target.value)}
+          style={{ fontSize:"0.9375rem", color:"var(--ink)", lineHeight:1.5, padding:"10px 14px", background:"var(--bg-2)", borderRadius:9, border:"1.5px solid var(--violet)", width:"100%", fontFamily:"var(--font-body)" }}/>
+      ) : (
+        <div style={{ fontSize:"0.9375rem", color:"var(--ink)", lineHeight:1.5, padding:"10px 14px", background:"var(--bg-2)", borderRadius:9, border:"1px solid var(--line)" }}>{value || '—'}</div>
+      )}
+    </div>
+  );
+}
+
+function ProjectPage() {
+  const { user, userData, project, subscription, teamMembers, loading } = useTCCData();
+  const [tasks, setTasks] = useState([]);
+  const [orientador, setOrientador] = useState(null);
+  const [goals, setGoals] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [shown, setShown] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editInfo, setEditInfo] = useState({});
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteCode, setInviteCode] = useState("");
+  const [generating, setGenerating] = useState(false);
+
+  useEffect(() => {
+    if (!project) return;
+    setEditName(project.name || "");
+    setEditInfo(project.project_info || {});
+    (async () => {
+      const { data: t } = await _supa.from('tasks').select('*').eq('project_id', project.id);
+      setTasks(t || []);
+      const o = await DB.orientador.getProjectOrientador(project.id);
+      setOrientador(o);
+      const g = await DB.calendarGoals.getAll(project.id);
+      setGoals(g);
+      const c = await DB.orientador.getComments(project.id);
+      setComments(c);
+    })();
+  }, [project]);
+
+  useEffect(() => { if (!loading) setTimeout(() => setShown(true), 50); }, [loading]);
+
+  async function saveProject() {
+    if (!editName.trim()) return;
+    await _supa.from('projects').update({ name: editName, project_info: editInfo }).eq('id', project.id);
+    setEditMode(false);
+    window.location.reload();
+  }
+
+  async function generateOrientadorInvite() {
+    setGenerating(true);
+    try {
+      const result = await DB.orientador.createInvite(project.id);
+      setInviteCode(result.code);
+    } catch(e) { alert("Erro: " + e.message); }
+    setGenerating(false);
+  }
+
+  function updateInfo(key, val) {
+    setEditInfo(prev => ({ ...prev, [key]: val }));
+  }
+
+  if (loading) return <AppSplash />;
+  if (!project) return (
+    <div className="app-layout">
+      <Sidebar active="project" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Projeto" user={user}/>
+        <div className="page-content"><div className="empty-state"><div className="es-icon">📋</div><h3>Nenhum projeto ativo</h3><p>Crie ou entre em um projeto pela página de Equipe.</p><a href="team.html" className="btn btn-violet">Ir para Equipe</a></div></div>
+      </div>
+    </div>
+  );
+
+  const totalTasks = tasks.length;
+  const doneTasks = tasks.filter(t => t.status === 'done').length;
+  const progress = totalTasks > 0 ? Math.round(doneTasks / totalTasks * 100) : 0;
+  const info = editMode ? editInfo : (project.project_info || {});
+  const isOwner = project.owner_id === user?.uid;
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="project" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Projeto" user={user} actions={
+          isOwner && (
+            <button className={`btn ${editMode?"btn-violet":"btn-ghost"} btn-sm`} onClick={() => editMode ? saveProject() : setEditMode(true)}>
+              {editMode ? "Salvar" : "Editar projeto"}
+            </button>
+          )
+        }/>
+        <div className="page-content">
+
+          <div className={`reveal ${shown?"in":""}`} style={{ marginBottom:24 }}>
+            <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexWrap:"wrap" }}>
+              <div>
+                <div className="mono-label" style={{ marginBottom:8 }}>Trabalho de Conclusão de Curso</div>
+                {editMode ? (
+                  <input type="text" value={editName} onChange={e=>setEditName(e.target.value)} style={{fontFamily:"var(--font-display)",fontSize:"1.875rem",fontWeight:400,border:"1.5px solid var(--violet)",borderRadius:8,padding:"4px 12px",width:"100%"}}/>
+                ) : (
+                  <h1 style={{ fontFamily:"var(--font-display)", fontSize:"1.875rem", fontWeight:400, letterSpacing:"-.02em", lineHeight:1.15, marginBottom:8 }}>
+                    {project.name}
+                  </h1>
+                )}
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:8 }}>
+                  <span className="tag tag-cyan">Em andamento</span>
+                  <span className="tag tag-amber">{progress}% concluído</span>
+                </div>
+              </div>
+              <div style={{ textAlign:"right" }}>
+                <div className="mono-label" style={{ marginBottom:4 }}>Código de entrada</div>
+                <div style={{ fontFamily:"var(--font-mono)", fontSize:"1.125rem", fontWeight:700, color:"var(--violet)", background:"rgba(124,58,237,.08)", padding:"8px 16px", borderRadius:9, border:"1px dashed rgba(124,58,237,.3)" }}>{project.code}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="page-grid" style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16 }}>
+            <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+              <div className={`card reveal ${shown?"in":""} d1`}>
+                <div className="card-title"><span className="ct-icon">📋</span> Informações Gerais</div>
+                <div className="info-fields-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                  <InfoField label="Instituição" value={info.institution} editing={editMode} onChange={v => updateInfo('institution', v)}/>
+                  <InfoField label="Curso" value={info.course} editing={editMode} onChange={v => updateInfo('course', v)}/>
+                  <InfoField label="Tipo" value={info.type} editing={editMode} onChange={v => updateInfo('type', v)}/>
+                  <InfoField label="Metodologia" value={info.methodology} editing={editMode} onChange={v => updateInfo('methodology', v)}/>
+                  <InfoField label="Área de pesquisa" value={info.area} editing={editMode} onChange={v => updateInfo('area', v)}/>
+                  <InfoField label="Semestre" value={info.semester} editing={editMode} onChange={v => updateInfo('semester', v)}/>
+                </div>
+              </div>
+
+              <div className={`card reveal ${shown?"in":""} d2`}>
+                <div className="card-title" style={{ justifyContent:"space-between" }}>
+                  <span style={{ display:"flex", alignItems:"center", gap:8 }}><span className="ct-icon">👨‍🏫</span> Orientador</span>
+                  {isOwner && !orientador && <button className="btn btn-violet btn-sm" onClick={() => setShowInviteModal(true)}>Convidar orientador</button>}
+                </div>
+                {orientador && orientador.users ? (
+                  <div style={{ display:"flex", alignItems:"center", gap:10, padding:14, background:"var(--bg-2)", borderRadius:10, border:"1px solid var(--line)" }}>
+                    <div className="av av-md c2">{getInitials(orientador.users.name || 'O')}</div>
+                    <div>
+                      <div style={{ fontWeight:600 }}>{orientador.users.name || 'Orientador vinculado'}</div>
+                      <div style={{ fontSize:".8125rem", color:"var(--muted)" }}>{orientador.users.email || ''}</div>
+                    </div>
+                    <span className="tag tag-amber" style={{marginLeft:"auto"}}>Orientador</span>
+                  </div>
+                ) : (
+                  <div style={{ padding:16, background:"var(--bg-2)", borderRadius:10, border:"1px dashed var(--line)", textAlign:"center" }}>
+                    <div style={{ color:"var(--muted)", fontSize:".875rem" }}>Nenhum orientador vinculado</div>
+                    {isOwner && <div style={{ fontSize:".75rem", color:"var(--muted)", marginTop:4 }}>Use o botão acima para gerar um código de convite</div>}
+                  </div>
+                )}
+              </div>
+
+              {comments.length > 0 && (
+                <div className={`card reveal ${shown?"in":""} d3`}>
+                  <div className="card-title"><span className="ct-icon">💬</span> Comentários do Orientador</div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                    {comments.map(c => (
+                      <div key={c.id} style={{ padding:"10px 14px", background:"var(--bg-2)", borderRadius:10, border:"1px solid var(--line)", borderLeft:"3px solid var(--amber)" }}>
+                        <div style={{ fontSize:".875rem", lineHeight:1.5 }}>{c.comment}</div>
+                        <div style={{ display:"flex", gap:8, marginTop:6, fontSize:".6875rem", color:"var(--muted)", fontFamily:"var(--font-mono)" }}>
+                          <span>{c.section || 'geral'}</span>
+                          <span>{new Date(c.created_at).toLocaleDateString('pt-BR')}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className={`card reveal ${shown?"in":""} d3`}>
+                <div className="card-title"><span className="ct-icon">👥</span> Membros ({teamMembers.length})</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                  {teamMembers.map((m,i) => (
+                    <div key={m.id} style={{ display:"flex", alignItems:"center", gap:10 }}>
+                      <div className={`av av-sm c${(i%4)+1}`}>{getInitials(m.name)}</div>
+                      <div style={{ fontSize:".875rem" }}>{m.name || m.email}</div>
+                      <span className={`tag ${m.role==='orientador'?'tag-amber':'tag-violet'}`} style={{marginLeft:"auto",fontSize:".6rem"}}>{m.role==='orientador'?'Orientador':'Estudante'}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+              <div className={`card reveal ${shown?"in":""} d1`}>
+                <div className="card-title"><span className="ct-icon">📈</span> Progresso</div>
+                <div style={{ textAlign:"center", padding:"16px 0" }}>
+                  <div style={{ fontFamily:"var(--font-display)", fontSize:"3rem", lineHeight:1, color:"var(--violet)" }}>{progress}%</div>
+                  <div style={{ fontSize:".8125rem", color:"var(--muted)", marginTop:4 }}>{doneTasks} de {totalTasks} tarefas concluídas</div>
+                </div>
+                <div className="progress-bar"><div className="progress-fill" style={{ width:`${progress}%` }}></div></div>
+              </div>
+
+              <div className={`card reveal ${shown?"in":""} d2`}>
+                <div className="card-title"><span className="ct-icon">⏱</span> Metas</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                  {goals.length === 0 && <div style={{color:"var(--muted)",fontSize:".8125rem"}}>Adicione metas no Calendário</div>}
+                  {goals.map((g) => (
+                    <div key={g.id} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 10px", borderRadius:8, background:"var(--bg-2)", border:"1px solid var(--line)" }}>
+                      <span style={{ width:8, height:8, borderRadius:"50%", background:g.completed?"var(--emerald)":"var(--violet)", flexShrink:0 }}></span>
+                      <span style={{ flex:1, fontSize:"0.8125rem", textDecoration:g.completed?"line-through":"none" }}>{g.title}</span>
+                      {g.deadline && <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)" }}>{new Date(g.deadline).toLocaleDateString('pt-BR')}</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className={`card reveal ${shown?"in":""} d3`}>
+                <div className="card-title"><span className="ct-icon">📊</span> Status por Fase</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                  {[{label:"A fazer",key:"todo",color:"var(--muted)"},{label:"Em andamento",key:"progress",color:"var(--blue)"},{label:"Em revisão",key:"review",color:"var(--amber)"},{label:"Concluído",key:"done",color:"var(--emerald)"}].map(s => {
+                    const cnt = tasks.filter(t => t.status === s.key).length;
+                    return (
+                      <div key={s.key} style={{ display:"flex", alignItems:"center", gap:10, fontSize:".8125rem" }}>
+                        <span style={{ width:8, height:8, borderRadius:"50%", background:s.color, flexShrink:0 }}></span>
+                        <span style={{ flex:1 }}>{s.label}</span>
+                        <span style={{ fontFamily:"var(--font-mono)", fontWeight:600, fontSize:".75rem" }}>{cnt}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {showInviteModal && (
+            <div className="modal-overlay" onClick={() => { setShowInviteModal(false); setInviteCode(""); }}>
+              <div className="modal" onClick={e => e.stopPropagation()}>
+                <h3 style={{fontFamily:"var(--font-display)",fontSize:"1.25rem",marginBottom:16}}>Convidar Orientador</h3>
+                {inviteCode ? (
+                  <div style={{ textAlign:"center" }}>
+                    <p style={{ fontSize:".875rem", color:"var(--muted)", marginBottom:16 }}>Envie este código para seu orientador:</p>
+                    <div style={{ fontFamily:"var(--font-mono)", fontSize:"1.5rem", fontWeight:700, color:"var(--violet)", background:"rgba(124,58,237,.08)", padding:"16px", borderRadius:12, border:"2px dashed rgba(124,58,237,.3)", marginBottom:16, letterSpacing:".08em" }}>
+                      {inviteCode}
+                    </div>
+                    <button className="btn btn-violet" style={{width:"100%"}} onClick={() => { navigator.clipboard.writeText(inviteCode); }}>Copiar código</button>
+                  </div>
+                ) : (
+                  <div>
+                    <p style={{ fontSize:".875rem", color:"var(--muted)", marginBottom:16 }}>Gere um código de convite para seu orientador acessar e acompanhar o projeto.</p>
+                    <button className="btn btn-violet" style={{width:"100%"}} onClick={generateOrientadorInvite} disabled={generating}>
+                      {generating ? "Gerando..." : "Gerar código de convite"}
+                    </button>
+                  </div>
+                )}
+                <button className="btn btn-ghost" style={{width:"100%",marginTop:8}} onClick={() => { setShowInviteModal(false); setInviteCode(""); }}>Fechar</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<ProjectPage/>);
+</script>
+</body>
+</html>

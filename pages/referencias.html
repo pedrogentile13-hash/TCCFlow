@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Gerador de Referências — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .ref-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr 280px;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
+    .ref-left {
+      background: var(--bg-2);
+      border-right: 1px solid var(--line);
+      padding: 20px 16px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line) transparent;
+    }
+    .ref-left::-webkit-scrollbar { width: 4px; }
+    .ref-left::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 4px; }
+    .ref-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 28px;
+      overflow-y: auto;
+    }
+    .ref-right {
+      background: var(--bg-2);
+      border-left: 1px solid var(--line);
+      padding: 20px 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line) transparent;
+    }
+    .ref-right::-webkit-scrollbar { width: 4px; }
+    .ref-right::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 4px; }
+    .ref-right.collapsed {
+      width: 0;
+      min-width: 0;
+      padding: 0;
+      border-left: none;
+      overflow: hidden;
+    }
+    .ref-section-title {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .ref-preview-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px;
+      width: 100%;
+      max-width: 640px;
+      box-shadow: var(--shadow-sm);
+    }
+    .ref-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .ref-preview-text {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--ink);
+      word-break: break-word;
+      white-space: pre-wrap;
+      padding: 16px;
+      background: var(--bg-2);
+      border-radius: 10px;
+      border: 1px solid var(--line);
+    }
+    .ref-history-item {
+      background: var(--paper);
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+      transition: box-shadow .15s;
+    }
+    .ref-history-item:hover {
+      box-shadow: var(--shadow-sm);
+    }
+    .ref-history-title {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .ref-history-meta {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ref-history-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .ref-btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .ref-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--emerald);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      box-shadow: var(--shadow);
+      animation: refToastIn .3s ease, refToastOut .3s ease 2.7s forwards;
+      z-index: 200;
+    }
+    @keyframes refToastIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes refToastOut {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(20px); opacity: 0; }
+    }
+    .ref-count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: var(--violet);
+      color: white;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 600;
+    }
+    .ref-right-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .ref-right-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ref-toggle-btn {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 40px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      border-right: none;
+      border-radius: 6px 0 0 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      z-index: 10;
+    }
+    .ref-toggle-btn:hover { color: var(--ink); }
+  </style>
+</head>
+<body><div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const TYPE_FIELDS = {
+  livro: ["titulo","autores","ano","editora","cidade","edicao"],
+  artigo: ["titulo","autores","ano","periodico","volume","numero","paginas"],
+  site: ["titulo","autores","ano","url"],
+  tese: ["titulo","autores","ano","instituicao","cidade","tipo_tese"],
+  periodico: ["titulo","autores","ano","periodico","volume","numero","paginas","url"]
+};
+
+const FIELD_LABELS = {
+  titulo: "Titulo",
+  autores: "Autor(es)",
+  ano: "Ano",
+  url: "URL / DOI",
+  editora: "Editora",
+  cidade: "Cidade",
+  edicao: "Edicao",
+  periodico: "Nome do Periodico",
+  volume: "Volume",
+  numero: "Numero",
+  paginas: "Paginas (ex: 10-25)",
+  instituicao: "Instituicao",
+  tipo_tese: "Tipo"
+};
+
+function formatAuthorABNT(raw) {
+  if (!raw) return "AUTOR DESCONHECIDO";
+  const authors = raw.split(";").map(a => a.trim()).filter(Boolean);
+  return authors.map(a => {
+    const parts = a.split(" ").filter(Boolean);
+    if (parts.length < 2) return parts[0].toUpperCase();
+    const last = parts.pop();
+    return last.toUpperCase() + ", " + parts.join(" ");
+  }).join("; ");
+}
+
+function generateABNT(type, f) {
+  const author = formatAuthorABNT(f.autores);
+  const titulo = f.titulo || "Sem titulo";
+  const ano = f.ano || new Date().getFullYear();
+
+  switch (type) {
+    case "livro": {
+      let ref = author + ". " + titulo + ".";
+      if (f.edicao) ref += " " + f.edicao + ". ed.";
+      if (f.cidade) ref += " " + f.cidade + ":";
+      if (f.editora) ref += " " + f.editora + ",";
+      ref += " " + ano + ".";
+      return ref;
+    }
+    case "artigo": {
+      let ref = author + ". " + titulo + ".";
+      if (f.periodico) ref += " " + f.periodico + ",";
+      if (f.volume) ref += " v. " + f.volume + ",";
+      if (f.numero) ref += " n. " + f.numero + ",";
+      if (f.paginas) ref += " p. " + f.paginas + ",";
+      ref += " " + ano + ".";
+      return ref;
+    }
+    case "site": {
+      const today = new Date().toLocaleDateString("pt-BR");
+      let ref = author + ". " + titulo + ". " + ano + ".";
+      if (f.url) ref += " Disponivel em: " + f.url + ".";
+      ref += " Acesso em: " + today + ".";
+      return ref;
+    }
+    case "tese": {
+      const tipoLabel = f.tipo_tese === "mestrado" ? "Dissertacao (Mestrado)" : "Tese (Doutorado)";
+      let ref = author + ". " + titulo + ". " + ano + ". " + tipoLabel;
+      if (f.instituicao) ref += " – " + f.instituicao;
+      if (f.cidade) ref += ", " + f.cidade;
+      ref += ", " + ano + ".";
+      return ref;
+    }
+    case "periodico": {
+      let ref = author + ". " + titulo + ".";
+      if (f.periodico) ref += " " + f.periodico + ",";
+      if (f.volume) ref += " v. " + f.volume + ",";
+      if (f.numero) ref += " n. " + f.numero + ",";
+      if (f.paginas) ref += " p. " + f.paginas + ",";
+      ref += " " + ano + ".";
+      if (f.url) ref += " Disponivel em: " + f.url + ".";
+      return ref;
+    }
+    default:
+      return "";
+  }
+}
+
+function generateAPA(type, f) {
+  const parts = (f.autores || "").split(";").map(a => a.trim()).filter(Boolean);
+  const author = parts.length > 0
+    ? parts.map(a => { const p = a.split(" "); const last = p.pop(); return last + ", " + p.map(x => x[0] + ".").join(" "); }).join(", ")
+    : "Autor desconhecido";
+  const ano = f.ano || "s.d.";
+  const titulo = f.titulo || "Sem titulo";
+
+  switch (type) {
+    case "livro":
+      return author + " (" + ano + "). " + titulo + "." + (f.cidade ? " " + f.cidade + ":" : "") + (f.editora ? " " + f.editora + "." : "");
+    case "artigo":
+    case "periodico":
+      return author + " (" + ano + "). " + titulo + "." + (f.periodico ? " " + f.periodico + "," : "") + (f.volume ? " " + f.volume : "") + (f.numero ? "(" + f.numero + ")" : "") + (f.paginas ? ", " + f.paginas : "") + ".";
+    case "site":
+      return author + " (" + ano + "). " + titulo + "." + (f.url ? " Retrieved from " + f.url : "");
+    case "tese":
+      return author + " (" + ano + "). " + titulo + "." + (f.tipo_tese === "mestrado" ? " (Master's thesis)." : " (Doctoral dissertation).") + (f.instituicao ? " " + f.instituicao + "." : "");
+    default:
+      return "";
+  }
+}
+
+function generateVancouver(type, f) {
+  const parts = (f.autores || "").split(";").map(a => a.trim()).filter(Boolean);
+  const author = parts.length > 0
+    ? parts.map(a => { const p = a.split(" "); const last = p.pop(); return last + " " + p.map(x => x[0]).join(""); }).join(", ")
+    : "Autor desconhecido";
+  const ano = f.ano || "s.d.";
+  const titulo = f.titulo || "Sem titulo";
+
+  switch (type) {
+    case "livro":
+      return author + ". " + titulo + "." + (f.cidade ? " " + f.cidade + ":" : "") + (f.editora ? " " + f.editora + ";" : "") + " " + ano + ".";
+    case "artigo":
+    case "periodico":
+      return author + ". " + titulo + "." + (f.periodico ? " " + f.periodico + "." : "") + " " + ano + ";" + (f.volume ? f.volume : "") + (f.numero ? "(" + f.numero + ")" : "") + (f.paginas ? ":" + f.paginas : "") + ".";
+    case "site":
+      return author + ". " + titulo + " [Internet]. " + ano + "." + (f.url ? " Available from: " + f.url : "");
+    case "tese":
+      return author + ". " + titulo + " [thesis]. " + (f.cidade || "") + ": " + (f.instituicao || "") + "; " + ano + ".";
+    default:
+      return "";
+  }
+}
+
+function generateReference(format, type, fields) {
+  switch (format) {
+    case "ABNT": return generateABNT(type, fields);
+    case "APA": return generateAPA(type, fields);
+    case "Vancouver": return generateVancouver(type, fields);
+    default: return generateABNT(type, fields);
+  }
+}
+
+function ReferenciasPage() {
+  const { user, userData, project, subscription, loading } = useTCCData();
+
+  const [format, setFormat] = useState("ABNT");
+  const [type, setType] = useState("livro");
+  const [fields, setFields] = useState({});
+  const [preview, setPreview] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [toast, setToast] = useState(null);
+  const [rightOpen, setRightOpen] = useState(true);
+  const toastTimer = useRef(null);
+
+  function showToast(msg) {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast(msg);
+    toastTimer.current = setTimeout(() => setToast(null), 3000);
+  }
+
+  function handleFieldChange(key, val) {
+    setFields(prev => ({ ...prev, [key]: val }));
+  }
+
+  function handleGenerate() {
+    if (!fields.titulo && !fields.autores) return;
+    const ref = generateReference(format, type, fields);
+    const entry = {
+      id: Date.now(),
+      text: ref,
+      format: format,
+      type: type,
+      title: fields.titulo || "Sem titulo",
+      date: new Date().toLocaleDateString("pt-BR")
+    };
+    setPreview(entry);
+    setHistory(prev => [entry, ...prev]);
+  }
+
+  function handleClear() {
+    setFields({});
+    setPreview(null);
+  }
+
+  function handleCopy(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast("Referencia copiada!");
+    }).catch(() => {
+      showToast("Erro ao copiar");
+    });
+  }
+
+  function handleDeleteHistory(id) {
+    setHistory(prev => prev.filter(h => h.id !== id));
+  }
+
+  function handleClearHistory() {
+    setHistory([]);
+  }
+
+  function handleTypeChange(newType) {
+    setType(newType);
+    setFields({});
+  }
+
+  const visibleFields = TYPE_FIELDS[type] || [];
+
+  if (loading) return <AppSplash />;
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="tools" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Gerador de Referencias" user={user}/>
+        <div className="ref-grid" style={{gridTemplateColumns: rightOpen ? "260px 1fr 280px" : "260px 1fr 0px"}}>
+
+          <div className="ref-left">
+            <div className="ref-section-title">Configuracoes</div>
+
+            <div className="field">
+              <label>Formato</label>
+              <select value={format} onChange={e => setFormat(e.target.value)}>
+                <option value="ABNT">ABNT</option>
+                <option value="APA">APA</option>
+                <option value="Vancouver">Vancouver</option>
+              </select>
+            </div>
+
+            <div className="field">
+              <label>Tipo de Obra</label>
+              <select value={type} onChange={e => handleTypeChange(e.target.value)}>
+                <option value="livro">Livro</option>
+                <option value="artigo">Artigo</option>
+                <option value="site">Site</option>
+                <option value="tese">Tese / Dissertacao</option>
+                <option value="periodico">Periodico</option>
+              </select>
+            </div>
+
+            <div className="ref-section-title" style={{marginTop:16}}>Campos</div>
+
+            {visibleFields.map(key => (
+              <div className="field" key={key}>
+                <label>{FIELD_LABELS[key] || key}</label>
+                {key === "tipo_tese" ? (
+                  <select value={fields[key] || "doutorado"} onChange={e => handleFieldChange(key, e.target.value)}>
+                    <option value="doutorado">Doutorado</option>
+                    <option value="mestrado">Mestrado</option>
+                  </select>
+                ) : (
+                  <input
+                    type={key === "ano" || key === "volume" || key === "numero" ? "number" : "text"}
+                    value={fields[key] || ""}
+                    onChange={e => handleFieldChange(key, e.target.value)}
+                    placeholder={key === "ano" ? "2024" : key === "autores" ? "Separar com ;" : ""}
+                  />
+                )}
+              </div>
+            ))}
+
+            <div className="ref-btn-group">
+              <button className="btn btn-violet" style={{flex:1}} onClick={handleGenerate}>
+                Gerar Referencia
+              </button>
+              <button className="btn btn-ghost" onClick={handleClear}>
+                Limpar
+              </button>
+            </div>
+          </div>
+
+          <div className="ref-main">
+            {preview ? (
+              <div className="ref-preview-card">
+                <div className="ref-preview-header">
+                  <span className="tag tag-violet">{preview.format}</span>
+                  <span className="tag tag-emerald" style={{textTransform:"capitalize"}}>{preview.type}</span>
+                </div>
+                <div className="ref-preview-text">{preview.text}</div>
+                <div style={{marginTop:16,display:"flex",justifyContent:"center"}}>
+                  <button className="btn btn-violet" onClick={() => handleCopy(preview.text)}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                    Copiar para Clipboard
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="empty-state">
+                <div className="es-icon">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{color:"var(--muted)"}}>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                </div>
+                <h3>Gerador de Referencias</h3>
+                <p>Preencha os campos e clique em Gerar</p>
+              </div>
+            )}
+          </div>
+
+          <div className={"ref-right" + (rightOpen ? "" : " collapsed")}>
+            {rightOpen && (
+              <>
+                <div className="ref-right-header">
+                  <div className="ref-right-title">
+                    Historico
+                    <span className="ref-count-badge">{history.length}</span>
+                  </div>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setRightOpen(false)} title="Fechar painel">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <div style={{flex:1,overflowY:"auto"}}>
+                  {history.length === 0 ? (
+                    <div style={{textAlign:"center",color:"var(--muted)",fontSize:"0.8125rem",padding:"32px 8px"}}>
+                      Nenhuma referencia gerada
+                    </div>
+                  ) : (
+                    history.map(item => (
+                      <div className="ref-history-item" key={item.id}>
+                        <div className="ref-history-title">{item.title}</div>
+                        <div className="ref-history-meta">
+                          <span className="tag tag-violet" style={{padding:"1px 6px",fontSize:"0.5625rem"}}>{item.format}</span>
+                          <span>{item.date}</span>
+                        </div>
+                        <div className="ref-history-actions">
+                          <button className="btn btn-violet btn-sm" onClick={() => handleCopy(item.text)}>
+                            Copiar
+                          </button>
+                          <button className="btn btn-ghost btn-sm" style={{color:"var(--rose)",borderColor:"var(--rose)"}} onClick={() => handleDeleteHistory(item.id)}>
+                            Excluir
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {history.length > 0 && (
+                  <button className="btn btn-ghost" style={{width:"100%",justifyContent:"center",marginTop:12,color:"var(--rose)",borderColor:"var(--rose)"}} onClick={handleClearHistory}>
+                    Limpar historico
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+
+        </div>
+
+        {!rightOpen && (
+          <div style={{position:"absolute",top:"50%",right:0,transform:"translateY(-50%)",zIndex:10}}>
+            <button className="btn btn-ghost btn-sm" style={{borderRadius:"8px 0 0 8px",padding:"12px 4px"}} onClick={() => setRightOpen(true)} title="Abrir historico">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/>
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {toast && <div className="ref-toast">{toast}</div>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<ReferenciasPage/>);
+</script>
+</body></html>

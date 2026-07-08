@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações - TCCFlow</title>
     <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -37,25 +53,31 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
-                    </div>
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
                     <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
-                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas</a>
-                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
-                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
-                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
-                </div>
-                <div class="flex items-center gap-2">
+                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
+                    <div class="relative" id="moreDropdown">
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
+                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
+                        </div>
+                    </div>
+                </div><div class="flex items-center gap-2">
                     <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-violet-600 bg-violet-50">
-                        <i class="fa-solid fa-gear text-sm"></i>
+                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-violet-600 bg-violet-50 overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
                     </a>
                     <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
                         <i class="fa-solid fa-right-from-bracket text-sm"></i>
@@ -73,9 +95,20 @@
             <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
             <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
             <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Ferramentas</a>
             <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
         </div>
+    
+    <script>
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('moreDropdown');
+        const menu = document.getElementById('moreMenu');
+        if (dropdown && menu && !dropdown.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+    </script>
     </nav>
 
     <!-- Main Content -->
@@ -83,14 +116,14 @@
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
             <div class="mb-8">
-                <h1 class="text-3xl font-bold">Configurações</h1>
-                <p class="text-slate-500 mt-1">Gerencie o seu perfil e preferências</p>
+                <h1 class="text-2xl sm:text-3xl font-bold" data-i18n="settings.title">Configurações</h1>
+                <p class="text-slate-500 mt-1" data-i18n="settings.subtitle">Gerencie o seu perfil e preferências</p>
             </div>
 
             <!-- Appearance / Dark Mode -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <h3 class="text-lg font-bold mb-6">
-                    <i class="fa-solid fa-palette mr-2 text-violet-600"></i>Aparência
+                    <i class="fa-solid fa-palette mr-2 text-violet-600"></i><span data-i18n="settings.appearance">Aparência</span>
                 </h3>
 
                 <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
@@ -99,8 +132,8 @@
                             <i class="fa-solid fa-moon text-amber-400 text-lg"></i>
                         </div>
                         <div>
-                            <p class="font-medium">Modo Escuro</p>
-                            <p class="text-xs text-slate-500">Ative o tema escuro para reduzir o cansaço visual</p>
+                            <p class="font-medium" data-i18n="settings.darkMode">Modo Escuro</p>
+                            <p class="text-xs text-slate-500" data-i18n="settings.darkModeDesc">Ative o tema escuro para reduzir o cansaço visual</p>
                         </div>
                     </div>
                     <div class="relative inline-block w-12 align-middle select-none">
@@ -112,15 +145,51 @@
                 </div>
             </div>
 
+            <!-- Language / Idioma -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
+                <h3 class="text-lg font-bold mb-6">
+                    <i class="fa-solid fa-globe mr-2 text-cyan-600"></i><span data-i18n="settings.language">Idioma</span>
+                </h3>
+
+                <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-100 to-cyan-200 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-language text-cyan-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium" data-i18n="settings.langLabel">Idioma do site</p>
+                            <p class="text-xs text-slate-500" data-i18n="settings.langDesc">Escolha o idioma de exibição da plataforma</p>
+                        </div>
+                    </div>
+                    <select id="langSelect" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500 transition cursor-pointer">
+                        <option value="pt-BR">🇧🇷 Português (Brasil)</option>
+                        <option value="pt-PT">🇵🇹 Português (Portugal)</option>
+                        <option value="en">🇺🇸 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                    </select>
+                </div>
+                <p class="text-xs text-slate-400 mt-3 ml-1"><i class="fa-solid fa-circle-info mr-1"></i>A alteração será aplicada em todas as páginas.</p>
+            </div>
+
             <!-- Profile Card -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <div class="flex items-center gap-5 mb-8">
-                    <div class="w-20 h-20 bg-violet-100 rounded-2xl flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-user text-violet-600 text-2xl"></i>
+                    <div class="relative group">
+                        <div id="avatarContainer" class="w-20 h-20 bg-violet-100 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden cursor-pointer border-2 border-transparent hover:border-violet-400 transition">
+                            <i id="avatarIcon" class="fa-solid fa-user text-violet-600 text-2xl"></i>
+                            <img id="avatarImg" src="" alt="Foto de perfil" class="hidden w-full h-full object-cover">
+                        </div>
+                        <label for="avatarInput" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                            <i class="fa-solid fa-camera text-white text-lg"></i>
+                        </label>
+                        <input type="file" id="avatarInput" accept="image/*" class="hidden">
                     </div>
                     <div>
                         <h2 class="text-xl font-bold" id="profileName">Usuário</h2>
                         <p class="text-sm text-slate-500" id="profileEmail">email@example.com</p>
+                        <button id="removeAvatarBtn" class="hidden text-[11px] text-red-400 hover:text-red-600 mt-1 transition">
+                            <i class="fa-solid fa-trash-can mr-1"></i>Remover foto
+                        </button>
                     </div>
                 </div>
 
@@ -152,22 +221,22 @@
             <!-- Change Password -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mb-6 shadow-sm">
                 <h3 class="text-lg font-bold mb-6">
-                    <i class="fa-solid fa-key mr-2 text-amber-600"></i>Alterar Senha
+                    <i class="fa-solid fa-key mr-2 text-amber-600"></i><span data-i18n="settings.changePassword">Alterar Senha</span>
                 </h3>
 
                 <form id="passwordForm" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Senha Atual</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2" data-i18n="settings.currentPassword">Senha Atual</label>
                         <input type="password" id="currentPassword" required
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Nova Senha</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2" data-i18n="settings.newPassword">Nova Senha</label>
                         <input type="password" id="newPassword" required minlength="6"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Confirmar Nova Senha</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2" data-i18n="settings.confirmPassword">Confirmar Nova Senha</label>
                         <input type="password" id="confirmNewPassword" required
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
                     </div>
@@ -175,24 +244,55 @@
                     <div id="passwordMsg" class="hidden text-sm rounded-xl px-4 py-3"></div>
 
                     <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
-                        <i class="fa-solid fa-key mr-2"></i>Alterar Senha
+                        <i class="fa-solid fa-key mr-2"></i><span data-i18n="settings.changePasswordBtn">Alterar Senha</span>
                     </button>
                 </form>
+            </div>
+
+            <!-- Project Limits -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8">
+                <h3 class="text-lg font-bold mb-4">
+                    <i class="fa-solid fa-folder-tree mr-2 text-violet-600"></i>Limite de Projetos
+                </h3>
+                <p class="text-sm text-slate-500 mb-4">Gerencie quantos projetos voce pode criar.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <p class="text-xs text-slate-500 mb-1">Projetos Criados</p>
+                        <p class="text-2xl font-bold text-violet-600" id="projectsCount">-</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <p class="text-xs text-slate-500 mb-1">Limite Maximo</p>
+                        <p class="text-2xl font-bold text-cyan-600" id="projectsMax">-</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <p class="text-xs text-slate-500 mb-1">Plano</p>
+                        <p class="text-2xl font-bold" id="planLabel">-</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <label class="text-sm font-medium text-slate-600">Alterar limite:</label>
+                    <input type="number" id="maxProjectsInput" min="1" max="50" value="1"
+                        class="w-20 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <button id="saveMaxProjectsBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-4 py-2 rounded-lg text-sm hover:shadow-lg transition">
+                        <i class="fa-solid fa-check mr-1"></i>Salvar
+                    </button>
+                </div>
+                <p id="maxProjectsFeedback" class="hidden text-sm mt-2 rounded-lg px-3 py-2"></p>
             </div>
 
             <!-- Danger Zone -->
             <div class="bg-white border border-red-200 rounded-2xl p-6 sm:p-8 shadow-sm">
                 <h3 class="text-lg font-bold text-red-600 mb-4">
-                    <i class="fa-solid fa-triangle-exclamation mr-2"></i>Zona de Perigo
+                    <i class="fa-solid fa-triangle-exclamation mr-2"></i><span data-i18n="settings.dangerZone">Zona de Perigo</span>
                 </h3>
-                <p class="text-sm text-slate-500 mb-6">Ações irreversíveis para a sua conta.</p>
+                <p class="text-sm text-slate-500 mb-6" data-i18n="settings.dangerDesc">Ações irreversíveis para a sua conta.</p>
 
                 <div class="flex flex-col sm:flex-row gap-3">
                     <button id="clearDataBtn" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-5 py-2.5 rounded-xl transition text-sm border border-red-200">
-                        <i class="fa-solid fa-broom mr-2"></i>Limpar Meus Dados
+                        <i class="fa-solid fa-broom mr-2"></i><span data-i18n="settings.clearData">Limpar Meus Dados</span>
                     </button>
                     <button id="deleteAccountBtn" class="bg-red-600 hover:bg-red-500 text-white font-semibold px-5 py-2.5 rounded-xl transition text-sm">
-                        <i class="fa-solid fa-trash mr-2"></i>Eliminar Conta
+                        <i class="fa-solid fa-trash mr-2"></i><span data-i18n="settings.deleteAccount">Eliminar Conta</span>
                     </button>
                 </div>
             </div>
@@ -200,12 +300,19 @@
         </div>
     </main>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-init.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
     <script src="../js/db-service.js"></script>
     <script>
+        // ========== Language Select ==========
+        const langSelect = document.getElementById('langSelect');
+        langSelect.value = localStorage.getItem('tccflow_lang') || 'pt-BR';
+
+        langSelect.addEventListener('change', function() {
+            localStorage.setItem('tccflow_lang', this.value);
+            if (window.i18n) window.i18n.apply(this.value);
+        });
+
         // ========== Dark Mode Toggle ==========
         const darkToggle = document.getElementById('darkModeToggle');
         darkToggle.checked = localStorage.getItem('tccflow_darkmode') === 'true';
@@ -228,20 +335,8 @@
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
-            // Update navbar for PRO users
-            try {
-                const pid = await DB.getProjectId();
-                if (pid) {
-                    const isPro = await DB.isProByProject(pid);
-                    if (isPro) {
-                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
-                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
-                        });
-                    }
-                }
-            } catch(e) { console.log(e); }
-
             loadProfile();
+            loadProjectLimits();
         });
 
         // ========== Mobile Nav ==========
@@ -254,12 +349,165 @@
             window.location.href = '../index.html';
         });
 
+        // ========== Project Limits ==========
+        async function loadProjectLimits() {
+            if (!currentUser) return;
+            try {
+                const { count, max } = await DB.projects.canCreateProject(currentUser.uid);
+                document.getElementById('projectsCount').textContent = count;
+                document.getElementById('projectsMax').textContent = max;
+                document.getElementById('maxProjectsInput').value = max;
+
+                const sub = await DB.subscriptions.get(currentUser.uid);
+                const planEl = document.getElementById('planLabel');
+                if (sub && sub.status === 'active' && sub.plan === 'pro') {
+                    planEl.textContent = 'PRO';
+                    planEl.classList.add('text-violet-600');
+                } else {
+                    planEl.textContent = 'Free';
+                    planEl.classList.add('text-slate-500');
+                }
+            } catch(e) { console.log('Error loading project limits:', e); }
+        }
+
+        document.getElementById('saveMaxProjectsBtn').addEventListener('click', async () => {
+            const newMax = parseInt(document.getElementById('maxProjectsInput').value);
+            const feedback = document.getElementById('maxProjectsFeedback');
+            if (isNaN(newMax) || newMax < 1) {
+                feedback.className = 'text-sm mt-2 rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                feedback.textContent = 'Valor invalido. Minimo: 1';
+                feedback.classList.remove('hidden');
+                return;
+            }
+            try {
+                await DB.projects.setMaxProjects(currentUser.uid, newMax);
+                feedback.className = 'text-sm mt-2 rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
+                feedback.textContent = 'Limite atualizado para ' + newMax + ' projetos!';
+                feedback.classList.remove('hidden');
+                document.getElementById('projectsMax').textContent = newMax;
+                setTimeout(() => feedback.classList.add('hidden'), 3000);
+            } catch(e) {
+                feedback.className = 'text-sm mt-2 rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                feedback.textContent = 'Erro ao salvar: ' + (e.message || 'Tente novamente');
+                feedback.classList.remove('hidden');
+            }
+        });
+
         // ========== Profile ==========
         function loadProfile() {
             document.getElementById('profileName').textContent = currentUser.displayName || 'Usuário';
             document.getElementById('profileEmail').textContent = currentUser.email;
             document.getElementById('editName').value = currentUser.displayName || '';
             document.getElementById('editEmail').value = currentUser.email;
+            loadAvatar();
+        }
+
+        function loadAvatar() {
+            const photoURL = currentUser.photoURL;
+            const avatarIcon = document.getElementById('avatarIcon');
+            const avatarImg = document.getElementById('avatarImg');
+            const removeBtn = document.getElementById('removeAvatarBtn');
+
+            if (photoURL) {
+                avatarIcon.classList.add('hidden');
+                avatarImg.classList.remove('hidden');
+                avatarImg.src = photoURL;
+                removeBtn.classList.remove('hidden');
+            } else {
+                avatarIcon.classList.remove('hidden');
+                avatarImg.classList.add('hidden');
+                avatarImg.src = '';
+                removeBtn.classList.add('hidden');
+            }
+
+            // Also update navbar avatar
+            const navAvatar = document.getElementById('navAvatar');
+            const navAvatarIcon = document.getElementById('navAvatarIcon');
+            if (navAvatar && navAvatarIcon) {
+                if (photoURL) {
+                    navAvatar.src = photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                } else {
+                    navAvatar.classList.add('hidden');
+                    navAvatarIcon.classList.remove('hidden');
+                }
+            }
+        }
+
+        // ========== Avatar Upload ==========
+        document.getElementById('avatarInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                showMsg('profileMsg', 'Por favor, selecione uma imagem válida.', 'error');
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                showMsg('profileMsg', 'A imagem deve ter no máximo 2MB.', 'error');
+                return;
+            }
+
+            try {
+                // Resize and convert to base64
+                const base64 = await resizeImage(file, 256);
+
+                await currentUser.updateProfile({ photoURL: base64 });
+
+                // Tenta salvar na tabela users (para equipe ver a foto)
+                try { await _supa.from('users').update({ photo_url: base64 }).eq('id', currentUser.uid); } catch(e) {}
+
+                loadAvatar();
+                showMsg('profileMsg', 'Foto de perfil atualizada!', 'success');
+            } catch (err) {
+                showMsg('profileMsg', 'Erro ao atualizar foto: ' + err.message, 'error');
+            }
+
+            // Clear input so same file can be re-selected
+            e.target.value = '';
+        });
+
+        document.getElementById('removeAvatarBtn').addEventListener('click', async () => {
+            if (!confirm('Remover sua foto de perfil?')) return;
+            try {
+                await currentUser.updateProfile({ photoURL: '' });
+                try { await _supa.from('users').update({ photo_url: null }).eq('id', currentUser.uid); } catch(e) {}
+                loadAvatar();
+                showMsg('profileMsg', 'Foto de perfil removida.', 'success');
+            } catch (err) {
+                showMsg('profileMsg', 'Erro ao remover foto: ' + err.message, 'error');
+            }
+        });
+
+        function resizeImage(file, maxSize) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+
+                        // Crop to square from center
+                        const side = Math.min(w, h);
+                        const sx = (w - side) / 2;
+                        const sy = (h - side) / 2;
+
+                        canvas.width = maxSize;
+                        canvas.height = maxSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, sx, sy, side, side, 0, 0, maxSize, maxSize);
+
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
 
         function showMsg(id, text, type) {
@@ -359,5 +607,6 @@
             }
         });
     </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>

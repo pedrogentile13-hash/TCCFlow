@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Confirmado - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <style>
+        :root {
+            --violet: #7c3aed;
+            --violet-2: #8b5cf6;
+            --cyan: #06b6d4;
+            --emerald: #10b981;
+            --bg: #fafaf7;
+            --bg-2: #f3f2ec;
+            --paper: #ffffff;
+            --ink: #0f0d1e;
+            --ink-2: #2a2540;
+            --muted: #6b6480;
+            --line: #e7e3d8;
+            --line-2: #d9d4c4;
+            --grad: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            --radius: 18px;
+            --radius-lg: 28px;
+            --shadow: 0 10px 30px -12px rgba(15,13,30,.12), 0 4px 12px -6px rgba(15,13,30,.08);
+            --font-display: "Instrument Serif", Georgia, serif;
+            --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0a0818;
+            --bg-2: #120f24;
+            --paper: #15112a;
+            --ink: #f5f3ff;
+            --ink-2: #d8d3f0;
+            --muted: #9189ad;
+            --line: #251f40;
+            --line-2: #1e1938;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            transition: background .4s, color .4s;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+        /* Grid background */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 72px 72px;
+            opacity: .35;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Gradient blur blob */
+        .blob {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(124,58,237,.12) 0%, rgba(6,182,212,.12) 50%, rgba(16,185,129,.08) 100%);
+            filter: blur(140px);
+            opacity: 0.5;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ============ Nav ============ */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 80%, transparent);
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid transparent;
+            transition: border-color .3s;
+        }
+
+        .nav.scrolled { border-bottom-color: var(--line); }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.0625rem;
+            letter-spacing: -0.01em;
+        }
+
+        .brand img { width: 28px; height: 28px; }
+
+        .brand .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--violet);
+            margin-left: 2px;
+        }
+
+        .nav-cta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: transform .25s cubic-bezier(.2,.9,.3,1.2), background .2s, color .2s, box-shadow .25s;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-primary {
+            background: var(--ink);
+            color: var(--bg);
+            box-shadow: 0 1px 0 rgba(255,255,255,.08) inset, 0 6px 20px -8px rgba(15,13,30,.35);
+        }
+        .btn-primary:hover {
+            background: var(--violet);
+            box-shadow: 0 6px 24px -6px rgba(124,58,237,.5);
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--ink);
+            padding: 10px 16px;
+        }
+        .btn-ghost:hover { background: var(--bg-2); }
+
+        .btn-active {
+            background: var(--bg-2);
+            color: var(--violet);
+            padding: 10px 16px;
+            font-weight: 600;
+        }
+
+        /* ============ Main content ============ */
+        .auth-main {
+            position: relative;
+            z-index: 2;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 120px 32px 60px;
+            text-align: center;
+        }
+
+        /* Eyebrow */
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 24px;
+            height: 1px;
+            background: currentColor;
+            opacity: .5;
+        }
+
+        /* Check icon */
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--grad);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin: 0 auto 28px;
+            box-shadow: 0 10px 32px -8px rgba(124, 58, 237, .3);
+        }
+
+        /* Title */
+        .auth-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin: 0 0 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 0.9375rem;
+            color: var(--ink-2);
+            margin: 0 0 32px;
+            line-height: 1.5;
+        }
+
+        /* Dashed separator */
+        .sep {
+            border: none;
+            border-top: 1px dashed var(--line);
+            margin: 32px 0;
+        }
+
+        /* Progress bar */
+        .progress-wrapper {
+            width: 100%;
+            max-width: 320px;
+            height: 3px;
+            background: var(--line);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 32px auto;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--grad);
+            border-radius: 4px;
+            animation: fillProgress 3s linear forwards;
+        }
+
+        @keyframes fillProgress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        /* Submit button */
+        .btn-submit {
+            padding: 16px 24px;
+            background: var(--grad);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin: 32px 0 0;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px -6px rgba(124, 58, 237, .4);
+        }
+
+        .btn-submit:active { transform: translateY(0); }
+
+        .btn-submit:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Footer */
+        .auth-footer {
+            text-align: center;
+            padding-top: 48px;
+            padding-bottom: 24px;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        /* Loading state */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--violet);
+            border-right-color: var(--cyan);
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--muted);
+            letter-spacing: 0.02em;
+        }
+
+        /* Success state */
+        .success-state {
+            display: none;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .success-state.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden { display: none !important; }
+
+        /* ============ Responsive ============ */
+        @media (max-width: 480px) {
+            .auth-main { padding: 100px 16px 40px; }
+            .nav-inner { padding: 0 16px; height: 56px; }
+            .brand { font-size: 0.9375rem; gap: 8px; }
+            .auth-title { font-size: 2.5rem; }
+            .check-icon { width: 64px; height: 64px; font-size: 1.5rem; margin-bottom: 24px; }
+            .blob { width: 400px; height: 400px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="blob"></div>
+
+    <!-- Sticky Nav -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="brand">
+                <img src="../favicon.png" alt="TCCFlow">
+                <span>TCCFlow<span class="dot"></span></span>
+            </a>
+            <div class="nav-cta">
+                <a href="dashboard.html" class="btn btn-primary">Ir para Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="auth-main">
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <div class="spinner"></div>
+            <p class="loading-text">Processando pagamento...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="successState" class="success-state">
+            <div class="check-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+
+            <div class="eyebrow">&middot; Transação</div>
+
+            <h1 class="auth-title">Pagamento confirmado!</h1>
+            <p class="auth-subtitle">Sua transação foi processada com sucesso</p>
+
+            <hr class="sep">
+
+            <div class="progress-wrapper">
+                <div class="progress-bar"></div>
+            </div>
+
+            <button class="btn-submit" onclick="window.location.href='dashboard.html'">
+                <i class="fa-solid fa-arrow-right"></i>
+                <span>Ir para Dashboard</span>
+            </button>
+
+            <!-- Footer -->
+            <div class="auth-footer">
+                &copy; 2026 TCCFlow
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script>
+        // Show success after 1 second, then auto-redirect after 3 more seconds
+        setTimeout(function() {
+            document.getElementById('loadingState').classList.add('hidden');
+            var successEl = document.getElementById('successState');
+            successEl.classList.add('active');
+            setTimeout(function() {
+                window.location.href = 'dashboard.html';
+            }, 3000);
+        }, 1000);
+
+        // Nav scroll border
+        window.addEventListener('scroll', () => {
+            document.querySelector('.nav').classList.toggle('scrolled', window.scrollY > 8);
+        });
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --violet: #7c3aed;
+            --violet-2: #8b5cf6;
+            --cyan: #06b6d4;
+            --emerald: #10b981;
+            --bg: #fafaf7;
+            --bg-2: #f3f2ec;
+            --paper: #ffffff;
+            --ink: #0f0d1e;
+            --ink-2: #2a2540;
+            --muted: #6b6480;
+            --line: #e7e3d8;
+            --line-2: #d9d4c4;
+            --grad: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+            --radius: 18px;
+            --shadow: 0 10px 30px -12px rgba(15,13,30,.12), 0 4px 12px -6px rgba(15,13,30,.08);
+            --font-display: "Instrument Serif", Georgia, serif;
+            --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Grid background */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 72px 72px;
+            opacity: .35;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Sticky Nav */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 80%, transparent);
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid var(--line);
+            height: 72px;
+        }
+        .nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.0625rem;
+            letter-spacing: -0.01em;
+            text-decoration: none;
+            color: var(--ink);
+        }
+        .brand img { width: 28px; height: 28px; }
+        .brand .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--violet);
+            margin-left: 2px;
+        }
+        .nav-cta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: transform .25s cubic-bezier(.2,.9,.3,1.2), background .2s, color .2s, box-shadow .25s;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-ghost {
+            background: transparent;
+            color: var(--ink);
+        }
+        .btn-ghost:hover { color: var(--violet); }
+
+        /* Main content */
+        .main {
+            position: relative;
+            z-index: 1;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 140px 24px 80px;
+        }
+
+        /* Icon container */
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            background: var(--grad);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            margin-bottom: 24px;
+        }
+
+        /* Eyebrow */
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .eyebrow::before {
+            content: "";
+            width: 24px;
+            height: 1px;
+            background: currentColor;
+            opacity: .5;
+        }
+
+        /* Title */
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 2.25rem;
+            font-weight: 400;
+            color: var(--ink);
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        /* Subtitle */
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Dashed separator */
+        .separator {
+            border: none;
+            border-top: 1px dashed var(--line);
+            margin: 32px 0;
+        }
+
+        /* Form */
+        .form-group { margin-bottom: 20px; }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--ink-2);
+            margin-bottom: 8px;
+        }
+        .form-label i { margin-right: 4px; color: var(--violet); }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1.5px solid var(--line);
+            background: var(--bg-2);
+            border-radius: 14px;
+            font-family: var(--font-body);
+            font-size: 0.9375rem;
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .form-input::placeholder { color: var(--muted); }
+        .form-input:focus {
+            border-color: var(--violet);
+            background: var(--paper);
+            box-shadow: 0 0 0 4px rgba(124,58,237,.06);
+        }
+
+        /* Error message */
+        .error-msg {
+            display: none;
+            border-left: 3px solid #ef4444;
+            background: rgba(239,68,68,.06);
+            padding: 14px 18px;
+            border-radius: 0 10px 10px 0;
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-bottom: 20px;
+        }
+        .error-msg.show { display: block; }
+
+        /* Primary button */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 999px;
+            font-family: var(--font-body);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            background: var(--ink);
+            color: var(--bg);
+            transition: transform .25s cubic-bezier(.2,.9,.3,1.2), background .2s, box-shadow .25s;
+        }
+        .btn-primary:hover {
+            background: var(--violet);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px -6px rgba(124,58,237,.5);
+        }
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Links section */
+        .links {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+        .links a {
+            color: var(--violet);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .links a:hover { text-decoration: underline; }
+
+        /* Success state */
+        .success-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--emerald), #06b6d4);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            margin-bottom: 24px;
+        }
+
+        .success-box {
+            border-left: 3px solid var(--emerald);
+            background: rgba(16,185,129,.06);
+            padding: 14px 18px;
+            border-radius: 0 10px 10px 0;
+            color: var(--ink-2);
+            font-size: 0.9375rem;
+            margin-bottom: 24px;
+        }
+
+        /* Footer */
+        .page-footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--muted);
+            padding: 0 24px 32px;
+        }
+
+        .hidden { display: none; }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            .main { padding: 100px 20px 60px; }
+            .page-title { font-size: 1.875rem; }
+            .nav-inner { padding: 0 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <!-- Sticky Nav -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="brand">
+                <img src="../assets/logo.png" alt="TCCFlow">
+                <span>TCCFlow<span class="dot"></span></span>
+            </a>
+            <div class="nav-cta">
+                <a href="login.html" class="btn btn-ghost">Entrar</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Step 1: Email Input -->
+        <div id="step1">
+            <div class="icon-box">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            <div class="eyebrow">&middot; Recuperação</div>
+            <h1 class="page-title">Recuperar senha</h1>
+            <p class="page-subtitle">Enviaremos um link de recuperação para seu email</p>
+
+            <hr class="separator">
+
+            <form id="recoveryForm">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-envelope"></i> Email
+                    </label>
+                    <input type="email" id="email" required placeholder="seu@email.com" class="form-input">
+                </div>
+
+                <div id="errorMsg" class="error-msg"></div>
+
+                <button type="submit" id="submitBtn" class="btn-primary">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar link
+                </button>
+            </form>
+
+            <hr class="separator">
+
+            <div class="links">
+                Lembrou a senha? <a href="login.html">Fazer login</a>
+            </div>
+        </div>
+
+        <!-- Step 2: Success Message -->
+        <div id="step2" class="hidden">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="eyebrow">&middot; Recuperação</div>
+            <h1 class="page-title">Email enviado</h1>
+            <p class="page-subtitle">Verifique sua caixa de entrada</p>
+
+            <hr class="separator">
+
+            <div class="success-box">
+                Link de recuperação enviado! Verifique seu email (inclusive a pasta de spam).
+            </div>
+
+            <a href="login.html" class="btn-primary">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Login
+            </a>
+
+            <hr class="separator">
+
+            <div class="links">
+                <a href="login.html">Ir para o login</a>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="page-footer">&copy; 2025 TCCFlow. Todos os direitos reservados.</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script>
+        auth.onAuthStateChanged(user => {
+            if (user) window.location.href = 'dashboard.html';
+        });
+
+        document.getElementById('recoveryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+            const btn = document.getElementById('submitBtn');
+
+            errorMsg.classList.remove('show');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:8px"></i>Enviando...';
+
+            try {
+                await auth.resetPasswordForEmail(email);
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+            } catch (err) {
+                errorMsg.textContent = err.message || 'Erro ao enviar email de recuperacao.';
+                errorMsg.classList.add('show');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Enviar link';
+            }
+        });
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orientador Virtual - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        .typing-dot { animation: typingBounce 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce { 0%,80%,100%{transform:scale(0);opacity:0.3} 40%{transform:scale(1);opacity:1} }
+        .msg-appear { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
+                    <div class="relative" id="moreDropdown">
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
+                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
+                        </div>
+                    </div>
+                </div><div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+        </div>
+    
+    <script>
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('moreDropdown');
+        const menu = document.getElementById('moreMenu');
+        if (dropdown && menu && !dropdown.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+    </script>
+    </nav>
+
+    <!-- PRO Gate Overlay -->
+    <div id="betaGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
+        <div class="text-center max-w-md px-6">
+            <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-crown text-violet-600 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-3">Orientador Virtual <span class="text-xs bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-2 py-0.5 rounded-full font-bold align-middle">PRO</span></h2>
+            <p class="text-sm text-slate-500 mb-4">O Orientador Virtual é exclusivo do plano PRO. Tenha um assistente I.A. que conhece o tema do seu TCC e ajuda com objetivos, metodologia e revisão.</p>
+            <ul class="text-xs text-slate-500 mb-6 space-y-1">
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Chat com I.A. especializada no seu tema</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Sugestões de objetivo e metodologia</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>Revisão de trechos do seu texto</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1"></i>1.000 buscas I.A. por mês</li>
+            </ul>
+            <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
+                <i class="fa-solid fa-crown mr-2"></i>Assinar Plano PRO
+            </a>
+            <p class="text-xs text-slate-400 mt-4" id="proGatePrice">A partir de R$ 97,00/ano</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Hero Header -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/20">
+                    <i class="fa-solid fa-graduation-cap text-white text-2xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">Orientador Virtual</h1>
+                <p class="text-slate-500 max-w-lg mx-auto">Seu assistente de I.A. para ajudar no desenvolvimento do TCC</p>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="flex flex-wrap justify-center gap-2 mb-6">
+                <button onclick="quickAction('Revisar Texto', 'Preciso que você revise o seguinte trecho do meu TCC e sugira melhorias na escrita acadêmica.')" class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700 transition shadow-sm">
+                    <i class="fa-solid fa-spell-check text-violet-500"></i>Revisar Texto
+                </button>
+                <button onclick="quickAction('Sugerir Objetivos', 'Me ajude a definir os objetivos geral e específicos do meu TCC.')" class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-700 transition shadow-sm">
+                    <i class="fa-solid fa-bullseye text-cyan-500"></i>Sugerir Objetivos
+                </button>
+                <button onclick="quickAction('Ajudar Metodologia', 'Preciso de ajuda para definir a metodologia do meu TCC. Quais abordagens posso usar?')" class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 transition shadow-sm">
+                    <i class="fa-solid fa-microscope text-emerald-500"></i>Ajudar Metodologia
+                </button>
+                <button onclick="quickAction('Melhorar Introdução', 'Me ajude a melhorar a introdução do meu TCC. Como posso torná-la mais impactante?')" class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 transition shadow-sm">
+                    <i class="fa-solid fa-pen-fancy text-amber-500"></i>Melhorar Introdução
+                </button>
+                <button onclick="quickAction('Gerar Resumo', 'Me ajude a escrever o resumo (abstract) do meu TCC.')" class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 transition shadow-sm">
+                    <i class="fa-solid fa-file-lines text-rose-500"></i>Gerar Resumo
+                </button>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col" style="height: calc(100vh - 340px); min-height: 400px;">
+
+                <!-- Chat Messages Area -->
+                <div id="chatMessages" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                    <!-- AI Welcome Message -->
+                    <div class="flex items-start gap-3 msg-appear">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-robot text-white text-xs"></i>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3 max-w-[85%]">
+                            <p class="text-sm text-slate-700 leading-relaxed">Olá! Sou seu orientador virtual. Posso ajudar com: revisão de texto, sugestões de objetivos, metodologia, introdução e muito mais. Cole um trecho do seu TCC ou me faça uma pergunta!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Typing Indicator (hidden by default) -->
+                <div id="typingIndicator" class="hidden px-4 sm:px-6 pb-2">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-robot text-white text-xs"></i>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3">
+                            <div class="flex items-center gap-1.5">
+                                <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+                                <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+                                <div class="typing-dot w-2 h-2 bg-slate-400 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="border-t border-slate-200 p-4 sm:p-6 bg-white">
+                    <form id="chatForm" class="flex gap-3">
+                        <textarea id="chatInput" rows="2" placeholder="Digite sua pergunta ou cole um trecho do TCC..."
+                            class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 transition resize-none"
+                            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();document.getElementById('chatForm').dispatchEvent(new Event('submit'));}"></textarea>
+                        <button type="submit" id="sendBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-5 py-3 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm self-end">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                    <p class="text-[10px] text-slate-400 mt-2 text-center">Orientador simulado para fins de demonstração. As respostas são pré-definidas.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/pricing-config.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        // Update PRO gate price from config
+        if (typeof PRICING !== 'undefined') {
+            const priceEl = document.getElementById('proGatePrice');
+            if (priceEl) priceEl.textContent = `A partir de ${PRICING.formatBRLDecimal(PRICING.BASE_PRICE)}/ano`;
+        }
+
+        // ========== State ==========
+        let currentUserId = null;
+        const CHAT_KEY = 'tccflow_orientador_chat';
+
+        // ========== Nav ==========
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        // ========== Auth ==========
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            // Feature temporarily disabled
+            window.location.href = 'dashboard.html';
+            return;
+            currentUserId = user.uid;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
+            // PRO gate check
+            try {
+                const pid = await DB.getProjectId();
+                if (pid) {
+                    const isPro = await DB.isProByProject(pid);
+                    if (!isPro) {
+                        document.getElementById('betaGateOverlay').classList.remove('hidden');
+                        return;
+                    }
+                }
+            } catch(e) {
+                console.warn('PRO check failed, allowing access:', e);
+            }
+
+            // Load saved conversation
+            loadConversation();
+        });
+
+        // ========== Chat Logic ==========
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatResponse(text) {
+            // Convert markdown-like formatting to HTML
+            let html = escapeHtml(text);
+            // Bold: **text**
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Line breaks
+            html = html.replace(/\n/g, '<br>');
+            // Bullet points
+            html = html.replace(/^- /gm, '&bull; ');
+            return html;
+        }
+
+        function getConversation() {
+            if (!currentUserId) return [];
+            try {
+                const data = JSON.parse(localStorage.getItem(CHAT_KEY) || '{}');
+                return data[currentUserId] || [];
+            } catch(e) { return []; }
+        }
+
+        function saveConversation(messages) {
+            if (!currentUserId) return;
+            try {
+                const data = JSON.parse(localStorage.getItem(CHAT_KEY) || '{}');
+                data[currentUserId] = messages;
+                localStorage.setItem(CHAT_KEY, JSON.stringify(data));
+            } catch(e) { console.warn('Failed to save conversation:', e); }
+        }
+
+        function loadConversation() {
+            const messages = getConversation();
+            messages.forEach(msg => {
+                appendMessage(msg.role, msg.content, false);
+            });
+            scrollToBottom();
+        }
+
+        function appendMessage(role, content, save = true) {
+            const container = document.getElementById('chatMessages');
+
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex items-start gap-3 msg-appear ${role === 'user' ? 'flex-row-reverse' : ''}`;
+
+            if (role === 'user') {
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-user text-white text-xs"></i>
+                    </div>
+                    <div class="bg-violet-600 text-white rounded-2xl rounded-tr-md px-4 py-3 max-w-[85%]">
+                        <p class="text-sm leading-relaxed">${escapeHtml(content)}</p>
+                    </div>`;
+            } else {
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-robot text-white text-xs"></i>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3 max-w-[85%]">
+                        <p class="text-sm text-slate-700 leading-relaxed">${formatResponse(content)}</p>
+                    </div>`;
+            }
+
+            container.appendChild(wrapper);
+            scrollToBottom();
+
+            if (save) {
+                const messages = getConversation();
+                messages.push({ role, content, timestamp: Date.now() });
+                saveConversation(messages);
+            }
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typingIndicator').classList.remove('hidden');
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            document.getElementById('typingIndicator').classList.add('hidden');
+        }
+
+        // ========== Simulated AI Responses ==========
+        const responses = {
+            objetivo: `Ótima pergunta! Aqui vão dicas para definir os objetivos do seu TCC:
+
+**Objetivo Geral:**
+- Deve ser amplo e expressar a finalidade principal do trabalho
+- Use verbos como: analisar, investigar, compreender, avaliar, propor
+- Exemplo: "Analisar o impacto das redes sociais na comunicação entre jovens universitários"
+
+**Objetivos Específicos:**
+- Devem ser desdobramentos do objetivo geral (geralmente 3 a 5)
+- Use verbos mais específicos: identificar, descrever, comparar, mapear, classificar
+- Cada objetivo específico deve ser mensurável e alcançável
+
+**Dica importante:** Os objetivos específicos, juntos, devem dar conta de atingir o objetivo geral. Pense neles como "passos" para chegar ao resultado final.
+
+**Exemplo prático:**
+- Específico 1: Identificar os principais usos das redes sociais entre universitários
+- Específico 2: Comparar padrões de comunicação online e presencial
+- Específico 3: Avaliar a percepção dos estudantes sobre o impacto das redes em suas relações
+
+Quer que eu ajude a elaborar os objetivos para o seu tema específico? Cole seu tema aqui!`,
+
+            metodologia: `Vamos falar sobre metodologia! Aqui estão os principais pontos:
+
+**Tipos de Pesquisa:**
+- **Qualitativa:** Entrevistas, análise de conteúdo, estudos de caso (ideal para compreender fenômenos em profundidade)
+- **Quantitativa:** Questionários, análise estatística, experimentos (ideal para medir e quantificar)
+- **Mista (quali-quanti):** Combina ambas as abordagens
+
+**Quanto à natureza:**
+- **Exploratória:** Quando o tema é pouco estudado
+- **Descritiva:** Para descrever características de um fenômeno
+- **Explicativa:** Para identificar causas e relações
+
+**Procedimentos comuns:**
+- **Pesquisa bibliográfica:** Revisão de literatura existente
+- **Estudo de caso:** Análise aprofundada de um caso específico
+- **Pesquisa de campo:** Coleta de dados no local do fenômeno
+- **Pesquisa-ação:** Quando o pesquisador intervém na realidade
+
+**Instrumentos de coleta:**
+- Questionários (Google Forms é muito usado)
+- Entrevistas semiestruturadas
+- Observação participante
+- Análise documental
+
+**Dica:** Justifique cada escolha metodológica. Explique POR QUE você escolheu aquela abordagem para o seu tema.
+
+Me conte sobre seu tema e eu posso sugerir a metodologia mais adequada!`,
+
+            introducao: `Vou te ajudar com a introdução! Uma boa introdução de TCC segue esta estrutura:
+
+**1. Contextualização (1-2 parágrafos)**
+- Apresente o tema de forma ampla
+- Situe o leitor no contexto do assunto
+- Use dados, estatísticas ou fatos relevantes para chamar atenção
+
+**2. Problematização (1 parágrafo)**
+- Apresente o problema de pesquisa
+- Mostre a lacuna ou questão que precisa ser respondida
+- Formule sua pergunta de pesquisa de forma clara
+
+**3. Justificativa (1 parágrafo)**
+- Explique POR QUE este tema é importante
+- Qual a relevância social, acadêmica ou profissional?
+- O que motiva esta pesquisa?
+
+**4. Objetivos (1 parágrafo)**
+- Apresente brevemente o objetivo geral
+- Mencione os objetivos específicos
+
+**5. Estrutura do trabalho (1 parágrafo)**
+- Descreva brevemente o que cada capítulo aborda
+- Ex: "O segundo capítulo apresenta a revisão bibliográfica sobre..."
+
+**Dicas de escrita:**
+- Evite começar com "O presente trabalho..." (muito genérico)
+- Comece com um dado impactante ou uma contextualização envolvente
+- Use linguagem formal, mas acessível
+- A introdução geralmente tem 2-4 páginas
+
+Cole sua introdução atual e eu posso sugerir melhorias!`,
+
+            revisao: `Aqui vão dicas para melhorar a escrita acadêmica do seu TCC:
+
+**Problemas comuns a evitar:**
+- **Linguagem informal:** Evite gírias, expressões coloquiais e primeira pessoa do singular
+- **Parágrafos muito curtos:** Cada parágrafo deve ter no mínimo 3-4 linhas
+- **Falta de coesão:** Use conectivos (portanto, contudo, além disso, nesse sentido)
+- **Repetição de palavras:** Use sinônimos e varie a estrutura das frases
+
+**Boas práticas:**
+- Use a **terceira pessoa** ou a **primeira pessoa do plural** (nós)
+- Cite as fontes corretamente (ABNT: Autor, ANO)
+- Cada parágrafo deve ter uma ideia central
+- Revise a concordância verbal e nominal
+- Evite frases muito longas (mais de 3 linhas)
+
+**Conectivos úteis:**
+- Para adicionar: além disso, ademais, outrossim, igualmente
+- Para contrastar: contudo, todavia, no entanto, por outro lado
+- Para concluir: portanto, dessa forma, em suma, diante disso
+- Para exemplificar: por exemplo, como ilustração, a título de exemplo
+
+**Checklist de revisão:**
+- Ortografia e gramática corretos?
+- Todas as citações estão referenciadas?
+- Os parágrafos têm coesão entre si?
+- A linguagem é adequada ao meio acadêmico?
+- As normas ABNT estão sendo seguidas?
+
+Cole um trecho do seu texto e eu posso dar sugestões específicas de melhoria!`,
+
+            resumo: `Vamos criar um resumo (abstract) eficiente! Siga esta estrutura:
+
+**Estrutura do Resumo ABNT:**
+O resumo deve ter entre **150 e 500 palavras** (verifique com sua instituição) e conter:
+
+**1. Contextualização (1-2 frases)**
+- Apresente o tema brevemente
+
+**2. Objetivo (1 frase)**
+- "O objetivo deste trabalho é/foi..."
+
+**3. Metodologia (1-2 frases)**
+- Descreva o tipo de pesquisa e os métodos utilizados
+
+**4. Resultados (2-3 frases)**
+- Apresente os principais achados
+
+**5. Conclusão (1-2 frases)**
+- Sintetize a conclusão principal
+
+**Exemplo de estrutura:**
+"O uso das redes sociais tem crescido significativamente entre jovens universitários. Este trabalho teve como objetivo analisar o impacto dessa tecnologia na comunicação interpessoal. Para isso, foi realizada uma pesquisa quantitativa com 200 estudantes por meio de questionário online. Os resultados indicaram que 78% dos participantes preferem a comunicação digital à presencial. Conclui-se que as redes sociais transformaram significativamente os padrões de interação social no ambiente acadêmico."
+
+**Palavras-chave:**
+- Liste 3 a 5 palavras-chave, separadas por ponto
+- Devem representar o conteúdo do trabalho
+- Ex: Redes sociais. Comunicação. Jovens universitários. Tecnologia.
+
+**Dica:** Escreva o resumo por ÚLTIMO, depois que o TCC estiver pronto. Assim você terá clareza sobre os resultados.
+
+Me conte sobre seu TCC e eu posso ajudar a rascunhar o resumo!`,
+
+            referencia: `Vou te ajudar com referências e citações ABNT! Aqui estão os formatos mais usados:
+
+**Citação Direta Curta (até 3 linhas):**
+- Dentro do texto, entre aspas
+- Exemplo: Segundo Silva (2020, p. 45), "a educação digital transformou o ensino superior".
+- Ou: "A educação digital transformou o ensino superior" (SILVA, 2020, p. 45).
+
+**Citação Direta Longa (mais de 3 linhas):**
+- Recuo de 4cm, fonte menor (tamanho 10), sem aspas
+- Espaçamento simples
+
+**Citação Indireta (paráfrase):**
+- Não usa aspas, não precisa de página
+- Exemplo: De acordo com Silva (2020), a tecnologia mudou o cenário educacional.
+
+**Referências bibliográficas (formatos ABNT):**
+
+**Livro:**
+SOBRENOME, Nome. **Título do livro:** subtítulo. Edição. Cidade: Editora, Ano.
+
+**Artigo de periódico:**
+SOBRENOME, Nome. Título do artigo. **Nome da Revista**, Cidade, v. X, n. X, p. XX-XX, mês/ano.
+
+**Site/Internet:**
+SOBRENOME, Nome (ou INSTITUIÇÃO). **Título da página.** Ano. Disponível em: URL. Acesso em: dia mês. ano.
+
+**TCC/Dissertação/Tese:**
+SOBRENOME, Nome. **Título.** Ano. Tipo (Grau) - Instituição, Cidade, Ano.
+
+**Dicas importantes:**
+- Organize em ordem alfabética pelo sobrenome do autor
+- Use espaçamento simples entre linhas, com espaço duplo entre referências
+- Toda citação no texto DEVE ter a referência completa na lista final
+
+Precisa formatar alguma referência específica? Me envie os dados!`,
+
+            default: `Obrigado pela mensagem! Como seu orientador virtual, posso te ajudar com diversas partes do TCC.
+
+**Aqui estão algumas formas como posso te auxiliar:**
+
+- **Revisão de texto:** Cole um trecho e sugiro melhorias na escrita acadêmica
+- **Objetivos:** Ajudo a definir objetivo geral e específicos
+- **Metodologia:** Sugiro abordagens metodológicas para seu tema
+- **Introdução:** Dicas de estrutura e escrita para a introdução
+- **Resumo/Abstract:** Ajudo a estruturar o resumo do trabalho
+- **Referências:** Formato ABNT para citações e referências bibliográficas
+- **Estrutura geral:** Como organizar os capítulos do TCC
+
+**Dicas rápidas para um bom TCC:**
+1. Comece pelo referencial teórico - a revisão de literatura fundamenta todo o resto
+2. Defina bem seu problema de pesquisa antes de começar a escrever
+3. Mantenha um cronograma realista e siga-o
+4. Faça backups regulares do seu trabalho
+5. Converse frequentemente com seu orientador
+
+Use os botões de ação rápida acima ou me faça uma pergunta específica sobre qualquer parte do seu TCC!`
+        };
+
+        function getAIResponse(message) {
+            const lower = message.toLowerCase();
+
+            if (lower.includes('objetivo') || lower.includes('objetivos')) {
+                return responses.objetivo;
+            }
+            if (lower.includes('metodologia') || lower.includes('método') || lower.includes('metodo') || lower.includes('abordagem')) {
+                return responses.metodologia;
+            }
+            if (lower.includes('introdução') || lower.includes('introducao') || lower.includes('introduçao')) {
+                return responses.introducao;
+            }
+            if (lower.includes('revisar') || lower.includes('revisão') || lower.includes('revisao') || lower.includes('corrigir') || lower.includes('melhorar texto') || lower.includes('escrita')) {
+                return responses.revisao;
+            }
+            if (lower.includes('resumo') || lower.includes('abstract')) {
+                return responses.resumo;
+            }
+            if (lower.includes('referência') || lower.includes('referencia') || lower.includes('citação') || lower.includes('citacao') || lower.includes('abnt') || lower.includes('citar')) {
+                return responses.referencia;
+            }
+
+            return responses.default;
+        }
+
+        // ========== Send Message ==========
+        document.getElementById('chatForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Append user message
+            appendMessage('user', message);
+            input.value = '';
+
+            // Show typing indicator
+            showTyping();
+
+            // Simulate thinking time (1-2 seconds)
+            const delay = 1000 + Math.random() * 1000;
+            setTimeout(() => {
+                hideTyping();
+                const response = getAIResponse(message);
+                appendMessage('ai', response);
+            }, delay);
+        });
+
+        // ========== Quick Actions ==========
+        window.quickAction = function(label, prompt) {
+            const input = document.getElementById('chatInput');
+            input.value = prompt;
+            input.focus();
+            // Auto-send
+            document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+        };
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

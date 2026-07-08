@@ -2,7 +2,14 @@
   "name": "tccflow",
   "version": "1.0.0",
   "description": "TCCFlow - Gerenciamento de TCC",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
     "mercadopago": "^2.0.0"
   }
 }

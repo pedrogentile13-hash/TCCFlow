@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Configurações — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .settings-nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;font-size:.875rem;color:var(--ink-2);cursor:pointer;transition:background .15s;margin-bottom:2px;}
+    .settings-nav-item:hover{background:var(--bg-2);}
+    .settings-nav-item.active{background:var(--grad);color:white;}
+    .section-title{font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-.02em;margin-bottom:4px;}
+    .section-title em{font-style:italic;color:var(--violet);}
+    .section-sub{font-size:.875rem;color:var(--muted);margin-bottom:24px;}
+    .settings-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line);}
+    .settings-row:last-child{border-bottom:none;}
+    .settings-row .row-info{flex:1;}
+    .settings-row .row-label{font-weight:500;font-size:.9375rem;margin-bottom:2px;}
+    .settings-row .row-desc{font-size:.8125rem;color:var(--muted);}
+    .toggle-switch{width:42px;height:24px;border-radius:999px;background:var(--line-2);position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;}
+    .toggle-switch.on{background:var(--violet);}
+    .toggle-switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .25s;}
+    .toggle-switch.on::after{transform:translateX(18px);}
+    .cancel-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:20px;}
+    .cancel-modal{background:var(--paper);border:1px solid var(--line);border-radius:20px;max-width:480px;width:100%;padding:32px;box-shadow:0 24px 60px rgba(0,0,0,.18);animation:modalIn .25s ease;}
+    @keyframes modalIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .cancel-modal h3{font-family:var(--font-display);font-size:1.375rem;font-weight:400;letter-spacing:-.02em;margin-bottom:4px;}
+    .cancel-reason-list{list-style:none;padding:0;margin:16px 0;}
+    .cancel-reason-list li{padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;font-size:.875rem;transition:all .15s;display:flex;align-items:center;gap:10px;}
+    .cancel-reason-list li:hover{border-color:var(--violet);background:rgba(124,58,237,.04);}
+    .cancel-reason-list li.selected{border-color:var(--violet);background:rgba(124,58,237,.08);font-weight:500;}
+    .cancel-reason-list li .radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .cancel-reason-list li.selected .radio{border-color:var(--violet);background:var(--violet);}
+    .cancel-reason-list li.selected .radio::after{content:"";width:6px;height:6px;border-radius:50%;background:white;}
+    .plan-card-inner{background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:24px;position:relative;overflow:hidden;}
+    .plan-card-inner.pro{border-color:var(--violet);background:linear-gradient(135deg,rgba(124,58,237,.04),rgba(6,182,212,.04));}
+    .plan-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;letter-spacing:.1em;padding:4px 10px;border-radius:999px;font-weight:600;}
+    .plan-badge.free{background:var(--bg-2);color:var(--muted);}
+    .plan-badge.pro{background:var(--grad);color:white;}
+    .plan-badge.cancelled{background:rgba(244,63,94,.1);color:var(--rose);}
+    .avatar-upload{position:relative;cursor:pointer;}
+    .avatar-upload:hover .avatar-overlay{opacity:1;}
+    .avatar-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;color:white;font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+    .avatar-img{width:64px;height:64px;border-radius:50%;object-fit:cover;}
+    .notif-permission{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;margin-bottom:20px;}
+    .notif-permission.granted{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);}
+    .notif-permission.denied{background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);}
+    .notif-permission.default{background:var(--bg-2);border:1px solid var(--line);}
+    .security-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;}
+    .security-card h4{font-size:.9375rem;font-weight:600;margin-bottom:4px;}
+    .security-card p{font-size:.8125rem;color:var(--muted);margin-bottom:14px;}
+    .delete-zone{background:rgba(244,63,94,.04);border:1.5px solid rgba(244,63,94,.2);border-radius:14px;padding:20px;}
+    .no-animations *,.no-animations *::before,.no-animations *::after{animation-duration:0s!important;transition-duration:0s!important;transition-delay:0s!important;}
+  </style>
+</head>
+<body><div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const SECTIONS = [
+  { id:"profile",  icon:"\u{1F464}", label:"Perfil" },
+  { id:"plan",     icon:"⭐",    label:"Plano" },
+  { id:"notif",    icon:"\u{1F514}", label:"Notificações" },
+  { id:"appear",   icon:"\u{1F3A8}", label:"Aparência" },
+  { id:"security", icon:"\u{1F512}", label:"Segurança" },
+];
+
+function Toggle({ on, onToggle }) {
+  return <div className={`toggle-switch ${on?"on":""}`} onClick={onToggle}></div>;
+}
+
+// ===================== PROFILE =====================
+function ProfileSection({ user, userData, subscription, saving, onSave, onPhotoChange }) {
+  const [name, setName] = useState(userData?.name || "");
+  const [email] = useState(user?.email || "");
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef(null);
+  const planLabel = subscription?.plan === "pro" ? "Plano Pro" : "Plano Gratuito";
+  const initials = getInitials(name);
+  const photoUrl = userData?.photo_url || null;
+
+  async function handlePhotoUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 2 * 1024 * 1024) { alert("Imagem deve ter no máximo 2MB."); return; }
+    if (!file.type.startsWith('image/')) { alert("Selecione uma imagem válida."); return; }
+
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `${user.uid}/avatar.${ext}`;
+
+      await _supa.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type });
+      const { data: urlData } = _supa.storage.from('avatars').getPublicUrl(path);
+      const publicUrl = urlData.publicUrl + '?t=' + Date.now();
+
+      await _supa.from('users').update({ photo_url: publicUrl }).eq('id', user.uid);
+      await _supa.auth.updateUser({ data: { photo_url: publicUrl } });
+      if (onPhotoChange) onPhotoChange(publicUrl);
+      alert("Foto atualizada!");
+    } catch(err) {
+      console.error('Upload error:', err);
+      alert("Erro ao enviar foto: " + (err.message || err));
+    }
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = '';
+  }
+
+  async function removePhoto() {
+    if (!user || !photoUrl) return;
+    if (!confirm("Remover foto de perfil?")) return;
+    setUploading(true);
+    try {
+      await _supa.from('users').update({ photo_url: null }).eq('id', user.uid);
+      await _supa.auth.updateUser({ data: { photo_url: null } });
+      if (onPhotoChange) onPhotoChange(null);
+    } catch(err) { alert("Erro: " + err.message); }
+    setUploading(false);
+  }
+
+  return (
+    <div>
+      <div className="section-title">Perfil <em>pessoal</em></div>
+      <div className="section-sub">Informações visíveis para sua equipe.</div>
+      <div className="card" style={{ marginBottom:16 }}>
+        <div style={{ display:"flex", gap:20, alignItems:"center", marginBottom:24 }}>
+          <div className="avatar-upload" onClick={() => fileRef.current?.click()}>
+            {photoUrl ? (
+              <img src={photoUrl} className="avatar-img" alt="Avatar"/>
+            ) : (
+              <div className="av c1" style={{ width:64, height:64, fontSize:"1.25rem", fontWeight:700 }}>{initials}</div>
+            )}
+            <div className="avatar-overlay">{uploading ? "..." : "Trocar"}</div>
+            <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={handlePhotoUpload}/>
+          </div>
+          <div>
+            <div style={{ fontWeight:600, fontSize:"1rem" }}>{name || "Usuário"}</div>
+            <div style={{ color:"var(--muted)", fontSize:"0.875rem" }}>{email}</div>
+            <div style={{display:"flex",gap:8,alignItems:"center",marginTop:6}}>
+              <span className={`tag ${subscription?.plan === "pro" ? "tag-violet" : "tag-cyan"}`}>{planLabel}</span>
+              {photoUrl && <button onClick={(e) => { e.stopPropagation(); removePhoto(); }} style={{fontSize:".6875rem",color:"var(--rose)",cursor:"pointer",background:"none",border:"none",textDecoration:"underline"}}>Remover foto</button>}
+            </div>
+          </div>
+        </div>
+        <div className="info-fields-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+          <div className="field" style={{ marginBottom:0 }}><label>Nome completo</label><input type="text" value={name} onChange={e=>setName(e.target.value)}/></div>
+          <div className="field" style={{ marginBottom:0 }}><label>E-mail</label><input type="email" value={email} disabled style={{opacity:0.6}}/></div>
+        </div>
+        <div style={{ marginTop:16 }}>
+          <button className="btn btn-primary" onClick={() => onSave(name)} disabled={saving}>
+            {saving ? "Salvando..." : "Salvar alterações"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===================== NOTIFICATIONS =====================
+function NotifSection() {
+  const [permission, setPermission] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'default');
+  const [prefs, setPrefs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('tccflow_notif_prefs')) || {}; } catch(e) { return {}; }
+  });
+
+  const defaults = { tasks:true, deadlines:true, mentions:true, team:true, orientador:true, calendar:true };
+  const getP = (key) => prefs[key] !== undefined ? prefs[key] : defaults[key];
+
+  function togglePref(key) {
+    const next = { ...prefs, [key]: !getP(key) };
+    setPrefs(next);
+    localStorage.setItem('tccflow_notif_prefs', JSON.stringify(next));
+  }
+
+  async function requestPermission() {
+    if (typeof Notification === 'undefined') { alert("Seu navegador não suporta notificações."); return; }
+    const result = await Notification.requestPermission();
+    setPermission(result);
+    if (result === 'granted') {
+      new Notification("TCCFlow", { body: "Notificações ativadas com sucesso!", icon: "../assets/logo.png" });
+    }
+  }
+
+  function sendTestNotif() {
+    if (permission !== 'granted') { alert("Ative as notificações primeiro."); return; }
+    new Notification("TCCFlow - Teste", { body: "Esta é uma notificação de teste. Tudo funcionando!", icon: "../assets/logo.png", tag: "test" });
+  }
+
+  const NOTIF_ITEMS = [
+    { id:"tasks", label:"Novas tarefas atribuídas", desc:"Quando alguém te atribuir uma tarefa" },
+    { id:"deadlines", label:"Prazos próximos", desc:"Alerta 24h antes do vencimento" },
+    { id:"mentions", label:"Menções no chat", desc:"Quando alguém te mencionar" },
+    { id:"team", label:"Atualizações da equipe", desc:"Membros entrando/saindo do projeto" },
+    { id:"orientador", label:"Comentários do orientador", desc:"Quando o orientador deixar feedback" },
+    { id:"calendar", label:"Eventos do calendário", desc:"Lembretes de sessões e metas" },
+  ];
+
+  const permClass = permission === 'granted' ? 'granted' : permission === 'denied' ? 'denied' : 'default';
+  const permLabel = permission === 'granted' ? 'Ativadas' : permission === 'denied' ? 'Bloqueadas' : 'Não configuradas';
+  const permColor = permission === 'granted' ? 'var(--emerald)' : permission === 'denied' ? 'var(--rose)' : 'var(--muted)';
+
+  return (
+    <div>
+      <div className="section-title">Notificações</div>
+      <div className="section-sub">Controle o que você recebe e quando.</div>
+
+      <div className={`notif-permission ${permClass}`}>
+        <div style={{width:36,height:36,borderRadius:"50%",background:permColor,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </div>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:600,fontSize:".875rem"}}>Notificações push: <span style={{color:permColor}}>{permLabel}</span></div>
+          <div style={{fontSize:".75rem",color:"var(--muted)"}}>
+            {permission === 'granted' ? "Você receberá notificações no celular e desktop." :
+             permission === 'denied' ? "Desbloqueie nas configurações do navegador." :
+             "Ative para receber alertas em tempo real."}
+          </div>
+        </div>
+        {permission !== 'granted' && permission !== 'denied' && (
+          <button className="btn btn-violet btn-sm" onClick={requestPermission}>Ativar</button>
+        )}
+        {permission === 'granted' && (
+          <button className="btn btn-ghost btn-sm" onClick={sendTestNotif}>Testar</button>
+        )}
+      </div>
+
+      <div className="card">
+        {NOTIF_ITEMS.map((it, idx, arr) => (
+          <div key={it.id} className="settings-row" style={{borderBottom:idx<arr.length-1?"1px solid var(--line)":"none"}}>
+            <div className="row-info">
+              <div className="row-label">{it.label}</div>
+              <div className="row-desc">{it.desc}</div>
+            </div>
+            <Toggle on={getP(it.id)} onToggle={() => togglePref(it.id)}/>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===================== APPEARANCE =====================
+function AppearSection() {
+  const [dark, setDark] = useState(() => typeof TCCDark !== 'undefined' ? TCCDark.isEnabled() : false);
+  const [anim, setAnim] = useState(() => localStorage.getItem('tccflow_animations') !== 'false');
+
+  useEffect(() => {
+    const handler = (e) => setDark(e.detail.enabled);
+    window.addEventListener('tccflow-dark-changed', handler);
+    return () => window.removeEventListener('tccflow-dark-changed', handler);
+  }, []);
+
+  useEffect(() => {
+    if (anim) {
+      document.body.classList.remove('no-animations');
+    } else {
+      document.body.classList.add('no-animations');
+    }
+    localStorage.setItem('tccflow_animations', anim ? 'true' : 'false');
+  }, [anim]);
+
+  function toggleDark() {
+    if (typeof TCCDark !== 'undefined') TCCDark.toggle();
+    setDark(d => !d);
+  }
+
+  return (
+    <div>
+      <div className="section-title">Aparência</div>
+      <div className="section-sub">Personalize como o TCCFlow aparece.</div>
+      <div className="card">
+        <div className="settings-row">
+          <div className="row-info"><div className="row-label">Modo escuro</div><div className="row-desc">Ativa o tema dark em toda a plataforma</div></div>
+          <Toggle on={dark} onToggle={toggleDark}/>
+        </div>
+        <div className="settings-row">
+          <div className="row-info"><div className="row-label">Animações</div><div className="row-desc">Transições e animações de interface</div></div>
+          <Toggle on={anim} onToggle={() => setAnim(a => !a)}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===================== SECURITY =====================
+function SecuritySection({ user }) {
+  const [curPass, setCurPass] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
+  const [changing, setChanging] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleChangePassword() {
+    if (!curPass || !newPass || !confirmPass) { alert("Preencha todos os campos."); return; }
+    if (newPass !== confirmPass) { alert("As senhas não coincidem."); return; }
+    if (newPass.length < 6) { alert("A nova senha deve ter pelo menos 6 caracteres."); return; }
+    setChanging(true);
+    try {
+      const { error: reErr } = await _supa.auth.signInWithPassword({ email: user.email, password: curPass });
+      if (reErr) throw { message: "Senha atual incorreta." };
+      const { error } = await _supa.auth.updateUser({ password: newPass });
+      if (error) throw error;
+      alert("Senha alterada com sucesso!");
+      setCurPass(""); setNewPass(""); setConfirmPass("");
+    } catch(e) {
+      alert("Erro: " + (e.message || e));
+    }
+    setChanging(false);
+  }
+
+  async function handleDeleteAccount() {
+    if (deleteConfirm !== "EXCLUIR") { alert('Digite "EXCLUIR" para confirmar.'); return; }
+    setDeleting(true);
+    try {
+      await _supa.from('users').delete().eq('id', user.uid);
+      await _supa.auth.signOut();
+      alert("Conta excluída. Você será redirecionado.");
+      window.location.href = "../index.html";
+    } catch(e) {
+      alert("Erro ao excluir conta: " + (e.message || e));
+      setDeleting(false);
+    }
+  }
+
+  const createdAt = user?.uid ? "Conta ativa" : "";
+
+  return (
+    <div>
+      <div className="section-title">Segurança</div>
+      <div className="section-sub">Proteja sua conta e gerencie o acesso.</div>
+
+      <div className="security-card">
+        <h4>Alterar senha</h4>
+        <p>Use uma senha forte com pelo menos 6 caracteres.</p>
+        <div style={{display:"grid",gap:12,maxWidth:400}}>
+          <div className="field" style={{marginBottom:0}}>
+            <label>Senha atual</label>
+            <input type="password" value={curPass} onChange={e=>setCurPass(e.target.value)} placeholder="Digite sua senha atual"/>
+          </div>
+          <div className="field" style={{marginBottom:0}}>
+            <label>Nova senha</label>
+            <input type="password" value={newPass} onChange={e=>setNewPass(e.target.value)} placeholder="Mínimo 6 caracteres"/>
+          </div>
+          <div className="field" style={{marginBottom:0}}>
+            <label>Confirmar nova senha</label>
+            <input type="password" value={confirmPass} onChange={e=>setConfirmPass(e.target.value)} placeholder="Repita a nova senha"/>
+          </div>
+          <button className="btn btn-primary" style={{width:"fit-content"}} onClick={handleChangePassword} disabled={changing}>
+            {changing ? "Alterando..." : "Alterar senha"}
+          </button>
+        </div>
+      </div>
+
+      <div className="security-card">
+        <h4>Sessão ativa</h4>
+        <p>Informações sobre sua sessão atual.</p>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div style={{background:"var(--bg-2)",borderRadius:10,padding:"12px 14px"}}>
+            <div style={{fontSize:".6875rem",color:"var(--muted)",marginBottom:2}}>Navegador</div>
+            <div style={{fontWeight:600,fontSize:".8125rem"}}>{navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop'}</div>
+          </div>
+          <div style={{background:"var(--bg-2)",borderRadius:10,padding:"12px 14px"}}>
+            <div style={{fontSize:".6875rem",color:"var(--muted)",marginBottom:2}}>Status</div>
+            <div style={{fontWeight:600,fontSize:".8125rem",color:"var(--emerald)"}}>Conectado</div>
+          </div>
+        </div>
+        <button className="btn btn-ghost" style={{marginTop:14,fontSize:".8125rem"}} onClick={async () => { await _supa.auth.signOut(); window.location.href = 'login.html'; }}>
+          Encerrar sessão
+        </button>
+      </div>
+
+      <div className="security-card">
+        <h4>E-mail de recuperação</h4>
+        <p>Envie um link para redefinir sua senha por e-mail.</p>
+        <button className="btn btn-ghost" style={{fontSize:".8125rem"}} onClick={async () => {
+          try {
+            await _supa.auth.resetPasswordForEmail(user.email, { redirectTo: window.location.origin + '/pages/nova-senha.html' });
+            alert("Link de recuperação enviado para " + user.email);
+          } catch(e) { alert("Erro: " + e.message); }
+        }}>Enviar link de recuperação</button>
+      </div>
+
+      <div className="delete-zone">
+        <h4 style={{color:"var(--rose)",marginBottom:4}}>Zona perigosa</h4>
+        <p style={{fontSize:".8125rem",color:"var(--muted)",marginBottom:14}}>
+          Ao excluir sua conta, todos os seus dados serão removidos permanentemente. Esta ação não pode ser desfeita.
+        </p>
+        {!showDelete ? (
+          <button className="btn" style={{background:"rgba(244,63,94,.08)",color:"var(--rose)",border:"1px solid rgba(244,63,94,.25)",fontSize:".8125rem"}}
+            onClick={() => setShowDelete(true)}>Excluir minha conta</button>
+        ) : (
+          <div style={{background:"var(--paper)",borderRadius:12,padding:16,border:"1px solid rgba(244,63,94,.2)",marginTop:8}}>
+            <p style={{fontSize:".8125rem",color:"var(--rose)",fontWeight:500,marginBottom:10}}>
+              Digite <strong>EXCLUIR</strong> para confirmar:
+            </p>
+            <div className="field" style={{marginBottom:10}}>
+              <input type="text" value={deleteConfirm} onChange={e => setDeleteConfirm(e.target.value)} placeholder='Digite "EXCLUIR"' style={{borderColor:"rgba(244,63,94,.3)"}}/>
+            </div>
+            <div style={{display:"flex",gap:10}}>
+              <button className="btn btn-ghost btn-sm" onClick={() => { setShowDelete(false); setDeleteConfirm(""); }}>Cancelar</button>
+              <button className="btn btn-sm" style={{background:"var(--rose)",color:"white",border:"none"}} onClick={handleDeleteAccount} disabled={deleting || deleteConfirm !== "EXCLUIR"}>
+                {deleting ? "Excluindo..." : "Confirmar exclusão"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ===================== PLAN (kept from before) =====================
+const CANCEL_REASONS = [
+  { id:"expensive", label:"Achei caro para o que oferece" },
+  { id:"not_using", label:"Não estou usando o suficiente" },
+  { id:"alternative", label:"Encontrei outra ferramenta" },
+  { id:"missing", label:"Faltam funcionalidades que preciso" },
+  { id:"ended", label:"Meu TCC já terminou" },
+  { id:"other", label:"Outro motivo" },
+];
+
+function PlanSection({ user, userData, subscription }) {
+  const [showCancel, setShowCancel] = useState(false);
+  const [reason, setReason] = useState("");
+  const [detail, setDetail] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+  const [step, setStep] = useState(1);
+
+  const isPro = subscription?.status === 'active' && subscription?.plan === 'pro';
+  const isCancelled = subscription?.status === 'cancelled';
+  const planName = isPro ? "Pro" : isCancelled ? "Cancelado" : "Gratuito";
+  const badgeClass = isPro ? "pro" : isCancelled ? "cancelled" : "free";
+
+  async function handleCancel() {
+    if (!reason) return;
+    setCancelling(true);
+    try {
+      await _supa.from('subscriptions').update({ status: 'cancelled' }).eq('id', user.uid);
+      try { await _supa.from('subscriptions').update({ cancel_reason: reason, cancel_detail: detail || null, cancelled_at: new Date().toISOString() }).eq('id', user.uid); } catch(e) {}
+      setShowCancel(false); setStep(1); setReason(""); setDetail("");
+      alert("Assinatura cancelada com sucesso.\nO pagamento automático do Mercado Pago será interrompido.");
+      window.location.reload();
+    } catch(e) { alert("Erro ao cancelar: " + (e.message || e)); }
+    setCancelling(false);
+  }
+
+  return (
+    <div>
+      <div className="section-title">Seu <em>Plano</em></div>
+      <div className="section-sub">Gerencie sua assinatura e forma de pagamento.</div>
+      <div className={`plan-card-inner ${isPro ? "pro" : ""}`} style={{marginBottom:16}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+          <div>
+            <div style={{fontSize:".75rem",color:"var(--muted)",marginBottom:4,fontFamily:"var(--font-mono)",textTransform:"uppercase",letterSpacing:".08em"}}>Plano atual</div>
+            <div style={{fontFamily:"var(--font-display)",fontSize:"1.75rem",fontWeight:400,letterSpacing:"-.02em"}}>{planName}</div>
+          </div>
+          <span className={`plan-badge ${badgeClass}`}>{isPro ? "Ativo" : isCancelled ? "Cancelado" : "Free"}</span>
+        </div>
+        {isPro && (
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
+            <div style={{background:"var(--bg-2)",borderRadius:10,padding:"12px 14px"}}>
+              <div style={{fontSize:".6875rem",color:"var(--muted)",marginBottom:2}}>Assentos</div>
+              <div style={{fontWeight:600}}>{subscription?.seats || 1} membros</div>
+            </div>
+            <div style={{background:"var(--bg-2)",borderRadius:10,padding:"12px 14px"}}>
+              <div style={{fontSize:".6875rem",color:"var(--muted)",marginBottom:2}}>Pagamento</div>
+              <div style={{fontWeight:600}}>{subscription?.paymentMethod === 'mercadopago' ? 'Mercado Pago' : subscription?.paymentMethod || 'N/A'}</div>
+            </div>
+          </div>
+        )}
+        {!isPro && !isCancelled && (
+          <div style={{background:"linear-gradient(135deg,rgba(244,63,94,.08),rgba(124,58,237,.08))",borderRadius:12,padding:"16px 18px",marginBottom:20,border:"1px solid rgba(244,63,94,.15)"}}>
+            <div style={{fontWeight:600,fontSize:".9375rem",marginBottom:4,color:"var(--rose)"}}>{"🔥"} Oferta Limitada — Desbloqueie o Pro</div>
+            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>
+              De <span style={{textDecoration:"line-through"}}>R$ 39,90/mês</span> por apenas <strong style={{color:"var(--rose)"}}>R$ 14,90/mês</strong>. Painel do Orientador, revisão do trabalho, IA ilimitada e muito mais.
+            </div>
+          </div>
+        )}
+        {isCancelled && (
+          <div style={{background:"rgba(244,63,94,.06)",borderRadius:12,padding:"16px 18px",marginBottom:20,border:"1px solid rgba(244,63,94,.15)"}}>
+            <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:4,color:"var(--rose)"}}>Assinatura cancelada</div>
+            <div style={{fontSize:".8125rem",color:"var(--muted)",lineHeight:1.5}}>Seu plano foi cancelado. Você pode reativar a qualquer momento.</div>
+          </div>
+        )}
+        <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+          {isPro ? (
+            <>
+              <a href="plans.html" className="btn btn-ghost" style={{fontSize:".8125rem"}}>Trocar plano</a>
+              <button className="btn" style={{fontSize:".8125rem",color:"var(--rose)",border:"1px solid rgba(244,63,94,.25)",background:"rgba(244,63,94,.05)"}}
+                onClick={() => { setShowCancel(true); setStep(1); setReason(""); setDetail(""); }}>Cancelar assinatura</button>
+            </>
+          ) : (
+            <a href="plans.html" className="btn btn-primary" style={{fontSize:".8125rem"}}>{isCancelled ? "Reativar plano" : "Fazer upgrade"}</a>
+          )}
+        </div>
+      </div>
+      <div className="card" style={{marginTop:20}}>
+        <div style={{fontWeight:500,fontSize:".9375rem",marginBottom:8}}>Recursos do seu plano</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+          {(isPro ? ["Até 5 projetos · 8 membros","Tarefas ilimitadas","1.000 buscas I.A./mês","Painel do Orientador","Trabalho Escrito com revisão","Integração Google completa","Suporte prioritário"]
+            : ["1 projeto","Até 2 pessoas","Até 5 tarefas","20 buscas I.A./mês","Calendário básico","Dashboard"]
+          ).map((f,i) => (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,fontSize:".8125rem",color:"var(--ink-2)",padding:"6px 0"}}>
+              <span style={{color:isPro?"var(--violet)":"var(--emerald)",fontWeight:700,fontSize:".75rem"}}>&#10003;</span> {f}
+            </div>
+          ))}
+        </div>
+      </div>
+      {showCancel && (
+        <div className="cancel-overlay" onClick={(e) => { if(e.target===e.currentTarget) setShowCancel(false); }}>
+          <div className="cancel-modal">
+            {step === 1 && (<>
+              <h3>Sentiremos sua falta</h3>
+              <p style={{color:"var(--muted)",fontSize:".875rem",marginBottom:4}}>Antes de ir, nos conte o motivo. Isso nos ajuda a melhorar.</p>
+              <ul className="cancel-reason-list">
+                {CANCEL_REASONS.map(r => (
+                  <li key={r.id} className={reason===r.id?"selected":""} onClick={() => setReason(r.id)}>
+                    <span className="radio"></span>{r.label}
+                  </li>
+                ))}
+              </ul>
+              {reason === "other" && (
+                <textarea placeholder="Conte-nos mais..." value={detail} onChange={e => setDetail(e.target.value)}
+                  style={{width:"100%",minHeight:60,borderRadius:10,border:"1.5px solid var(--line)",padding:"10px 12px",fontSize:".875rem",resize:"vertical",background:"var(--bg-2)",marginBottom:8}}/>
+              )}
+              <div style={{display:"flex",gap:10,marginTop:12}}>
+                <button className="btn btn-ghost" style={{flex:1}} onClick={() => setShowCancel(false)}>Voltar</button>
+                <button className="btn" style={{flex:1,background:"var(--rose)",color:"white",border:"none",opacity:reason?1:0.5}} disabled={!reason} onClick={() => setStep(2)}>Continuar</button>
+              </div>
+            </>)}
+            {step === 2 && (<>
+              <h3 style={{color:"var(--rose)"}}>Confirmar cancelamento</h3>
+              <p style={{color:"var(--muted)",fontSize:".875rem",marginBottom:16}}>Ao confirmar, sua assinatura Pro será cancelada e o pagamento automático no Mercado Pago será interrompido.</p>
+              <div style={{background:"rgba(244,63,94,.06)",border:"1px solid rgba(244,63,94,.15)",borderRadius:12,padding:"14px 16px",marginBottom:20}}>
+                <div style={{fontWeight:500,fontSize:".8125rem",color:"var(--rose)",marginBottom:6}}>Você perderá acesso a:</div>
+                <ul style={{margin:0,paddingLeft:18,fontSize:".8125rem",color:"var(--ink-2)",lineHeight:1.8}}>
+                  <li>Tarefas e grupos ilimitados</li><li>IA com 1.000 buscas/mês</li><li>Integração Google completa</li><li>Suporte prioritário</li>
+                </ul>
+              </div>
+              <div style={{display:"flex",gap:10}}>
+                <button className="btn btn-ghost" style={{flex:1}} onClick={() => setStep(1)}>Voltar</button>
+                <button className="btn" style={{flex:1,background:"var(--rose)",color:"white",border:"none"}} onClick={handleCancel} disabled={cancelling}>{cancelling ? "Cancelando..." : "Confirmar cancelamento"}</button>
+              </div>
+            </>)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ===================== MAIN PAGE =====================
+function SettingsPage() {
+  const { user, userData, subscription, loading } = useTCCData();
+  const [section, setSection] = useState("profile");
+  const [saving, setSaving] = useState(false);
+  const [, forceUpdate] = useState(0);
+
+  useEffect(() => {
+    if (localStorage.getItem('tccflow_animations') === 'false') {
+      document.body.classList.add('no-animations');
+    }
+  }, []);
+
+  if (loading) return <AppSplash />;
+
+  async function saveProfile(newName) {
+    if (!newName.trim() || !user) return;
+    setSaving(true);
+    try {
+      await _supa.from('users').update({ name: newName }).eq('id', user.uid);
+      alert("Perfil atualizado com sucesso!");
+    } catch(e) { alert("Erro ao salvar: " + e.message); }
+    setSaving(false);
+  }
+
+  const content = {
+    profile: <ProfileSection user={user} userData={userData} subscription={subscription} saving={saving} onSave={saveProfile} onPhotoChange={() => forceUpdate(n=>n+1)}/>,
+    plan: <PlanSection user={user} userData={userData} subscription={subscription}/>,
+    notif: <NotifSection/>,
+    appear: <AppearSection/>,
+    security: <SecuritySection user={user}/>,
+  };
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="settings" userData={userData} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Configurações" user={user}/>
+        <div className="settings-inner-grid" style={{ flex:1, display:"grid", gridTemplateColumns:"200px 1fr", overflow:"hidden" }}>
+          <div style={{ borderRight:"1px solid var(--line)", padding:"16px 10px", background:"var(--paper)", overflowY:"auto" }}>
+            <div className="mono-label" style={{ marginBottom:8, padding:"0 4px" }}>Configurações</div>
+            {SECTIONS.map(s => (
+              <div key={s.id} className={`settings-nav-item ${section===s.id?"active":""}`} onClick={() => setSection(s.id)}>
+                <span>{s.icon}</span> {s.label}
+              </div>
+            ))}
+          </div>
+          <div style={{ overflowY:"auto", padding:"28px 32px" }}>
+            {content[section]}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<SettingsPage/>);
+</script>
+</body>
+</html>

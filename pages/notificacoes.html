@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificações - TCCFlow</title>
+    <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dark.css">
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
+        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
+        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
+        .toast-enter { animation: toastIn 0.3s ease-out; }
+        .toast-exit { animation: toastOut 0.3s ease-in forwards; }
+        @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen antialiased">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="dashboard.html" class="flex items-center gap-2.5">
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
+                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
+                </a>
+                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i>Ferramentas</a>
+                    <div class="relative" id="moreDropdown">
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition flex items-center gap-1">Mais <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Equipe</a>
+                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i>Planos</a>
+                        </div>
+                    </div>
+                </div><div class="flex items-center gap-2">
+                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
+                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
+                    </a>
+                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Ferramentas</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+        </div>
+    
+    <script>
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('moreDropdown');
+        const menu = document.getElementById('moreMenu');
+        if (dropdown && menu && !dropdown.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+    </script>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-20 right-4 z-[60] space-y-3 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16 min-h-screen pb-12">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold mb-2">Notificações & Lembretes</h1>
+                <p class="text-slate-500">Configure alertas para nunca perder um prazo</p>
+            </div>
+
+            <!-- Permission Card -->
+            <div id="permissionCard" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-bell text-violet-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg mb-1">Ative as notificações para receber lembretes</h3>
+                        <p class="text-sm text-slate-500 mb-4">Permitir notificações garante que você será alertado sobre prazos e tarefas importantes do seu TCC.</p>
+                        <div class="flex items-center gap-4 flex-wrap">
+                            <button id="enableNotifBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-medium px-5 py-2.5 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
+                                <i class="fa-solid fa-bell mr-2"></i>Ativar Notificações
+                            </button>
+                            <span id="permissionStatus" class="text-xs font-medium px-3 py-1.5 rounded-full bg-slate-100 text-slate-500">
+                                <i class="fa-solid fa-circle-info mr-1"></i>Status: verificando...
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Reminders -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-violet-600"></i>
+                        Lembretes Ativos
+                    </h2>
+                    <span id="activeCount" class="text-xs font-medium px-2.5 py-1 rounded-full bg-violet-100 text-violet-700">0</span>
+                </div>
+                <div id="remindersList" class="space-y-3">
+                    <div class="text-center py-8 text-slate-400 text-sm">
+                        <i class="fa-solid fa-bell-slash text-2xl mb-2 block"></i>
+                        Nenhum lembrete configurado ainda
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Reminder Form -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8">
+                <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-cyan-500"></i>
+                    Novo Lembrete
+                </h2>
+                <form id="reminderForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1.5">Título do lembrete</label>
+                        <input type="text" id="reminderTitle" required placeholder="Ex: Entregar capítulo 3"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 mb-1.5">Data e hora</label>
+                            <input type="datetime-local" id="reminderDatetime" required
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 mb-1.5">Repetir</label>
+                            <select id="reminderRepeat"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                                <option value="never">Nunca</option>
+                                <option value="daily">Diariamente</option>
+                                <option value="weekly">Semanalmente</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1.5">Antecedência</label>
+                        <select id="reminderAdvance"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                            <option value="0">No horário exato</option>
+                            <option value="5">5 minutos antes</option>
+                            <option value="15" selected>15 minutos antes</option>
+                            <option value="30">30 minutos antes</option>
+                            <option value="60">1 hora antes</option>
+                            <option value="1440">1 dia antes</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button type="submit" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-medium px-6 py-2.5 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
+                            <i class="fa-solid fa-plus mr-2"></i>Criar Lembrete
+                        </button>
+                        <button type="reset" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium px-6 py-2.5 rounded-xl transition text-sm">
+                            Limpar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Quick Reminders -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8">
+                <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                    Lembretes Rápidos
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Quick: Entrega Final -->
+                    <button onclick="quickEntregaFinal()" class="group text-left p-4 bg-gradient-to-br from-violet-50 to-cyan-50 border border-violet-200/50 rounded-xl hover:shadow-md hover:shadow-violet-500/10 transition">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition">
+                            <i class="fa-solid fa-flag-checkered text-violet-600"></i>
+                        </div>
+                        <h4 class="text-sm font-bold mb-1">Entrega Final</h4>
+                        <p class="text-xs text-slate-500">Lembrete automático do prazo final do projeto</p>
+                        <span id="deadlineInfo" class="text-[10px] text-violet-600 font-medium mt-2 block"></span>
+                    </button>
+
+                    <!-- Quick: Estudo Diário -->
+                    <button onclick="quickEstudoDiario()" class="group text-left p-4 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 rounded-xl hover:shadow-md hover:shadow-amber-500/10 transition">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition">
+                            <i class="fa-solid fa-book-open text-amber-600"></i>
+                        </div>
+                        <h4 class="text-sm font-bold mb-1">Estudo Diário</h4>
+                        <p class="text-xs text-slate-500">Lembrete diário para dedicar tempo ao TCC</p>
+                    </button>
+
+                    <!-- Quick: Reunião com Orientador -->
+                    <button onclick="quickReuniaoOrientador()" class="group text-left p-4 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/50 rounded-xl hover:shadow-md hover:shadow-emerald-500/10 transition">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition">
+                            <i class="fa-solid fa-users text-emerald-600"></i>
+                        </div>
+                        <h4 class="text-sm font-bold mb-1">Reunião com Orientador</h4>
+                        <p class="text-xs text-slate-500">Lembrete semanal para reunião de orientação</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notification History -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-history text-slate-400"></i>
+                        Histórico de Notificações
+                    </h2>
+                    <button onclick="clearHistory()" class="text-xs text-slate-400 hover:text-red-500 transition">
+                        <i class="fa-solid fa-trash mr-1"></i>Limpar
+                    </button>
+                </div>
+                <div id="historyList" class="space-y-2">
+                    <div class="text-center py-8 text-slate-400 text-sm">
+                        <i class="fa-solid fa-inbox text-2xl mb-2 block"></i>
+                        Nenhuma notificação enviada ainda
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
+    <script src="../js/db-service.js"></script>
+    <script>
+        // ========== State ==========
+        let currentUser = null;
+        let projectId = null;
+        let projectDeadline = null;
+        let reminderInterval = null;
+
+        // ========== Auth ==========
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            document.getElementById('userName').textContent = user.displayName || 'Usuário';
+
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
+            if (isFirebaseConfigured()) {
+                try {
+                    projectId = await DB.getProjectId();
+                } catch (err) {
+                    console.error('Error loading project:', err);
+                }
+            }
+
+            updatePermissionStatus();
+            renderReminders();
+            renderHistory();
+            startReminderChecker();
+            loadProjectDeadline();
+        });
+
+        // ========== Mobile Nav ==========
+        document.getElementById('mobileNavBtn').addEventListener('click', () => {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = '../index.html';
+        });
+
+        // ========== Notification Permission ==========
+        function updatePermissionStatus() {
+            const statusEl = document.getElementById('permissionStatus');
+            const card = document.getElementById('permissionCard');
+            const btn = document.getElementById('enableNotifBtn');
+
+            if (!('Notification' in window)) {
+                statusEl.innerHTML = '<i class="fa-solid fa-circle-xmark mr-1"></i>Navegador não suporta notificações';
+                statusEl.className = 'text-xs font-medium px-3 py-1.5 rounded-full bg-red-100 text-red-600';
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
+            const perm = Notification.permission;
+            if (perm === 'granted') {
+                statusEl.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Notificações ativadas';
+                statusEl.className = 'text-xs font-medium px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700';
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Ativadas';
+                btn.classList.remove('from-violet-600', 'to-cyan-500');
+                btn.classList.add('bg-emerald-500', 'cursor-default');
+                btn.disabled = true;
+            } else if (perm === 'denied') {
+                statusEl.innerHTML = '<i class="fa-solid fa-circle-xmark mr-1"></i>Notificações bloqueadas';
+                statusEl.className = 'text-xs font-medium px-3 py-1.5 rounded-full bg-red-100 text-red-600';
+                btn.innerHTML = '<i class="fa-solid fa-lock mr-2"></i>Bloqueadas no navegador';
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                statusEl.innerHTML = '<i class="fa-solid fa-circle-info mr-1"></i>Aguardando permissão';
+                statusEl.className = 'text-xs font-medium px-3 py-1.5 rounded-full bg-amber-100 text-amber-700';
+            }
+        }
+
+        document.getElementById('enableNotifBtn').addEventListener('click', async () => {
+            if (!('Notification' in window)) return;
+            try {
+                const result = await Notification.requestPermission();
+                updatePermissionStatus();
+                if (result === 'granted') {
+                    showToast('Notificações ativadas com sucesso!', 'success');
+                }
+            } catch (err) {
+                console.error('Permission error:', err);
+            }
+        });
+
+        // ========== Reminders Storage ==========
+        function getStorageKey() {
+            return currentUser ? `reminders_${currentUser.uid}` : 'reminders_guest';
+        }
+
+        function getHistoryKey() {
+            return currentUser ? `notif_history_${currentUser.uid}` : 'notif_history_guest';
+        }
+
+        function getReminders() {
+            return JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+        }
+
+        function saveReminders(reminders) {
+            localStorage.setItem(getStorageKey(), JSON.stringify(reminders));
+        }
+
+        function getHistory() {
+            return JSON.parse(localStorage.getItem(getHistoryKey()) || '[]');
+        }
+
+        function saveHistory(history) {
+            localStorage.setItem(getHistoryKey(), JSON.stringify(history));
+        }
+
+        // ========== Render Reminders ==========
+        function renderReminders() {
+            const reminders = getReminders();
+            const list = document.getElementById('remindersList');
+            const countEl = document.getElementById('activeCount');
+            const active = reminders.filter(r => r.active);
+            countEl.textContent = active.length;
+
+            if (reminders.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">
+                    <i class="fa-solid fa-bell-slash text-2xl mb-2 block"></i>
+                    Nenhum lembrete configurado ainda
+                </div>`;
+                return;
+            }
+
+            const repeatLabels = { never: 'Sem repetição', daily: 'Diariamente', weekly: 'Semanalmente' };
+            const advanceLabels = { '0': 'No horário', '5': '5min antes', '15': '15min antes', '30': '30min antes', '60': '1h antes', '1440': '1 dia antes' };
+
+            list.innerHTML = reminders.sort((a, b) => new Date(a.datetime) - new Date(b.datetime)).map(r => {
+                const dt = new Date(r.datetime);
+                const isPast = dt < new Date() && r.repeat === 'never';
+                const dateStr = dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+                const timeStr = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                return `
+                <div class="flex items-center gap-4 p-4 rounded-xl border ${r.active ? 'bg-slate-50 border-slate-200' : 'bg-slate-50/50 border-slate-100 opacity-60'} group transition">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center ${r.active ? 'bg-violet-100 text-violet-600' : 'bg-slate-100 text-slate-400'}">
+                            <i class="fa-solid ${r.repeat !== 'never' ? 'fa-repeat' : 'fa-bell'} text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-semibold truncate ${isPast && !r.active ? 'line-through text-slate-400' : ''}">${escapeHtml(r.title)}</h4>
+                        <div class="flex items-center gap-3 mt-1 flex-wrap">
+                            <span class="text-xs text-slate-500"><i class="fa-regular fa-calendar mr-1"></i>${dateStr}</span>
+                            <span class="text-xs text-slate-500"><i class="fa-regular fa-clock mr-1"></i>${timeStr}</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full ${r.repeat !== 'never' ? 'bg-cyan-50 text-cyan-700' : 'bg-slate-100 text-slate-500'}">${repeatLabels[r.repeat] || r.repeat}</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-violet-50 text-violet-600">${advanceLabels[String(r.advance)] || r.advance + 'min'}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <button onclick="toggleReminder('${r.id}')" class="w-12 h-6 rounded-full relative transition ${r.active ? 'bg-violet-600' : 'bg-slate-300'}" title="${r.active ? 'Desativar' : 'Ativar'}">
+                            <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm ${r.active ? 'left-[26px]' : 'left-0.5'}"></div>
+                        </button>
+                        <button onclick="deleteReminder('${r.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition opacity-0 group-hover:opacity-100" title="Excluir">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ========== Render History ==========
+        function renderHistory() {
+            const history = getHistory();
+            const list = document.getElementById('historyList');
+
+            if (history.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">
+                    <i class="fa-solid fa-inbox text-2xl mb-2 block"></i>
+                    Nenhuma notificação enviada ainda
+                </div>`;
+                return;
+            }
+
+            list.innerHTML = history.sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt)).slice(0, 50).map(h => {
+                const dt = new Date(h.sentAt);
+                const dateStr = dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                const timeStr = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                return `
+                <div class="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                    <div class="w-8 h-8 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-bell text-xs"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium truncate">${escapeHtml(h.title)}</p>
+                    </div>
+                    <span class="text-xs text-slate-400 flex-shrink-0">${dateStr} ${timeStr}</span>
+                </div>`;
+            }).join('');
+        }
+
+        // ========== CRUD ==========
+        document.getElementById('reminderForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('reminderTitle').value.trim();
+            const datetime = document.getElementById('reminderDatetime').value;
+            const repeat = document.getElementById('reminderRepeat').value;
+            const advance = parseInt(document.getElementById('reminderAdvance').value);
+
+            if (!title || !datetime) return;
+
+            const reminder = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                title,
+                datetime,
+                repeat,
+                advance,
+                active: true,
+                createdAt: new Date().toISOString()
+            };
+
+            const reminders = getReminders();
+            reminders.push(reminder);
+            saveReminders(reminders);
+            renderReminders();
+            showToast(`Lembrete "${title}" criado!`, 'success');
+            document.getElementById('reminderForm').reset();
+        });
+
+        window.toggleReminder = function(id) {
+            const reminders = getReminders();
+            const r = reminders.find(r => r.id === id);
+            if (r) {
+                r.active = !r.active;
+                saveReminders(reminders);
+                renderReminders();
+            }
+        };
+
+        window.deleteReminder = function(id) {
+            if (!confirm('Excluir este lembrete?')) return;
+            const reminders = getReminders().filter(r => r.id !== id);
+            saveReminders(reminders);
+            renderReminders();
+            showToast('Lembrete excluído', 'info');
+        };
+
+        window.clearHistory = function() {
+            if (!confirm('Limpar todo o histórico de notificações?')) return;
+            saveHistory([]);
+            renderHistory();
+        };
+
+        // ========== Reminder Checker ==========
+        function startReminderChecker() {
+            if (reminderInterval) clearInterval(reminderInterval);
+            reminderInterval = setInterval(checkReminders, 30000);
+            checkReminders(); // Run once immediately
+        }
+
+        function checkReminders() {
+            const now = new Date();
+            const reminders = getReminders();
+            let changed = false;
+
+            reminders.forEach(r => {
+                if (!r.active) return;
+
+                const targetTime = new Date(r.datetime);
+                const advanceMs = (r.advance || 0) * 60 * 1000;
+                const fireTime = new Date(targetTime.getTime() - advanceMs);
+
+                // Check if this reminder should fire now (within 30 second window)
+                const diff = now.getTime() - fireTime.getTime();
+                if (diff >= 0 && diff < 35000) {
+                    fireReminder(r);
+                    changed = true;
+
+                    // Handle repeat
+                    if (r.repeat === 'daily') {
+                        const next = new Date(targetTime);
+                        next.setDate(next.getDate() + 1);
+                        r.datetime = formatDatetimeLocal(next);
+                    } else if (r.repeat === 'weekly') {
+                        const next = new Date(targetTime);
+                        next.setDate(next.getDate() + 7);
+                        r.datetime = formatDatetimeLocal(next);
+                    } else {
+                        r.active = false;
+                    }
+                }
+            });
+
+            if (changed) {
+                saveReminders(reminders);
+                renderReminders();
+                renderHistory();
+            }
+        }
+
+        function fireReminder(reminder) {
+            const advanceText = reminder.advance > 0
+                ? ` (${reminder.advance >= 60 ? (reminder.advance / 60) + 'h' : reminder.advance + 'min'} de antecedência)`
+                : '';
+            const body = `Lembrete: ${reminder.title}${advanceText}`;
+
+            // Browser notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification('TCCFlow - Lembrete', {
+                        body: body,
+                        icon: '../favicon.png',
+                        badge: '../favicon.png',
+                        tag: reminder.id
+                    });
+                } catch (err) {
+                    console.error('Notification error:', err);
+                }
+            }
+
+            // In-app toast
+            showToast(reminder.title, 'reminder');
+
+            // Save to history
+            const history = getHistory();
+            history.push({
+                id: Date.now().toString(),
+                reminderId: reminder.id,
+                title: reminder.title,
+                sentAt: new Date().toISOString()
+            });
+            saveHistory(history);
+        }
+
+        // ========== Toast ==========
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            const colors = {
+                success: 'bg-emerald-500',
+                info: 'bg-slate-700',
+                reminder: 'bg-violet-600',
+                error: 'bg-red-500'
+            };
+
+            const icons = {
+                success: 'fa-check-circle',
+                info: 'fa-circle-info',
+                reminder: 'fa-bell',
+                error: 'fa-circle-xmark'
+            };
+
+            toast.className = `pointer-events-auto ${colors[type] || colors.info} text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 toast-enter`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icons[type] || icons.info}"></i>
+                <span class="text-sm font-medium flex-1">${escapeHtml(message)}</span>
+                <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // ========== Quick Reminders ==========
+        async function loadProjectDeadline() {
+            if (!projectId) return;
+            try {
+                const { data } = await _supa
+                    .from('projects')
+                    .select('deadline, name')
+                    .eq('id', projectId)
+                    .maybeSingle();
+
+                if (data && data.deadline) {
+                    projectDeadline = data.deadline;
+                    const dt = new Date(data.deadline);
+                    document.getElementById('deadlineInfo').textContent =
+                        'Prazo: ' + dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+                }
+            } catch (err) {
+                console.log('Could not load project deadline:', err);
+            }
+        }
+
+        window.quickEntregaFinal = function() {
+            const title = 'Lembrar da entrega final do TCC';
+            let dt;
+            if (projectDeadline) {
+                dt = new Date(projectDeadline);
+            } else {
+                // Default: 30 days from now at 08:00
+                dt = new Date();
+                dt.setDate(dt.getDate() + 30);
+                dt.setHours(8, 0, 0, 0);
+            }
+
+            document.getElementById('reminderTitle').value = title;
+            document.getElementById('reminderDatetime').value = formatDatetimeLocal(dt);
+            document.getElementById('reminderRepeat').value = 'never';
+            document.getElementById('reminderAdvance').value = '1440'; // 1 day before
+            document.getElementById('reminderForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            showToast('Formulário preenchido! Ajuste e confirme.', 'info');
+        };
+
+        window.quickEstudoDiario = function() {
+            const dt = new Date();
+            dt.setDate(dt.getDate() + 1);
+            dt.setHours(19, 0, 0, 0); // Default 7pm
+
+            document.getElementById('reminderTitle').value = 'Hora de estudar para o TCC!';
+            document.getElementById('reminderDatetime').value = formatDatetimeLocal(dt);
+            document.getElementById('reminderRepeat').value = 'daily';
+            document.getElementById('reminderAdvance').value = '5';
+            document.getElementById('reminderForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            showToast('Formulário preenchido! Ajuste o horário e confirme.', 'info');
+        };
+
+        window.quickReuniaoOrientador = function() {
+            // Next Monday at 14:00
+            const dt = new Date();
+            const dayOfWeek = dt.getDay();
+            const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek);
+            dt.setDate(dt.getDate() + daysUntilMonday);
+            dt.setHours(14, 0, 0, 0);
+
+            document.getElementById('reminderTitle').value = 'Reunião com orientador';
+            document.getElementById('reminderDatetime').value = formatDatetimeLocal(dt);
+            document.getElementById('reminderRepeat').value = 'weekly';
+            document.getElementById('reminderAdvance').value = '60'; // 1h before
+            document.getElementById('reminderForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            showToast('Formulário preenchido! Ajuste o dia/hora e confirme.', 'info');
+        };
+
+        // ========== Helpers ==========
+        function formatDatetimeLocal(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const h = String(date.getHours()).padStart(2, '0');
+            const min = String(date.getMinutes()).padStart(2, '0');
+            return `${y}-${m}-${d}T${h}:${min}`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "tccflow-video",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx remotion studio",
+    "render": "npx remotion render Announcement out/announcement.mp4 --overwrite"
+  },
+  "devDependencies": {
+    "@remotion/cli": "^4.0.471",
+    "remotion": "^4.0.471"
+  }
+}

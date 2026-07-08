@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Equipe — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+  <style>
+    .proj-card{background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:18px;transition:border-color .2s,box-shadow .2s;cursor:pointer;}
+    .proj-card:hover{border-color:var(--violet);box-shadow:var(--shadow-sm);}
+    .proj-card.active{border-color:var(--violet);background:rgba(124,58,237,.04);}
+  </style>
+</head>
+<body><div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function TeamPage() {
+  const { user, userData, project, subscription, teamMembers, loading } = useTCCData();
+  const [copied, setCopied] = useState(false);
+  const [tab, setTab] = useState("membros");
+  const [joinCode, setJoinCode] = useState("");
+  const [joining, setJoining] = useState(false);
+  const [joinMsg, setJoinMsg] = useState("");
+  const [taskCounts, setTaskCounts] = useState({});
+  const [allUserProjects, setAllUserProjects] = useState([]);
+  const [switching, setSwitching] = useState(false);
+  const [orientadorInviteCode, setOrientadorInviteCode] = useState("");
+  const [linkedOrientador, setLinkedOrientador] = useState(null);
+  const [generatingCode, setGeneratingCode] = useState(false);
+  const [removingOrientador, setRemovingOrientador] = useState(false);
+
+  useEffect(() => {
+    if (!project) return;
+    (async () => {
+      try {
+        const relation = await DB.orientador.getProjectOrientador(project.id);
+        if (relation?.users) {
+          setLinkedOrientador(relation.users);
+        } else {
+          setLinkedOrientador(null);
+        }
+      } catch(e) { console.error('Error loading orientador:', e); }
+    })();
+  }, [project]);
+
+  async function generateOrientadorCode() {
+    if (!project) return;
+    setGeneratingCode(true);
+    try {
+      const result = await DB.orientador.createInvite(project.id);
+      setOrientadorInviteCode(result.code);
+      await loadOrientador();
+    } catch(e) { alert("Erro ao gerar código: " + (e.message || e)); }
+    setGeneratingCode(false);
+  }
+
+  async function loadOrientador() {
+    if (!project) return;
+    try {
+      const relation = await DB.orientador.getProjectOrientador(project.id);
+      if (relation?.users) {
+        setLinkedOrientador(relation.users);
+      } else {
+        setLinkedOrientador(null);
+      }
+    } catch(e) { console.error('Error loading orientador:', e); }
+  }
+
+  async function removeOrientador() {
+    if (!linkedOrientador || !confirm("Remover orientador do projeto?")) return;
+    setRemovingOrientador(true);
+    try {
+      await _supa.from('orientador_projects').delete().eq('project_id', project.id);
+      setLinkedOrientador(null);
+      setOrientadorInviteCode("");
+    } catch(e) { alert("Erro ao remover: " + (e.message || e)); }
+    setRemovingOrientador(false);
+  }
+
+  useEffect(() => {
+    if (!project || !teamMembers.length) return;
+    (async () => {
+      const { data } = await _supa.from('tasks').select('assigned_to, status').eq('project_id', project.id);
+      const counts = {};
+      (data || []).forEach(t => {
+        if (!counts[t.assigned_to]) counts[t.assigned_to] = { total: 0, done: 0 };
+        counts[t.assigned_to].total++;
+        if (t.status === 'done') counts[t.assigned_to].done++;
+      });
+      setTaskCounts(counts);
+    })();
+  }, [project, teamMembers]);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      try {
+        const owned = await DB.projects.getOwned(user.uid);
+        const { data: memberOf } = await _supa.from('projects').select('id, name, code, owner_id, members, created_at').contains('members', [user.uid]);
+        const all = [...(owned || [])];
+        (memberOf || []).forEach(p => {
+          if (!all.find(a => a.id === p.id)) all.push({ id: p.id, name: p.name, code: p.code, ownerId: p.owner_id, members: p.members, createdAt: p.created_at });
+        });
+        setAllUserProjects(all);
+      } catch(e) { console.error(e); }
+    })();
+  }, [user]);
+
+  function copyCode() {
+    if (project?.code) navigator.clipboard.writeText(project.code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleJoin() {
+    if (!joinCode.trim()) return;
+    setJoining(true); setJoinMsg("");
+    try {
+      const { data: projects, error: projErr } = await _supa.from('projects').select('*').eq('code', joinCode.toUpperCase());
+      if (projErr) throw projErr;
+      if (!projects || !projects.length) { setJoinMsg("Código não encontrado"); setJoining(false); return; }
+      const proj = projects[0];
+
+      // Atualiza projeto_id do usuário
+      const { error: userErr } = await _supa.from('users').update({ project_id: proj.id }).eq('id', user.uid);
+      if (userErr) throw userErr;
+
+      // Adiciona usuário ao array de membros do projeto
+      let membersList = proj.members;
+      if (typeof membersList === 'string') {
+        try { membersList = JSON.parse(membersList); } catch { membersList = []; }
+      }
+      if (!Array.isArray(membersList)) membersList = [];
+
+      if (!membersList.includes(user.uid)) {
+        const newMembers = [...membersList, user.uid];
+        const { error: membersErr } = await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
+        if (membersErr) throw membersErr;
+      }
+      window.location.reload();
+    } catch(e) { setJoinMsg("Erro: " + (e.message || e)); }
+    setJoining(false);
+  }
+
+  async function switchProject(projId) {
+    if (projId === project?.id) return;
+    setSwitching(true);
+    try {
+      await _supa.from('users').update({ project_id: projId }).eq('id', user.uid);
+      window.location.reload();
+    } catch(e) { alert("Erro ao trocar projeto: " + e.message); setSwitching(false); }
+  }
+
+  async function createNewProject() {
+    const name = prompt("Nome do novo projeto:");
+    if (!name || !name.trim()) return;
+    const canCreate = await DB.projects.canCreateProject(user.uid);
+    if (!canCreate.allowed) {
+      alert("Você atingiu o limite de " + canCreate.max + " projeto(s). Apague um projeto existente ou faça upgrade.");
+      return;
+    }
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = 'TCC-';
+    for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    const { data: newProj, error } = await _supa.from('projects').insert({
+      name: name.trim(), code, owner_id: user.uid, members: [user.uid]
+    }).select('*').maybeSingle();
+    if (error) { alert("Erro ao criar projeto: " + error.message); return; }
+    if (!newProj) { alert("Erro: projeto não foi retornado"); return; }
+    await _supa.from('users').update({ project_id: newProj.id }).eq('id', user.uid);
+    window.location.reload();
+  }
+
+  async function leaveProject(projId) {
+    if (!confirm("Tem certeza que deseja sair deste projeto? Você perderá acesso a todas as tarefas e dados do projeto.")) return;
+    try {
+      await _supa.from('users').update({ project_id: null }).eq('id', user.uid);
+      const { data: proj } = await _supa.from('projects').select('members').eq('id', projId).maybeSingle();
+      if (proj?.members) {
+        const updated = (proj.members || []).filter(m => m !== user.uid);
+        await _supa.from('projects').update({ members: updated }).eq('id', projId);
+      }
+      window.location.reload();
+    } catch(e) { alert("Erro ao sair do projeto: " + e.message); }
+  }
+
+  async function deleteProject(projId) {
+    if (!confirm("ATENÇÃO: Isso vai APAGAR o projeto permanentemente, incluindo todas as tarefas, anotações e dados. Deseja continuar?")) return;
+    if (!confirm("Tem certeza absoluta? Esta ação não pode ser desfeita.")) return;
+    try {
+      const { data: members } = await _supa.from('users').select('id').eq('project_id', projId);
+      if (members?.length) {
+        for (const m of members) {
+          await _supa.from('users').update({ project_id: null }).eq('id', m.id);
+        }
+      }
+      await _supa.from('projects').delete().eq('id', projId);
+      window.location.reload();
+    } catch(e) { alert("Erro ao apagar projeto: " + e.message); }
+  }
+
+  if (loading) return <AppSplash />;
+
+  const slots = subscription?.seats || 1;
+  const used = teamMembers.length;
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="team" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Equipe" user={user}/>
+        <div className="page-content">
+          <div className="page-grid" style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16 }}>
+            <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+              <div style={{ display:"flex", gap:2, background:"var(--bg-2)", borderRadius:10, padding:4, width:"fit-content" }}>
+                {[["membros","Membros"],["orientador","Orientador"],["projetos","Meus Projetos"],["entrar","Entrar em Projeto"]].map(([v,l]) => (
+                  <button key={v} className={`btn btn-sm ${tab===v?"btn-primary":"btn-ghost"}`} style={{ border:"none" }} onClick={() => setTab(v)}>{l}</button>
+                ))}
+              </div>
+
+              {tab === "membros" && (
+                <div className="card">
+                  <div className="card-title" style={{ justifyContent:"space-between" }}>
+                    <span style={{ display:"flex", alignItems:"center", gap:8 }}><span className="ct-icon">👥</span> Membros da Equipe</span>
+                    <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)" }}>{used}/{slots} usuários</span>
+                  </div>
+                  <div style={{ display:"flex", gap:6, marginBottom:20 }}>
+                    {Array.from({ length:Math.max(slots, used) }).map((_, i) => (
+                      <div key={i} style={{ flex:1, height:6, borderRadius:999, background:i<used?"#7c3aed":"var(--line)" }}></div>
+                    ))}
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                    {teamMembers.map((m, idx) => {
+                      const tc = taskCounts[m.id] || { total: 0, done: 0 };
+                      return (
+                        <div key={m.id} style={{ display:"flex", alignItems:"center", gap:14, padding:"12px 14px", background:"var(--bg-2)", borderRadius:12, border:"1px solid var(--line)" }}>
+                          <div className={`av av-lg c${(idx%4)+1}`}>{getInitials(m.name)}</div>
+                          <div style={{ flex:1 }}>
+                            <div style={{ fontWeight:600, fontSize:"0.9375rem", marginBottom:2 }}>{m.name || 'Sem nome'}</div>
+                            <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>{m.email}</div>
+                          </div>
+                          <span className={`tag ${m.role==='orientador'?'tag-amber':'tag-violet'}`}>{m.role==='orientador'?'Orientador':'Estudante'}</span>
+                          <div style={{ textAlign:"right" }}>
+                            <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--muted)" }}>Tarefas</div>
+                            <div style={{ fontWeight:600, fontSize:"0.875rem" }}>{tc.done}/{tc.total}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {teamMembers.length === 0 && <div style={{color:"var(--muted)",padding:12}}>Nenhum membro no projeto</div>}
+                  </div>
+                </div>
+              )}
+
+              {tab === "orientador" && (
+                <div className="card">
+                  <div className="card-title"><span className="ct-icon">👨‍🏫</span> Orientador do Projeto</div>
+                  {linkedOrientador ? (
+                    <div>
+                      <div style={{ display:"flex", alignItems:"center", gap:14, padding:"16px 14px", background:"var(--bg-2)", borderRadius:12, border:"1px solid var(--line)", marginBottom:16 }}>
+                        <div className={`av av-lg c1`}>{getInitials(linkedOrientador.name)}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontWeight:600, fontSize:"0.9375rem", marginBottom:2 }}>{linkedOrientador.name || 'Sem nome'}</div>
+                          <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>{linkedOrientador.email}</div>
+                        </div>
+                        <span className="tag tag-amber">Orientador</span>
+                      </div>
+                      <button className="btn btn-ghost" style={{ width:"100%", color:"var(--rose)" }} onClick={removeOrientador} disabled={removingOrientador}>
+                        {removingOrientador ? "Removendo..." : "Remover Orientador"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize:"0.875rem", color:"var(--muted)", marginBottom:20 }}>Gere um código para convidar seu orientador.</p>
+                      {orientadorInviteCode && (
+                        <div style={{ background:"rgba(124,58,237,.08)", border:"1px solid var(--violet)", borderRadius:12, padding:16, marginBottom:16, textAlign:"center" }}>
+                          <div style={{ fontSize:"0.6875rem", color:"var(--muted)", marginBottom:6 }}>Código de convite</div>
+                          <div style={{ fontFamily:"var(--font-mono)", fontSize:"1.5rem", fontWeight:700, color:"var(--violet)", letterSpacing:"0.1em", marginBottom:12 }}>{orientadorInviteCode}</div>
+                          <button className="btn btn-violet" style={{ width:"100%" }} onClick={() => { navigator.clipboard.writeText(orientadorInviteCode); alert("Código copiado!"); }}>
+                            Copiar código
+                          </button>
+                        </div>
+                      )}
+                      <button className="btn btn-violet" style={{ width:"100%" }} onClick={generateOrientadorCode} disabled={generatingCode}>
+                        {generatingCode ? "Gerando..." : orientadorInviteCode ? "Gerar novo código" : "Gerar código de convite"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {tab === "projetos" && (
+                <div className="card">
+                  <div className="card-title" style={{ justifyContent:"space-between" }}>
+                    <span style={{ display:"flex", alignItems:"center", gap:8 }}><span className="ct-icon">📁</span> Meus Projetos</span>
+                    <button className="btn btn-violet btn-sm" onClick={createNewProject}>+ Novo projeto</button>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                    {allUserProjects.length === 0 && <div style={{color:"var(--muted)",padding:12}}>Nenhum projeto encontrado</div>}
+                    {allUserProjects.map(p => (
+                      <div key={p.id} style={{ background: p.id===project?.id ? "rgba(124,58,237,.06)" : "var(--bg-2)", border: p.id===project?.id ? "1.5px solid var(--violet)" : "1px solid var(--line)", borderRadius:12, padding:14 }}>
+                        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6, cursor:"pointer" }} onClick={() => switchProject(p.id)}>
+                          <div style={{ fontWeight:600, fontSize:"0.9375rem" }}>{p.name}</div>
+                          {p.id === project?.id && <span className="tag tag-violet">Ativo</span>}
+                        </div>
+                        <div style={{ display:"flex", gap:12, alignItems:"center", marginBottom:10 }}>
+                          <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.75rem", color:"var(--violet)", background:"rgba(124,58,237,.08)", padding:"2px 8px", borderRadius:6 }}>{p.code}</span>
+                          {p.ownerId === user?.uid && <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", color:"var(--muted)" }}>Criador</span>}
+                          {p.members && <span style={{ fontFamily:"var(--font-mono)", fontSize:"0.625rem", color:"var(--muted)" }}>{p.members.length} membro(s)</span>}
+                        </div>
+                        <div style={{ display:"flex", gap:8 }}>
+                          {p.ownerId === user?.uid ? (
+                            <button className="btn btn-ghost btn-sm" style={{ color:"var(--rose)", flex:1 }} onClick={(e) => { e.stopPropagation(); deleteProject(p.id); }}>
+                              Apagar projeto
+                            </button>
+                          ) : (
+                            <button className="btn btn-ghost btn-sm" style={{ color:"var(--amber)", flex:1 }} onClick={(e) => { e.stopPropagation(); leaveProject(p.id); }}>
+                              Sair do projeto
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {switching && <div style={{textAlign:"center",padding:16,color:"var(--violet)"}}>Trocando projeto...</div>}
+                </div>
+              )}
+
+              {tab === "entrar" && (
+                <div className="card" style={{ maxWidth:480 }}>
+                  <div className="card-title"><span className="ct-icon">🔑</span> Entrar em um Projeto</div>
+                  <p style={{ fontSize:"0.875rem", color:"var(--muted)", marginBottom:20 }}>Peça ao líder do grupo o código de convite.</p>
+                  <div className="field">
+                    <label>Código de convite</label>
+                    <input type="text" placeholder="TCC-XXXX" value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
+                      style={{ fontFamily:"var(--font-mono)", letterSpacing:"0.08em", fontSize:"1rem" }}/>
+                  </div>
+                  {joinMsg && <div style={{color:"var(--rose)",fontSize:".8125rem",marginBottom:12}}>{joinMsg}</div>}
+                  <button className="btn btn-violet" style={{ width:"100%" }} onClick={handleJoin} disabled={joining}>
+                    {joining ? "Entrando..." : "Entrar no projeto"}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+              {project && (
+                <div className="card" style={{ background:"linear-gradient(135deg,rgba(124,58,237,.06),rgba(6,182,212,.06))", border:"1px solid rgba(124,58,237,.2)" }}>
+                  <div className="card-title"><span className="ct-icon">🔗</span> Código de convite</div>
+                  <div style={{ textAlign:"center", padding:"12px 0 8px" }}>
+                    <div style={{ fontFamily:"var(--font-mono)", fontSize:"1.375rem", fontWeight:700, color:"var(--violet)", letterSpacing:"0.1em", marginBottom:12 }}>{project.code}</div>
+                    <button className="btn btn-violet" style={{ width:"100%" }} onClick={copyCode}>
+                      {copied ? "✓ Copiado!" : "Copiar código"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="card">
+                <div className="card-title"><span className="ct-icon">⭐</span> Uso do Plano</div>
+                <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:20, padding:"16px 0" }}>
+                  <div style={{ position:"relative", width:80, height:80 }}>
+                    <svg viewBox="0 0 80 80" style={{ transform:"rotate(-90deg)" }}>
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="var(--line)" strokeWidth="8"/>
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="url(#grad)" strokeWidth="8"
+                        strokeDasharray={`${used/slots*201} 201`} strokeLinecap="round"/>
+                      <defs><linearGradient id="grad"><stop offset="0%" stopColor="#7c3aed"/><stop offset="100%" stopColor="#06b6d4"/></linearGradient></defs>
+                    </svg>
+                    <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+                      <div style={{ fontFamily:"var(--font-display)", fontSize:"1.375rem", lineHeight:1 }}>{used}</div>
+                      <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.5625rem", color:"var(--muted)" }}>/ {slots}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight:600, marginBottom:4 }}>{used} {used===1?'membro ativo':'membros ativos'}</div>
+                    <div style={{ fontSize:"0.8125rem", color:"var(--muted)" }}>Capacidade: {slots} membros</div>
+                    <div style={{ fontFamily:"var(--font-mono)", fontSize:"0.6875rem", color:"var(--violet)", marginTop:6 }}>+ {Math.max(0, slots-used)} {slots-used===1?'vaga disponível':'vagas disponíveis'}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<TeamPage/>);
+</script>
+</body>
+</html>

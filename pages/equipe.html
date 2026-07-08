@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4278555972399416" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-4278555972399416">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" href="../favicon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#7c3aed">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipe - TCCFlow</title>
     <script src="../js/darkmode.js"></script>
+    <script src="../js/i18n.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -35,25 +51,31 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
-                    </div>
+                    <img src="../favicon.png" alt="TCCFlow" class="w-11 h-11 rounded-xl">
                     <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
                 </a>
-                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
-                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas</a>
-                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Equipe</a>
-                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
-                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
-                </div>
-                <div class="flex items-center gap-2">
+                <div class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-full p-1">
+                    <a href="dashboard.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.dashboard">Dashboard</a>
+                    <a href="projeto.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.project">Projeto</a>
+                    <a href="ia.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.ia">I.A.</a>
+                    <a href="calendario.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition" data-i18n="nav.calendar">Calendário</a>
+                    <a href="ferramentas.html" class="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition"><i class="fa-solid fa-wrench mr-1 text-[10px]"></i><span data-i18n="nav.tools">Ferramentas</span></a>
+                    <div class="relative" id="moreDropdown">
+                        <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-violet-600 shadow-sm flex items-center gap-1"><span data-i18n="nav.more">Mais</span> <i class="fa-solid fa-chevron-down text-[8px]"></i></button>
+                        <div id="moreMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
+                            <a href="organizacao.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.tasks">Tarefas</a>
+                            <a href="equipe.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition" data-i18n="nav.team">Equipe</a>
+                            <a href="google.html" class="flex items-center justify-between px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full">PRO</span></a>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a href="planos.html" class="flex items-center px-4 py-2 text-sm text-slate-600 hover:bg-violet-50 hover:text-violet-600 transition"><i class="fa-solid fa-tag mr-2 text-xs"></i><span data-i18n="nav.plans">Planos</span></a>
+                        </div>
+                    </div>
+                </div><div class="flex items-center gap-2">
                     <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear text-sm"></i>
+                    <a href="painel-admin.html" class="admin-panel-btn hidden w-9 h-9 rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-600 hover:bg-amber-50 transition" title="Painel Admin"><i class="fa-solid fa-shield-halved text-sm"></i></a>
+                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition overflow-hidden">
+                        <i id="navAvatarIcon" class="fa-solid fa-gear text-sm"></i>
+                        <img id="navAvatar" src="" alt="" class="hidden w-full h-full object-cover">
                     </a>
                     <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
                         <i class="fa-solid fa-right-from-bracket text-sm"></i>
@@ -65,39 +87,36 @@
             </div>
         </div>
         <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
+            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.dashboard">Dashboard</a>
+            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.project">Projeto</a>
+            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tasks">Tarefas</a>
+            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.ia">I.A.</a>
+            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.calendar">Calendário</a>
+            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50" data-i18n="nav.team">Equipe</a>
+            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></a>
+            <a href="ferramentas.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.tools">Ferramentas</a>
+            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600" data-i18n="nav.plans">Planos</a>
         </div>
+    
+    <script>
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('moreDropdown');
+        const menu = document.getElementById('moreMenu');
+        if (dropdown && menu && !dropdown.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+    </script>
     </nav>
 
     <!-- PRO Gate Overlay -->
-    <div id="proGateOverlay" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
-        <div class="text-center max-w-md px-6">
-            <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-lock text-violet-600 text-3xl"></i>
-            </div>
-            <h2 class="text-2xl font-bold mb-3">Recurso Exclusivo PRO</h2>
-            <p class="text-sm text-slate-500 mb-8">O gerenciamento de equipe é exclusivo do plano PRO. Assine para convidar membros, compartilhar projetos e trabalhar em grupo.</p>
-            <a href="planos.html" class="inline-block bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 px-8 rounded-xl hover:shadow-lg hover:shadow-violet-500/25 transition">
-                <i class="fa-solid fa-crown mr-2"></i>Assinar Plano PRO
-            </a>
-            <p class="text-xs text-slate-400 mt-4">A partir de R$ 97,00/ano</p>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <main class="relative z-10 pt-16 min-h-screen pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
             <div class="mb-8">
-                <h1 class="text-3xl font-bold mb-2">Gerenciar Equipe</h1>
-                <p class="text-slate-500">Convide membros e organize seu grupo de TCC</p>
+                <h1 class="text-2xl sm:text-3xl font-bold mb-2" data-i18n="team.title">Gerenciar Equipe</h1>
+                <p class="text-slate-500" data-i18n="team.subtitle">Convide membros e organize seu grupo de TCC</p>
             </div>
 
             <!-- No Project Panel -->
@@ -106,34 +125,34 @@
                     <div class="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <i class="fa-solid fa-users text-violet-600 text-2xl"></i>
                     </div>
-                    <h2 class="text-xl font-bold mb-2">Você ainda não tem um projeto</h2>
-                    <p class="text-sm text-slate-500 mb-8">Crie um novo projeto ou entre em um existente com o código do grupo.</p>
+                    <h2 class="text-xl font-bold mb-2" data-i18n="team.noProject">Você ainda não tem um projeto</h2>
+                    <p class="text-sm text-slate-500 mb-8" data-i18n="team.noProjectDesc">Crie um novo projeto ou entre em um existente com o código do grupo.</p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
                         <div class="bg-gradient-to-br from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6 text-left">
-                            <h3 class="font-bold mb-2"><i class="fa-solid fa-plus-circle mr-2 text-violet-600"></i>Criar Projeto Novo</h3>
-                            <p class="text-xs text-slate-500 mb-4">Gera um código para seus colegas entrarem.</p>
+                            <h3 class="font-bold mb-2"><i class="fa-solid fa-plus-circle mr-2 text-violet-600"></i><span data-i18n="team.createProject">Criar Projeto Novo</span></h3>
+                            <p class="text-xs text-slate-500 mb-4" data-i18n="team.createProjectDesc">Gera um código para seus colegas entrarem.</p>
                             <div class="mb-3">
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Nome do Projeto</label>
-                                <input type="text" id="newProjectName" value="Meu TCC" placeholder="Ex: TCC Turma A"
+                                <label class="block text-xs font-medium text-slate-600 mb-1" data-i18n="team.projectName">Nome do Projeto</label>
+                                <input type="text" id="newProjectName" value="Meu TCC" data-i18n-placeholder="team.projectNamePlaceholder" placeholder="Ex: TCC Turma A"
                                     class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                             </div>
                             <button onclick="createNewProject()" id="createProjectBtn"
                                 class="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold py-2.5 rounded-xl transition hover:shadow-lg hover:shadow-violet-500/25 text-sm">
-                                <i class="fa-solid fa-rocket mr-2"></i>Criar Projeto
+                                <i class="fa-solid fa-rocket mr-2"></i><span data-i18n="team.create">Criar Projeto</span>
                             </button>
                         </div>
                         <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-left">
-                            <h3 class="font-bold mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-cyan-600"></i>Entrar em Projeto</h3>
-                            <p class="text-xs text-slate-500 mb-4">Cole o código que seu colega compartilhou.</p>
+                            <h3 class="font-bold mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-cyan-600"></i><span data-i18n="team.joinProject">Entrar em Projeto</span></h3>
+                            <p class="text-xs text-slate-500 mb-4" data-i18n="team.joinProjectDesc">Cole o código que seu colega compartilhou.</p>
                             <div class="mb-3">
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Código do Projeto</label>
-                                <input type="text" id="joinProjectCode" placeholder="Ex: TCC-A3KR"
+                                <label class="block text-xs font-medium text-slate-600 mb-1" data-i18n="team.projectCode">Código do Projeto</label>
+                                <input type="text" id="joinProjectCode" data-i18n-placeholder="team.enterCode" placeholder="Ex: TCC-A3KR"
                                     class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-violet-500">
                             </div>
                             <button onclick="joinExistingProject()" id="joinProjectBtn"
                                 class="w-full bg-slate-900 text-white font-semibold py-2.5 rounded-xl transition hover:bg-slate-800 text-sm">
-                                <i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto
+                                <i class="fa-solid fa-sign-in-alt mr-2"></i><span data-i18n="team.join">Entrar no Projeto</span>
                             </button>
                         </div>
                     </div>
@@ -175,7 +194,7 @@
                         <i class="fa-solid fa-exclamation-triangle mr-1"></i>Limite de assentos atingido. <a href="planos.html" class="text-violet-600 font-medium hover:underline">Upgrade para mais assentos →</a>
                     </div>
                     <div id="freeUpgrade" class="hidden text-xs text-slate-500 mt-2">
-                        Plano gratuito: máx. 2 membros. <a href="planos.html" class="text-violet-600 font-medium hover:underline">Fazer upgrade →</a>
+                        Plano gratuito: apenas 1 integrante. <a href="planos.html" class="text-violet-600 font-medium hover:underline">Upgrade para adicionar membros →</a>
                     </div>
                 </div>
 
@@ -193,6 +212,49 @@
                     <div id="inviteMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
                 </div>
 
+                <!-- My Projects -->
+                <div id="myProjectsPanel" class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold"><i class="fa-solid fa-folder-open text-violet-600 mr-2"></i>Meus Projetos</h2>
+                        <span id="projectLimitBadge" class="text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-600"></span>
+                    </div>
+                    <div id="myProjectsList" class="space-y-3 mb-4">
+                        <div class="text-center py-4 text-slate-400 text-sm">
+                            <i class="fa-solid fa-spinner fa-spin mr-1"></i> Carregando projetos...
+                        </div>
+                    </div>
+                    <!-- Create New Project (inline) -->
+                    <div id="createNewProjectSection" class="hidden">
+                        <div class="border-t border-slate-100 pt-4 mt-2">
+                            <div class="flex gap-3">
+                                <input type="text" id="newProjectNameInline" placeholder="Nome do novo projeto (ex: TCC Turma B)"
+                                    class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                                <button onclick="createNewProjectInline()" id="createProjectBtnInline"
+                                    class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:shadow-lg transition whitespace-nowrap">
+                                    <i class="fa-solid fa-plus mr-1"></i>Criar
+                                </button>
+                            </div>
+                            <div id="createProjectMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
+                        </div>
+                    </div>
+                    <div id="projectLimitMsg" class="hidden mt-3 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2"></div>
+                </div>
+
+                <!-- Switch/Join another project -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm">
+                    <h2 class="text-lg font-bold mb-2"><i class="fa-solid fa-right-to-bracket text-cyan-600 mr-2"></i>Entrar em Outro Projeto</h2>
+                    <p class="text-xs text-slate-500 mb-4">Quer trocar para o projeto de outro grupo? Cole o código abaixo.</p>
+                    <div class="flex gap-3">
+                        <input type="text" id="switchProjectCode" placeholder="Ex: TCC-A3KR"
+                            class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-violet-500">
+                        <button onclick="switchToProject()" id="switchProjectBtn"
+                            class="bg-slate-900 text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-slate-800 transition whitespace-nowrap">
+                            <i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar
+                        </button>
+                    </div>
+                    <div id="switchMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
+                </div>
+
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <h2 class="text-lg font-bold mb-6">Membros da Equipe</h2>
                     <div id="membersList" class="space-y-3">
@@ -202,15 +264,93 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Invite Orientador Section (BETA) - hidden -->
+                <div id="orientadorSection" class="hidden bg-white border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm mt-8">
+                    <div class="flex items-center gap-2 mb-4">
+                        <h2 class="text-lg font-bold"><i class="fa-solid fa-graduation-cap text-emerald-600 mr-2"></i>Orientador</h2>
+                        <span class="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">BETA</span>
+                    </div>
+                    <div id="orientadorInfo">
+                        <p class="text-sm text-slate-500 mb-4">Convide seu orientador para acompanhar e corrigir o projeto diretamente no TCCFlow.</p>
+                        <div id="orientadorLinked" class="hidden mb-4">
+                            <div class="flex items-center gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm" id="orientadorName">-</p>
+                                    <p class="text-xs text-slate-400" id="orientadorEmail">-</p>
+                                </div>
+                                <span class="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 ml-auto">Vinculado</span>
+                            </div>
+                        </div>
+                        <div id="orientadorInvite">
+                            <button onclick="generateOrientadorCode()" id="genOrientadorBtn"
+                                class="bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:shadow-lg transition">
+                                <i class="fa-solid fa-link mr-2"></i>Gerar Código de Convite
+                            </button>
+                            <div id="orientadorCodeBox" class="hidden mt-3 flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                                <code class="text-lg font-bold text-emerald-700 flex-1 font-mono" id="orientadorCode"></code>
+                                <button onclick="copyOrientadorCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                                    <i class="fa-solid fa-copy mr-1"></i>Copiar
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2">O orientador deve criar uma conta e entrar pelo <a href="orientador-painel.html" class="text-emerald-600 hover:underline font-medium">Painel do Orientador</a>.</p>
+                        </div>
+                        <div id="orientadorMsg" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></div>
+                    </div>
+                </div>
+
+                <!-- Chat PRO Banner (shown for free users in main content) -->
+                <div id="chatProBanner" class="hidden mt-8">
+                    <div class="bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200/50 rounded-2xl p-5 text-center">
+                        <h3 class="text-sm font-bold mb-1"><i class="fa-solid fa-comments mr-1 text-violet-500"></i>Chat da Equipe <span class="text-[8px] font-bold bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-1.5 py-0.5 rounded-full align-middle">PRO</span></h3>
+                        <p class="text-xs text-slate-500 mb-3">Converse em tempo real com os membros do seu projeto.</p>
+                        <a href="planos.html" class="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 hover:underline"><i class="fa-solid fa-crown text-amber-500"></i>Fazer Upgrade</a>
+                    </div>
+                </div>
             </div>
 
         </div>
     </main>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-init.js"></script>
+    <!-- Chat FAB (PRO only) -->
+    <button id="chatFab" class="hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-violet-600 to-cyan-500 rounded-full shadow-lg shadow-violet-500/30 items-center justify-center text-white hover:shadow-xl hover:scale-105 transition-all cursor-pointer" onclick="toggleChatPanel()">
+        <i class="fa-solid fa-comments text-lg"></i>
+        <span id="chatBadge" class="hidden absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold items-center justify-center animate-pulse text-white">!</span>
+    </button>
+
+    <!-- Chat Panel (slide-up) -->
+    <div id="chatPanel" class="hidden fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden" style="max-height: 450px;">
+        <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-violet-600 to-cyan-500">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-comments"></i> Chat da Equipe</h3>
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] text-white/70" id="chatStatus">Conectado</span>
+                <button onclick="toggleChatPanel()" class="text-white/80 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+        <div id="messagesArea" class="h-72 overflow-y-auto p-3 space-y-2 bg-slate-50/50">
+            <div id="emptyChat" class="flex items-center justify-center h-full">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-violet-50 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fa-solid fa-comments text-violet-400 text-lg"></i>
+                    </div>
+                    <p class="text-xs text-slate-400">Nenhuma mensagem ainda. Comece a conversa!</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-2 border-t border-slate-100 flex items-center gap-2">
+            <input type="text" id="chatInput" placeholder="Mensagem..."
+                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition" autocomplete="off">
+            <button id="sendChatBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-3 py-2 rounded-xl font-semibold text-sm hover:shadow-lg transition disabled:opacity-50" disabled>
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-init.js"></script>
     <script src="../js/db-service.js"></script>
     <script>
         let currentUser = null;
@@ -245,42 +385,78 @@
             document.getElementById('projectPanel').classList.add('hidden');
         }
 
+        // Guard against multiple onAuthStateChanged calls
+        let _initialized = false;
+
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'login.html'; return; }
+            if (_initialized) return;
+            _initialized = true;
+
             currentUser = user;
             document.getElementById('userName').textContent = user.displayName || 'Usuário';
 
+            // Load navbar avatar
+            if (user.photoURL) {
+                const navAvatar = document.getElementById('navAvatar');
+                const navAvatarIcon = document.getElementById('navAvatarIcon');
+                if (navAvatar && navAvatarIcon) {
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    navAvatarIcon.classList.add('hidden');
+                }
+            }
+
             if (isFirebaseConfigured()) {
                 try {
-                    // Check if user is PRO - block if not
-                    const isPro = await DB.subscriptions.isPro(user.uid);
-                    if (!isPro) {
-                        document.getElementById('proGateOverlay').classList.remove('hidden');
-                        return;
+                    // Load user data directly from Supabase
+                    const { data: userData } = await _supa.from('users').select('*').eq('id', user.uid).maybeSingle();
+
+                    // Sync photo from Auth to users table if needed
+                    if (userData && user.photoURL && !userData.photo_url) {
+                        try { await _supa.from('users').update({ photo_url: user.photoURL }).eq('id', user.uid); } catch(e) {}
                     }
 
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists && userDoc.data().projectId) {
-                        projectId = userDoc.data().projectId;
-                        const projectDoc = await db.collection('projects').doc(projectId).get();
-                        if (projectDoc.exists) {
-                            const project = projectDoc.data();
-                            projectOwnerId = project.ownerId;
-                            document.getElementById('projectCode').textContent = project.code;
+                    if (userData && userData.project_id) {
+                        projectId = userData.project_id;
+
+                        // Load project directly from Supabase
+                        const { data: projectData } = await _supa.from('projects').select('*').eq('id', projectId).maybeSingle();
+
+                        if (projectData) {
+                            projectOwnerId = projectData.owner_id;
+                            document.getElementById('projectCode').textContent = projectData.code;
                             showProjectPanel();
-                            loadMembers(project);
-                            updateSeatsBanner(project);
+                            await loadMembersFromProject(projectId, projectData.owner_id);
+                            await updateSeatsBanner(projectId, projectData.owner_id);
+                            const isBeta = await DB.isBetaTester(user.uid);
+                            if (isBeta) {
+                                await loadMyProjects();
+                                await initChat();
+                            } else {
+                                document.getElementById('myProjectsPanel').classList.add('hidden');
+                                // Hide chat elements for non-beta users
+                                const chatFab = document.getElementById('chatFab');
+                                const chatPanel = document.getElementById('chatPanel');
+                                const chatProBanner = document.getElementById('chatProBanner');
+                                if (chatFab) chatFab.style.display = 'none';
+                                if (chatPanel) chatPanel.style.display = 'none';
+                                if (chatProBanner) chatProBanner.style.display = 'none';
+                            }
+                            await loadOrientadorSection();
                         } else {
                             showNoProjectPanel();
                         }
                     } else {
-                        if (!userDoc.exists) {
-                            await db.collection('users').doc(user.uid).set({
+                        if (!userData) {
+                            // Create user record without setting project_id
+                            // (ignoreDuplicates to handle race conditions)
+                            await _supa.from('users').upsert({
+                                id: user.uid,
                                 name: user.displayName || 'Usuário',
                                 email: user.email,
-                                projectId: null,
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                            });
+                                created_at: new Date().toISOString()
+                            }, { onConflict: 'id', ignoreDuplicates: true });
                         }
                         showNoProjectPanel();
                     }
@@ -300,35 +476,183 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Criando...';
 
             try {
+                // Check project limit
+                const { allowed, max } = await DB.projects.canCreateProject(currentUser.uid);
+                if (!allowed) {
+                    showSetupMsg(`Limite de ${max} projeto${max > 1 ? 's' : ''} atingido. Faça upgrade para PRO para criar mais projetos.`, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-rocket mr-2"></i>Criar Projeto';
+                    return;
+                }
+
                 const code = generateCode();
-                const projectRef = await db.collection('projects').add({
+
+                // Create project directly via Supabase
+                const { data: newProj, error: createErr } = await _supa.from('projects').insert({
                     name: projectName,
                     code: code,
-                    ownerId: currentUser.uid,
+                    owner_id: currentUser.uid,
                     members: [currentUser.uid],
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                    created_at: new Date().toISOString()
+                }).select().maybeSingle();
+                if (createErr) throw createErr;
 
-                await db.collection('users').doc(currentUser.uid).set({
+                // Update user's project_id (user updates own record - RLS allows this)
+                const { error: upsertErr } = await _supa.from('users').upsert({
+                    id: currentUser.uid,
                     name: currentUser.displayName || 'Usuário',
                     email: currentUser.email,
-                    projectId: projectRef.id,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
+                    project_id: newProj.id
+                });
+                if (upsertErr) {
+                    console.error('Failed to set project_id on user:', upsertErr);
+                    // Fallback: try update only
+                    const { error: updateErr } = await _supa.from('users')
+                        .update({ project_id: newProj.id })
+                        .eq('id', currentUser.uid);
+                    if (updateErr) console.error('Fallback update also failed:', updateErr);
+                }
 
-                projectId = projectRef.id;
+                projectId = newProj.id;
                 projectOwnerId = currentUser.uid;
                 document.getElementById('projectCode').textContent = code;
                 showProjectPanel();
-
-                const projectDoc = await db.collection('projects').doc(projectId).get();
-                loadMembers(projectDoc.data());
+                await loadMembersFromProject(projectId, currentUser.uid);
+                await updateSeatsBanner(projectId, currentUser.uid);
+                await loadMyProjects();
             } catch (err) {
                 console.error('Error creating project:', err);
                 showSetupMsg('Erro ao criar projeto: ' + err.message, 'error');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-rocket mr-2"></i>Criar Projeto';
             }
+        };
+
+        // ========== My Projects (multiple projects) ==========
+        async function loadMyProjects() {
+            if (!currentUser) return;
+            const listEl = document.getElementById('myProjectsList');
+            const limitBadge = document.getElementById('projectLimitBadge');
+            const createSection = document.getElementById('createNewProjectSection');
+            const limitMsg = document.getElementById('projectLimitMsg');
+
+            try {
+                const ownedProjects = await DB.projects.getOwned(currentUser.uid);
+                const { allowed, count, max } = await DB.projects.canCreateProject(currentUser.uid);
+
+                limitBadge.textContent = `${count} / ${max} projeto${max > 1 ? 's' : ''}`;
+
+                if (ownedProjects.length === 0) {
+                    listEl.innerHTML = '<p class="text-center text-sm text-slate-400 py-3">Nenhum projeto criado por você.</p>';
+                } else {
+                    listEl.innerHTML = '';
+                    for (const proj of ownedProjects) {
+                        const isActive = proj.id === projectId;
+                        const activeClass = isActive
+                            ? 'border-violet-300 bg-violet-50/50'
+                            : 'border-slate-200 hover:border-slate-300';
+
+                        // Count members
+                        const { data: members } = await _supa.from('users').select('id').eq('project_id', proj.id);
+                        const memberCount = (members || []).length;
+
+                        listEl.innerHTML += `
+                            <div class="flex items-center justify-between p-4 rounded-xl border ${activeClass} transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 ${isActive ? 'bg-gradient-to-br from-violet-600 to-cyan-500' : 'bg-slate-200'} rounded-xl flex items-center justify-center ${isActive ? 'text-white' : 'text-slate-500'}">
+                                        <i class="fa-solid fa-folder text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">${proj.name}</p>
+                                        <p class="text-xs text-slate-400">Código: <code class="font-mono text-violet-600">${proj.code}</code> &bull; ${memberCount} membro${memberCount !== 1 ? 's' : ''}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    ${isActive
+                                        ? '<span class="text-xs font-bold px-3 py-1 rounded-full bg-violet-100 text-violet-700">Ativo</span>'
+                                        : `<button onclick="switchToProjectById('${proj.id}')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-violet-100 text-slate-600 hover:text-violet-700 transition">Acessar</button>`
+                                    }
+                                    <button onclick="deleteProject('${proj.id}', '${proj.name.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition" title="Apagar projeto">
+                                        <i class="fa-solid fa-trash text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>`;
+                    }
+                }
+
+                // Show/hide create button
+                if (allowed) {
+                    createSection.classList.remove('hidden');
+                    limitMsg.classList.add('hidden');
+                } else {
+                    createSection.classList.add('hidden');
+                    if (max <= 1) {
+                        limitMsg.innerHTML = '<i class="fa-solid fa-lock mr-1 text-violet-500"></i>Plano gratuito permite apenas 1 projeto. <a href="planos.html" class="text-violet-600 font-semibold hover:underline">Faça upgrade para PRO</a> e crie até 2 projetos.';
+                    } else {
+                        limitMsg.innerHTML = '<i class="fa-solid fa-info-circle mr-1 text-slate-400"></i>Você atingiu o limite de ' + max + ' projetos do plano PRO.';
+                    }
+                    limitMsg.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error('Error loading projects:', err);
+                listEl.innerHTML = '<p class="text-center text-sm text-red-400 py-3">Erro ao carregar projetos</p>';
+            }
+        }
+
+        window.switchToProjectById = async function(newProjectId) {
+            try {
+                await _supa.from('users').update({ project_id: newProjectId }).eq('id', currentUser.uid);
+                window.location.reload();
+            } catch (err) {
+                alert('Erro ao trocar de projeto: ' + err.message);
+            }
+        };
+
+        window.createNewProjectInline = async function() {
+            const btn = document.getElementById('createProjectBtnInline');
+            const nameInput = document.getElementById('newProjectNameInline');
+            const msgEl = document.getElementById('createProjectMsg');
+            const projectName = nameInput.value.trim() || 'Meu TCC';
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Criando...';
+            msgEl.classList.add('hidden');
+
+            try {
+                const { allowed, count, max } = await DB.projects.canCreateProject(currentUser.uid);
+                if (!allowed) {
+                    msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                    msgEl.textContent = `Limite de ${max} projeto${max > 1 ? 's' : ''} atingido.`;
+                    msgEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-plus mr-1"></i>Criar';
+                    return;
+                }
+
+                const code = generateCode();
+                const { data: newProj, error: createErr } = await _supa.from('projects').insert({
+                    name: projectName,
+                    code: code,
+                    owner_id: currentUser.uid,
+                    members: [currentUser.uid],
+                    created_at: new Date().toISOString()
+                }).select().maybeSingle();
+                if (createErr) throw createErr;
+
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
+                msgEl.textContent = `Projeto "${projectName}" criado! Código: ${code}`;
+                msgEl.classList.remove('hidden');
+                nameInput.value = '';
+
+                await loadMyProjects();
+            } catch (err) {
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                msgEl.textContent = 'Erro: ' + err.message;
+                msgEl.classList.remove('hidden');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-plus mr-1"></i>Criar';
         };
 
         // ========== Join Existing Project ==========
@@ -342,37 +666,173 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Entrando...';
 
             try {
-                const snap = await db.collection('projects').where('code', '==', code).get();
-                if (snap.empty) {
+                // Find project by code directly via Supabase
+                const { data: projects, error: findErr } = await _supa.from('projects').select('*').eq('code', code);
+                if (findErr) throw findErr;
+
+                if (!projects || projects.length === 0) {
                     showSetupMsg('Código não encontrado: ' + code, 'error');
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto';
                     return;
                 }
 
-                const projDoc = snap.docs[0];
-                await db.collection('projects').doc(projDoc.id).update({
-                    members: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
-                });
+                const proj = projects[0];
 
-                await db.collection('users').doc(currentUser.uid).set({
+                // Check seat limit before joining
+                let ownerIsPro = false;
+                let ownerMaxSeats = 1;
+                try {
+                    const sub = await DB.subscriptions.get(proj.owner_id);
+                    if (sub && sub.status === 'active' && sub.plan === 'pro') {
+                        ownerIsPro = true;
+                        ownerMaxSeats = sub.seats || 5;
+                    }
+                } catch(e) {}
+
+                // Count current members
+                const { data: currentMembersData } = await _supa.from('users').select('id').eq('project_id', proj.id);
+                const currentMemberCount = (currentMembersData || []).length;
+                const alreadyMember = (currentMembersData || []).some(m => m.id === currentUser.uid);
+
+                if (!alreadyMember && currentMemberCount >= ownerMaxSeats) {
+                    showSetupMsg(ownerIsPro
+                        ? 'Este projeto atingiu o limite de assentos do plano PRO.'
+                        : 'Este projeto é do plano gratuito e aceita apenas 1 integrante. O dono precisa fazer upgrade para PRO.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto';
+                    return;
+                }
+
+                // KEY FIX: Only update the user's OWN record (RLS always allows this)
+                const { error: userErr } = await _supa.from('users').upsert({
+                    id: currentUser.uid,
                     name: currentUser.displayName || 'Usuário',
                     email: currentUser.email,
-                    projectId: projDoc.id,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
+                    project_id: proj.id
+                });
+                if (userErr) {
+                    console.error('Upsert failed, trying update fallback:', userErr);
+                    // Fallback: try update only (in case upsert fails due to RLS on insert)
+                    const { error: updateErr } = await _supa.from('users')
+                        .update({ project_id: proj.id })
+                        .eq('id', currentUser.uid);
+                    if (updateErr) throw updateErr;
+                }
 
-                projectId = projDoc.id;
-                const updatedDoc = await db.collection('projects').doc(projectId).get();
-                projectOwnerId = updatedDoc.data().ownerId;
-                document.getElementById('projectCode').textContent = updatedDoc.data().code;
+                // Try to also update projects.members (best effort - may fail due to RLS)
+                try {
+                    const existingMembers = proj.members || [];
+                    if (!existingMembers.includes(currentUser.uid)) {
+                        const newMembers = [...new Set([...existingMembers, currentUser.uid])];
+                        await _supa.from('projects').update({ members: newMembers }).eq('id', proj.id);
+                    }
+                } catch (e) {
+                    console.log('Could not update projects.members (RLS), but user.project_id was set:', e);
+                }
+
+                projectId = proj.id;
+                projectOwnerId = proj.owner_id;
+                document.getElementById('projectCode').textContent = proj.code;
                 showProjectPanel();
-                loadMembers(updatedDoc.data());
+                await loadMembersFromProject(projectId, proj.owner_id);
+                await updateSeatsBanner(projectId, proj.owner_id);
             } catch (err) {
                 console.error('Error joining project:', err);
                 showSetupMsg('Erro ao entrar no projeto: ' + err.message, 'error');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar no Projeto';
+            }
+        };
+
+        // ========== Switch to Another Project (from project panel) ==========
+        window.switchToProject = async function() {
+            const btn = document.getElementById('switchProjectBtn');
+            const code = document.getElementById('switchProjectCode').value.trim().toUpperCase();
+            const msgEl = document.getElementById('switchMsg');
+
+            if (!code) {
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                msgEl.textContent = 'Digite o código do projeto.';
+                msgEl.classList.remove('hidden');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Entrando...';
+
+            try {
+                // Find project by code directly via Supabase
+                const { data: projects, error: findErr } = await _supa.from('projects').select('*').eq('code', code);
+                if (findErr) throw findErr;
+
+                if (!projects || projects.length === 0) {
+                    msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                    msgEl.textContent = 'Código não encontrado: ' + code;
+                    msgEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar';
+                    return;
+                }
+
+                const proj = projects[0];
+
+                // Check seat limit before switching
+                let switchOwnerIsPro = false;
+                let switchMaxSeats = 1;
+                try {
+                    const sub = await DB.subscriptions.get(proj.owner_id);
+                    if (sub && sub.status === 'active' && sub.plan === 'pro') {
+                        switchOwnerIsPro = true;
+                        switchMaxSeats = sub.seats || 5;
+                    }
+                } catch(e) {}
+
+                const { data: switchMembers } = await _supa.from('users').select('id').eq('project_id', proj.id);
+                const switchCount = (switchMembers || []).length;
+                const switchAlready = (switchMembers || []).some(m => m.id === currentUser.uid);
+
+                if (!switchAlready && switchCount >= switchMaxSeats) {
+                    msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                    msgEl.textContent = switchOwnerIsPro
+                        ? 'Este projeto atingiu o limite de assentos PRO.'
+                        : 'Projeto gratuito aceita apenas 1 integrante. O dono precisa fazer upgrade.';
+                    msgEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar';
+                    return;
+                }
+
+                // Only update user's OWN record (RLS allows this)
+                await _supa.from('users').update({ project_id: proj.id }).eq('id', currentUser.uid);
+
+                // Best effort: also update projects.members
+                try {
+                    const currentMembers = proj.members || [];
+                    if (!currentMembers.includes(currentUser.uid)) {
+                        await _supa.from('projects').update({ members: [...new Set([...currentMembers, currentUser.uid])] }).eq('id', proj.id);
+                    }
+                } catch (e) { console.log('Could not update projects.members:', e); }
+
+                projectId = proj.id;
+                projectOwnerId = proj.owner_id;
+                document.getElementById('projectCode').textContent = proj.code;
+                await loadMembersFromProject(projectId, proj.owner_id);
+                await updateSeatsBanner(projectId, proj.owner_id);
+
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
+                msgEl.textContent = 'Projeto trocado com sucesso!';
+                msgEl.classList.remove('hidden');
+                document.getElementById('switchProjectCode').value = '';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar';
+            } catch (err) {
+                console.error('Error switching project:', err);
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                msgEl.textContent = 'Erro ao trocar de projeto: ' + err.message;
+                msgEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Entrar';
             }
         };
 
@@ -383,68 +843,96 @@
             });
         }
 
-        async function loadMembers(project) {
+        // Load members by querying the USERS table (source of truth)
+        // This avoids RLS issues - we don't depend on projects.members array
+        async function loadMembersFromProject(projId, ownerId) {
             const membersList = document.getElementById('membersList');
 
-            if (!project.members || project.members.length === 0) {
+            // Query all users that have this project_id - THIS is the source of truth
+            let members, error;
+            try {
+                const res = await _supa.from('users').select('id, name, email, photo_url').eq('project_id', projId);
+                members = res.data; error = res.error;
+            } catch(e) {}
+            if (error || !members) {
+                // Fallback sem photo_url (coluna pode não existir)
+                const res2 = await _supa.from('users').select('id, name, email').eq('project_id', projId);
+                members = res2.data; error = res2.error;
+            }
+
+            if (error) {
+                console.error('Error loading members:', error);
+                membersList.innerHTML = '<p class="text-center text-red-400 py-6">Erro ao carregar membros</p>';
+                return;
+            }
+
+            // Deduplicate by email (in case of multiple auth accounts)
+            const seenEmails = new Set();
+            const uniqueMembers = [];
+            for (const m of (members || [])) {
+                const email = m.email || '';
+                if (email && seenEmails.has(email)) continue;
+                if (email) seenEmails.add(email);
+                uniqueMembers.push(m);
+            }
+
+            if (uniqueMembers.length === 0) {
                 membersList.innerHTML = '<p class="text-center text-slate-400 py-6">Nenhum membro ainda</p>';
                 return;
             }
 
             membersList.innerHTML = '';
-            const isOwner = currentUser.uid === projectOwnerId;
+            const isOwner = currentUser.uid === ownerId;
 
-            for (const uid of project.members) {
-                try {
-                    const userDoc = await db.collection('users').doc(uid).get();
-                    const data = userDoc.exists ? userDoc.data() : { name: 'Desconhecido', email: '' };
-                    const initial = (data.name || '?').charAt(0).toUpperCase();
-                    const isMe = uid === currentUser.uid;
-                    const isProjectOwner = uid === projectOwnerId;
+            for (const member of uniqueMembers) {
+                const name = member.name || 'Sem nome';
+                const email = member.email || '';
+                const initial = name.charAt(0).toUpperCase();
+                const photo = member.photo_url || '';
+                const isMe = member.id === currentUser.uid;
+                const isProjectOwner = member.id === ownerId;
 
-                    let badge = '';
-                    if (isProjectOwner) {
-                        badge = '<span class="text-xs px-3 py-1 rounded-full bg-violet-100 text-violet-700">Dono</span>';
-                    } else if (isMe) {
-                        badge = '<span class="text-xs px-3 py-1 rounded-full bg-cyan-100 text-cyan-700">Você</span>';
-                    } else {
-                        badge = '<span class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600">Membro</span>';
-                    }
-
-                    let removeBtn = '';
-                    if (isOwner && !isProjectOwner) {
-                        removeBtn = `
-                            <button onclick="removeMember('${uid}', '${(data.name || 'este membro').replace(/'/g, "\\'")}')"
-                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Remover membro">
-                                <i class="fa-solid fa-user-minus text-sm"></i>
-                            </button>`;
-                    } else if (!isOwner && isMe && !isProjectOwner) {
-                        removeBtn = `
-                            <button onclick="leaveProject()"
-                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Sair do projeto">
-                                <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                            </button>`;
-                    }
-
-                    membersList.innerHTML += `
-                        <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border border-slate-200">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                    ${initial}
-                                </div>
-                                <div>
-                                    <p class="font-medium">${data.name || 'Sem nome'}</p>
-                                    <p class="text-xs text-slate-400">${data.email || ''}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center">
-                                ${badge}
-                                ${removeBtn}
-                            </div>
-                        </div>`;
-                } catch (err) {
-                    console.log('Error loading user:', err);
+                let badge = '';
+                if (isProjectOwner) {
+                    badge = '<span class="text-xs px-3 py-1 rounded-full bg-violet-100 text-violet-700">Dono</span>';
+                } else if (isMe) {
+                    badge = '<span class="text-xs px-3 py-1 rounded-full bg-cyan-100 text-cyan-700">Você</span>';
+                } else {
+                    badge = '<span class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600">Membro</span>';
                 }
+
+                let removeBtn = '';
+                if (isOwner && !isProjectOwner) {
+                    removeBtn = `
+                        <button onclick="removeMember('${member.id}', '${name.replace(/'/g, "\\'")}')"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Remover membro">
+                            <i class="fa-solid fa-user-minus text-sm"></i>
+                        </button>`;
+                } else if (!isOwner && isMe && !isProjectOwner) {
+                    removeBtn = `
+                        <button onclick="leaveProject()"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition ml-2" title="Sair do projeto">
+                            <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                        </button>`;
+                }
+
+                membersList.innerHTML += `
+                    <div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 border border-slate-200">
+                        <div class="flex items-center gap-3">
+                            ${photo
+                                ? `<img src="${photo}" alt="${initial}" class="w-10 h-10 rounded-full object-cover">`
+                                : `<div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">${initial}</div>`
+                            }
+                            <div>
+                                <p class="font-medium">${name}</p>
+                                <p class="text-xs text-slate-400">${email}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            ${badge}
+                            ${removeBtn}
+                        </div>
+                    </div>`;
             }
         }
 
@@ -453,13 +941,20 @@
             if (!confirm(`Tem certeza que deseja remover "${name}" do projeto?`)) return;
 
             try {
-                await db.collection('projects').doc(projectId).update({
-                    members: firebase.firestore.FieldValue.arrayRemove(uid)
-                });
-                await db.collection('users').doc(uid).update({ projectId: null });
+                // Clear the member's project_id (owner can do this)
+                await _supa.from('users').update({ project_id: null }).eq('id', uid);
 
-                const projectDoc = await db.collection('projects').doc(projectId).get();
-                loadMembers(projectDoc.data());
+                // Best effort: also remove from projects.members array
+                try {
+                    const { data: proj } = await _supa.from('projects').select('members').eq('id', projectId).maybeSingle();
+                    if (proj) {
+                        const newMembers = (proj.members || []).filter(m => m !== uid);
+                        await _supa.from('projects').update({ members: newMembers }).eq('id', projectId);
+                    }
+                } catch (e) { console.log('Could not update projects.members:', e); }
+
+                await loadMembersFromProject(projectId, projectOwnerId);
+                await updateSeatsBanner(projectId, projectOwnerId);
             } catch (err) {
                 alert('Erro ao remover membro: ' + err.message);
             }
@@ -470,10 +965,18 @@
             if (!confirm('Tem certeza que deseja sair deste projeto?')) return;
 
             try {
-                await db.collection('projects').doc(projectId).update({
-                    members: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
-                });
-                await db.collection('users').doc(currentUser.uid).update({ projectId: null });
+                // User clears own project_id (RLS allows this)
+                await _supa.from('users').update({ project_id: null }).eq('id', currentUser.uid);
+
+                // Best effort: also remove from projects.members
+                try {
+                    const { data: proj } = await _supa.from('projects').select('members').eq('id', projectId).maybeSingle();
+                    if (proj) {
+                        const newMembers = (proj.members || []).filter(m => m !== currentUser.uid);
+                        await _supa.from('projects').update({ members: newMembers }).eq('id', projectId);
+                    }
+                } catch (e) { console.log('Could not update projects.members:', e); }
+
                 projectId = null;
                 showNoProjectPanel();
             } catch (err) {
@@ -481,20 +984,88 @@
             }
         };
 
-        // ========== Seat Management ==========
-        async function updateSeatsBanner(project) {
-            const banner = document.getElementById('seatsBanner');
-            if (!project || !projectOwnerId) return;
+        // ========== Delete Project ==========
+        window.deleteProject = async function(projId, projName) {
+            if (!confirm(`Tem certeza que deseja APAGAR o projeto "${projName}"?\n\nTodos os dados (tarefas, calendário, artigos salvos, etc.) serão excluídos permanentemente.\n\nEsta ação NÃO pode ser desfeita.`)) return;
+            if (!confirm(`Última confirmação: apagar "${projName}" permanentemente?`)) return;
 
-            const memberCount = (project.members || []).length;
-            let maxSeats = 2; // Free plan default
+            try {
+                // First, switch current user to this project so RLS allows deletions
+                const currentUserId = auth.currentUser.uid;
+                await _supa.from('users').update({ project_id: projId }).eq('id', currentUserId);
+
+                // Clear project_id for all members of this project
+                const { data: members } = await _supa.from('users').select('id').eq('project_id', projId);
+                if (members && members.length > 0) {
+                    for (const m of members) {
+                        await _supa.from('users').update({ project_id: null }).eq('id', m.id);
+                    }
+                }
+
+                // Delete all related data (including newer tables)
+                const deletePromises = [
+                    _supa.from('tasks').delete().eq('project_id', projId),
+                    _supa.from('google_links').delete().eq('project_id', projId),
+                    _supa.from('saved_papers').delete().eq('project_id', projId),
+                    _supa.from('calendar_goals').delete().eq('project_id', projId),
+                    _supa.from('calendar_sessions').delete().eq('project_id', projId),
+                    _supa.from('ai_usage').delete().eq('project_id', projId),
+                    _supa.from('diary_entries').delete().eq('project_id', projId),
+                    _supa.from('notes').delete().eq('project_id', projId),
+                    _supa.from('ideas').delete().eq('project_id', projId),
+                    _supa.from('user_references').delete().eq('project_id', projId),
+                    _supa.from('orientador_projects').delete().eq('project_id', projId),
+                    _supa.from('orientador_comments').delete().eq('project_id', projId)
+                ];
+                await Promise.all(deletePromises);
+
+                // Delete the project itself
+                const { error } = await _supa.from('projects').delete().eq('id', projId);
+                if (error) throw error;
+
+                // If deleted the active project, reload the page
+                if (projId === projectId) {
+                    projectId = null;
+                    window.location.reload();
+                } else {
+                    await loadMyProjects();
+                }
+            } catch (err) {
+                console.error('Error deleting project:', err);
+                alert('Erro ao apagar projeto: ' + err.message);
+            }
+        };
+
+        // ========== Seat Management ==========
+        async function updateSeatsBanner(projId, ownerId) {
+            const banner = document.getElementById('seatsBanner');
+            if (!projId || !ownerId) return;
+
+            // Count members from USERS table (source of truth)
+            const { data: members } = await _supa
+                .from('users')
+                .select('email')
+                .eq('project_id', projId);
+
+            // Deduplicate by email
+            const seenEmails = new Set();
+            let memberCount = 0;
+            for (const m of (members || [])) {
+                const email = m.email || String(memberCount);
+                if (!seenEmails.has(email)) {
+                    seenEmails.add(email);
+                    memberCount++;
+                }
+            }
+
+            let maxSeats = 1; // Free plan: only the owner
             let isPro = false;
 
             try {
-                const sub = await DB.subscriptions.get(projectOwnerId);
+                const sub = await DB.subscriptions.get(ownerId);
                 if (sub && sub.status === 'active' && sub.plan === 'pro') {
                     isPro = true;
-                    maxSeats = sub.seats || 1;
+                    maxSeats = sub.seats || 5;
                 }
             } catch (err) {
                 console.warn('Could not check subscription:', err);
@@ -525,9 +1096,11 @@
                 document.getElementById('seatsWarning').classList.add('hidden');
             }
 
-            // Show invite by email only for owner
-            if (currentUser.uid === projectOwnerId) {
+            // Show invite by email only for PRO owner
+            if (currentUser.uid === ownerId && isPro) {
                 document.getElementById('inviteByEmail').classList.remove('hidden');
+            } else {
+                document.getElementById('inviteByEmail').classList.add('hidden');
             }
         }
 
@@ -559,10 +1132,211 @@
             btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Enviar';
         };
 
+        // ========== Orientador Invite (BETA) ==========
+        async function loadOrientadorSection() {
+            if (!projectId) return;
+            try {
+                const orientador = await DB.orientador.getProjectOrientador(projectId);
+                console.log("Orientador loaded in equipe:", orientador);
+                if (orientador) {
+                    const user = orientador.users || orientador;
+                    console.log("Orientador user data:", user);
+                    if (user && user.id) {
+                        console.log("Showing orientador linked section");
+                        document.getElementById('orientadorLinked').classList.remove('hidden');
+                        document.getElementById('orientadorInvite').classList.add('hidden');
+                        document.getElementById('orientadorName').textContent = user.name || 'Orientador';
+                        document.getElementById('orientadorEmail').textContent = user.email || '';
+                    } else {
+                        console.log("No user id in orientador");
+                        document.getElementById('orientadorLinked').classList.add('hidden');
+                        document.getElementById('orientadorInvite').classList.remove('hidden');
+                    }
+                } else {
+                    console.log("No orientador relation found");
+                    document.getElementById('orientadorLinked').classList.add('hidden');
+                    document.getElementById('orientadorInvite').classList.remove('hidden');
+                }
+            } catch(e) {
+                console.warn('Error loading orientador:', e);
+                document.getElementById('orientadorLinked').classList.add('hidden');
+                document.getElementById('orientadorInvite').classList.remove('hidden');
+            }
+        }
+
+        window.generateOrientadorCode = async function() {
+            const btn = document.getElementById('genOrientadorBtn');
+            const msgEl = document.getElementById('orientadorMsg');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Gerando...';
+
+            try {
+                const { code } = await DB.orientador.createInvite(projectId);
+                document.getElementById('orientadorCode').textContent = code;
+                document.getElementById('orientadorCodeBox').classList.remove('hidden');
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200';
+                msgEl.textContent = 'Compartilhe este código com seu orientador!';
+                msgEl.classList.remove('hidden');
+            } catch(err) {
+                msgEl.className = 'mt-3 text-sm rounded-lg px-3 py-2 bg-red-50 text-red-600 border border-red-200';
+                msgEl.textContent = 'Erro: ' + (err.message || 'Falha ao gerar código');
+                msgEl.classList.remove('hidden');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-link mr-2"></i>Gerar Código de Convite';
+        };
+
+        window.copyOrientadorCode = function() {
+            const code = document.getElementById('orientadorCode').textContent;
+            navigator.clipboard.writeText(code).then(() => alert('Código copiado!'));
+        };
+
+        // ========== Chat Integration (PRO) ==========
+        let chatChannel = null;
+        const CHAT_CACHE_KEY = 'tccflow_chat_';
+
+        function getChatCacheKey() { return CHAT_CACHE_KEY + projectId; }
+
+        function getCachedMessages() {
+            try { return JSON.parse(localStorage.getItem(getChatCacheKey()) || '[]'); }
+            catch(e) { return []; }
+        }
+
+        function saveCachedMessages(msgs) {
+            localStorage.setItem(getChatCacheKey(), JSON.stringify(msgs.slice(-100)));
+        }
+
+        function chatEscapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        function formatChatTime(iso) {
+            const d = new Date(iso);
+            const now = new Date();
+            const t = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            return d.toDateString() === now.toDateString() ? t : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + t;
+        }
+
+        function addChatMessage(msg) {
+            const area = document.getElementById('messagesArea');
+            const empty = document.getElementById('emptyChat');
+            if (empty) empty.remove();
+
+            const isMe = msg.userId === currentUser.uid;
+            const initial = (msg.userName || 'U').charAt(0).toUpperCase();
+            const avatar = msg.userPhoto
+                ? `<img src="${chatEscapeHtml(msg.userPhoto)}" class="w-7 h-7 rounded-full object-cover flex-shrink-0">`
+                : `<div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold bg-gradient-to-br from-violet-600 to-cyan-500">${initial}</div>`;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
+
+            if (isMe) {
+                wrapper.innerHTML = `<div class="flex items-end gap-2 max-w-[75%]">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[10px] text-slate-400 mb-0.5">${chatEscapeHtml(msg.userName)} · ${formatChatTime(msg.timestamp)}</span>
+                        <div class="bg-violet-600 text-white px-3 py-2 rounded-2xl rounded-br-sm text-sm">${chatEscapeHtml(msg.text)}</div>
+                    </div>${avatar}</div>`;
+            } else {
+                wrapper.innerHTML = `<div class="flex items-end gap-2 max-w-[75%]">
+                    ${avatar}<div class="flex flex-col">
+                        <span class="text-[10px] text-slate-400 mb-0.5">${chatEscapeHtml(msg.userName)} · ${formatChatTime(msg.timestamp)}</span>
+                        <div class="bg-white border border-slate-200 text-slate-900 px-3 py-2 rounded-2xl rounded-bl-sm text-sm">${chatEscapeHtml(msg.text)}</div>
+                    </div></div>`;
+            }
+            area.appendChild(wrapper);
+            area.scrollTop = area.scrollHeight;
+
+            // Show badge if panel is hidden and message is from someone else
+            if (!isMe) {
+                const panel = document.getElementById('chatPanel');
+                if (panel && panel.classList.contains('hidden')) {
+                    document.getElementById('chatBadge').classList.remove('hidden');
+                    document.getElementById('chatBadge').classList.add('flex');
+                }
+            }
+        }
+
+        window.toggleChatPanel = function() {
+            const panel = document.getElementById('chatPanel');
+            panel.classList.toggle('hidden');
+            if (!panel.classList.contains('hidden')) {
+                document.getElementById('chatBadge').classList.add('hidden');
+                const area = document.getElementById('messagesArea');
+                area.scrollTop = area.scrollHeight;
+                document.getElementById('chatInput').focus();
+            }
+        };
+
+        async function initChat() {
+            if (!projectId) return;
+
+            // Check if PRO
+            let isPro = false;
+            try { isPro = await DB.isProByProject(projectId); } catch(e) {}
+
+            if (!isPro) {
+                document.getElementById('chatProBanner').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('chatFab').classList.remove('hidden');
+            document.getElementById('chatFab').classList.add('flex');
+            document.getElementById('chatStatus').textContent = 'Conectado';
+
+            // Load cached messages
+            const cached = getCachedMessages();
+            if (cached.length > 0) {
+                document.getElementById('emptyChat')?.remove();
+                cached.forEach(m => addChatMessage(m));
+            }
+
+            // Subscribe to Supabase Realtime Broadcast
+            chatChannel = _supa.channel('chat_' + projectId);
+            chatChannel.on('broadcast', { event: 'message' }, (payload) => {
+                const msg = payload.payload;
+                addChatMessage(msg);
+                const c = getCachedMessages(); c.push(msg); saveCachedMessages(c);
+            });
+            chatChannel.subscribe();
+
+            document.getElementById('sendChatBtn').disabled = false;
+        }
+
+        function sendChatMessage(text) {
+            if (!text.trim() || !chatChannel) return;
+            const msg = {
+                userId: currentUser.uid,
+                userName: currentUser.displayName || 'Usuário',
+                userPhoto: currentUser.photoURL || '',
+                text: text.trim(),
+                timestamp: new Date().toISOString()
+            };
+            chatChannel.send({ type: 'broadcast', event: 'message', payload: msg });
+            addChatMessage(msg);
+            const c = getCachedMessages(); c.push(msg); saveCachedMessages(c);
+        }
+
+        document.getElementById('sendChatBtn').addEventListener('click', () => {
+            const input = document.getElementById('chatInput');
+            if (input.value.trim()) { sendChatMessage(input.value); input.value = ''; input.focus(); }
+        });
+
+        document.getElementById('chatInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (e.target.value.trim()) { sendChatMessage(e.target.value); e.target.value = ''; }
+            }
+        });
+
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await auth.signOut();
             window.location.href = '../index.html';
         });
     </script>
+    <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>

@@ -1,440 +1,212 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - TCCFlow</title>
-    <script src="../js/darkmode.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/dark.css">
-    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }</script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .liquid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .liquid-bg .blob { position: absolute; border-radius: 50%; filter: blur(100px); }
-        .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,0.12); top: -100px; right: -100px; animation: drift1 25s infinite ease-in-out; }
-        .blob-2 { width: 400px; height: 400px; background: rgba(6,182,212,0.10); bottom: -80px; left: -80px; animation: drift2 30s infinite ease-in-out; }
-        .blob-3 { width: 300px; height: 300px; background: rgba(16,185,129,0.08); top: 50%; left: 50%; animation: drift3 20s infinite ease-in-out; }
-        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-150px,100px) scale(1.1)} 66%{transform:translate(80px,-60px) scale(0.9)} }
-        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(120px,-80px) scale(0.95)} 66%{transform:translate(-60px,60px) scale(1.1)} }
-        @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
-    </style>
-</head>
-<body class="bg-white text-slate-900 min-h-screen antialiased">
-
-    <div class="liquid-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
-
-    <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <a href="dashboard.html" class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-                        <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
-                    </div>
-                    <span class="text-lg font-bold text-slate-900">TCC<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-500">Flow</span></span>
-                </a>
-                <div class="hidden lg:flex items-center bg-slate-100 rounded-full p-1">
-                    <a href="dashboard.html" class="px-4 py-1.5 rounded-full text-sm font-medium bg-white text-violet-600 shadow-sm">Dashboard</a>
-                    <a href="projeto.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Projeto</a>
-                    <a href="organizacao.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Tarefas</a>
-                    <a href="ia.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">I.A.</a>
-                    <a href="calendario.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Calendário</a>
-                    <a href="equipe.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Equipe</a>
-                    <a href="google.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Google</a>
-                    <a href="planos.html" class="px-4 py-1.5 rounded-full text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-white/50 transition">Planos</a>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="hidden sm:block text-sm text-slate-500" id="userName"></span>
-                    <a href="admin.html" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear text-sm"></i>
-                    </a>
-                    <button id="logoutBtn" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
-                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                    </button>
-                    <button id="mobileNavBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-bars text-sm"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div id="mobileNav" class="hidden lg:hidden px-4 pb-3 space-y-1 border-t border-slate-100">
-            <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-violet-600 bg-violet-50">Dashboard</a>
-            <a href="projeto.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Projeto</a>
-            <a href="organizacao.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Tarefas</a>
-            <a href="ia.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">I.A.</a>
-            <a href="calendario.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Calendário</a>
-            <a href="equipe.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Equipe</a>
-            <a href="google.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Google</a>
-            <a href="planos.html" class="block px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-violet-600">Planos</a>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="relative z-10 pt-16 min-h-screen pb-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold mb-2">Bem-vindo ao seu TCC!</h1>
-                    <p class="text-slate-500" id="projectInfo">Carregando...</p>
-                </div>
-                <button id="quickAddTaskBtn" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white px-5 py-2.5 rounded-xl font-medium hover:shadow-lg hover:shadow-violet-500/25 transition text-sm">
-                    <i class="fa-solid fa-plus mr-2"></i>Nova Tarefa
-                </button>
-            </div>
-
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500">Membros</span>
-                        <i class="fa-solid fa-users text-violet-600 text-lg"></i>
-                    </div>
-                    <div class="text-3xl font-bold" id="memberCount">0</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500">Tarefas</span>
-                        <i class="fa-solid fa-list-check text-cyan-600 text-lg"></i>
-                    </div>
-                    <div class="text-3xl font-bold" id="taskCount">0</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500">Concluídas</span>
-                        <i class="fa-solid fa-check-circle text-emerald-600 text-lg"></i>
-                    </div>
-                    <div class="text-3xl font-bold" id="completedCount">0</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-slate-500">Progresso</span>
-                        <i class="fa-solid fa-chart-pie text-amber-600 text-lg"></i>
-                    </div>
-                    <div class="text-3xl font-bold" id="progressPercent">0%</div>
-                </div>
-            </div>
-
-            <!-- Content Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2">
-                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-lg font-bold flex items-center gap-2">
-                                <i class="fa-solid fa-circle-check text-violet-600"></i>
-                                Minhas Tarefas
-                            </h2>
-                            <a href="organizacao.html" class="text-sm text-violet-600 hover:underline">Ver Todas</a>
-                        </div>
-                        <div id="myTasksList" class="space-y-3">
-                            <div class="text-center py-8 text-slate-400">
-                                <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
-                                <p class="text-sm">Nenhuma tarefa atribuída</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-lg font-bold flex items-center gap-2">
-                                <i class="fa-solid fa-people-group text-cyan-600"></i>
-                                Equipe
-                            </h2>
-                            <a href="equipe.html" class="text-sm text-violet-600 hover:underline">Gerenciar</a>
-                        </div>
-                        <div id="teamList" class="space-y-2">
-                            <div class="text-center py-6 text-slate-400 text-sm">Carregando...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 bg-gradient-to-r from-violet-50 to-cyan-50 border border-violet-200 rounded-2xl p-6">
-                <h3 class="font-bold mb-2"><i class="fa-solid fa-lightbulb mr-2 text-amber-600"></i>Dica:</h3>
-                <p class="text-sm text-slate-600">Acesse a página de <strong>Organização</strong> para ver todas as tarefas do projeto, atribuir atividades e acompanhar o progresso de cada membro da equipe.</p>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- Quick Add Task Modal -->
-    <div id="quickTaskModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-            <h2 class="text-xl font-bold mb-4" id="dashModalTitle">Nova Tarefa</h2>
-            <form id="quickTaskForm" class="space-y-4">
-                <input type="hidden" id="dashEditTaskId" value="">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Título</label>
-                    <input type="text" id="dashTaskTitle" required placeholder="Descrição da tarefa"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Atribuído a</label>
-                    <select id="dashTaskAssignee" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                        <option value="">Selecione um membro...</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Prazo</label>
-                    <input type="date" id="dashTaskDueDate" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                </div>
-                <div id="dashStatusField" class="hidden">
-                    <label class="block text-sm font-medium mb-1">Status</label>
-                    <select id="dashTaskStatus"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                        <option value="todo">A Fazer</option>
-                        <option value="progress">Em Andamento</option>
-                        <option value="done">Concluído</option>
-                    </select>
-                </div>
-                <div class="flex gap-3">
-                    <button type="submit" id="dashSubmitBtn" class="flex-1 bg-violet-600 hover:bg-violet-500 text-white font-medium py-2 rounded-lg transition">Criar</button>
-                    <button type="button" onclick="closeDashModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 font-medium py-2 rounded-lg transition">Cancelar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-init.js"></script>
-    <script src="../js/db-service.js"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0XRG60XV9"></script>
     <script>
-        let currentUser = null;
-        let projectId = null;
-        let memberNames = {};
-
-        document.getElementById('mobileNavBtn').addEventListener('click', () => {
-            document.getElementById('mobileNav').classList.toggle('hidden');
-        });
-
-        auth.onAuthStateChanged(async user => {
-            if (!user) { window.location.href = 'login.html'; return; }
-            currentUser = user;
-            document.getElementById('userName').textContent = user.displayName || 'Usuário';
-
-            // Update navbar for PRO users
-            try {
-                const pid = await DB.getProjectId();
-                if (pid) {
-                    const isPro = await DB.isProByProject(pid);
-                    if (isPro) {
-                        document.querySelectorAll('a[href="planos.html"]').forEach(el => {
-                            el.innerHTML = '<i class="fa-solid fa-crown mr-1 text-amber-500"></i>Meu Plano';
-                        });
-                    }
-                }
-            } catch(e) { console.log(e); }
-
-            if (isFirebaseConfigured()) {
-                try {
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists && userDoc.data().projectId) {
-                        projectId = userDoc.data().projectId;
-                        await loadDashboard();
-                    } else {
-                        document.getElementById('projectInfo').innerHTML =
-                            '<span class="text-amber-600">Você ainda não tem um projeto. <a href="equipe.html" class="underline">Criar ou entrar em um projeto</a></span>';
-                    }
-                } catch (err) {
-                    console.error('Firebase error:', err);
-                    document.getElementById('projectInfo').innerHTML =
-                        '<span class="text-amber-600">Erro ao carregar dados</span>';
-                }
-            } else {
-                document.getElementById('projectInfo').innerHTML =
-                    '<span class="text-amber-600">Configure Firebase em js/firebase-init.js</span>';
-            }
-        });
-
-        async function loadDashboard() {
-            const projectDoc = await db.collection('projects').doc(projectId).get();
-            if (!projectDoc.exists) return;
-            const project = projectDoc.data();
-
-            document.getElementById('projectInfo').innerHTML =
-                `<strong>${project.name}</strong> &bull; Código: <code class="bg-slate-100 px-2 py-1 rounded text-violet-600 font-mono">${project.code}</code>`;
-
-            document.getElementById('memberCount').textContent = project.members.length;
-
-            // Load member names for assignee select
-            const assigneeSelect = document.getElementById('dashTaskAssignee');
-            assigneeSelect.innerHTML = '<option value="">Selecione um membro...</option>';
-            for (const uid of project.members) {
-                try {
-                    const memberDoc = await db.collection('users').doc(uid).get();
-                    if (memberDoc.exists) {
-                        const data = memberDoc.data();
-                        memberNames[uid] = data.name;
-                        const option = document.createElement('option');
-                        option.value = uid;
-                        option.textContent = data.name;
-                        assigneeSelect.appendChild(option);
-                    }
-                } catch (err) { console.log('Error loading member:', err); }
-            }
-
-            // Load ALL tasks for the project
-            const allTasksSnap = await db.collection('tasks')
-                .where('projectId', '==', projectId)
-                .get();
-            const allTasks = allTasksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-            const myTasks = allTasks.filter(t => t.assignedTo === currentUser.uid);
-
-            document.getElementById('taskCount').textContent = myTasks.length;
-            const completed = myTasks.filter(t => t.status === 'done').length;
-            document.getElementById('completedCount').textContent = completed;
-            document.getElementById('progressPercent').textContent =
-                myTasks.length > 0 ? Math.round((completed / myTasks.length) * 100) + '%' : '0%';
-
-            // Render my tasks with edit/delete
-            if (myTasks.length === 0) {
-                document.getElementById('myTasksList').innerHTML = `
-                    <div class="text-center py-8 text-slate-400">
-                        <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
-                        <p class="text-sm">Nenhuma tarefa atribuída a você</p>
-                    </div>`;
-            } else {
-                document.getElementById('myTasksList').innerHTML = myTasks.map(task => {
-                    const statusIcon = task.status === 'done' ? 'check-circle' : task.status === 'progress' ? 'spinner' : 'circle';
-                    const statusColor = task.status === 'done' ? 'text-emerald-600' :
-                                        task.status === 'progress' ? 'text-cyan-600' : 'text-amber-600';
-                    const statusLabel = task.status === 'done' ? 'Concluído' : task.status === 'progress' ? 'Em Andamento' : 'A Fazer';
-                    return `
-                        <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 group border border-slate-100">
-                            <i class="fa-solid fa-${statusIcon} ${statusColor} mt-0.5"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium">${task.title}</p>
-                                <div class="flex items-center gap-3 mt-1">
-                                    <p class="text-xs text-slate-400">${task.dueDate ? 'Prazo: ' + new Date(task.dueDate).toLocaleDateString('pt-BR') : ''}</p>
-                                    <span class="text-xs px-2 py-0.5 rounded-full ${task.status === 'done' ? 'bg-emerald-50 text-emerald-700' : task.status === 'progress' ? 'bg-cyan-50 text-cyan-700' : 'bg-amber-50 text-amber-700'}">${statusLabel}</span>
-                                </div>
-                                <div class="flex gap-1 mt-2">
-                                    ${task.status !== 'todo' ? `<button onclick="dashChangeStatus('${task.id}', 'todo')" class="text-xs px-2 py-1 rounded bg-amber-50 text-amber-700 hover:bg-amber-100 transition">A Fazer</button>` : ''}
-                                    ${task.status !== 'progress' ? `<button onclick="dashChangeStatus('${task.id}', 'progress')" class="text-xs px-2 py-1 rounded bg-cyan-50 text-cyan-700 hover:bg-cyan-100 transition">Em Andamento</button>` : ''}
-                                    ${task.status !== 'done' ? `<button onclick="dashChangeStatus('${task.id}', 'done')" class="text-xs px-2 py-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">Concluído</button>` : ''}
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                                <button onclick="dashEditTask('${task.id}', '${task.title.replace(/'/g, "\\'")}', '${task.assignedTo}', '${task.dueDate}', '${task.status}')"
-                                    class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition" title="Editar">
-                                    <i class="fa-solid fa-pen text-xs"></i>
-                                </button>
-                                <button onclick="dashDeleteTask('${task.id}')"
-                                    class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition" title="Apagar">
-                                    <i class="fa-solid fa-trash text-xs"></i>
-                                </button>
-                            </div>
-                        </div>`;
-                }).join('');
-            }
-
-            // Load team list
-            const teamList = document.getElementById('teamList');
-            if (project.members.length === 0) {
-                teamList.innerHTML = '<p class="text-sm text-slate-400">Sem membros</p>';
-            } else {
-                teamList.innerHTML = '';
-                for (const uid of project.members) {
-                    const name = memberNames[uid] || 'Desconhecido';
-                    teamList.innerHTML += `
-                        <div class="flex items-center gap-3 p-2 rounded-lg">
-                            <div class="w-8 h-8 bg-gradient-to-br from-violet-600 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                ${name.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium">${name}</p>
-                                <p class="text-xs text-slate-400">${uid === currentUser.uid ? 'Você' : 'Membro'}</p>
-                            </div>
-                        </div>`;
-                }
-            }
-        }
-
-        // ========== Quick Task Modal ==========
-        document.getElementById('quickAddTaskBtn').addEventListener('click', () => {
-            document.getElementById('dashEditTaskId').value = '';
-            document.getElementById('dashModalTitle').textContent = 'Nova Tarefa';
-            document.getElementById('dashSubmitBtn').textContent = 'Criar';
-            document.getElementById('dashStatusField').classList.add('hidden');
-            document.getElementById('quickTaskForm').reset();
-            document.getElementById('quickTaskModal').classList.remove('hidden');
-        });
-
-        function closeDashModal() {
-            document.getElementById('quickTaskModal').classList.add('hidden');
-        }
-
-        window.dashEditTask = function(id, title, assignee, dueDate, status) {
-            document.getElementById('dashEditTaskId').value = id;
-            document.getElementById('dashModalTitle').textContent = 'Editar Tarefa';
-            document.getElementById('dashSubmitBtn').textContent = 'Salvar';
-            document.getElementById('dashTaskTitle').value = title;
-            document.getElementById('dashTaskAssignee').value = assignee;
-            document.getElementById('dashTaskDueDate').value = dueDate;
-            document.getElementById('dashTaskStatus').value = status;
-            document.getElementById('dashStatusField').classList.remove('hidden');
-            document.getElementById('quickTaskModal').classList.remove('hidden');
-        };
-
-        document.getElementById('quickTaskForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!projectId || !isFirebaseConfigured()) return;
-
-            const editId = document.getElementById('dashEditTaskId').value;
-            const data = {
-                projectId,
-                title: document.getElementById('dashTaskTitle').value,
-                assignedTo: document.getElementById('dashTaskAssignee').value,
-                dueDate: document.getElementById('dashTaskDueDate').value,
-                status: editId ? document.getElementById('dashTaskStatus').value : 'todo'
-            };
-
-            try {
-                if (editId) {
-                    await db.collection('tasks').doc(editId).update(data);
-                } else {
-                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    await db.collection('tasks').add(data);
-                }
-                closeDashModal();
-                await loadDashboard();
-            } catch (err) {
-                alert('Erro: ' + err.message);
-            }
-        });
-
-        window.dashChangeStatus = async function(taskId, newStatus) {
-            try {
-                await db.collection('tasks').doc(taskId).update({ status: newStatus });
-                await loadDashboard();
-            } catch (err) { alert('Erro: ' + err.message); }
-        };
-
-        window.dashDeleteTask = async function(taskId) {
-            if (!confirm('Tem certeza que deseja apagar esta tarefa?')) return;
-            try {
-                await db.collection('tasks').doc(taskId).delete();
-                await loadDashboard();
-            } catch (err) { alert('Erro: ' + err.message); }
-        };
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await auth.signOut();
-            window.location.href = '../index.html';
-        });
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0XRG60XV9');
     </script>
+
+
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Dashboard — TCCFlow</title>
+  <link rel="icon" href="../assets/logo.png"/>
+  <link rel="stylesheet" href="../css/app.css"/>
+  <script src="../js/darkmode.js"></script>
+</head>
+<body>
+<div id="root"><div class="app-splash"><div class="splash-logo"><img src="../assets/logo.png" alt=""/></div><div class="splash-name">TCC<em>Flow</em></div><div class="splash-dots"><span></span><span></span><span></span></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-init.js"></script>
+<script src="../js/db-service.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="../src/sidebar.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function PriorityDot({ p }) {
+  const colors = { alta:"var(--rose)", média:"var(--amber)", baixa:"var(--emerald)" };
+  return <span style={{width:7,height:7,borderRadius:"50%",background:colors[p]||"var(--muted)",display:"inline-block",flexShrink:0}}></span>;
+}
+
+function Dashboard() {
+  const { user, userData, project, subscription, teamMembers, loading } = useTCCData();
+  const [tasks, setTasks] = useState([]);
+  const [shown, setShown] = useState(false);
+  const [orientador, setOrientador] = useState(null);
+
+  useEffect(() => {
+    if (!project) return;
+    (async () => {
+      try {
+        const { data } = await _supa.from('tasks').select('*').eq('project_id', project.id).order('created_at', { ascending: false });
+        setTasks(data || []);
+
+        const oriData = await DB.orientador.getProjectOrientador(project.id);
+        console.log("Dashboard orientador loaded:", oriData);
+        if (oriData) {
+          const userData = oriData.users || oriData;
+          if (userData && userData.id) {
+            setOrientador(userData);
+          }
+        }
+      } catch(e) { console.error(e); }
+    })();
+  }, [project]);
+
+  useEffect(() => { if (!loading) setTimeout(() => setShown(true), 50); }, [loading]);
+
+  if (loading) return <AppSplash />;
+
+  const userName = userData?.name || user?.displayName || 'Usuário';
+  const firstName = userName.split(' ')[0];
+  const myTasks = tasks.filter(t => t.assigned_to === user?.uid || (t.assigned_to_list && t.assigned_to_list.includes(user?.uid)));
+  const todayTasks = myTasks.filter(t => t.status !== 'done');
+  const doneTasks = tasks.filter(t => t.status === 'done');
+  const totalTasks = tasks.length;
+  const progress = totalTasks > 0 ? Math.round(doneTasks.length / totalTasks * 100) : 0;
+
+  async function toggleTask(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const newStatus = task.status === 'done' ? 'todo' : 'done';
+    await _supa.from('tasks').update({ status: newStatus }).eq('id', taskId);
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+  }
+
+  const statusLabel = (s) => s === 'todo' ? 'A fazer' : s === 'progress' ? 'Em andamento' : 'Concluída';
+
+  return (
+    <div className="app-layout">
+      <Sidebar active="dashboard" userData={userData} project={project} subscription={subscription}/>
+      <div className="main-area">
+        <Topbar page="Dashboard" user={user}/>
+        <div className="page-content">
+
+          <div className={`reveal ${shown?"in":""}`} style={{marginBottom:28}}>
+            <div style={{background:"var(--grad)",borderRadius:16,padding:"24px 28px",color:"white",position:"relative",overflow:"hidden"}}>
+              <div style={{position:"absolute",right:-40,top:-40,width:220,height:220,borderRadius:"50%",background:"rgba(255,255,255,.08)"}}></div>
+              <div style={{fontFamily:"var(--font-mono)",fontSize:"0.6875rem",textTransform:"uppercase",letterSpacing:"0.12em",opacity:.8,marginBottom:6}}>Bem-vindo de volta 👋</div>
+              <h2 style={{fontFamily:"var(--font-display)",fontSize:"1.75rem",fontWeight:400,margin:"0 0 4px",letterSpacing:"-0.02em"}}>Bom dia, <em>{firstName}!</em></h2>
+              {project && <p style={{margin:0,opacity:.85,fontSize:"0.9375rem"}}>{project.name}</p>}
+              {project?.code && (
+                <div style={{display:"flex",alignItems:"center",gap:16,marginTop:16}}>
+                  <div style={{fontFamily:"var(--font-mono)",fontSize:"0.75rem",opacity:.8}}>Código de entrada:</div>
+                  <div style={{background:"rgba(255,255,255,.2)",padding:"4px 12px",borderRadius:6,fontFamily:"var(--font-mono)",fontSize:"0.875rem",fontWeight:600,letterSpacing:"0.08em"}}>{project.code}</div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className={`stat-grid reveal ${shown?"in":""} d1`}>
+            <div className="stat-card">
+              <div className="stat-label">Membros</div>
+              <div className="stat-value">{teamMembers.length}</div>
+              <div className="stat-sub">de {subscription?.seats || 1} no plano</div>
+              <div className="stat-icon">👥</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">Minhas Tarefas</div>
+              <div className="stat-value">{todayTasks.length}</div>
+              <div className="stat-sub">pendentes</div>
+              <div className="stat-icon">📋</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">Concluídas</div>
+              <div className="stat-value">{doneTasks.length}</div>
+              <div className="stat-sub">de {totalTasks} total</div>
+              <div className="stat-icon">✅</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">Progresso</div>
+              <div className="stat-value">{progress}%</div>
+              <div className="progress-bar"><div className="progress-fill" style={{width:`${progress}%`}}></div></div>
+              <div className="stat-icon">📈</div>
+            </div>
+          </div>
+
+          <div style={{display:"grid",gridTemplateColumns:"1fr 340px",gap:16}} className={`page-grid reveal ${shown?"in":""} d2`}>
+            <div className="card" style={{overflowY:"auto",maxHeight:"calc(100vh - 400px)"}}>
+              <div className="card-title" style={{justifyContent:"space-between"}}>
+                <span style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span className="ct-icon">📋</span> Minhas Tarefas
+                </span>
+                <a href="tasks.html" className="btn btn-ghost btn-sm">Ver todas</a>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {todayTasks.length === 0 && <div style={{color:"var(--muted)",fontSize:"0.875rem",padding:12}}>Nenhuma tarefa pendente</div>}
+                {todayTasks.slice(0,5).map(t => (
+                  <div key={t.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:10,background:"var(--bg-2)",border:"1px solid var(--line)"}}>
+                    <PriorityDot p={t.due_date && new Date(t.due_date) < new Date() ? "alta" : "média"}/>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"0.875rem",fontWeight:500,marginBottom:2}}>{t.title}</div>
+                      <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                        <span className="tag tag-cyan">{statusLabel(t.status)}</span>
+                        {t.due_date && <span style={{fontFamily:"var(--font-mono)",fontSize:"0.6875rem",color:"var(--muted)"}}>Vence {new Date(t.due_date).toLocaleDateString('pt-BR')}</span>}
+                      </div>
+                    </div>
+                    <button onClick={() => toggleTask(t.id)} style={{width:22,height:22,borderRadius:6,border:"1.5px solid var(--line)",background:"var(--paper)",cursor:"pointer",flexShrink:0,transition:"all .2s"}}
+                      onMouseEnter={e=>{e.currentTarget.style.background="var(--emerald)";e.currentTarget.style.borderColor="var(--emerald)"}}
+                      onMouseLeave={e=>{e.currentTarget.style.background="var(--paper)";e.currentTarget.style.borderColor="var(--line)"}}></button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{display:"flex",flexDirection:"column",gap:16,maxHeight:"calc(100vh - 400px)",overflowY:"auto"}}>
+              {orientador && (
+                <div className="card" style={{borderColor:"var(--emerald)",background:"linear-gradient(135deg,rgba(16,185,129,.04),rgba(6,182,212,.04))"}}>
+                  <div className="card-title" style={{justifyContent:"space-between"}}>
+                    <span style={{display:"flex",alignItems:"center",gap:8}}>
+                      <span className="ct-icon">🎓</span> Orientador
+                    </span>
+                    <a href="orientador-feedback.html" className="btn btn-ghost btn-sm">Ver detalhes</a>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:12}}>
+                    <div className="av av-sm c1" style={{background:"var(--emerald)"}}>{getInitials(orientador.name)}</div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"0.8125rem",fontWeight:600,color:"var(--ink)"}}>{orientador.name || 'Orientador'}</div>
+                      <div style={{fontFamily:"var(--font-mono)",fontSize:"0.625rem",color:"var(--muted)"}}>{orientador.email}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="card">
+                <div className="card-title" style={{justifyContent:"space-between"}}>
+                  <span style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span className="ct-icon">👥</span> Equipe
+                  </span>
+                  <a href="team.html" className="btn btn-ghost btn-sm">Gerenciar</a>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:12,maxHeight:"280px",overflowY:"auto"}}>
+                  {teamMembers.filter(m => m.role !== 'orientador').map((m, i) => (
+                    <div key={m.id} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 12px",borderRadius:"10px",backgroundColor:"var(--bg-2)",border:"1px solid transparent",transition:"all 0.2s"}}>
+                      <div className={`av av-sm c${(i%4)+1}`}>{getInitials(m.name)}</div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontSize:"0.8125rem",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.name || m.email}</div>
+                        <div style={{fontFamily:"var(--font-mono)",fontSize:"0.625rem",color:"var(--muted)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>Estudante</div>
+                      </div>
+                    </div>
+                  ))}
+                  {teamMembers.filter(m => m.role !== 'orientador').length === 0 && <div style={{color:"var(--muted)",fontSize:"0.8125rem",textAlign:"center",padding:"16px"}}>Nenhum membro ainda</div>}
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<Dashboard/>);
+</script>
 </body>
 </html>
