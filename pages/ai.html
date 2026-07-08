@@ -338,10 +338,14 @@ function AIPage() {
     const apiMsgs = newMsgs.map(({ _imgPreview, ...m }) => m);
 
     try {
+      const { data: { session } } = await _supa.auth.getSession();
       const res = await fetch('/.netlify/functions/tccflow-ai', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: apiMsgs, userId: user?.uid || 'anonymous' })
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token || ''}`
+        },
+        body: JSON.stringify({ messages: apiMsgs })
       });
       const data = await res.json();
       const reply = res.ok && data.reply ? data.reply : ('**Erro:** ' + (data.error || 'Falha ao obter resposta.'));

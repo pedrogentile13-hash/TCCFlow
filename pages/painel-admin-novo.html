@@ -940,6 +940,12 @@
     <script src="../js/supabase-init.js"></script>
     <script src="../js/db-service.js"></script>
     <script>
+        // Escape user-controlled strings before inserting into innerHTML (prevents stored XSS)
+        function escapeHtml(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
         let adminCharts = {};
         let allData = {
             payments: [],
@@ -1225,7 +1231,7 @@
                 const isPro = c.coupon_type === 'instant_pro';
 
                 return `<tr>
-                    <td><strong>${c.code}</strong></td>
+                    <td><strong>${escapeHtml(c.code)}</strong></td>
                     <td><span class="badge ${isPro ? 'badge-success' : 'badge-info'}">${isPro ? '👑 PRO Direto' : '💰 Desconto'}</span></td>
                     <td>${isPro ? (c.pro_duration_days || 365) + ' dias' : c.discount_percent + '%'}</td>
                     <td>${c.used_count}</td>
@@ -1494,8 +1500,8 @@
 
                 tbody.innerHTML = features.map(f => `
                     <tr>
-                        <td><strong>${f.feature_name}</strong></td>
-                        <td>${f.description || '-'}</td>
+                        <td><strong>${escapeHtml(f.feature_name)}</strong></td>
+                        <td>${escapeHtml(f.description || '-')}</td>
                         <td><input type="checkbox" ${f.enabled ? 'checked' : ''} onchange="toggleFeature('${f.id}', this.checked)"></td>
                         <td><input type="checkbox" ${f.enabled_for_free ? 'checked' : ''} onchange="updateFeatureFree('${f.id}', this.checked)"></td>
                         <td><input type="checkbox" ${f.enabled_for_pro ? 'checked' : ''} onchange="updateFeaturePro('${f.id}', this.checked)"></td>

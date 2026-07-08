@@ -4,6 +4,39 @@
 
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 const { createClient } = require('@supabase/supabase-js');
+const crypto = require('crypto');
+
+// Validate Mercado Pago's x-signature header.
+// Enabled only when MERCADOPAGO_WEBHOOK_SECRET is configured, so the live
+// webhook keeps working until the secret is set in the environment.
+function isValidSignature(event) {
+    const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+    if (!secret) {
+        console.warn('[webhook] MERCADOPAGO_WEBHOOK_SECRET not set — signature check skipped');
+        return true; // fail-open until configured (re-fetch from MP API is the fallback control)
+    }
+
+    const headers = event.headers || {};
+    const xSignature = headers['x-signature'] || headers['X-Signature'] || '';
+    const xRequestId = headers['x-request-id'] || headers['X-Request-Id'] || '';
+    const params = new URLSearchParams(event.rawQuery || '');
+    const dataId = params.get('data.id') || params.get('id') || '';
+
+    const parts = Object.fromEntries(
+        xSignature.split(',').map(p => p.split('=').map(s => s.trim()))
+    );
+    const ts = parts.ts;
+    const hash = parts.v1;
+    if (!ts || !hash) return false;
+
+    const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+    const computed = crypto.createHmac('sha256', secret).update(manifest).digest('hex');
+    try {
+        return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(hash));
+    } catch {
+        return false;
+    }
+}
 
 exports.handler = async (event) => {
     // Mercado Pago sends GET for validation and POST for notifications
@@ -16,6 +49,11 @@ exports.handler = async (event) => {
     }
 
     try {
+        if (!isValidSignature(event)) {
+            console.error('[webhook] Invalid x-signature — rejecting');
+            return { statusCode: 401, body: 'Invalid signature' };
+        }
+
         const body = JSON.parse(event.body || '{}');
 
         console.log('Webhook received:', body.type || body.action);

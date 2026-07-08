@@ -78,18 +78,36 @@ Ao final, verificar se há algo mais útil. Se sim, adicionar seção:
 Tom: claro, jovem, confiável, direto, acadêmico sem ser difícil.
 Formato: use markdown — **negrito**, listas, títulos ##, > citações, \`código\`.`;
 
+const { getUserFromEvent, serviceClient } = require('./_auth');
+
 exports.handler = async (event) => {
     const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type'
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
     };
 
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
 
     try {
-        const { messages, userId } = JSON.parse(event.body);
+        // ── Require a logged-in beta tester ───────────────────────
+        const user = await getUserFromEvent(event);
+        if (!user) {
+            return { statusCode: 401, headers, body: JSON.stringify({ error: 'Não autenticado. Faça login novamente.' }) };
+        }
+
+        const { data: profile } = await serviceClient()
+            .from('users')
+            .select('beta_tester')
+            .eq('id', user.id)
+            .maybeSingle();
+
+        if (!profile || profile.beta_tester !== true) {
+            return { statusCode: 403, headers, body: JSON.stringify({ error: 'Recurso exclusivo para Beta Testers.' }) };
+        }
+
+        const { messages } = JSON.parse(event.body);
 
         if (!messages || !Array.isArray(messages) || messages.length === 0) {
             return { statusCode: 400, headers, body: JSON.stringify({ error: 'Mensagens obrigatórias' }) };
@@ -126,7 +144,7 @@ exports.handler = async (event) => {
         if (!response.ok) {
             const errData = await response.text();
             console.error('Groq API error:', response.status, errData);
-            return { statusCode: 500, headers, body: JSON.stringify({ error: `Erro na API Groq (${response.status}): ${errData.substring(0, 200)}` }) };
+            return { statusCode: 502, headers, body: JSON.stringify({ error: 'A IA está temporariamente indisponível. Tente novamente.' }) };
         }
 
         const data = await response.json();

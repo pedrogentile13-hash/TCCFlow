@@ -27,8 +27,36 @@ app.use((req, res, next) => {
   next();
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Block direct access to sensitive files BEFORE serving static content.
+// Without this, express.static would expose .env, SQL schema/RLS files,
+// backend source, and git internals over HTTP.
+// ─────────────────────────────────────────────────────────────────────────────
+const BLOCKED_PATTERNS = [
+  /(^|\/)\.env/i,           // .env, .env-hostinger-example
+  /(^|\/)\.git(\/|$)/i,     // .git internals
+  /\.sql$/i,                // database schema / RLS policies
+  /(^|\/)netlify(\/|$)/i,   // backend function source
+  /(^|\/)server\.js$/i,
+  /(^|\/)db\.js$/i,
+  /(^|\/)package(-.*)?\.json$/i,
+  /(^|\/)package-lock\.json$/i,
+  /\.md$/i,                 // internal guides (MIGRATION_GUIDE, etc.)
+  /(^|\/)\.htaccess/i
+];
+
+app.use((req, res, next) => {
+  const decoded = decodeURIComponent(req.path);
+  if (BLOCKED_PATTERNS.some(re => re.test(decoded))) {
+    return res.status(404).send('Not found');
+  }
+  next();
+});
+
 // Serve static files from project root
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname), {
+  dotfiles: 'deny'
+}));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // API ROUTES — Map Netlify Functions to Express endpoints
@@ -43,6 +71,7 @@ function wrapFunction(handler) {
         body: typeof req.body === 'string' ? req.body : JSON.stringify(req.body),
         headers: req.headers,
         queryStringParameters: req.query,
+        rawQuery: req.originalUrl.split('?')[1] || '',
       };
 
       const result = await handler(event);

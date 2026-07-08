@@ -185,15 +185,14 @@ function PlansPage() {
     setActivatingPro(true);
     try {
       console.log("Ativando PRO com cupom:", coupon);
+      const { data: { session } } = await _supa.auth.getSession();
       const response = await fetch("/.netlify/functions/activate-pro-coupon", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code: coupon.toUpperCase(),
-          userId: user.uid,
-          userEmail: user.email,
-          userName: userData?.name || user.displayName || "Usuário"
-        })
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token || ''}`
+        },
+        body: JSON.stringify({ code: coupon.toUpperCase() })
       });
       const data = await response.json();
       console.log("Response:", data);
@@ -233,20 +232,18 @@ function PlansPage() {
     setProcessingPlan(planId);
 
     try {
-      const finalAmount = couponDiscount > 0 ? amount * (1 - couponDiscount / 100) : amount;
-
+      const { data: { session } } = await _supa.auth.getSession();
       const response = await fetch("/.netlify/functions/create-preapproval", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token || ''}`
+        },
         body: JSON.stringify({
-          userId: user.uid,
-          userEmail: user.email,
           userName: userData?.name || user.displayName || "Usuário",
           planType: billing === "annual" ? "pro_annual" : "pro_monthly",
           couponCode: coupon.toUpperCase() || null,
-          discountPercent: couponDiscount,
-          originalAmount: amount,
-          paidAmount: finalAmount
+          originalAmount: amount
         })
       });
 
